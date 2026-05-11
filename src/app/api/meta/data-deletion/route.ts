@@ -14,8 +14,13 @@ import { parseSignedRequest } from "@/lib/meta/signed-request";
  * See https://developers.facebook.com/docs/development/create-an-app/app-dashboard/data-deletion-callback
  */
 export async function POST(request: NextRequest) {
-  const formData = await request.formData();
-  const signedRequest = formData.get("signed_request");
+  let signedRequest: FormDataEntryValue | null = null;
+  try {
+    const formData = await request.formData();
+    signedRequest = formData.get("signed_request");
+  } catch {
+    // Empty / malformed body — fall through to the 400 below
+  }
 
   if (typeof signedRequest !== "string") {
     return NextResponse.json({ error: "signed_request missing" }, { status: 400 });

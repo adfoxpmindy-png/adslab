@@ -20,6 +20,12 @@ enum Role {
   VIEWER
 }
 
+enum MetaConnectionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
 // ============================================================
 // Core models — Multi-tenant foundation
 // ============================================================
@@ -35,6 +41,7 @@ model User {
 
   memberships             TenantMember[]
   emailVerificationTokens EmailVerificationToken[]
+  connectedMetaAccounts   MetaConnection[]         @relation("MetaConnectionConnector")
 }
 
 model Tenant {
@@ -44,7 +51,8 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members TenantMember[]
+  members        TenantMember[]
+  metaConnection MetaConnection?
 }
 
 model TenantMember {
@@ -72,4 +80,51 @@ model EmailVerificationToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// ============================================================
+// Meta integration — direct Marketing API (not Pipeboard)
+// ============================================================
+
+model MetaConnection {
+  id                   String               @id @default(cuid())
+  tenantId             String               @unique
+  // AES-256-GCM encrypted access token (long-lived, ~60d expiry)
+  accessTokenEncrypted String
+  tokenExpiresAt       DateTime?
+  // Facebook user who authorized the app
+  metaUserId           String
+  metaUserName         String
+  // AdsLab user (must be tenant OWNER) who initiated the connection
+  connectedByUserId    String
+  status               MetaConnectionStatus @default(ACTIVE)
+  connectedAt          DateTime             @default(now())
+  lastSyncedAt         DateTime?
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connectedBy User            @relation("MetaConnectionConnector", fields: [connectedByUserId], references: [id])
+  adAccounts  MetaAdAccount[]
+
+  @@index([metaUserId])
+  @@index([status])
+}
+
+model MetaAdAccount {
+  id               String   @id @default(cuid())
+  metaConnectionId String
+  // Meta's account id, e.g. "act_1234567890"
+  metaAccountId    String
+  name             String
+  currency         String
+  timezoneName     String
+  // Meta's account_status: 1=ACTIVE, 2=DISABLED, 3=UNSETTLED, etc.
+  accountStatus    Int
+  businessId       String?
+  businessName     String?
+  lastFetchedAt    DateTime @default(now())
+
+  connection MetaConnection @relation(fields: [metaConnectionId], references: [id], onDelete: Cascade)
+
+  @@unique([metaConnectionId, metaAccountId])
+  @@index([metaConnectionId])
 }
