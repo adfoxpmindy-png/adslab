@@ -144,7 +144,7 @@
 - [x] Layout `src/app/t/[tenantSlug]/layout.tsx` — เรียก `requireTenantMember(slug)` (authoritative check)
 - [x] Wrap `requireTenantMember` ด้วย React `cache()` — layout + page เรียกซ้ำได้แต่ DB hit แค่ครั้งเดียว
 - [x] Login API set `redirectTo` = first tenant slug → page อ่าน `?next=` ก่อน
-- [ ] **Tenant switcher** จะทำใน Task 11 (Dashboard shell + topbar)
+- [x] **Tenant switcher** ทำใน Task 11 (`src/components/tenant/tenant-switcher.tsx`)
 
 **Verified scenarios (E2E via HTTP):**
 1. ✅ No cookie + `/t/demo/dashboard` → 307 `/login?next=%2Ft%2Fdemo%2Fdashboard`
