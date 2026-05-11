@@ -18,7 +18,7 @@ type SidebarProps = {
 export function Sidebar({ tenantSlug }: SidebarProps) {
   const items: SidebarItem[] = [
     { label: "Dashboard", href: `/t/${tenantSlug}/dashboard`, icon: LayoutDashboard, enabled: true },
-    { label: "Reports", href: `/t/${tenantSlug}/reports`, icon: FileText, enabled: false },
+    { label: "Reports", href: `/t/${tenantSlug}/reports`, icon: FileText, enabled: true },
     { label: "Insights", href: `/t/${tenantSlug}/insights`, icon: BarChart3, enabled: false },
     { label: "Settings", href: `/t/${tenantSlug}/settings/integrations`, icon: Settings, enabled: true },
   ];

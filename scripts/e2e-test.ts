@@ -528,6 +528,70 @@ async function main() {
     );
   }
 
+  // ===== AI Daily Report (add-ai-daily-report) =====
+
+  // 39. /t/<slug>/reports renders for OWNER
+  {
+    const r = await fetch(`${BASE}/t/demo/reports`, {
+      headers: { Cookie: adminJar.value },
+    });
+    const html = await r.text();
+    record(
+      "39. /t/demo/reports renders + 'รายงานประจำวัน' label",
+      r.status === 200 && html.includes("รายงานประจำวัน"),
+      `status=${r.status}`,
+    );
+  }
+
+  // 40. POST /api/reports/generate without session → redirect/401
+  {
+    const r = await fetch(`${BASE}/api/reports/generate?tenantSlug=demo`, {
+      method: "POST",
+      redirect: "manual",
+    });
+    record(
+      "40. Generate report without session → unauthorized",
+      r.status === 307 || r.status === 401,
+      `status=${r.status}`,
+    );
+  }
+
+  // 41. POST /api/reports/generate with bad date format → 400
+  {
+    const r = await api("/api/reports/generate?tenantSlug=demo&date=2026/01/01", {
+      method: "POST",
+      cookieJar: adminJar,
+    });
+    record(
+      "41. Generate report with invalid date → 400",
+      r.status === 400,
+      `status=${r.status} body=${JSON.stringify(r.body)}`,
+    );
+  }
+
+  // 42. POST /api/cron/daily-report without bearer → 401
+  {
+    const r = await fetch(`${BASE}/api/cron/daily-report`, { method: "POST" });
+    record(
+      "42. Cron without bearer → 401",
+      r.status === 401,
+      `status=${r.status}`,
+    );
+  }
+
+  // 43. POST /api/cron/daily-report with wrong bearer → 401
+  {
+    const r = await fetch(`${BASE}/api/cron/daily-report`, {
+      method: "POST",
+      headers: { Authorization: "Bearer wrong-token-here" },
+    });
+    record(
+      "43. Cron with wrong bearer → 401",
+      r.status === 401,
+      `status=${r.status}`,
+    );
+  }
+
   // ===== Summary =====
   await prisma.$disconnect();
 
