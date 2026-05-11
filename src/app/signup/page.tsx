@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LegalFooter } from "@/components/legal-footer";
 
 type FieldErrors = Partial<Record<"name" | "email" | "password" | "tenantName", string>>;
 
@@ -158,6 +159,7 @@ export default function SignupPage() {
             เข้าสู่ระบบ
           </Link>
         </p>
+        <LegalFooter />
       </div>
     </main>
   );

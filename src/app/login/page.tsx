@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LegalFooter } from "@/components/legal-footer";
 
 type FieldErrors = Partial<Record<"email" | "password", string>>;
 
@@ -135,6 +136,7 @@ export default function LoginPage() {
             สมัครสมาชิก
           </Link>
         </p>
+        <LegalFooter />
       </div>
     </main>
   );
