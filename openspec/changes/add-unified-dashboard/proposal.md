@@ -27,30 +27,37 @@
 - Stale-while-revalidate pattern: เห็นข้อมูลเก่าทันทีแล้ว revalidate ใน background ผ่าน server action
 
 **APIs:**
-- `GET /api/meta/insights?tenantSlug=<slug>&range=<today|yesterday|7d|30d>` — return aggregated KPI + per-account breakdown
+- `GET /api/meta/insights?tenantSlug=<slug>&range=<preset>&from=<ISO>&to=<ISO>` — return aggregated KPI + per-account breakdown (preset OR custom from/to)
 - `POST /api/meta/insights/refresh?tenantSlug=<slug>` — invalidate cache + force refetch (OWNER + MEDIA_BUYER)
 
 **UI (dashboard page):**
-- Date range picker (4 presets ก่อน — Today / Yesterday / 7 วันล่าสุด / 30 วันล่าสุด)
+- Date range picker: 4 presets (Today / Yesterday / 7d / 30d) **+ custom calendar picker** (founder requested)
 - 4 KPI cards: Total Spend / Impressions / Clicks / Conversions พร้อม delta vs previous period
-- Account breakdown table: Account name, business, spend, CPM, CTR, ROAS, top campaigns count, status
+- Account breakdown table: Account name, business, spend (THB + native), CPM, CTR, ROAS, status
 - Empty-state ถ้ายังไม่มี active campaigns: "ยังไม่มี campaign ทำงาน — ไปสร้างที่ Meta Ads Manager ก่อน"
 - "Last synced X minutes ago" + manual refresh button
 - Skeleton loading state ระหว่าง fetch ครั้งแรก (founder feedback)
 
+**Currency handling:**
+- รวมยอดเป็น **THB เดียว** ใช้ fixed FX rate ใน env var (`META_FX_USD_THB`, `META_FX_EUR_THB`, etc.)
+- ในตาราง per-account แสดง original currency (ไม่แปลง) เพื่อ transparency
+- เพิ่ม helper `convertToThb(amount, currency)` ใน `src/lib/meta/fx.ts` พร้อม unit test
+- Phase 2 (`add-fx-feed`): ดึงอัตราอัตโนมัติจาก BOT API รายวัน
+
 **KPI Tracker — basic only:**
-- Red/yellow/green badge เรียบง่ายบน CPM และ ROAS (เกณฑ์ default แบบ generic — AI tuning ใน proposal ถัดไป)
+- Red/yellow/green badge บน CPM (>100 red, 50-100 yellow, <50 green) และ ROAS (<2 red, 2-3 yellow, >3 green)
+- เกณฑ์ hardcoded ใน Phase 1 — user-customizable thresholds + goal tracking **ย้ายไป proposal `add-campaign-goals`** (Phase 1 ตัวต่อไป)
 
 ### ❌ Non-goals (proposal ถัดไป)
 
 - ❌ AI Daily Report / Optimization Recommendations → `add-ai-daily-report` / `add-ai-optimization`
-- ❌ Custom date range (calendar picker) → Phase 2
+- ❌ **User-defined campaign goals + KPI focus + goal-vs-actual tracking** → `add-campaign-goals` (Phase 1, ตัวต่อไปทันที — เป็น **core differentiator**)
 - ❌ Charts / time-series visualization → Phase 2 (`add-dashboard-charts`)
 - ❌ Campaign-level deep view (drill-down per campaign) → Phase 2
 - ❌ Export to CSV / PDF / PPT → Phase 2 (`add-export`)
 - ❌ Cross-platform aggregation (Google / TikTok) → Phase 2+
 - ❌ Real-time push (WebSocket / SSE) → Phase 3
-- ❌ Customizable KPI thresholds per account → Phase 2 (`add-kpi-rules`)
+- ❌ Auto-FX rate from BOT API → Phase 2 (`add-fx-feed`)
 
 ---
 
@@ -62,8 +69,11 @@
 | Cache TTL | 15 นาที (configurable ผ่าน env `INSIGHTS_CACHE_TTL_SEC`) | สมดุลระหว่าง freshness + Meta API quota |
 | Cache key | `${tenantId}::${scope}::${range}` | scope = "summary" or `act_<id>`; range = preset string |
 | Aggregation level | Per-tenant + per-ad-account | Phase 1 ดูภาพรวม + breakdown ต่อ account; campaign-level Phase 2 |
-| Currency normalization | แสดงในสกุลเงินของแต่ละ ad account; รวมเป็น THB สำหรับ tenant ถ้า account ทั้งหมดเป็น THB; ไม่งั้นแสดงแยก | Multi-currency conversion ซับซ้อน — Phase 2 ใช้ FX API |
-| KPI threshold (red/yellow/green) | Hardcode ใน Phase 1 — CPM > 100 = red, ROAS < 2 = red | Phase 2 ให้ user/AI ปรับ |
+| Currency normalization | รวมเป็น **THB เดียวเสมอ** ผ่าน fixed FX rate ใน env; แสดง native currency ในตาราง per-account | Founder ตัดสินใจ — agency ไทยคิดเงินเป็น THB |
+| FX rate source | Fixed env var (`META_FX_USD_THB`, etc.); manual update รายเดือน | Phase 2 ดึงจาก BOT API อัตโนมัติ (`add-fx-feed`) |
+| KPI threshold (red/yellow/green) | Hardcode ใน Phase 1 — CPM (>100 red, 50-100 yellow, <50 green), ROAS (<2 red, 2-3 yellow, >3 green) | User-customizable + goal-aware thresholds → `add-campaign-goals` |
+| Conversion metric | Purchase + Lead รวม (default) | Founder บอก "Purchase + Lead" — `add-campaign-goals` ปลดล็อค user-defined goals |
+| Date range | 4 presets + custom calendar picker (founder requested) | Custom range เพิ่ม flexibility สำหรับงาน reporting |
 | Date timezone | Tenant timezone (ใช้ ad account แรก) | Meta insights มี timezone ของ account; aggregate ใช้ตัวที่บ่อยที่สุด |
 | API call pattern | 1 batch call: `/me/adaccounts?fields=insights.date_preset(X){...}` | ลดจำนวน Meta API round-trip |
 
@@ -121,8 +131,18 @@ model MetaInsightCache {
 
 ---
 
-## 7. Open questions
+## 7. Founder decisions (locked in)
 
-1. **Date range presets** — 4 ตัวพอไหม (Today / Yesterday / 7d / 30d) หรือต้องการ "This month" / "Last month" ด้วย?
-2. **Currency mixed** — ถ้า tenant มี account หลายสกุล (เช่น THB + USD) จะแสดงอย่างไรในตัวรวม? *(แนะนำ: แยกแสดงเป็น 2 บรรทัด "฿X,XXX + $YYY")*
-3. **Conversion metric** — Meta มีหลายแบบ (purchase, lead, custom event) — ใช้ตัวไหนเป็น default? *(แนะนำ: `actions:offsite_conversion.fb_pixel_purchase` รวมกับ `actions:lead`)*
+- ✅ **Date range:** 4 presets + **custom calendar picker** (founder request)
+- ✅ **Currency:** รวมเป็น **THB เดียว** ผ่าน fixed FX rate ใน env (manual update รายเดือน; auto via BOT API ใน Phase 2)
+- ✅ **Conversion metric:** Purchase + Lead รวม (default) — user-defined goals + KPI focus จะมาใน proposal `add-campaign-goals` ต่อทันที
+
+## 8. Pointer to next proposal
+
+หลัง proposal นี้ landed → **`add-campaign-goals`** จะให้ user:
+- กำหนด primary + secondary KPIs ต่อ ad account / campaign
+- ตั้งเป้า threshold เอง (เช่น "ROAS > 3.0", "Reach > 100k/day")
+- เห็น "✅ On track" / "⚠️ Off track" indicator
+- ปลดล็อค `add-ai-optimization` (AI ที่รู้ว่าจะ optimize ไปทิศใด)
+
+นี่คือ **core differentiator** ของ AdsLab vs Madgicx — agency ไทยตั้ง goal ภาษาไทยได้ + AI ช่วย optimize ตาม goal ของจริง ไม่ใช่ metric แบบ generic
