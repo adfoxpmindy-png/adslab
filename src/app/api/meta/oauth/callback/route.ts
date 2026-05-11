@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/crypto/aes";
+import { syncAdAccounts } from "@/lib/meta/client";
 import {
   exchangeCodeForToken,
   exchangeForLongLivedToken,
@@ -87,8 +88,21 @@ export async function GET(request: Request) {
       });
     });
 
+    // Eagerly pull ad accounts so the settings page renders the table
+    // on the first paint. Failures here are non-fatal — user can hit
+    // "Sync" manually if it errors.
+    let syncFailed = false;
+    try {
+      await syncAdAccounts(statePayload.tenantId);
+    } catch (err) {
+      syncFailed = true;
+      console.warn("[meta/oauth/callback] initial sync failed:", (err as Error).message);
+    }
+
+    const params = new URLSearchParams({ connected: "1" });
+    if (syncFailed) params.set("sync_failed", "1");
     return NextResponse.redirect(
-      `${appUrl}/t/${tenant.slug}/settings/integrations?connected=1`,
+      `${appUrl}/t/${tenant.slug}/settings/integrations?${params.toString()}`,
       307,
     );
   } catch (err) {

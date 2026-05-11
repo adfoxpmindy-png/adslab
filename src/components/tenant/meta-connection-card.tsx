@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CheckCircle2, ExternalLink, Plug, RefreshCw, Unplug } from "lucide-react";
+import { AlertCircle, CheckCircle2, ExternalLink, RefreshCw, Unplug } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { MetaIcon } from "@/components/icons/meta";
 import { cn } from "@/lib/utils";
 
 export type MetaConnectionData =
@@ -116,8 +117,8 @@ export function MetaConnectionCard({ tenantSlug, role, data, flash }: Props) {
 function DisconnectedView({ tenantSlug, isOwner }: { tenantSlug: string; isOwner: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-8 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-muted">
-        <Plug className="size-5 text-muted-foreground" />
+      <div className="flex size-12 items-center justify-center rounded-full bg-[#1877F2]/10">
+        <MetaIcon className="size-6 text-[#1877F2]" />
       </div>
       <div>
         <h3 className="text-base font-semibold">ยังไม่ได้เชื่อมต่อ Meta</h3>
@@ -128,10 +129,11 @@ function DisconnectedView({ tenantSlug, isOwner }: { tenantSlug: string; isOwner
       {isOwner ? (
         <a
           href={`/api/meta/oauth/start?tenantSlug=${tenantSlug}`}
-          className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+          className={cn(buttonVariants({ size: "lg" }), "gap-2 bg-[#1877F2] text-white hover:bg-[#166FE5]")}
         >
-          <ExternalLink className="size-4" />
+          <MetaIcon className="size-4" />
           เชื่อมต่อกับ Meta
+          <ExternalLink className="size-3.5" />
         </a>
       ) : (
         <p className="text-sm text-muted-foreground">เฉพาะ OWNER เท่านั้นที่เชื่อมต่อได้</p>
@@ -161,8 +163,11 @@ function ConnectedView({
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-            <CheckCircle2 className="size-5 text-primary" />
+          <div className="relative flex size-10 items-center justify-center rounded-full bg-[#1877F2]/10">
+            <MetaIcon className="size-5 text-[#1877F2]" />
+            <span className="absolute -right-0.5 -bottom-0.5 flex size-4 items-center justify-center rounded-full bg-background">
+              <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            </span>
           </div>
           <div>
             <p className="text-base font-semibold">{data.connection.metaUserName}</p>

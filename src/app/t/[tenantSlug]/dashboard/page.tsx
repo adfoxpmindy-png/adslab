@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowDownRight, ArrowUpRight, ArrowRight, Plug, Sparkles } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, ArrowRight, Sparkles } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
+import { MetaIcon } from "@/components/icons/meta";
 import { cn } from "@/lib/utils";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
@@ -78,8 +79,8 @@ export default async function DashboardPage({
 function ConnectMetaCta({ tenantSlug }: { tenantSlug: string }) {
   return (
     <Card className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-      <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
-        <Plug className="size-6 text-primary" />
+      <div className="flex size-14 items-center justify-center rounded-full bg-[#1877F2]/10">
+        <MetaIcon className="size-7 text-[#1877F2]" />
       </div>
       <div className="max-w-md space-y-2">
         <h2 className="text-xl font-semibold tracking-tight">เชื่อม Meta เพื่อเริ่มใช้งาน</h2>
@@ -90,8 +91,9 @@ function ConnectMetaCta({ tenantSlug }: { tenantSlug: string }) {
       </div>
       <Link
         href={`/t/${tenantSlug}/settings/integrations`}
-        className={cn(buttonVariants({ size: "lg" }), "gap-2")}
+        className={cn(buttonVariants({ size: "lg" }), "gap-2 bg-[#1877F2] text-white hover:bg-[#166FE5]")}
       >
+        <MetaIcon className="size-4" />
         Connect Meta
         <ArrowRight className="size-4" />
       </Link>
