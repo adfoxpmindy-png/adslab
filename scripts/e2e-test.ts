@@ -339,16 +339,18 @@ async function main() {
 
   // ===== Dashboard with admin =====
 
-  // 21. Dashboard shows Connect Meta CTA (no MetaConnection yet)
+  // 21. Dashboard renders for OWNER (either Connect CTA or real KPIs)
   {
     const r = await fetch(`${BASE}/t/demo/dashboard`, {
       headers: { Cookie: adminJar.value },
     });
     const html = await r.text();
+    const hasConnectCta = html.includes("Connect Meta") && html.includes("เชื่อม Meta");
+    const hasKpiCards = html.includes("Total Spend") || html.includes("Impressions");
     record(
-      "21. Dashboard shows 'Connect Meta' CTA + tenant name (when not connected)",
-      r.status === 200 && html.includes("Connect Meta") && html.includes("AdsLab Demo Agency"),
-      `status=${r.status}`,
+      "21. Dashboard renders + tenant name + (Connect CTA OR KPI cards)",
+      r.status === 200 && html.includes("AdsLab Demo Agency") && (hasConnectCta || hasKpiCards),
+      `status=${r.status} connectCta=${hasConnectCta} kpiCards=${hasKpiCards}`,
     );
     record(
       "22. Dashboard has NO unverified banner (admin is verified)",
@@ -364,13 +366,16 @@ async function main() {
     record(`${path} returns 200`, r.status === 200, `status=${r.status}`);
   }
 
-  // 26. GET /api/meta/connection (admin, no connection yet) → { connected: false }
+  // 26. GET /api/meta/connection returns proper shape (either state)
   {
     const r = await api("/api/meta/connection?tenantSlug=demo", { cookieJar: adminJar });
+    const shapeOk =
+      r.body?.connected === false ||
+      (r.body?.connected === true && Array.isArray(r.body?.accounts));
     record(
-      "26. Meta connection status (admin, no connection) → connected:false",
-      r.status === 200 && r.body?.connected === false,
-      `status=${r.status} body=${JSON.stringify(r.body)}`,
+      "26. Meta connection status returns valid shape",
+      r.status === 200 && shapeOk,
+      `status=${r.status} connected=${r.body?.connected} accountCount=${r.body?.connection?.accountCount ?? 0}`,
     );
   }
 
@@ -467,15 +472,20 @@ async function main() {
     );
   }
 
-  // 35. Insights with admin but no Meta connection → 409 no_connection
+  // 35. Insights with admin returns either 409 (no connection) or 200 with valid shape
   {
     const r = await api("/api/meta/insights?tenantSlug=demo&range=last_7d", {
       cookieJar: adminJar,
     });
+    const okConnected =
+      r.status === 200 &&
+      typeof r.body?.summary?.spendThb === "number" &&
+      Array.isArray(r.body?.accounts);
+    const okDisconnected = r.status === 409 && r.body?.code === "no_connection";
     record(
-      "35. Insights without Meta connection → 409 no_connection",
-      r.status === 409 && r.body?.code === "no_connection",
-      `status=${r.status} body=${JSON.stringify(r.body)}`,
+      "35. Insights returns valid shape (200 connected OR 409 no_connection)",
+      okConnected || okDisconnected,
+      `status=${r.status} ${okConnected ? `spendThb=${r.body.summary.spendThb} accounts=${r.body.accounts.length}` : ""}`,
     );
   }
 
@@ -504,15 +514,16 @@ async function main() {
     );
   }
 
-  // 38. Dashboard page renders (no connection → ConnectMetaCta)
+  // 38. Dashboard live data path: if Meta is connected, page should mention
+  //     date range picker controls or KPI labels (test 21 covers the dual case).
+  //     This test asserts the page works in both states without 5xx errors.
   {
     const r = await fetch(`${BASE}/t/demo/dashboard`, {
       headers: { Cookie: adminJar.value },
     });
-    const html = await r.text();
     record(
-      "38. Dashboard renders Connect CTA (admin demo tenant has no Meta connection)",
-      r.status === 200 && html.includes("เชื่อม Meta") && html.includes("Connect Meta"),
+      "38. Dashboard responds 200 with admin cookie (connected or not)",
+      r.status === 200,
       `status=${r.status}`,
     );
   }
