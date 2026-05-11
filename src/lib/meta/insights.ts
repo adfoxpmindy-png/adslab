@@ -23,6 +23,18 @@ export type DateRangeKey =
   | "last_30d"
   | `custom:${string}..${string}`;
 
+/**
+ * Distribution of active+paused campaign objectives on an ad account.
+ * Lets the AI reason about WHY a metric pattern is acceptable —
+ * a Reach campaign with low ROAS is fine; a Sales campaign with the
+ * same number is a red flag.
+ */
+export type CampaignObjectiveCount = {
+  /** Raw Meta value, e.g. `OUTCOME_SALES`, `OUTCOME_AWARENESS`, `REACH` */
+  objective: string;
+  count: number;
+};
+
 export type ParsedInsight = {
   accountId: string; // "act_xxxx"
   accountName: string;
@@ -39,6 +51,8 @@ export type ParsedInsight = {
   conversions: number;
   purchaseValue: number;
   roas: number;
+  /** Empty array if campaigns sub-query is not available. */
+  campaignObjectives: CampaignObjectiveCount[];
 };
 
 export type DashboardSummary = {
@@ -80,6 +94,13 @@ type RawInsight = {
   action_values?: RawAction[];
 };
 
+type RawCampaign = {
+  id: string;
+  name?: string;
+  objective?: string;
+  effective_status?: string;
+};
+
 type RawAccountWithInsights = {
   id: string; // "act_xxx"
   name: string;
@@ -87,6 +108,7 @@ type RawAccountWithInsights = {
   account_status: number;
   business?: { id: string; name: string };
   insights?: { data: RawInsight[] };
+  campaigns?: { data: RawCampaign[] };
 };
 
 type RawAccountsPage = {
@@ -107,6 +129,18 @@ function sumActionTypes(actions: RawAction[] | undefined, allowed: Set<string>):
     if (allowed.has(a.action_type)) total += num(a.value);
   }
   return total;
+}
+
+function summarizeObjectives(campaigns: RawCampaign[] | undefined): CampaignObjectiveCount[] {
+  if (!campaigns || campaigns.length === 0) return [];
+  const counts = new Map<string, number>();
+  for (const c of campaigns) {
+    if (!c.objective) continue;
+    counts.set(c.objective, (counts.get(c.objective) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .map(([objective, count]) => ({ objective, count }))
+    .sort((a, b) => b.count - a.count);
 }
 
 export function parseInsight(account: RawAccountWithInsights): ParsedInsight {
@@ -131,6 +165,7 @@ export function parseInsight(account: RawAccountWithInsights): ParsedInsight {
     conversions,
     purchaseValue,
     roas: spend > 0 ? purchaseValue / spend : 0,
+    campaignObjectives: summarizeObjectives(account.campaigns?.data),
   };
 }
 
@@ -176,7 +211,13 @@ export async function fetchInsightsForAllAccounts(
     ? `insights.time_range(${rangeParam.time_range}){${INSIGHT_FIELDS}}`
     : `insights.date_preset(${rangeParam.date_preset}){${INSIGHT_FIELDS}}`;
 
-  const fields = `id,name,currency,account_status,business{id,name},${insightSubQuery}`;
+  // Nested `campaigns` sub-query: pull active+paused campaigns with their
+  // objective so the AI can evaluate metrics against intent (Reach vs Sales
+  // need different judgement). Limit 50 per account keeps payload bounded.
+  const campaignsSubQuery =
+    'campaigns.limit(50).filtering([{"field":"effective_status","operator":"IN","value":["ACTIVE","PAUSED","CAMPAIGN_PAUSED"]}]){id,name,objective,effective_status}';
+
+  const fields = `id,name,currency,account_status,business{id,name},${insightSubQuery},${campaignsSubQuery}`;
 
   const results: ParsedInsight[] = [];
   let page = await graphFetch<RawAccountsPage>("/me/adaccounts", {
