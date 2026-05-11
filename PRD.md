@@ -258,9 +258,10 @@
 
 > รายการนี้ sync กับ [openspec/changes/](openspec/changes/) — ดูแผนละเอียดในแต่ละ change proposal
 
-### 🔄 In Progress
-- **`add-mvp-foundation`** (พื้นฐาน Phase 1) — 13 tasks, ~30-35 ชม.
-  - ดูแผนละเอียดที่ [openspec/changes/add-mvp-foundation/tasks.md](openspec/changes/add-mvp-foundation/tasks.md)
+### ✅ Completed
+- **`add-mvp-foundation`** (พื้นฐาน Phase 1) — 13 tasks ✓ + 22/22 E2E tested บน production
+  - Production URL: **https://adslab-theta.vercel.app**
+  - ดูสรุปที่ [openspec/changes/add-mvp-foundation/tasks.md](openspec/changes/add-mvp-foundation/tasks.md)
 
 ### 📋 ถัดไป (Phase 1 — รอ foundation เสร็จ)
 Proposals เหล่านี้จะถูกสร้างหลัง `add-mvp-foundation` ผ่าน:
@@ -283,6 +284,7 @@ Proposals เหล่านี้จะถูกสร้างหลัง `ad
 |-------|--------|----------|
 | 2026-05-11 | Approach | Phased — MVP ก่อน, ห้ามทำทุกอย่างพร้อมกัน |
 | 2026-05-11 | AI Gateway | **OpenRouter** (hybrid Claude analysis + Gemini Flash chat) — superseded direct Anthropic SDK plan |
+| 2026-05-11 | Deploy | **Vercel** at https://adslab-theta.vercel.app — same Neon DB for dev + prod (split when 10+ paying customers) |
 | 2026-05-11 | Meta integration (MVP) | Pipeboard MCP (skip own Meta App) |
 | 2026-05-11 | Multi-tenant URL | Path-based (`/t/<slug>/...`) |
 | 2026-05-11 | Email verification | Phase 1 (Hostatom SMTP) |
