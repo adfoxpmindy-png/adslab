@@ -339,22 +339,117 @@ async function main() {
 
   // ===== Dashboard with admin =====
 
-  // 21. Dashboard has KPI cards
+  // 21. Dashboard shows Connect Meta CTA (no MetaConnection yet)
   {
     const r = await fetch(`${BASE}/t/demo/dashboard`, {
       headers: { Cookie: adminJar.value },
     });
     const html = await r.text();
-    const expects = ["Total Spend", "Impressions", "Clicks", "Conversions", "AdsLab Demo Agency"];
-    const missing = expects.filter((e) => !html.includes(e));
     record(
-      "21. Dashboard KPI cards + tenant name visible",
-      missing.length === 0,
-      `missing=${missing.join(",")}`,
+      "21. Dashboard shows 'Connect Meta' CTA + tenant name (when not connected)",
+      r.status === 200 && html.includes("Connect Meta") && html.includes("AdsLab Demo Agency"),
+      `status=${r.status}`,
     );
     record(
       "22. Dashboard has NO unverified banner (admin is verified)",
       !html.includes("กรุณายืนยันอีเมล"),
+    );
+  }
+
+  // ===== Meta integration =====
+
+  // 23-25. Legal pages return 200
+  for (const path of ["/privacy", "/terms", "/data-deletion"]) {
+    const r = await fetch(`${BASE}${path}`);
+    record(`${path} returns 200`, r.status === 200, `status=${r.status}`);
+  }
+
+  // 26. GET /api/meta/connection (admin, no connection yet) → { connected: false }
+  {
+    const r = await api("/api/meta/connection?tenantSlug=demo", { cookieJar: adminJar });
+    record(
+      "26. Meta connection status (admin, no connection) → connected:false",
+      r.status === 200 && r.body?.connected === false,
+      `status=${r.status} body=${JSON.stringify(r.body)}`,
+    );
+  }
+
+  // 27. GET /api/meta/oauth/start without session → proxy redirects to /login
+  {
+    const r = await fetch(`${BASE}/api/meta/oauth/start?tenantSlug=demo`, { redirect: "manual" });
+    // The proxy only matches /t/* — /api/meta/oauth/start isn't proxy-gated,
+    // so this hits the handler which calls requireSession() → redirect /login.
+    record(
+      "27. OAuth start without session → redirects",
+      r.status === 307 || r.status === 401,
+      `status=${r.status}`,
+    );
+  }
+
+  // 28. GET /api/meta/oauth/start with admin (OWNER of demo) → 307 to facebook.com
+  {
+    const r = await fetch(`${BASE}/api/meta/oauth/start?tenantSlug=demo`, {
+      headers: { Cookie: adminJar.value },
+      redirect: "manual",
+    });
+    const loc = r.headers.get("location") ?? "";
+    record(
+      "28. OAuth start (OWNER) → 307 to facebook.com with scopes",
+      r.status === 307 && loc.includes("facebook.com") && loc.includes("ads_management"),
+      `status=${r.status} location=${loc.slice(0, 80)}...`,
+    );
+  }
+
+  // 29. POST /api/meta/sync without session → redirected by requireSession
+  {
+    const r = await api("/api/meta/sync?tenantSlug=demo", { method: "POST" });
+    record(
+      "29. Meta sync without session → not authorized",
+      r.status === 401 || r.status === 307,
+      `status=${r.status}`,
+    );
+  }
+
+  // 30. POST /api/meta/disconnect without session → not authorized
+  {
+    const r = await api("/api/meta/disconnect?tenantSlug=demo", { method: "POST" });
+    record(
+      "30. Meta disconnect without session → not authorized",
+      r.status === 401 || r.status === 307,
+      `status=${r.status}`,
+    );
+  }
+
+  // 31. POST /api/meta/data-deletion with no body → 400
+  {
+    const r = await fetch(`${BASE}/api/meta/data-deletion`, { method: "POST" });
+    record(
+      "31. Meta data-deletion callback (no body) → 400",
+      r.status === 400,
+      `status=${r.status}`,
+    );
+  }
+
+  // 32. POST /api/meta/deauthorize with no body → 400
+  {
+    const r = await fetch(`${BASE}/api/meta/deauthorize`, { method: "POST" });
+    record(
+      "32. Meta deauthorize callback (no body) → 400",
+      r.status === 400,
+      `status=${r.status}`,
+    );
+  }
+
+  // 33. Settings integrations page renders for OWNER
+  {
+    const r = await fetch(`${BASE}/t/demo/settings/integrations`, {
+      headers: { Cookie: adminJar.value },
+    });
+    const html = await r.text();
+    record(
+      "33. /t/demo/settings/integrations renders for OWNER + has Meta connect button",
+      r.status === 200 && html.includes("Meta") && html.includes("เชื่อมต่อ"),
+      `status=${r.status}`,
     );
   }
 

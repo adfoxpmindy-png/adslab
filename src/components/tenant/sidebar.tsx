@@ -20,7 +20,7 @@ export function Sidebar({ tenantSlug }: SidebarProps) {
     { label: "Dashboard", href: `/t/${tenantSlug}/dashboard`, icon: LayoutDashboard, enabled: true },
     { label: "Reports", href: `/t/${tenantSlug}/reports`, icon: FileText, enabled: false },
     { label: "Insights", href: `/t/${tenantSlug}/insights`, icon: BarChart3, enabled: false },
-    { label: "Settings", href: `/t/${tenantSlug}/settings`, icon: Settings, enabled: false },
+    { label: "Settings", href: `/t/${tenantSlug}/settings/integrations`, icon: Settings, enabled: true },
   ];
 
   return (
