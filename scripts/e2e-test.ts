@@ -453,6 +453,70 @@ async function main() {
     );
   }
 
+  // ===== Dashboard insights API (add-unified-dashboard) =====
+
+  // 34. Insights without session → redirect / 401
+  {
+    const r = await fetch(`${BASE}/api/meta/insights?tenantSlug=demo&range=last_7d`, {
+      redirect: "manual",
+    });
+    record(
+      "34. Insights without session → redirects",
+      r.status === 307 || r.status === 401,
+      `status=${r.status}`,
+    );
+  }
+
+  // 35. Insights with admin but no Meta connection → 409 no_connection
+  {
+    const r = await api("/api/meta/insights?tenantSlug=demo&range=last_7d", {
+      cookieJar: adminJar,
+    });
+    record(
+      "35. Insights without Meta connection → 409 no_connection",
+      r.status === 409 && r.body?.code === "no_connection",
+      `status=${r.status} body=${JSON.stringify(r.body)}`,
+    );
+  }
+
+  // 36. Insights with invalid range → 400
+  {
+    const r = await api("/api/meta/insights?tenantSlug=demo&range=invalid_range", {
+      cookieJar: adminJar,
+    });
+    record(
+      "36. Insights with invalid range → 400",
+      r.status === 400,
+      `status=${r.status} body=${JSON.stringify(r.body)}`,
+    );
+  }
+
+  // 37. Insights refresh without session → redirect / 401
+  {
+    const r = await fetch(`${BASE}/api/meta/insights/refresh?tenantSlug=demo&range=last_7d`, {
+      method: "POST",
+      redirect: "manual",
+    });
+    record(
+      "37. Insights refresh without session → redirects",
+      r.status === 307 || r.status === 401,
+      `status=${r.status}`,
+    );
+  }
+
+  // 38. Dashboard page renders (no connection → ConnectMetaCta)
+  {
+    const r = await fetch(`${BASE}/t/demo/dashboard`, {
+      headers: { Cookie: adminJar.value },
+    });
+    const html = await r.text();
+    record(
+      "38. Dashboard renders Connect CTA (admin demo tenant has no Meta connection)",
+      r.status === 200 && html.includes("เชื่อม Meta") && html.includes("Connect Meta"),
+      `status=${r.status}`,
+    );
+  }
+
   // ===== Summary =====
   await prisma.$disconnect();
 

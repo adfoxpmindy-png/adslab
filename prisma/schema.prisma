@@ -53,6 +53,7 @@ model Tenant {
 
   members        TenantMember[]
   metaConnection MetaConnection?
+  insightCaches  MetaInsightCache[]
 }
 
 model TenantMember {
@@ -127,4 +128,26 @@ model MetaAdAccount {
 
   @@unique([metaConnectionId, metaAccountId])
   @@index([metaConnectionId])
+}
+
+// Server-side cache of Meta Insights API responses, keyed by tenant + scope
+// (summary or single ad account) + date range. TTL'd via expiresAt.
+model MetaInsightCache {
+  id          String   @id @default(cuid())
+  tenantId    String
+  // "summary" = aggregated across all accounts; "act_xxxx" = single account
+  scope       String
+  // Either a preset name ("today" | "yesterday" | "last_7d" | "last_30d")
+  // or a custom range encoded as "custom:YYYY-MM-DD..YYYY-MM-DD"
+  rangeKey    String
+  // Full response payload. Shape matches AggregatedInsights / PerAccountInsights
+  payload     Json
+  fetchedAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, scope, rangeKey])
+  @@index([tenantId])
+  @@index([expiresAt])
 }

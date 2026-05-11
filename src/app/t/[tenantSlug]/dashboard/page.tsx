@@ -1,28 +1,17 @@
 import Link from "next/link";
-import { ArrowDownRight, ArrowUpRight, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { MetaIcon } from "@/components/icons/meta";
+import { DashboardClient } from "@/components/tenant/dashboard-client";
 import { cn } from "@/lib/utils";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
+import { getDashboardData } from "@/lib/meta/dashboard-service";
+import type { DashboardPayload, DateRangeKey } from "@/lib/meta/insights";
 
-type KpiTone = "positive" | "negative" | "neutral";
-
-type KpiPlaceholder = {
-  label: string;
-  value: string;
-  delta: string;
-  tone: KpiTone;
-};
-
-const PLACEHOLDER_KPIS: KpiPlaceholder[] = [
-  { label: "Total Spend", value: "฿0", delta: "—", tone: "neutral" },
-  { label: "Impressions", value: "0", delta: "—", tone: "neutral" },
-  { label: "Clicks", value: "0", delta: "—", tone: "neutral" },
-  { label: "Conversions", value: "0", delta: "—", tone: "neutral" },
-];
+const DEFAULT_RANGE: DateRangeKey = "last_7d";
 
 export default async function DashboardPage({
   params,
@@ -30,47 +19,50 @@ export default async function DashboardPage({
   params: Promise<{ tenantSlug: string }>;
 }) {
   const { tenantSlug } = await params;
-  const { tenant } = await requireTenantMember(tenantSlug);
+  const { tenant, role } = await requireTenantMember(tenantSlug);
 
-  // Show the "Connect Meta" empty state if no connection yet.
   const connection = await prisma.metaConnection.findUnique({
     where: { tenantId: tenant.id },
-    select: { id: true, status: true, adAccounts: { select: { id: true }, take: 1 } },
+    select: { id: true, status: true },
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
+
+  // Server-side fetch the first page of insights so the dashboard renders
+  // with real numbers on initial paint instead of a client-side waterfall.
+  // If the fetch fails (network blip, Meta rate limit), fall through to
+  // a soft empty state and let the client retry.
+  let initialPayload: DashboardPayload | null = null;
+  let initialFromCache = false;
+  let initialIsStale = false;
+  if (isConnected) {
+    try {
+      const result = await getDashboardData(tenant.id, DEFAULT_RANGE);
+      initialPayload = result.payload;
+      initialFromCache = result.fromCache;
+      initialIsStale = result.isStale;
+    } catch (err) {
+      console.warn("[dashboard] initial fetch failed:", (err as Error).message);
+    }
+  }
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
       <header className="flex flex-col gap-1">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Workspace</p>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{tenant.name}</h1>
-        <p className="text-sm text-muted-foreground">
-          ภาพรวมแคมเปญทั้งหมดจะแสดงที่นี่
-        </p>
       </header>
 
       {!isConnected ? (
         <ConnectMetaCta tenantSlug={tenantSlug} />
       ) : (
-        <>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {PLACEHOLDER_KPIS.map((kpi) => (
-              <KpiCard key={kpi.label} kpi={kpi} />
-            ))}
-          </div>
-
-          <Card className="flex flex-col items-center justify-center gap-3 border-dashed bg-background/40 py-16 text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
-              <Sparkles className="size-5 text-primary" />
-            </div>
-            <h2 className="text-lg font-semibold tracking-tight">เชื่อม Meta เรียบร้อย — รอ AI Daily Report</h2>
-            <p className="max-w-md text-sm text-muted-foreground">
-              KPI ตัวเลขจริง + insights จะแสดงเมื่อ proposal{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 text-xs">add-unified-dashboard</code>{" "}
-              และ <code className="rounded bg-muted px-1.5 py-0.5 text-xs">add-ai-daily-report</code> ทำเสร็จ
-            </p>
-          </Card>
-        </>
+        <DashboardClient
+          tenantSlug={tenantSlug}
+          initialRange={DEFAULT_RANGE}
+          initialPayload={initialPayload}
+          initialFromCache={initialFromCache}
+          initialIsStale={initialIsStale}
+          canRefresh={role !== "VIEWER"}
+        />
       )}
     </div>
   );
@@ -97,28 +89,6 @@ function ConnectMetaCta({ tenantSlug }: { tenantSlug: string }) {
         Connect Meta
         <ArrowRight className="size-4" />
       </Link>
-    </Card>
-  );
-}
-
-function KpiCard({ kpi }: { kpi: KpiPlaceholder }) {
-  const deltaColor =
-    kpi.tone === "positive"
-      ? "text-emerald-600 dark:text-emerald-400"
-      : kpi.tone === "negative"
-        ? "text-destructive"
-        : "text-muted-foreground";
-  const Icon =
-    kpi.tone === "positive" ? ArrowUpRight : kpi.tone === "negative" ? ArrowDownRight : null;
-
-  return (
-    <Card className="flex flex-col gap-2 p-5">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{kpi.label}</p>
-      <p className="text-3xl font-semibold tracking-tight">{kpi.value}</p>
-      <p className={`flex items-center gap-1 text-xs ${deltaColor}`}>
-        {Icon && <Icon className="size-3" />}
-        <span>{kpi.delta}</span>
-      </p>
     </Card>
   );
 }
