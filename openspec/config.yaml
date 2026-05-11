@@ -1,0 +1,84 @@
+schema: spec-driven
+
+context: |
+  # AdsLab — Project Context
+
+  ## What we're building
+  AdsLab is a Thai-first Course + SaaS platform for media buyers and digital
+  marketing agencies. The mission is to let media buyers manage ads across
+  multiple platforms (Meta, Google, TikTok, LINE) from one place, with AI
+  that optimizes daily and reads numbers humans usually can't interpret.
+
+  Open-source MCP servers are the "engine" — we orchestrate them rather than
+  re-implementing every ad platform API ourselves.
+
+  ## Primary user (today)
+  Thai agency operator running 31 Meta ad accounts under one Business Manager.
+  Non-programmer. Founder dogfoods every feature before it ships.
+
+  Priority order:
+  1. Agency operators
+  2. Freelance media buyers
+  3. SME / brand owners
+  4. Beginners (course funnel → SaaS users)
+
+  ## Phase 1 MVP scope (what we ARE building now)
+  - Login / Signup + Multi-tenant (basic)
+  - Meta OAuth + connect ad accounts (via Pipeboard MCP)
+  - Multi ad-account unified dashboard (Meta only)
+  - KPI Tracker (red/yellow/green pacing)
+  - AI Daily Report (Claude-powered)
+  - AI Daily Optimization Recommendation
+  - AI in-app chat (campaign Q&A)
+  - Basic billing (Omise + 30-day trial)
+
+  ## Out of scope for Phase 1 (defer to later phases)
+  Google / TikTok / LINE integrations, campaign creation UI, creative tools,
+  course platform, CRM, public API, white-label reports, advanced AI features
+  (predict CPM, smart-crop, etc.), affiliate, Zapier, Notion/Airtable, 2FA,
+  granular permissions. These belong in later phases — write proposals only.
+
+  ## Tech stack
+  - Framework: Next.js 16 (App Router) — note: this is the new Next.js with breaking changes; read `node_modules/next/dist/docs/` before writing code
+  - Styling: Tailwind CSS + shadcn/ui
+  - ORM: Prisma
+  - Database: Neon (PostgreSQL) — no Row Level Security; full server-side API
+  - File storage: Vercel Blob
+  - AI Gateway: OpenRouter (one API key routes to multiple providers)
+  - AI Models (hybrid): Claude Sonnet for analysis; Gemini Flash for chat; Gemini Flash Lite for lightweight tasks. Prompt caching auto-enabled for Anthropic models.
+  - Meta integration (MVP): Pipeboard / meta-ads-mcp (open-source MCP)
+  - Email: Resend (`onboarding@resend.dev` ใน dev; verify a real domain in Resend dashboard for Phase 2)
+  - Payments: Omise (PromptPay + Thai cards) — Phase 1; Stripe later
+  - Hosting: Vercel (free tier in MVP; budget <$50/mo total)
+
+  ## Conventions
+  - Always respond to the founder in Thai (he is non-technical).
+  - Educational tone: explain what we're doing, why, and the expected outcome.
+  - Server-side API for every DB operation. Connect to DB via host/user/pass only.
+  - Use Prisma migrations — never hand-edit schema in a DB UI.
+  - Seed default admin: email `test@test.com`, password `admin123`.
+  - Vercel Blob for files; never local filesystem. Store URLs in DB, not files.
+  - Never `prisma migrate reset --force` without explicit confirmation.
+  - Test every new feature (write test → run → fix → delete test if not permanent).
+  - Before running the dev server, check `curl localhost:3000` first; on port
+    conflict, detect OS and kill the process (see CLAUDE.md for commands).
+
+  ## Dogfooding rule
+  Every Phase 1 feature must be usable by the founder's real 31-account
+  Meta workflow before we call it "done." If the founder wouldn't use it
+  himself tomorrow, it isn't shipped.
+
+rules:
+  proposal:
+    - Write proposals in Thai when intended for the founder; English is fine for technical sections.
+    - Always include "Non-goals" — list what this change explicitly does NOT do.
+    - State the user-visible outcome in one sentence at the top.
+    - For Phase 2+ features (out of MVP scope), mark with "Phase: future" and do not implement until Phase 1 ships.
+  tasks:
+    - Break tasks into chunks of max 2-4 hours each.
+    - Each task must be testable / verifiable on its own.
+    - Order tasks so the system is deployable after every task (avoid long broken intervals).
+  spec:
+    - Specs describe the *contract* (what), not the implementation (how).
+    - Include acceptance criteria as a bulleted checklist.
+    - Reference exact API routes, DB tables, and Claude prompts where relevant.
