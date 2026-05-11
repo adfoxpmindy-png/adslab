@@ -1,0 +1,128 @@
+# Proposal: Add Unified Dashboard (Phase 1, Meta-only)
+
+**Phase:** 1
+**Status:** Draft — awaiting founder approval
+**User-visible outcome (1 sentence):** เปิด `/t/<slug>/dashboard` แล้วเห็นยอด spend / impressions / clicks / conversions รวมทุก ad account ของ tenant + ตารางต่อ-account แสดง ROAS, top campaigns โดยเลือกช่วงเวลา (Today / Yesterday / 7d / 30d) ได้
+
+---
+
+## 1. ทำไมต้องมี proposal นี้
+
+`add-meta-integration` เชื่อม Meta แล้ว แต่ dashboard ยังเป็น placeholder
+นี่คือ **ฟีเจอร์แรกที่ user จะรู้สึกว่า "AdsLab มีประโยชน์"** — เห็นตัวเลขจริงในที่เดียว แทนการเข้า Meta Ads Manager หลายแท็บ
+
+> ⚠️ Out-of-scope ตามนิยาม Phase 1 MVP: AI Daily Report / Optimization Recommendations → จะมาในตัวที่แยก  
+> ✅ In-scope: ตัวเลขดิบ + การจัดกลุ่ม + filter เวลา (foundation ที่ AI features จะวางอยู่บน)
+
+---
+
+## 2. ขอบเขตของ change นี้
+
+### ✅ In scope
+
+**Data layer:**
+- ใหม่: `src/lib/meta/insights.ts` — Meta Insights API wrapper (fetch summary + breakdown)
+- ใหม่: `MetaInsightCache` table — cache JSON ของ insights ต่อ (tenantId, scope, dateRange)
+- TTL caching: 15 นาทีสำหรับ live data; เก็บ history ไว้ 90 วัน
+- Stale-while-revalidate pattern: เห็นข้อมูลเก่าทันทีแล้ว revalidate ใน background ผ่าน server action
+
+**APIs:**
+- `GET /api/meta/insights?tenantSlug=<slug>&range=<today|yesterday|7d|30d>` — return aggregated KPI + per-account breakdown
+- `POST /api/meta/insights/refresh?tenantSlug=<slug>` — invalidate cache + force refetch (OWNER + MEDIA_BUYER)
+
+**UI (dashboard page):**
+- Date range picker (4 presets ก่อน — Today / Yesterday / 7 วันล่าสุด / 30 วันล่าสุด)
+- 4 KPI cards: Total Spend / Impressions / Clicks / Conversions พร้อม delta vs previous period
+- Account breakdown table: Account name, business, spend, CPM, CTR, ROAS, top campaigns count, status
+- Empty-state ถ้ายังไม่มี active campaigns: "ยังไม่มี campaign ทำงาน — ไปสร้างที่ Meta Ads Manager ก่อน"
+- "Last synced X minutes ago" + manual refresh button
+- Skeleton loading state ระหว่าง fetch ครั้งแรก (founder feedback)
+
+**KPI Tracker — basic only:**
+- Red/yellow/green badge เรียบง่ายบน CPM และ ROAS (เกณฑ์ default แบบ generic — AI tuning ใน proposal ถัดไป)
+
+### ❌ Non-goals (proposal ถัดไป)
+
+- ❌ AI Daily Report / Optimization Recommendations → `add-ai-daily-report` / `add-ai-optimization`
+- ❌ Custom date range (calendar picker) → Phase 2
+- ❌ Charts / time-series visualization → Phase 2 (`add-dashboard-charts`)
+- ❌ Campaign-level deep view (drill-down per campaign) → Phase 2
+- ❌ Export to CSV / PDF / PPT → Phase 2 (`add-export`)
+- ❌ Cross-platform aggregation (Google / TikTok) → Phase 2+
+- ❌ Real-time push (WebSocket / SSE) → Phase 3
+- ❌ Customizable KPI thresholds per account → Phase 2 (`add-kpi-rules`)
+
+---
+
+## 3. การตัดสินใจทางสถาปัตยกรรม
+
+| เรื่อง | ตัดสินใจ | เหตุผล |
+|--------|---------|---------|
+| Caching layer | DB-backed JSON cache (`MetaInsightCache` table) | ไม่ต้องลง Redis; Neon ฟรี; รองรับ historical ได้ด้วย |
+| Cache TTL | 15 นาที (configurable ผ่าน env `INSIGHTS_CACHE_TTL_SEC`) | สมดุลระหว่าง freshness + Meta API quota |
+| Cache key | `${tenantId}::${scope}::${range}` | scope = "summary" or `act_<id>`; range = preset string |
+| Aggregation level | Per-tenant + per-ad-account | Phase 1 ดูภาพรวม + breakdown ต่อ account; campaign-level Phase 2 |
+| Currency normalization | แสดงในสกุลเงินของแต่ละ ad account; รวมเป็น THB สำหรับ tenant ถ้า account ทั้งหมดเป็น THB; ไม่งั้นแสดงแยก | Multi-currency conversion ซับซ้อน — Phase 2 ใช้ FX API |
+| KPI threshold (red/yellow/green) | Hardcode ใน Phase 1 — CPM > 100 = red, ROAS < 2 = red | Phase 2 ให้ user/AI ปรับ |
+| Date timezone | Tenant timezone (ใช้ ad account แรก) | Meta insights มี timezone ของ account; aggregate ใช้ตัวที่บ่อยที่สุด |
+| API call pattern | 1 batch call: `/me/adaccounts?fields=insights.date_preset(X){...}` | ลดจำนวน Meta API round-trip |
+
+---
+
+## 4. Schema changes
+
+```prisma
+model MetaInsightCache {
+  id          String   @id @default(cuid())
+  tenantId    String
+  scope       String   // "summary" | "act_<id>"
+  rangePreset String   // "today" | "yesterday" | "last_7d" | "last_30d"
+  payload     Json     // insights data
+  fetchedAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, scope, rangePreset])
+  @@index([tenantId])
+  @@index([expiresAt])  // for periodic cleanup
+}
+```
+
+ต้อง expose `cache` relation บน `Tenant` ใน schema.
+
+---
+
+## 5. Performance / cost estimate
+
+| Item | Number |
+|------|--------|
+| Meta API calls per dashboard load (cache miss) | 1 batched call |
+| Meta API calls per dashboard load (cache hit) | 0 |
+| DB queries per dashboard load | 1-3 (cache lookup + tenant + accounts) |
+| Cache hit rate (estimate, founder use) | ~80% (refresh every 15 min, dashboard loaded multiple times) |
+| OpenRouter cost | ฿0 — ไม่มี AI ในตัวนี้ |
+
+---
+
+## 6. Acceptance criteria
+
+- [ ] `/t/<slug>/dashboard` ที่ connect Meta แล้ว แสดง 4 KPI cards จริงๆ ไม่ใช่ "฿0"
+- [ ] Date range picker เปลี่ยน → ตัวเลข update ตามช่วงเวลาที่เลือก
+- [ ] Account breakdown table แสดง 31 บัญชีของ founder
+- [ ] Cache: load ครั้งแรก ~3-5s; load ซ้ำใน 15 นาที <500ms
+- [ ] "Last synced" timestamp แสดงเวลา cache เก็บค่า
+- [ ] Manual refresh button → invalidate cache + refetch
+- [ ] Skeleton loading state ระหว่าง fetch ครั้งแรก
+- [ ] Empty state (ไม่มี active campaign) แสดงข้อความที่ดี ไม่ใช่ "0" ว่างเปล่า
+- [ ] Red/yellow/green badge บน CPM และ ROAS ปรากฏถูกต้องตามเกณฑ์
+- [ ] Token expired ระหว่าง fetch → graceful error + ปุ่ม "Reconnect"
+- [ ] E2E tests: 5-7 scenarios ใหม่ใน e2e-test.ts
+
+---
+
+## 7. Open questions
+
+1. **Date range presets** — 4 ตัวพอไหม (Today / Yesterday / 7d / 30d) หรือต้องการ "This month" / "Last month" ด้วย?
+2. **Currency mixed** — ถ้า tenant มี account หลายสกุล (เช่น THB + USD) จะแสดงอย่างไรในตัวรวม? *(แนะนำ: แยกแสดงเป็น 2 บรรทัด "฿X,XXX + $YYY")*
+3. **Conversion metric** — Meta มีหลายแบบ (purchase, lead, custom event) — ใช้ตัวไหนเป็น default? *(แนะนำ: `actions:offsite_conversion.fb_pixel_purchase` รวมกับ `actions:lead`)*
