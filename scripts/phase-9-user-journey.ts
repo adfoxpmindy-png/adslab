@@ -88,6 +88,8 @@ async function fillCard(page: Page, opts: { number: string; cvv?: string }) {
   await page.fill('input#expMonth', "12");
   await page.fill('input#expYear', "2030");
   await page.fill('input#cvv', opts.cvv ?? "123");
+  // Accept terms — required since KYC-prep added refund clause checkbox.
+  await page.check('input[type="checkbox"]');
 }
 
 async function cleanup(tenantId: string, userId: string) {
