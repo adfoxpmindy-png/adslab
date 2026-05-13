@@ -1,9 +1,9 @@
-# AdsLab — Business Model Brief for Omise KYC
+# AdsLab — Business Brief for Omise KYC (Sole Proprietor)
 
 **Submission to:** support@omise.co
-**Subject:** AdsLab merchant onboarding — supporting documents
+**Subject:** AdsLab merchant onboarding — supporting documents (individual)
 **Merchant URL:** https://adslab-theta.vercel.app
-**Date:** 13 May 2026
+**Registration type:** Individual / สอดล (บุคคลธรรมดา)
 
 ---
 
@@ -21,7 +21,7 @@ management, and conversion tracking tools.
 - Act as a payment intermediary for advertising transactions
 - Provide marketplace, escrow, or transaction-clearing services
 
-The customer's relationship with Meta for ad spend remains direct and separate.
+The customer's relationship with Meta for ad spend stays direct and separate.
 AdsLab only reads the customer's Meta data (via their own Meta Marketing API
 access token) and writes optimization actions back when the customer requests
 them via our UI or AI assistant.
@@ -39,24 +39,28 @@ or yearly via Omise:
 | Scale | ฿44,990 | ฿449,990 | Agency, ฿100k–฿500k spend |
 | Enterprise | Custom | — | > ฿1M spend (sales-led, manual invoicing) |
 
-**Add-ons** (optional, charged on top of base):
+**Add-ons** (optional, on top of base):
 - Event SDK + Pixel Tracking — ฿590/mo
 - Extra Ad Account — ฿190/account/mo
-- White-label Reports — ฿490/mo
+- White-label Reports — ฿490/mo (free for Scale+)
 - Priority AI (Claude Opus) — ฿890/mo
 
-All prices include 7% VAT.
+All prices VAT-inclusive at the standard 7% rate. As individual operator I am
+not currently VAT-registered (will register and convert to juristic person once
+revenue passes the ฿1.8M/year threshold).
 
-**Average ticket size**: ฿1,490–฿10,990 / customer / month.
-**Expected transaction count**: 50–500 charges per month initially, scaling
-gradually as we exit closed beta.
+**Average ticket size**: ฿1,490–฿10,990 per customer per month.
+**Expected transaction volume**: 50–500 charges per month initially, scaling
+gradually as the closed beta opens up.
 
 ## 3. Customer Acquisition
 
-- **Closed beta** at present (~50 dogfood users including team).
+- **Closed beta** at present (~50 dogfood users including myself).
 - **No paid acquisition channels** active. Growth via:
   - Word-of-mouth in the Thai media-buyer community
-  - Founder's personal network (founder is an active media buyer)
+  - My personal network (I'm an active Thai media buyer managing
+    31 Meta ad accounts under one Business Manager — AdsLab is the tool
+    I built for my own daily workflow)
   - Organic content (planned for Q3 2026)
 - **No affiliate or referral payouts**.
 
@@ -76,7 +80,8 @@ gradually as we exit closed beta.
   `payment × (remaining_days / total_days_in_period)`
 - **Post-trial cancellation**: access continues until end of paid period, no
   refund issued at cancellation, no further auto-renewal
-- **No refund** beyond 7-day window or for accounts suspended due to ToS violation
+- **No refund** beyond 7-day window or for accounts suspended due to ToS
+  violation
 
 Refund process: customer clicks "ขอคืนเงิน" in Settings → Billing → refund
 processed via Omise refund API → credit returns to original card in 5–10
@@ -98,8 +103,9 @@ available.
 
 **Regulatory compliance**:
 - PDPA (Thailand) — full privacy policy at /privacy
-- VAT 7% inclusive in displayed prices
-- Terms of Service accepted before payment via checkbox
+- VAT 7% inclusive in displayed prices (will register VAT once revenue passes
+  the threshold)
+- Terms of Service accepted before payment via mandatory checkbox
 - No personal financial data collected beyond what Omise needs
 
 ## 7. Technology Stack
@@ -112,7 +118,7 @@ available.
 - **Auth**: iron-session (encrypted cookie)
 - **Encryption**: AES-256-GCM for stored Meta access tokens
 
-## 8. Why we chose Omise
+## 8. Why I chose Omise
 
 - THB-native pricing display (no currency conversion to customer)
 - Recurring billing via customer + saved card flow
@@ -121,34 +127,37 @@ available.
 - Webhook-based reconciliation
 - Test mode with realistic event delivery for QA
 
-## 9. Team + Operations
+## 9. About the operator
 
-- **Founder**: [TODO: name + brief background — e.g. "10 years experience as
-  Thai media buyer managing 31 Meta ad accounts under one Business Manager"]
+- **Name**: [TODO: full Thai name as on ID card]
+- **Background**: Active Thai media buyer with 10+ years experience.
+  Currently managing 31 Meta ad accounts under one Business Manager.
+  Founded AdsLab in 2026 to ship the daily-workflow tooling I needed myself.
 - **Location**: Thailand
+- **Plan**: Operate as sole proprietor through the beta and early-stage,
+  then convert to นิติบุคคล once revenue stabilizes (Q4 2026 target).
 - **Customer support**: Email reply within 24 business hours
 - **Operating hours**: Mon–Fri 9:00–18:00 ICT
 
 ## 10. Supporting documents attached
 
-1. DBD certificate (หนังสือรับรองบริษัท)
-2. ภ.พ.20 (VAT registration certificate) — if registered
-3. Bank book first page (matching company name)
-4. ID card of director / shareholder >25%
-5. Screenshot of customer dashboard
-6. Screenshot of admin / billing settings showing pricing transparency
-7. This document
+1. National ID card (บัตรประชาชน) — front + back
+2. Bank book first page (matching name on ID card)
+3. Bank statement, recent 3 months
+4. Screenshot of customer dashboard
+5. Screenshot of admin / billing settings showing pricing transparency
+6. This document
 
 ---
 
-**Contact for any clarifications:**
+**Contact:**
 
 - Email: [TODO: business email]
-- Phone: [TODO: business phone]
+- Phone: [TODO: phone number]
 - Website: https://adslab-theta.vercel.app
 
 ---
 
-> Note for the founder editing this doc: replace every `[TODO: ...]` placeholder
-> with real info before sending to Omise. Make sure the company name in section
-> "Supporting documents" matches your DBD exactly.
+> Note: replace every `[TODO: ...]` placeholder before sending. Match the name
+> on this document to the name on your national ID exactly so Omise's KYC
+> reviewers can cross-reference quickly.

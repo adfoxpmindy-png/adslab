@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { COMPANY } from "@/lib/company";
+import { COMPANY, entityLabelTh, hasRealTaxId } from "@/lib/company";
 
 /**
  * Site-wide footer with company legal info, contact details, and
@@ -20,13 +20,17 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
-            <p className="font-semibold text-foreground">{COMPANY.legalNameTh}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{COMPANY.legalNameEn}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{entityLabelTh()}</p>
+            <p className="mt-1 font-semibold text-foreground">{COMPANY.legalNameTh}</p>
             <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
-              <div>
-                <dt className="inline">เลขผู้เสียภาษี: </dt>
-                <dd className="inline">{COMPANY.taxId}</dd>
-              </div>
+              {hasRealTaxId() && (
+                <div>
+                  <dt className="inline">
+                    {COMPANY.entityType === "JURISTIC" ? "เลขผู้เสียภาษี" : "เลขประจำตัวประชาชน"}:{" "}
+                  </dt>
+                  <dd className="inline">{COMPANY.taxId}</dd>
+                </div>
+              )}
               <div>
                 <dt className="inline">ที่อยู่: </dt>
                 <dd className="inline">{COMPANY.addressTh}</dd>
@@ -80,7 +84,7 @@ export function SiteFooter() {
         </div>
 
         <p className="mt-8 text-center text-[11px] text-muted-foreground">
-          © {new Date().getFullYear()} {COMPANY.legalNameTh}. All rights reserved. ระบบชำระเงินผ่าน Omise (PCI DSS Level 1).
+          © {new Date().getFullYear()} {COMPANY.brandName}. ระบบชำระเงินผ่าน Omise (PCI DSS Level 1).
         </p>
       </div>
     </footer>

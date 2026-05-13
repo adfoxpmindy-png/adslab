@@ -1,49 +1,71 @@
 /**
- * Company identity — single source of truth for legal info displayed
+ * Business identity — single source of truth for legal info displayed
  * in footer, refund policy, terms, and KYC documents.
  *
+ * Supports both individual (บุคคลธรรมดา) and juristic (นิติบุคคล)
+ * registration. Toggle `entityType` when upgrading from sole
+ * proprietorship to company.
+ *
  * **YOU MUST EDIT THESE VALUES** before submitting Omise KYC.
- * Omise reviewers verify that the legal name on your site matches
- * the company name on your DBD certificate exactly.
+ * The legal name on your site must match the name on your Omise
+ * merchant profile exactly.
  *
  * After editing, redeploy via `git push`.
  */
 
 export const COMPANY = {
-  // Legal name as registered with DBD (Department of Business Development)
-  // Example: "บริษัท แอดส์แล็บ จำกัด" / "AdsLab Co., Ltd."
-  legalNameTh: "บริษัท แอดส์แล็บ จำกัด",
-  legalNameEn: "AdsLab Co., Ltd.",
+  /**
+   * INDIVIDUAL = sole proprietor / บุคคลธรรมดา (Omise KYC submits ID card)
+   * JURISTIC   = company / นิติบุคคล (Omise KYC submits DBD + ภพ.20)
+   * Currently set for INDIVIDUAL — switch to JURISTIC after incorporating.
+   */
+  entityType: "INDIVIDUAL" as "INDIVIDUAL" | "JURISTIC",
 
-  // Brand name shown in marketing (can differ from legal name)
+  /**
+   * Legal name as shown on Omise merchant profile.
+   * For INDIVIDUAL: full Thai name e.g. "นาย สมชาย ใจดี"
+   * For JURISTIC:   company name e.g. "บริษัท แอดส์แล็บ จำกัด"
+   */
+  legalNameTh: "นาย ชื่อ นามสกุล",
+  legalNameEn: "Mr./Ms. Name Surname",
+
+  /** Brand name shown in marketing — can differ from legal name */
   brandName: "AdsLab",
 
-  // 13-digit Thai tax ID (เลขประจำตัวผู้เสียภาษี)
+  /**
+   * For INDIVIDUAL: 13-digit National ID (เลขบัตรประชาชน)
+   *                 — also serves as personal tax ID
+   * For JURISTIC:   13-digit company tax ID (เลขผู้เสียภาษีนิติบุคคล)
+   *
+   * Note: it's conventional in Thailand to show this on receipts. If
+   * you'd rather not display it publicly while registered as individual,
+   * leave as "0000000000000" and the footer will hide the line.
+   */
   taxId: "0000000000000",
 
-  // DBD registration number (เลขทะเบียนนิติบุคคล) — usually same as taxId
-  dbdRegistrationNumber: "0000000000000",
+  /**
+   * Registered address. For INDIVIDUAL = address on national ID card
+   * (or your operating address if different). For JURISTIC = DBD
+   * registered head office.
+   */
+  addressTh: "ที่อยู่ดำเนินการ",
+  addressEn: "Business address",
 
-  // Registered business address (must match DBD certificate)
-  addressTh: "ที่อยู่บริษัทตามที่จดทะเบียน",
-  addressEn: "Company registered address",
-
-  // Contact for customers + Omise
+  /** Customer-facing support contact */
   supportEmail: "support@adslab.app",
   contactPhone: "+66 X-XXXX-XXXX",
 
-  // Optional: VAT registration (ภ.พ.20)
+  /** Optional — only relevant when entityType=JURISTIC */
   vatRegistered: false,
 } as const;
 
-/**
- * Convenience: a one-line Thai legal footer string with name + tax ID
- * + address — ready to drop into UI components.
- */
-export function companyFooterLineTh(): string {
-  return `${COMPANY.legalNameTh} · เลขผู้เสียภาษี ${COMPANY.taxId} · ${COMPANY.addressTh}`;
+/** Footer label that adapts to entity type */
+export function entityLabelTh(): string {
+  return COMPANY.entityType === "JURISTIC" ? "ดำเนินการโดย" : "ผู้ให้บริการ";
 }
 
-export function companyFooterLineEn(): string {
-  return `${COMPANY.legalNameEn} · Tax ID ${COMPANY.taxId} · ${COMPANY.addressEn}`;
+/** True if taxId is a real value (not the placeholder) */
+export function hasRealTaxId(): boolean {
+  const id: string = COMPANY.taxId;
+  return id !== "0000000000000" && id.length === 13;
 }

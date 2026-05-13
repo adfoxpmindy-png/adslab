@@ -92,6 +92,8 @@ export default function RefundPolicyPage() {
             <br />
             โทรศัพท์: {COMPANY.contactPhone}
             <br />
+            ผู้ให้บริการ: {COMPANY.legalNameTh}
+            <br />
             ที่อยู่: {COMPANY.addressTh}
           </p>
 
