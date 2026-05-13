@@ -46,77 +46,161 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Brand identity — indigo → violet → pink gradient.
+     Matches the new AdsLab logo. Used for primary CTAs, active nav
+     state, AI badges, and gradient text accents. */
+  --color-brand-indigo: var(--brand-indigo);
+  --color-brand-violet: var(--brand-violet);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+
+  /* Surface colors — slightly different from card/popover for layered UIs */
+  --color-canvas: var(--canvas);
+  --color-surface-elevated: var(--surface-elevated);
+
+  /* Status colors — used by StatusBadge variants */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Shadow scale — designed for white-on-near-white card stacks */
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-popover: var(--shadow-popover);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Canvas + surfaces */
+  --canvas: oklch(0.985 0.003 280);         /* page background — barely-tinted off-white */
+  --background: oklch(1 0 0);                /* card / panel bg */
+  --foreground: oklch(0.18 0.02 270);        /* near-black with subtle violet undertone */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.02 270);
+  --surface-elevated: oklch(1 0 0);          /* for stacked card-on-card */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  /* AdsLab accent — Tailwind cyan-500 (#06B6D4) */
-  --primary: oklch(0.789 0.154 211.53);
+  --popover-foreground: oklch(0.18 0.02 270);
+
+  /* Brand identity — indigo → violet → pink. The active nav state and
+     primary CTAs use the linear gradient between these. */
+  --brand-indigo: oklch(0.58 0.20 270);      /* ≈ #5B5BF5 — primary brand color */
+  --brand-violet: oklch(0.61 0.22 295);      /* ≈ #7C3AED */
+  --brand-pink: oklch(0.72 0.18 340);        /* ≈ #EC4899 */
+  --brand: var(--brand-indigo);              /* solid fallback when gradient impractical */
+  --brand-foreground: oklch(1 0 0);          /* text/icon color on brand-gradient surfaces */
+
+  /* Primary alias = brand-indigo. Replaces the previous cyan accent. */
+  --primary: var(--brand-indigo);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+
+  --secondary: oklch(0.97 0.005 280);
+  --secondary-foreground: oklch(0.205 0.02 270);
+  --muted: oklch(0.97 0.005 280);
+  --muted-foreground: oklch(0.52 0.015 270);
+  --accent: oklch(0.96 0.01 285);
+  --accent-foreground: oklch(0.205 0.02 270);
+
+  /* Status palette */
+  --success: oklch(0.72 0.16 155);           /* emerald — for positive metrics, active status */
+  --success-foreground: oklch(0.98 0 0);
+  --warning: oklch(0.78 0.15 75);            /* amber — for paused / warning */
+  --warning-foreground: oklch(0.27 0.05 75);
+  --info: oklch(0.70 0.16 230);              /* sky — for informational badges */
+  --info-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --border: oklch(0.92 0.005 280);
+  --input: oklch(0.92 0.005 280);
+  --ring: oklch(0.58 0.20 270 / 50%);        /* indigo focus ring */
+
+  /* Chart palette — for KPI line/donut charts. Brand-aware. */
+  --chart-1: oklch(0.58 0.20 270);           /* indigo */
+  --chart-2: oklch(0.61 0.22 295);           /* violet */
+  --chart-3: oklch(0.72 0.18 340);           /* pink */
+  --chart-4: oklch(0.72 0.16 155);           /* emerald */
+  --chart-5: oklch(0.78 0.15 75);            /* amber */
+
+  --radius: 0.75rem;                         /* slightly larger than before for softer cards */
+
+  /* Sidebar — white with gradient active state baked into components */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.18 0.02 270);
+  --sidebar-primary: var(--brand-indigo);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.97 0.005 280);
+  --sidebar-accent-foreground: oklch(0.205 0.02 270);
+  --sidebar-border: oklch(0.93 0.005 280);
+  --sidebar-ring: var(--ring);
+
+  /* Shadows tuned for white-card-on-near-white-canvas stacks.
+     The mockups show very subtle elevation — not the heavy shadows of
+     material design. These are barely-there but enough to lift cards
+     off the canvas. */
+  --shadow-card: 0 1px 2px 0 oklch(0.18 0.02 270 / 0.04), 0 1px 3px 0 oklch(0.18 0.02 270 / 0.06);
+  --shadow-card-hover: 0 4px 12px -2px oklch(0.18 0.02 270 / 0.08), 0 2px 6px -2px oklch(0.18 0.02 270 / 0.06);
+  --shadow-popover: 0 10px 38px -10px oklch(0.18 0.02 270 / 0.18), 0 10px 20px -15px oklch(0.18 0.02 270 / 0.12);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  /* AdsLab accent — same teal in dark mode */
-  --primary: oklch(0.789 0.154 211.53);
+  --canvas: oklch(0.14 0.015 270);
+  --background: oklch(0.18 0.018 270);
+  --foreground: oklch(0.97 0.005 280);
+  --card: oklch(0.20 0.018 270);
+  --card-foreground: oklch(0.97 0.005 280);
+  --surface-elevated: oklch(0.22 0.018 270);
+  --popover: oklch(0.20 0.018 270);
+  --popover-foreground: oklch(0.97 0.005 280);
+
+  /* Brand stays vivid in dark — slight saturation bump for contrast */
+  --brand-indigo: oklch(0.62 0.22 270);
+  --brand-violet: oklch(0.65 0.23 295);
+  --brand-pink: oklch(0.74 0.19 340);
+  --brand: var(--brand-indigo);
+  --brand-foreground: oklch(1 0 0);
+
+  --primary: var(--brand-indigo);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.26 0.015 270);
+  --secondary-foreground: oklch(0.97 0.005 280);
+  --muted: oklch(0.26 0.015 270);
+  --muted-foreground: oklch(0.66 0.012 270);
+  --accent: oklch(0.26 0.015 270);
+  --accent-foreground: oklch(0.97 0.005 280);
+
+  --success: oklch(0.72 0.16 155);
+  --success-foreground: oklch(0.10 0 0);
+  --warning: oklch(0.78 0.15 75);
+  --warning-foreground: oklch(0.10 0 0);
+  --info: oklch(0.70 0.16 230);
+  --info-foreground: oklch(0.10 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.62 0.22 270 / 60%);
+
+  --chart-1: oklch(0.62 0.22 270);
+  --chart-2: oklch(0.65 0.23 295);
+  --chart-3: oklch(0.74 0.19 340);
+  --chart-4: oklch(0.72 0.16 155);
+  --chart-5: oklch(0.78 0.15 75);
+
+  --sidebar: oklch(0.18 0.018 270);
+  --sidebar-foreground: oklch(0.97 0.005 280);
+  --sidebar-primary: var(--brand-indigo);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.24 0.015 270);
+  --sidebar-accent-foreground: oklch(0.97 0.005 280);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: var(--ring);
+
+  --shadow-card: 0 1px 2px 0 oklch(0 0 0 / 0.20), 0 1px 3px 0 oklch(0 0 0 / 0.18);
+  --shadow-card-hover: 0 4px 12px -2px oklch(0 0 0 / 0.30), 0 2px 6px -2px oklch(0 0 0 / 0.20);
+  --shadow-popover: 0 10px 38px -10px oklch(0 0 0 / 0.55), 0 10px 20px -15px oklch(0 0 0 / 0.40);
 }
 
 @layer base {
@@ -124,11 +208,45 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-canvas text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply bg-canvas font-sans antialiased;
   }
+  /* Currency / metric columns should align decimal places */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  /* Brand gradient — indigo → violet → pink. Use sparingly:
+     - Primary CTAs
+     - AI badges
+     - Active nav state
+     - Hero accent text */
+  .bg-brand-gradient {
+    background-image: linear-gradient(135deg, var(--brand-indigo) 0%, var(--brand-violet) 50%, var(--brand-pink) 100%);
+  }
+  .text-brand-gradient {
+    background-image: linear-gradient(135deg, var(--brand-indigo) 0%, var(--brand-violet) 50%, var(--brand-pink) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .ring-brand-gradient {
+    background-image: linear-gradient(135deg, var(--brand-indigo) 0%, var(--brand-violet) 50%, var(--brand-pink) 100%);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  /* Shadow utilities mapped to our card shadow tokens */
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-card-hover { box-shadow: var(--shadow-card-hover); }
+  .shadow-popover { box-shadow: var(--shadow-popover); }
 }
 
 /* Customer Journey — "floating island" idle animation.

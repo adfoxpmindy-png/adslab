@@ -3,8 +3,9 @@ import { requireSession } from "@/lib/auth/session";
 import { requireActiveSubscription } from "@/lib/auth/billing-gate";
 import { prisma } from "@/lib/prisma";
 
-import { Sidebar } from "@/components/tenant/sidebar";
-import { Topbar } from "@/components/tenant/topbar";
+import { SidebarV2 } from "@/components/tenant/sidebar-v2";
+import { TopbarV2 } from "@/components/tenant/topbar-v2";
+import { PageTitleProvider } from "@/components/tenant/topbar-page-title";
 import { PlatformBar } from "@/components/tenant/platform-bar";
 import { UnverifiedBanner } from "@/components/tenant/unverified-banner";
 import { TierLimitBanner } from "@/components/tenant/tier-limit-banner";
@@ -82,31 +83,36 @@ export default async function TenantLayout({
   const tenants = memberships.map((m) => m.tenant);
   const isVerified = Boolean(user.emailVerifiedAt);
 
+  // Free tier (and below) sees the upgrade promo. Hide for Scale+.
+  const showUpgrade = !["scale", "enterprise"].includes(subscription.planKey);
+
   return (
-    <div className="flex min-h-screen w-full">
-      <Sidebar tenantSlug={tenantSlug} />
-      <div className="flex flex-1 flex-col">
-        <Topbar
-          currentTenantSlug={tenantSlug}
-          tenants={tenants}
-          user={{ name: user.name, email: user.email }}
-        />
-        <PlatformBar
-          tenantSlug={tenantSlug}
-          accounts={inScopeAccounts}
-          totalAccounts={accounts.length}
-          tenantScopeApplied={tenantScope.accountIds !== null}
-        />
-        {!isVerified && <UnverifiedBanner />}
-        <TierLimitBanner
-          status={subscription.status}
-          planName={subscription.planName}
-          trialEndsAt={subscription.trialEndsAt}
-          tenantSlug={tenantSlug}
-        />
-        <main className="flex-1 bg-muted/20">{children}</main>
+    <PageTitleProvider>
+      <div className="flex min-h-screen w-full bg-canvas">
+        <SidebarV2 tenantSlug={tenantSlug} showUpgrade={showUpgrade} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopbarV2
+            currentTenantSlug={tenantSlug}
+            tenants={tenants}
+            user={{ name: user.name, email: user.email }}
+          />
+          <PlatformBar
+            tenantSlug={tenantSlug}
+            accounts={inScopeAccounts}
+            totalAccounts={accounts.length}
+            tenantScopeApplied={tenantScope.accountIds !== null}
+          />
+          {!isVerified && <UnverifiedBanner />}
+          <TierLimitBanner
+            status={subscription.status}
+            planName={subscription.planName}
+            trialEndsAt={subscription.trialEndsAt}
+            tenantSlug={tenantSlug}
+          />
+          <main className="flex-1 bg-canvas">{children}</main>
+        </div>
+        <AIChat tenantSlug={tenantSlug} />
       </div>
-      <AIChat tenantSlug={tenantSlug} />
-    </div>
+    </PageTitleProvider>
   );
 }
