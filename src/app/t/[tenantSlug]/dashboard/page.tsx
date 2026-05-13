@@ -7,8 +7,11 @@ import { MetaIcon } from "@/components/icons/meta";
 import { DashboardClient } from "@/components/tenant/dashboard-client";
 import { cn } from "@/lib/utils";
 import { requireTenantMember } from "@/lib/auth/tenant";
+import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
-import { getDashboardData } from "@/lib/meta/dashboard-service";
+import { getDashboardData, filterDashboardPayload } from "@/lib/meta/dashboard-service";
+import { getEffectiveScope, getTenantScope } from "@/lib/tenant-scope";
+import { OnboardingChecklist } from "@/components/tenant/onboarding-checklist";
 import type { DashboardPayload, DateRangeKey } from "@/lib/meta/insights";
 
 const DEFAULT_RANGE: DateRangeKey = "last_7d";
@@ -19,6 +22,7 @@ export default async function DashboardPage({
   params: Promise<{ tenantSlug: string }>;
 }) {
   const { tenantSlug } = await params;
+  const session = await requireSession();
   const { tenant, role } = await requireTenantMember(tenantSlug);
 
   const connection = await prisma.metaConnection.findUnique({
@@ -26,6 +30,25 @@ export default async function DashboardPage({
     select: { id: true, status: true },
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
+  const scope = await getEffectiveScope(session.userId, tenant.id);
+  const selectedIds = scope.accountIds;
+  // OWNER sees the onboarding checklist until they complete all steps.
+  // We snapshot the 4 setup signals here and pass to the client card.
+  const isOwner = role === "OWNER";
+  const tenantScopeRaw = isOwner ? await getTenantScope(tenant.id) : null;
+  const scopeSet =
+    tenantScopeRaw !== null &&
+    (tenantScopeRaw.accountIds !== null ||
+      tenantScopeRaw.campaignIds !== null ||
+      tenantScopeRaw.campaignNamePatterns.length > 0);
+  const [namingCount, campaignCount] = isOwner
+    ? await Promise.all([
+        prisma.namingTemplate.count({ where: { tenantId: tenant.id } }),
+        connection
+          ? prisma.metaCampaign.count({ where: { metaConnectionId: connection.id } })
+          : Promise.resolve(0),
+      ])
+    : [0, 0];
 
   // Server-side fetch the first page of insights so the dashboard renders
   // with real numbers on initial paint instead of a client-side waterfall.
@@ -37,7 +60,7 @@ export default async function DashboardPage({
   if (isConnected) {
     try {
       const result = await getDashboardData(tenant.id, DEFAULT_RANGE);
-      initialPayload = result.payload;
+      initialPayload = filterDashboardPayload(result.payload, selectedIds);
       initialFromCache = result.fromCache;
       initialIsStale = result.isStale;
     } catch (err) {
@@ -51,6 +74,16 @@ export default async function DashboardPage({
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Workspace</p>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">{tenant.name}</h1>
       </header>
+
+      {isOwner && (
+        <OnboardingChecklist
+          tenantSlug={tenantSlug}
+          metaConnected={isConnected}
+          scopeSet={scopeSet}
+          hasNamingTemplate={namingCount > 0}
+          hasCampaign={campaignCount > 0}
+        />
+      )}
 
       {!isConnected ? (
         <ConnectMetaCta tenantSlug={tenantSlug} />

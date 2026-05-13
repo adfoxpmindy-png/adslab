@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { renderMarkdown } from "@/lib/markdown";
+import { ReportActionsPanel } from "@/components/tenant/report-actions-panel";
+import type { ValidatedSuggestion } from "@/lib/reports/extract-actions";
 
 const STATUS_LABEL: Record<string, string> = {
   COMPLETED: "เสร็จแล้ว",
@@ -19,7 +21,7 @@ export default async function ReportViewerPage({
   params: Promise<{ tenantSlug: string; reportId: string }>;
 }) {
   const { tenantSlug, reportId } = await params;
-  const { tenant } = await requireTenantMember(tenantSlug);
+  const { tenant, role } = await requireTenantMember(tenantSlug);
 
   const report = await prisma.dailyReport.findUnique({
     where: { id: reportId },
@@ -29,6 +31,7 @@ export default async function ReportViewerPage({
       reportDate: true,
       status: true,
       contentMd: true,
+      suggestedActions: true,
       generatedAt: true,
       deliveredAt: true,
       generationError: true,
@@ -40,6 +43,8 @@ export default async function ReportViewerPage({
   if (!report || report.tenantId !== tenant.id) notFound();
 
   const dateLabel = report.reportDate.toISOString().slice(0, 10);
+  const canApply = role === "OWNER" || role === "MEDIA_BUYER";
+  const suggestions = (report.suggestedActions as ValidatedSuggestion[] | null) ?? [];
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 px-6 py-8">
@@ -75,6 +80,15 @@ export default async function ReportViewerPage({
             <p className="mt-1 text-xs text-destructive/80 font-mono">{report.generationError}</p>
           )}
         </Card>
+      )}
+
+      {report.status === "COMPLETED" && suggestions.length > 0 && (
+        <ReportActionsPanel
+          tenantSlug={tenantSlug}
+          reportId={report.id}
+          suggestions={suggestions}
+          canApply={canApply}
+        />
       )}
 
       {report.status === "COMPLETED" && report.contentMd && (

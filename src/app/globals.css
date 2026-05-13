@@ -130,3 +130,19 @@
     @apply font-sans;
   }
 }
+
+/* Customer Journey — "floating island" idle animation.
+   Each island bobs up + down on its own slightly-offset clock so the
+   canvas feels alive. We use `transform` not `top` to stay on the
+   compositor and avoid layout. */
+@keyframes journey-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.journey-float {
+  animation: journey-float 4s ease-in-out infinite;
+}

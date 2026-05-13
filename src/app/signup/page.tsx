@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -61,9 +62,16 @@ export default function SignupPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">AdsLab</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Image
+            src="/adslab-logo.png"
+            alt="AdsLab"
+            width={400}
+            height={120}
+            priority
+            className="h-12 w-auto dark:brightness-0 dark:invert"
+          />
+          <p className="mt-2 text-sm text-muted-foreground">
             ยิงแอดให้เร็ว แม่น scale ได้
           </p>
         </div>

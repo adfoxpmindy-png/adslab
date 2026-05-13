@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -49,8 +50,15 @@ export default async function VerifyEmailPage({
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">AdsLab</h1>
+        <div className="mb-8 flex flex-col items-center">
+          <Image
+            src="/adslab-logo.png"
+            alt="AdsLab"
+            width={400}
+            height={120}
+            priority
+            className="h-12 w-auto dark:brightness-0 dark:invert"
+          />
         </div>
 
         <Card>

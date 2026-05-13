@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/auth/session";
 import type { Role } from "@/generated/prisma/enums";
@@ -43,14 +43,29 @@ export const requireTenantMember = cache(
     });
 
     if (!tenant || tenant.members.length === 0) {
-      // Don't leak whether the tenant exists — treat non-membership as 404.
+      // Signed-in but not a member of this tenant — common when a user
+      // follows a share link to someone else's workspace. Instead of
+      // a confusing 404, bounce them to a tenant they ARE in. Falls
+      // back to /signup if they somehow have no memberships at all
+      // (shouldn't happen via normal signup flow).
+      const ownMembership = await prisma.tenantMember.findFirst({
+        where: { userId: session.userId },
+        orderBy: { createdAt: "asc" },
+        select: { tenant: { select: { slug: true } } },
+      });
+      if (ownMembership) {
+        redirect(`/t/${ownMembership.tenant.slug}/dashboard`);
+      }
+      // Last resort — we don't leak whether the tenant exists.
       notFound();
     }
 
     const role = tenant.members[0].role;
 
     if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-      notFound();
+      // Member but lacks the required role — keep them on the tenant
+      // but bounce to the dashboard rather than 404.
+      redirect(`/t/${tenant.slug}/dashboard`);
     }
 
     return {

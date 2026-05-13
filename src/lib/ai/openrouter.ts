@@ -58,6 +58,39 @@ export type AiChatResult = {
   };
 };
 
+/** A single tool definition in OpenAI tool-calling format. */
+export type AiTool = {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: Record<string, unknown>;
+  };
+};
+
+/** A tool call returned from the model. */
+export type AiToolCall = {
+  id: string;
+  name: string;
+  /** Arguments as a parsed object. We attempt JSON.parse server-side. */
+  arguments: Record<string, unknown>;
+};
+
+/** Result of a chat turn that may or may not include tool calls. */
+export type AiChatTurnResult = {
+  content: string | null;
+  toolCalls: AiToolCall[];
+  model: string;
+  usage: AiChatResult["usage"];
+  finishReason: string | null;
+};
+
+/** Message format including tool turns for the multi-turn tool loop. */
+export type AiToolMessage =
+  | { role: "user"; content: string }
+  | { role: "assistant"; content: string | null; toolCalls?: AiToolCall[] }
+  | { role: "tool"; toolCallId: string; content: string };
+
 /**
  * Unified chat call that routes to the configured model for the given role.
  *
@@ -119,5 +152,112 @@ export async function aiChat(input: AiChatInput): Promise<AiChatResult> {
       completionTokens: response.usage?.completion_tokens ?? 0,
       totalTokens: response.usage?.total_tokens ?? 0,
     },
+  };
+}
+
+/**
+ * Tool-enabled chat call. Mirrors `aiChat` but takes a tool list and
+ * preserves the model's tool_calls in the response so the caller can
+ * dispatch them and feed the results back on the next turn.
+ *
+ * Caller is responsible for the loop: if `toolCalls` is non-empty,
+ * execute each, push `{ role: "tool", toolCallId, content: JSON }`
+ * entries, and call again.
+ */
+export async function aiChatWithTools(input: {
+  role: AiRole;
+  system?: string;
+  messages: AiToolMessage[];
+  tools: AiTool[];
+  toolChoice?: "auto" | "none" | "required";
+  temperature?: number;
+  maxTokens?: number;
+  cacheSystem?: boolean;
+}): Promise<AiChatTurnResult> {
+  const client = getClient();
+  const model = getAiModel(input.role);
+  const isAnthropic = model.startsWith("anthropic/");
+  const shouldCache = isAnthropic && (input.cacheSystem ?? true);
+
+  const messages: unknown[] = [];
+
+  if (input.system) {
+    if (shouldCache) {
+      messages.push({
+        role: "system",
+        content: [
+          {
+            type: "text",
+            text: input.system,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
+      });
+    } else {
+      messages.push({ role: "system", content: input.system });
+    }
+  }
+
+  for (const msg of input.messages) {
+    if (msg.role === "user") {
+      messages.push({ role: "user", content: msg.content });
+    } else if (msg.role === "assistant") {
+      const out: Record<string, unknown> = { role: "assistant" };
+      if (msg.content !== null && msg.content !== "") out.content = msg.content;
+      if (msg.toolCalls && msg.toolCalls.length > 0) {
+        out.tool_calls = msg.toolCalls.map((tc) => ({
+          id: tc.id,
+          type: "function" as const,
+          function: { name: tc.name, arguments: JSON.stringify(tc.arguments) },
+        }));
+      }
+      messages.push(out);
+    } else if (msg.role === "tool") {
+      messages.push({
+        role: "tool",
+        tool_call_id: msg.toolCallId,
+        content: msg.content,
+      });
+    }
+  }
+
+  const response = await client.chat.completions.create({
+    model,
+    messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+    tools: input.tools as OpenAI.Chat.Completions.ChatCompletionTool[],
+    tool_choice: input.toolChoice ?? "auto",
+    temperature: input.temperature,
+    max_tokens: input.maxTokens,
+  });
+
+  const choice = response.choices[0];
+  if (!choice) {
+    throw new Error(`AI returned no choices (model: ${model})`);
+  }
+  const message = choice.message;
+
+  const toolCalls: AiToolCall[] = (message.tool_calls ?? [])
+    .map((tc) => {
+      if (tc.type !== "function") return null;
+      let args: Record<string, unknown> = {};
+      try {
+        args = JSON.parse(tc.function.arguments || "{}") as Record<string, unknown>;
+      } catch {
+        // Model produced invalid JSON args — pass empty so handler errors out.
+      }
+      return { id: tc.id, name: tc.function.name, arguments: args };
+    })
+    .filter((x): x is AiToolCall => x !== null);
+
+  return {
+    content: message.content ?? null,
+    toolCalls,
+    model,
+    usage: {
+      promptTokens: response.usage?.prompt_tokens ?? 0,
+      completionTokens: response.usage?.completion_tokens ?? 0,
+      totalTokens: response.usage?.total_tokens ?? 0,
+    },
+    finishReason: choice.finish_reason ?? null,
   };
 }

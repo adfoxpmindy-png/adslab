@@ -21,8 +21,8 @@ export default async function SettingsLayout({
 
       <nav className="mb-6 flex flex-wrap gap-2 border-b border-border text-sm">
         <SettingsTab href={`/t/${tenantSlug}/settings/integrations`} label="Integrations" />
+        <SettingsTab href={`/t/${tenantSlug}/settings/billing`} label="Billing" />
         <SettingsTab href={`/t/${tenantSlug}/settings/team`} label="Team" disabled />
-        <SettingsTab href={`/t/${tenantSlug}/settings/billing`} label="Billing" disabled />
         <SettingsTab href={`/t/${tenantSlug}/settings/account`} label="Account" disabled />
       </nav>
 

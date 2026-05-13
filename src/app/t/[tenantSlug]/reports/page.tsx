@@ -4,9 +4,11 @@ import { Sparkles, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { requireTenantMember } from "@/lib/auth/tenant";
+import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
-import { GenerateReportButton } from "@/components/tenant/generate-report-button";
+import { ReportsClient } from "@/components/tenant/reports-client";
+import { getEffectiveScope, applyScopeFilter } from "@/lib/tenant-scope";
 
 const STATUS_LABEL: Record<string, { label: string; tone: string }> = {
   COMPLETED: { label: "เสร็จแล้ว", tone: "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300" },
@@ -16,11 +18,17 @@ const STATUS_LABEL: Record<string, { label: string; tone: string }> = {
 
 export default async function ReportsListPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ tenantSlug: string }>;
+  searchParams: Promise<{ scopeId?: string }>;
 }) {
   const { tenantSlug } = await params;
+  const { scopeId } = await searchParams;
+  const session = await requireSession();
   const { tenant, role } = await requireTenantMember(tenantSlug);
+  const scope = await getEffectiveScope(session.userId, tenant.id);
+  const scopeFilter = applyScopeFilter(scope);
 
   const connection = await prisma.metaConnection.findUnique({
     where: { tenantId: tenant.id },
@@ -29,20 +37,66 @@ export default async function ReportsListPage({
   const canGenerate = role === "OWNER" || role === "MEDIA_BUYER";
   const isConnected = connection !== null && connection.status === "ACTIVE";
 
-  const reports = await prisma.dailyReport.findMany({
-    where: { tenantId: tenant.id },
-    orderBy: { reportDate: "desc" },
-    take: 30,
-    select: {
-      id: true,
-      reportDate: true,
-      status: true,
-      contentMd: true,
-      generatedAt: true,
-      deliveredAt: true,
-      estimatedCostUsd: true,
-    },
-  });
+  // Load: list of scopes + reports for the selected scope (or all-tenant
+  // by default). The "ทั้งหมด" view filters to scopeId IS NULL so the
+  // cron-generated reports are visible.
+  const [scopes, accounts, campaigns, reports] = await Promise.all([
+    prisma.reportScope.findMany({
+      where: { tenantId: tenant.id },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        name: true,
+        accountIds: true,
+        campaignIds: true,
+      },
+    }),
+    connection
+      ? prisma.metaAdAccount.findMany({
+          where: {
+            metaConnectionId: connection.id,
+            ...(scope.accountIds !== null ? { metaAccountId: { in: scope.accountIds } } : {}),
+          },
+          orderBy: { name: "asc" },
+          select: { metaAccountId: true, name: true, businessName: true },
+        })
+      : Promise.resolve([]),
+    connection
+      ? prisma.metaCampaign.findMany({
+          where: {
+            metaConnectionId: connection.id,
+            ...scopeFilter,
+          },
+          orderBy: [{ effectiveStatus: "asc" }, { name: "asc" }],
+          select: {
+            metaCampaignId: true,
+            metaAccountId: true,
+            name: true,
+            effectiveStatus: true,
+          },
+        })
+      : Promise.resolve([]),
+    prisma.dailyReport.findMany({
+      where: {
+        tenantId: tenant.id,
+        scopeId: scopeId ? scopeId : null,
+      },
+      orderBy: { reportDate: "desc" },
+      take: 30,
+      select: {
+        id: true,
+        reportDate: true,
+        status: true,
+        contentMd: true,
+        generatedAt: true,
+        deliveredAt: true,
+        estimatedCostUsd: true,
+      },
+    }),
+  ]);
+
+  const selectedScope =
+    scopeId ? scopes.find((s) => s.id === scopeId) ?? null : null;
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
@@ -55,16 +109,13 @@ export default async function ReportsListPage({
             <p className="text-xs uppercase tracking-wide text-muted-foreground">AI Reports</p>
             <h1 className="text-2xl font-semibold tracking-tight">รายงานประจำวัน</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              AI สรุปผลของวันก่อนหน้าทุกเช้า 9 โมง (เวลาประเทศไทย)
+              ฉบับ &quot;ทั้งหมด&quot; สร้างอัตโนมัติทุกเช้า 9 โมง — รายงาน scope กดเองตามต้องการ
             </p>
           </div>
         </div>
-        {canGenerate && isConnected && (
-          <GenerateReportButton tenantSlug={tenantSlug} />
-        )}
       </header>
 
-      {!isConnected && (
+      {!isConnected ? (
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
           <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน AI Reports</p>
           <Link
@@ -74,57 +125,40 @@ export default async function ReportsListPage({
             ไปที่ Settings
           </Link>
         </Card>
-      )}
-
-      {isConnected && reports.length === 0 && (
-        <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-16 text-center">
-          <FileText className="size-8 text-muted-foreground" />
-          <p className="text-sm font-medium">ยังไม่มีรายงาน</p>
-          <p className="text-xs text-muted-foreground">
-            คลิก &quot;สร้างรายงานเดี๋ยวนี้&quot; เพื่อให้ AI สรุปข้อมูลของเมื่อวานให้คุณ
-          </p>
-        </Card>
-      )}
-
-      {isConnected && reports.length > 0 && (
-        <Card className="p-0">
-          <ul className="divide-y divide-border">
-            {reports.map((r) => {
-              const status = STATUS_LABEL[r.status] ?? STATUS_LABEL.GENERATING;
-              const preview = extractFirstSentence(r.contentMd ?? "");
-              const dateLabel = r.reportDate.toISOString().slice(0, 10);
-              return (
-                <li key={r.id}>
-                  <Link
-                    href={`/t/${tenantSlug}/reports/${r.id}`}
-                    className="flex flex-wrap items-start justify-between gap-3 px-5 py-4 transition-colors hover:bg-muted/30"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium tabular-nums">{dateLabel}</span>
-                        <span className={cn("rounded-md px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide", status.tone)}>
-                          {status.label}
-                        </span>
-                        {r.deliveredAt && (
-                          <span className="text-[11px] text-muted-foreground">ส่งอีเมลแล้ว</span>
-                        )}
-                      </div>
-                      {preview && (
-                        <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{preview}</p>
-                      )}
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-0.5 text-[11px] text-muted-foreground">
-                      <span>{new Date(r.generatedAt).toLocaleString("th-TH")}</span>
-                      {r.estimatedCostUsd > 0 && (
-                        <span>${r.estimatedCostUsd.toFixed(4)}</span>
-                      )}
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </Card>
+      ) : (
+        <ReportsClient
+          tenantSlug={tenantSlug}
+          canGenerate={canGenerate}
+          scopes={scopes.map((s) => ({
+            id: s.id,
+            name: s.name,
+            accountIds: (s.accountIds as string[]) ?? [],
+            campaignIds: (s.campaignIds as string[]) ?? [],
+          }))}
+          selectedScopeId={selectedScope?.id ?? null}
+          selectedScopeName={selectedScope?.name ?? null}
+          accounts={accounts.map((a) => ({
+            id: a.metaAccountId,
+            name: a.name,
+            business: a.businessName,
+          }))}
+          campaigns={campaigns.map((c) => ({
+            id: c.metaCampaignId,
+            accountId: c.metaAccountId,
+            name: c.name,
+            status: c.effectiveStatus,
+          }))}
+          reports={reports.map((r) => ({
+            id: r.id,
+            reportDate: r.reportDate.toISOString().slice(0, 10),
+            status: r.status,
+            previewText: extractFirstSentence(r.contentMd ?? ""),
+            generatedAt: r.generatedAt.toISOString(),
+            deliveredAt: r.deliveredAt?.toISOString() ?? null,
+            estimatedCostUsd: r.estimatedCostUsd,
+          }))}
+          statusLabels={STATUS_LABEL}
+        />
       )}
     </div>
   );
@@ -132,7 +166,6 @@ export default async function ReportsListPage({
 
 function extractFirstSentence(md: string): string {
   if (!md) return "";
-  // Strip markdown chars + take first non-heading line
   for (const raw of md.split("\n")) {
     const line = raw.trim();
     if (!line) continue;
