@@ -2,7 +2,7 @@
 
 **Submission to:** support@omise.co
 **Subject:** AdsLab merchant onboarding — supporting documents (individual)
-**Merchant URL:** https://adslab-theta.vercel.app
+**Merchant URL:** https://ads-lab.xyz
 **Registration type:** Individual / สอดล (บุคคลธรรมดา)
 
 ---
@@ -66,7 +66,7 @@ gradually as the closed beta opens up.
 
 ## 4. Service Delivery
 
-- 100% software-as-a-service via web app at https://adslab-theta.vercel.app
+- 100% software-as-a-service via web app at https://ads-lab.xyz
 - No physical goods shipped
 - No digital downloads sold
 - Customer gets immediate access to dashboard upon subscription start
@@ -154,7 +154,7 @@ available.
 
 - Email: [TODO: business email]
 - Phone: [TODO: phone number]
-- Website: https://adslab-theta.vercel.app
+- Website: https://ads-lab.xyz
 
 ---
 

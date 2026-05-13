@@ -48,7 +48,7 @@ export async function GET(request: Request) {
   const origin =
     process.env.NEXT_PUBLIC_APP_URL ??
     request.headers.get("origin") ??
-    "https://adslab-theta.vercel.app";
+    "https://ads-lab.xyz";
 
   const snippet = `<!-- AdsLab Event SDK -->
 <script>

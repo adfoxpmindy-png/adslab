@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const appUrl = process.env.APP_URL ?? "https://adslab-theta.vercel.app";
+  const appUrl = process.env.APP_URL ?? "https://ads-lab.xyz";
   const stats = await runBillingTick({ appUrl });
   return NextResponse.json({ ok: true, stats });
 }
