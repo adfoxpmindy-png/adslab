@@ -46,11 +46,28 @@ export function verifyOmiseSignature(opts: {
   );
 }
 
+/** Omise event keys we act on. Other keys (e.g. charge.create) are
+ *  acknowledged with 200 but skipped — no BillingEvent inserted. */
+const HANDLED_KEYS = new Set([
+  "charge.complete",
+  "charge.failed",
+  "refund.create",
+  "dispute.create",
+]);
+
 export async function handleOmiseEvent(event: OmiseWebhookEvent): Promise<void> {
   // Determine tenantId from the underlying charge/refund metadata.
   const tenantId = extractTenantId(event);
   if (!tenantId) {
     console.warn(`[omise webhook] no tenantId in event ${event.id}`);
+    return;
+  }
+
+  // Skip events we don't act on. Omise fires charge.create immediately
+  // after a charge is created — but we already recorded the Invoice
+  // synchronously in chargeTenant(); the charge.create webhook adds no
+  // information. Acknowledging with 200 is enough.
+  if (!HANDLED_KEYS.has(event.key)) {
     return;
   }
 
@@ -85,9 +102,6 @@ export async function handleOmiseEvent(event: OmiseWebhookEvent): Promise<void> 
     case "dispute.create":
       await handleDisputeCreate(tenantId);
       break;
-    default:
-      // Unhandled but recorded for audit.
-      break;
   }
 }
 
@@ -96,7 +110,8 @@ function extractTenantId(event: OmiseWebhookEvent): string | null {
   return data.metadata?.tenantId ?? null;
 }
 
-function mapEventKind(omiseKey: string): "CHARGE_SUCCESS" | "CHARGE_FAILED" | "REFUNDED" | "SUSPENDED" | "TRIAL_STARTED" {
+function mapEventKind(omiseKey: string): "CHARGE_SUCCESS" | "CHARGE_FAILED" | "REFUNDED" | "SUSPENDED" {
+  // Caller filters via HANDLED_KEYS — these are the only inputs we see.
   switch (omiseKey) {
     case "charge.complete":
       return "CHARGE_SUCCESS";
@@ -107,7 +122,8 @@ function mapEventKind(omiseKey: string): "CHARGE_SUCCESS" | "CHARGE_FAILED" | "R
     case "dispute.create":
       return "SUSPENDED";
     default:
-      return "CHARGE_FAILED";
+      // Unreachable — HANDLED_KEYS filter prevents this.
+      throw new Error(`unexpected event key: ${omiseKey}`);
   }
 }
 
