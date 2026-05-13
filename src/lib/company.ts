@@ -22,38 +22,44 @@ export const COMPANY = {
   entityType: "INDIVIDUAL" as "INDIVIDUAL" | "JURISTIC",
 
   /**
-   * Legal name as shown on Omise merchant profile.
-   * For INDIVIDUAL: full Thai name e.g. "นาย สมชาย ใจดี"
-   * For JURISTIC:   company name e.g. "บริษัท แอดส์แล็บ จำกัด"
+   * Legal name as submitted to Omise. Used internally (receipts, KYC
+   * records) — NOT shown publicly unless `showLegalNamePublicly` = true.
    */
-  legalNameTh: "นาย ชื่อ นามสกุล",
-  legalNameEn: "Mr./Ms. Name Surname",
+  legalNameTh: "นภดล รัตนน้ำอ้อม",
+  legalNameEn: "Nopphadon Rattananam-om",
 
-  /** Brand name shown in marketing — can differ from legal name */
+  /**
+   * If true, the footer + refund-policy page display the legal name.
+   * Most Thai individual-merchant SaaS keep this off and show only the
+   * brand name + contact info — increases trust without exposing the
+   * operator's full name publicly. Omise's KYC doesn't require display
+   * of the legal name; they verify it via ID card on file.
+   */
+  showLegalNamePublicly: false,
+
+  /** Brand name shown everywhere customer-facing */
   brandName: "AdsLab",
 
   /**
-   * For INDIVIDUAL: 13-digit National ID (เลขบัตรประชาชน)
-   *                 — also serves as personal tax ID
-   * For JURISTIC:   13-digit company tax ID (เลขผู้เสียภาษีนิติบุคคล)
-   *
-   * Note: it's conventional in Thailand to show this on receipts. If
-   * you'd rather not display it publicly while registered as individual,
-   * leave as "0000000000000" and the footer will hide the line.
+   * 13-digit ID (เลขบัตรประชาชน for individuals, เลขผู้เสียภาษี for
+   * juristic). Keep `showTaxIdPublicly = false` for individuals — Omise
+   * doesn't require this in the public site, and showing your personal
+   * ID number is uncomfortable. If you later register as a company,
+   * flip this to true.
    */
   taxId: "0000000000000",
+  showTaxIdPublicly: false,
 
-  /**
-   * Registered address. For INDIVIDUAL = address on national ID card
-   * (or your operating address if different). For JURISTIC = DBD
-   * registered head office.
-   */
-  addressTh: "ที่อยู่ดำเนินการ",
-  addressEn: "Business address",
+  /** Registered / operating address — shown in footer for trust */
+  addressTh: "8/26 ถนนวิภาวดีรังสิต ซอยวิภาวดีรังสิต 22 แขวงจอมพล เขตจตุจักร กรุงเทพฯ 10900",
+  addressEn: "8/26 Vibhavadi Rangsit Rd., Soi Vibhavadi Rangsit 22, Chom Phon, Chatuchak, Bangkok 10900",
 
   /** Customer-facing support contact */
-  supportEmail: "support@adslab.app",
-  contactPhone: "+66 X-XXXX-XXXX",
+  supportEmail: "indyworkff3@hotmail.com",
+  contactPhone: "+66 64-904-3497",
+
+  /** Operating website */
+  websiteUrl: "https://ads-lab.xyz",
 
   /** Optional — only relevant when entityType=JURISTIC */
   vatRegistered: false,
@@ -64,8 +70,8 @@ export function entityLabelTh(): string {
   return COMPANY.entityType === "JURISTIC" ? "ดำเนินการโดย" : "ผู้ให้บริการ";
 }
 
-/** True if taxId is a real value (not the placeholder) */
-export function hasRealTaxId(): boolean {
+/** True if taxId is a real value AND user opted to display it publicly */
+export function hasDisplayableTaxId(): boolean {
   const id: string = COMPANY.taxId;
-  return id !== "0000000000000" && id.length === 13;
+  return COMPANY.showTaxIdPublicly && id !== "0000000000000" && id.length === 13;
 }

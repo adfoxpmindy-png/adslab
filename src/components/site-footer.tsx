@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { COMPANY, entityLabelTh, hasRealTaxId } from "@/lib/company";
+import { COMPANY, entityLabelTh, hasDisplayableTaxId } from "@/lib/company";
 
 /**
  * Site-wide footer with company legal info, contact details, and
@@ -21,9 +21,11 @@ export function SiteFooter() {
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">{entityLabelTh()}</p>
-            <p className="mt-1 font-semibold text-foreground">{COMPANY.legalNameTh}</p>
+            <p className="mt-1 font-semibold text-foreground">
+              {COMPANY.showLegalNamePublicly ? COMPANY.legalNameTh : COMPANY.brandName}
+            </p>
             <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
-              {hasRealTaxId() && (
+              {hasDisplayableTaxId() && (
                 <div>
                   <dt className="inline">
                     {COMPANY.entityType === "JURISTIC" ? "เลขผู้เสียภาษี" : "เลขประจำตัวประชาชน"}:{" "}
