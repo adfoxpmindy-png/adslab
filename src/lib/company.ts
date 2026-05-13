@@ -55,7 +55,7 @@ export const COMPANY = {
   addressEn: "8/26 Vibhavadi Rangsit Rd., Soi Vibhavadi Rangsit 22, Chom Phon, Chatuchak, Bangkok 10900",
 
   /** Customer-facing support contact */
-  supportEmail: "indyworkff3@hotmail.com",
+  supportEmail: "support@ads-lab.xyz",
   contactPhone: "+66 64-904-3497",
 
   /** Operating website */
