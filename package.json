@@ -16,6 +16,7 @@
     "seed:plans": "tsx prisma/seed/plans.ts",
     "seed:grandfather": "tsx prisma/seed/grandfather.ts",
     "test:billing": "dotenv -e .env.local -- tsx scripts/billing-e2e.ts",
+    "test:user-journey": "dotenv -e .env.local -- tsx scripts/phase-9-user-journey.ts",
     "test:e2e": "dotenv -e .env.local -- tsx scripts/e2e-test.ts"
   },
   "dependencies": {
