@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { requireTenantMember } from "@/lib/auth/tenant";
-import { refreshDashboardData } from "@/lib/meta/dashboard-service";
+import { requireSession } from "@/lib/auth/session";
+import { refreshDashboardData, filterDashboardPayload } from "@/lib/meta/dashboard-service";
+import { getEffectiveScope } from "@/lib/tenant-scope";
 import type { DateRangeKey } from "@/lib/meta/insights";
 
 const PRESETS: DateRangeKey[] = ["today", "yesterday", "last_7d", "last_30d"];
@@ -29,11 +31,14 @@ export async function POST(request: Request) {
   }
 
   // VIEWER may not trigger a fresh Meta API call (consumes quota).
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
+  const scope = await getEffectiveScope(session.userId, tenant.id);
 
   try {
     const result = await refreshDashboardData(tenant.id, range);
-    return NextResponse.json({ ok: true, ...result.payload, fromCache: false });
+    const filtered = filterDashboardPayload(result.payload, scope.accountIds);
+    return NextResponse.json({ ok: true, ...filtered, fromCache: false });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Refresh failed";
     console.error("[meta/insights/refresh] failed:", message);

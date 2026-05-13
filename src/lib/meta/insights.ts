@@ -35,6 +35,36 @@ export type CampaignObjectiveCount = {
   count: number;
 };
 
+/**
+ * Per-campaign metrics for the report window. Lets the AI judge each
+ * campaign against its own intent (objective), not a generic rubric
+ * applied to the whole account.
+ */
+export type ParsedCampaignInsight = {
+  /** Meta campaign id (string of digits) */
+  campaignId: string;
+  campaignName: string;
+  /** Raw Meta objective, e.g. "OUTCOME_SALES". Null when Meta omits it. */
+  metaObjective: string | null;
+  /** Meta's effective_status: ACTIVE, PAUSED, CAMPAIGN_PAUSED, etc. */
+  effectiveStatus: string;
+  configuredStatus: string | null;
+  /** Budget in minor units. Only populated for CBO campaigns. */
+  dailyBudget: number | null;
+  lifetimeBudget: number | null;
+  /** ISO datetime string. Null = no scheduled end. */
+  endTime: string | null;
+  spend: number;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  cpm: number;
+  cpc: number;
+  conversions: number;
+  purchaseValue: number;
+  roas: number;
+};
+
 export type ParsedInsight = {
   accountId: string; // "act_xxxx"
   accountName: string;
@@ -53,6 +83,8 @@ export type ParsedInsight = {
   roas: number;
   /** Empty array if campaigns sub-query is not available. */
   campaignObjectives: CampaignObjectiveCount[];
+  /** Per-campaign metrics within this account for the report window. */
+  campaigns: ParsedCampaignInsight[];
 };
 
 export type DashboardSummary = {
@@ -99,6 +131,11 @@ type RawCampaign = {
   name?: string;
   objective?: string;
   effective_status?: string;
+  configured_status?: string;
+  daily_budget?: string; // Meta returns budgets as strings of minor units
+  lifetime_budget?: string;
+  end_time?: string; // ISO datetime
+  insights?: { data: RawInsight[] };
 };
 
 type RawAccountWithInsights = {
@@ -143,12 +180,43 @@ function summarizeObjectives(campaigns: RawCampaign[] | undefined): CampaignObje
     .sort((a, b) => b.count - a.count);
 }
 
+function parseCampaign(c: RawCampaign): ParsedCampaignInsight {
+  const insight = c.insights?.data?.[0];
+  const spend = num(insight?.spend);
+  const purchaseValue = sumActionTypes(insight?.action_values, PURCHASE_VALUE_ACTION_TYPES);
+  const conversions = sumActionTypes(insight?.actions, CONVERSION_ACTION_TYPES);
+  // Meta returns "0" for ABO campaigns' campaign-level budget; treat as null.
+  const dailyBudget = c.daily_budget && c.daily_budget !== "0" ? Number(c.daily_budget) : null;
+  const lifetimeBudget =
+    c.lifetime_budget && c.lifetime_budget !== "0" ? Number(c.lifetime_budget) : null;
+  return {
+    campaignId: c.id,
+    campaignName: c.name ?? "",
+    metaObjective: c.objective ?? null,
+    effectiveStatus: c.effective_status ?? "UNKNOWN",
+    configuredStatus: c.configured_status ?? null,
+    dailyBudget,
+    lifetimeBudget,
+    endTime: c.end_time ?? null,
+    spend,
+    impressions: num(insight?.impressions),
+    clicks: num(insight?.clicks),
+    ctr: num(insight?.ctr),
+    cpm: num(insight?.cpm),
+    cpc: num(insight?.cpc),
+    conversions,
+    purchaseValue,
+    roas: spend > 0 ? purchaseValue / spend : 0,
+  };
+}
+
 export function parseInsight(account: RawAccountWithInsights): ParsedInsight {
   const insight = account.insights?.data?.[0];
   const spend = num(insight?.spend);
   const purchaseValue = sumActionTypes(insight?.action_values, PURCHASE_VALUE_ACTION_TYPES);
   const conversions = sumActionTypes(insight?.actions, CONVERSION_ACTION_TYPES);
 
+  const rawCampaigns = account.campaigns?.data ?? [];
   return {
     accountId: account.id,
     accountName: account.name,
@@ -165,7 +233,8 @@ export function parseInsight(account: RawAccountWithInsights): ParsedInsight {
     conversions,
     purchaseValue,
     roas: spend > 0 ? purchaseValue / spend : 0,
-    campaignObjectives: summarizeObjectives(account.campaigns?.data),
+    campaignObjectives: summarizeObjectives(rawCampaigns),
+    campaigns: rawCampaigns.map(parseCampaign),
   };
 }
 
@@ -211,11 +280,20 @@ export async function fetchInsightsForAllAccounts(
     ? `insights.time_range(${rangeParam.time_range}){${INSIGHT_FIELDS}}`
     : `insights.date_preset(${rangeParam.date_preset}){${INSIGHT_FIELDS}}`;
 
+  // Nested per-campaign insights with the SAME range as the account-level
+  // query, so the AI sees consistent numbers when it cross-checks.
+  const campaignInsightSubQuery = rangeParam.time_range
+    ? `insights.time_range(${rangeParam.time_range}){${INSIGHT_FIELDS}}`
+    : `insights.date_preset(${rangeParam.date_preset}){${INSIGHT_FIELDS}}`;
+
   // Nested `campaigns` sub-query: pull active+paused campaigns with their
-  // objective so the AI can evaluate metrics against intent (Reach vs Sales
-  // need different judgement). Limit 50 per account keeps payload bounded.
+  // objective AND their own insights so the AI can evaluate each campaign
+  // against its own intent (Reach vs Sales need different judgement).
+  // Also pull budget + end_time so the campaigns page can show current
+  // values without an extra request. Limit 50 per account.
   const campaignsSubQuery =
-    'campaigns.limit(50).filtering([{"field":"effective_status","operator":"IN","value":["ACTIVE","PAUSED","CAMPAIGN_PAUSED"]}]){id,name,objective,effective_status}';
+    `campaigns.limit(50).filtering([{"field":"effective_status","operator":"IN","value":["ACTIVE","PAUSED","CAMPAIGN_PAUSED"]}])` +
+    `{id,name,objective,effective_status,configured_status,daily_budget,lifetime_budget,end_time,${campaignInsightSubQuery}}`;
 
   const fields = `id,name,currency,account_status,business{id,name},${insightSubQuery},${campaignsSubQuery}`;
 

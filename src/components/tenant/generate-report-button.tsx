@@ -58,16 +58,22 @@ export function GenerateReportButton({ tenantSlug }: { tenantSlug: string }) {
       if (!res.ok) throw new Error(data.error ?? "สร้างรายงานไม่สำเร็จ");
 
       clearInterval(toastInterval);
+      // Override the loading toast's original 60s duration so the bubble
+      // dismisses normally after navigation. Without this, success/info
+      // sticks around for the full minute.
       if (data.status === "skipped") {
-        toast.info("มีรายงานของวันนี้อยู่แล้ว — กำลังพาไปดู", { id: toastId });
+        toast.info("มีรายงานของวันนี้อยู่แล้ว — กำลังพาไปดู", { id: toastId, duration: 2500 });
       } else if (data.status === "completed") {
-        toast.success("✓ สร้างรายงานสำเร็จ", { id: toastId });
+        toast.success("✓ สร้างรายงานสำเร็จ", { id: toastId, duration: 3000 });
       }
       router.push(`/t/${tenantSlug}/reports/${data.reportId}`);
       router.refresh();
     } catch (err) {
       clearInterval(toastInterval);
-      toast.error(err instanceof Error ? err.message : "สร้างรายงานไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : "สร้างรายงานไม่สำเร็จ", {
+        id: toastId,
+        duration: 5000,
+      });
     } finally {
       setPending(false);
     }

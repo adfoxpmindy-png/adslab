@@ -45,6 +45,10 @@ export type MetaErrorBody = {
     code: number;
     error_subcode?: number;
     fbtrace_id?: string;
+    /** Localized error title (Meta returns Thai if account locale is th_TH). */
+    error_user_title?: string;
+    /** Localized error explanation — better for user-facing messages than `message`. */
+    error_user_msg?: string;
   };
 };
 
@@ -54,15 +58,21 @@ export class MetaApiError extends Error {
   readonly type: string;
   readonly fbtraceId?: string;
   readonly status: number;
+  readonly userTitle?: string;
+  readonly userMessage?: string;
 
   constructor(body: MetaErrorBody, httpStatus: number) {
-    super(body.error.message);
+    // Prefer the localized user-facing message when present — it's
+    // already translated and worded for end users.
+    super(body.error.error_user_msg ?? body.error.message);
     this.name = "MetaApiError";
     this.code = body.error.code;
     this.subcode = body.error.error_subcode;
     this.type = body.error.type;
     this.fbtraceId = body.error.fbtrace_id;
     this.status = httpStatus;
+    this.userTitle = body.error.error_user_title;
+    this.userMessage = body.error.error_user_msg;
   }
 
   /** Code 190 = token issues (expired / revoked / invalid). */

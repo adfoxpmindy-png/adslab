@@ -2,8 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { aiChat, getAiModel } from "@/lib/ai/openrouter";
 import { getDashboardData } from "@/lib/meta/dashboard-service";
 import type { DateRangeKey } from "@/lib/meta/insights";
+import { resolveCampaignGoals } from "@/lib/goals/resolver";
 import { sendEmail } from "@/lib/email/send";
 import { dailyReportEmailTemplate } from "@/lib/email/templates/daily-report";
+import { applyScopeFilter, type ScopeFilter } from "./scope-filter";
+import { extractAndValidateActions, stripActionsBlock } from "./extract-actions";
 
 import {
   DAILY_REPORT_SYSTEM_PROMPT,
@@ -54,6 +57,12 @@ export type GenerateInput = {
   generatedBy?: string | null;
   /** Whether to also email the report after generation. */
   sendEmail?: boolean;
+  /**
+   * Optional scope: if set, the report is filtered to only the
+   * accounts/campaigns in this scope. The scope row provides both the
+   * filter and the display name for the prompt.
+   */
+  scopeId?: string | null;
 };
 
 export type GenerateResult =
@@ -66,9 +75,13 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
     input.reportDate ?? toBangkokDateString(new Date(Date.now() - 24 * 60 * 60 * 1000));
   const reportDate = bangkokDateToUtcMidnight(reportDateStr);
 
-  // 1. Idempotency check
-  const existing = await prisma.dailyReport.findUnique({
-    where: { tenantId_reportDate: { tenantId: input.tenantId, reportDate } },
+  // 1. Idempotency check — each (tenant, date, scope) gets one row.
+  //    Note: Prisma's composite-unique typing doesn't accept null on
+  //    nullable columns, so we use findFirst with an explicit
+  //    `scopeId: null` clause for the full-tenant case.
+  const scopeId = input.scopeId ?? null;
+  const existing = await prisma.dailyReport.findFirst({
+    where: { tenantId: input.tenantId, reportDate, scopeId },
     select: { id: true, status: true },
   });
   if (existing && existing.status !== "FAILED") {
@@ -101,23 +114,54 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
     };
   }
 
-  // 3. Create / reset the report row in GENERATING state
-  const row = await prisma.dailyReport.upsert({
-    where: { tenantId_reportDate: { tenantId: input.tenantId, reportDate } },
-    update: {
-      status: "GENERATING",
-      contentMd: null,
-      generationError: null,
-      generatedBy: input.generatedBy ?? null,
-      generatedAt: new Date(),
-    },
-    create: {
-      tenantId: input.tenantId,
-      reportDate,
-      status: "GENERATING",
-      generatedBy: input.generatedBy ?? null,
-    },
+  // 2b. Load scope (if any) so we can both filter the data AND pass the
+  //     scope name to the prompt for human-readable framing.
+  const scope = scopeId
+    ? await prisma.reportScope.findFirst({
+        where: { id: scopeId, tenantId: input.tenantId },
+        select: { id: true, name: true, accountIds: true, campaignIds: true },
+      })
+    : null;
+  if (scopeId && !scope) {
+    return { status: "failed", reportId: null, error: "Scope not found" };
+  }
+
+  // 2c. If no explicit ReportScope, fall back to TenantScope as the
+  //     implicit filter — that's the "tenant default lens" set in
+  //     Settings → Tenant Scope. Without this fallback, the cron-
+  //     generated daily report would include data from accounts the
+  //     user has scoped out, leading to misleading AI analysis.
+  //
+  //     Precedence: explicit ReportScope > TenantScope > full tenant
+  const tenantScope = scope ? null : await prisma.tenantScope.findUnique({
+    where: { tenantId: input.tenantId },
+    select: { accountIds: true, campaignIds: true },
   });
+
+  // 3. Create / reset the report row in GENERATING state. We can't use
+  //    a single Prisma upsert here because the composite-unique with a
+  //    nullable column isn't accepted by the upsert type; do it as a
+  //    find+update / create instead.
+  const row = existing
+    ? await prisma.dailyReport.update({
+        where: { id: existing.id },
+        data: {
+          status: "GENERATING",
+          contentMd: null,
+          generationError: null,
+          generatedBy: input.generatedBy ?? null,
+          generatedAt: new Date(),
+        },
+      })
+    : await prisma.dailyReport.create({
+        data: {
+          tenantId: input.tenantId,
+          reportDate,
+          scopeId,
+          status: "GENERATING",
+          generatedBy: input.generatedBy ?? null,
+        },
+      });
 
   try {
     // 4. Pull insights for "yesterday" + day-before (for comparison)
@@ -131,12 +175,55 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       // Previous-day data is optional context — failing it shouldn't kill the report.
     }
 
+    // 4a. Apply scope filter (if any) — reduces both today's and the
+    //     comparison day's data to the selected accounts/campaigns.
+    //
+    // Precedence: explicit ReportScope (named) > TenantScope (default)
+    //             > full tenant
+    let scopeFilter: ScopeFilter | null = null;
+    if (scope) {
+      scopeFilter = {
+        accountIds: scope.accountIds as string[],
+        campaignIds: scope.campaignIds as string[],
+      };
+    } else if (tenantScope) {
+      const tAccounts = tenantScope.accountIds as string[] | null;
+      const tCampaigns = tenantScope.campaignIds as string[] | null;
+      // Only build a filter if at least one side is set — pure null/null
+      // = "no constraint" = same as no filter at all.
+      if (tAccounts !== null || tCampaigns !== null) {
+        scopeFilter = {
+          accountIds: tAccounts ?? [],
+          campaignIds: tCampaigns ?? [],
+        };
+      }
+    }
+    const todayPayload = scopeFilter ? applyScopeFilter(today.payload, scopeFilter) : today.payload;
+    const prevDayPayload =
+      prevDay && scopeFilter ? applyScopeFilter(prevDay, scopeFilter) : prevDay;
+
+    // 4b. Resolve goals for every campaign we saw today. This gives the
+    //     AI the per-campaign intent it needs to apply the right rubric.
+    const allCampaigns = todayPayload.accounts.flatMap((a) =>
+      a.campaigns.map((c) => ({
+        metaCampaignId: c.campaignId,
+        name: c.campaignName,
+        metaObjective: c.metaObjective,
+      })),
+    );
+    const goalsByCampaignId = await resolveCampaignGoals({
+      tenantId: input.tenantId,
+      campaigns: allCampaigns,
+    });
+
     // 5. Build prompt + call Claude
     const userMessage = buildDailyReportUserMessage({
       tenantName: tenant.name,
       dateLabel: thaiDateLabel(reportDateStr),
-      today: today.payload,
-      prevDay,
+      today: todayPayload,
+      prevDay: prevDayPayload,
+      goalsByCampaignId,
+      scopeName: scope?.name ?? null,
     });
 
     const result = await aiChat({
@@ -144,24 +231,54 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       system: DAILY_REPORT_SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],
       cacheSystem: true,
-      maxTokens: 1500,
+      // 4000 covers full-tenant reports (~3K tokens of structured Thai
+      // markdown across 7 objective lanes + recs) with headroom; scoped
+      // reports finish well under this. At Sonnet's $15/M output that's
+      // a ~$0.06 ceiling per report.
+      maxTokens: 4000,
     });
 
-    const contentMd = result.content;
+    const rawContentMd = result.content;
     const promptTokens = result.usage.promptTokens;
     const completionTokens = result.usage.completionTokens;
+
+    // Extract structured action suggestions BEFORE stripping the block
+    // from the displayed markdown. We persist the validated list on the
+    // report so the viewer can render an Actions panel without re-parsing.
+    const suggestedActions = await extractAndValidateActions(rawContentMd, input.tenantId);
+    const contentMd = stripActionsBlock(rawContentMd);
     // OpenRouter doesn't always surface cache_read_input_tokens via the OpenAI
     // SDK; estimate cost assuming half of input was cached after first call.
     const estimatedCachedTokens = Math.round(promptTokens * 0.6);
     const estimatedCostUsd = estimateCostUsd(promptTokens, completionTokens, estimatedCachedTokens);
 
-    // 6. Save the completed report
+    // 6. Save the completed report. Snapshot bundles the dashboard
+    //    payload AND the goal each campaign was assigned to AT report
+    //    time — so a later viewer can explain "this Awareness campaign
+    //    was classified as Awareness because Meta said so" even if the
+    //    user later edits their goals.
+    const goalsSnapshot = Array.from(goalsByCampaignId.entries()).map(
+      ([campaignId, g]) => ({
+        campaignId,
+        objective: g.objective,
+        source: g.source,
+        resolved: g.resolved,
+      }),
+    );
+    const snapshot = {
+      ...todayPayload,
+      goals: goalsSnapshot,
+      scope: scope ? { id: scope.id, name: scope.name } : null,
+    };
     const completed = await prisma.dailyReport.update({
       where: { id: row.id },
       data: {
         status: "COMPLETED",
         contentMd,
-        payloadSnapshot: today.payload as unknown as object,
+        payloadSnapshot: snapshot as unknown as object,
+        suggestedActions: (suggestedActions.length > 0
+          ? suggestedActions
+          : undefined) as unknown as object,
         promptTokens,
         completionTokens,
         estimatedCostUsd,

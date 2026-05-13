@@ -5,7 +5,7 @@ import { generateDailyReport } from "@/lib/reports/daily-report";
 import { requireSession } from "@/lib/auth/session";
 
 /**
- * POST /api/reports/generate?tenantSlug=<slug>&date=<YYYY-MM-DD>&email=<bool>
+ * POST /api/reports/generate?tenantSlug=<slug>&date=<YYYY-MM-DD>&email=<bool>&scopeId=<id>
  *
  * Manually trigger a daily-report generation. OWNER + MEDIA_BUYER only —
  * VIEWER can read existing reports but cannot kick off new AI calls (burns
@@ -14,6 +14,8 @@ import { requireSession } from "@/lib/auth/session";
  * If `date` is omitted the report covers "yesterday" (Bangkok local).
  * If `email=true`, the report is also emailed to the tenant OWNER after
  * generation; default is dashboard-only.
+ * If `scopeId` is set, the report is filtered to the scope's accounts /
+ * campaigns; otherwise the report covers the full tenant.
  */
 export async function POST(request: Request) {
   const url = new URL(request.url);
@@ -27,6 +29,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "date must be YYYY-MM-DD" }, { status: 400 });
   }
 
+  const scopeId = url.searchParams.get("scopeId");
+
   const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
 
@@ -37,6 +41,7 @@ export async function POST(request: Request) {
     reportDate: date,
     generatedBy: session.userId,
     sendEmail: shouldEmail,
+    scopeId: scopeId || null,
   });
 
   if (result.status === "failed") {

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { requireTenantMember } from "@/lib/auth/tenant";
-import { getDashboardData } from "@/lib/meta/dashboard-service";
+import { requireSession } from "@/lib/auth/session";
+import { getDashboardData, filterDashboardPayload } from "@/lib/meta/dashboard-service";
+import { getEffectiveScope } from "@/lib/tenant-scope";
 import type { DateRangeKey } from "@/lib/meta/insights";
 
 const PRESETS: DateRangeKey[] = ["today", "yesterday", "last_7d", "last_30d"];
@@ -29,13 +31,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "invalid range" }, { status: 400 });
   }
 
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug);
+  const scope = await getEffectiveScope(session.userId, tenant.id);
 
   try {
     const result = await getDashboardData(tenant.id, range);
+    const filtered = filterDashboardPayload(result.payload, scope.accountIds);
     return NextResponse.json({
       ok: true,
-      ...result.payload,
+      ...filtered,
       fromCache: result.fromCache,
       isStale: result.isStale,
     });

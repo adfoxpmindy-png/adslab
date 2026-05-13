@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { syncCampaignsFromInsights } from "@/lib/goals/campaign-sync";
 import { getConnection, getFreshAccessToken } from "./client";
 import { convertToThb } from "./fx";
 import {
@@ -16,7 +17,7 @@ function getCacheTtlSec(): number {
   return Number.isFinite(v) && v > 0 ? v : 900; // 15 min default
 }
 
-function aggregate(accounts: ParsedInsight[]): DashboardSummary {
+export function aggregate(accounts: ParsedInsight[]): DashboardSummary {
   let spendThb = 0;
   let purchaseValueThb = 0;
   let impressions = 0;
@@ -40,6 +41,26 @@ function aggregate(accounts: ParsedInsight[]): DashboardSummary {
     roas: spendThb > 0 ? purchaseValueThb / spendThb : 0,
     ctr: impressions > 0 ? (clicks / impressions) * 100 : 0,
     cpm: impressions > 0 ? (spendThb / impressions) * 1000 : 0,
+  };
+}
+
+/**
+ * Filter a DashboardPayload to only the specified accounts and recompute
+ * `summary`. Used by the per-user account picker — the cached payload
+ * is global (per tenant+range), so we filter post-load instead of
+ * baking accountIds into the cache key (would explode cache combos).
+ */
+export function filterDashboardPayload(
+  payload: DashboardPayload,
+  selectedAccountIds: string[] | null,
+): DashboardPayload {
+  if (selectedAccountIds === null) return payload;
+  const allow = new Set(selectedAccountIds);
+  const accounts = payload.accounts.filter((a) => allow.has(a.accountId));
+  return {
+    ...payload,
+    accounts,
+    summary: aggregate(accounts),
   };
 }
 
@@ -87,6 +108,20 @@ async function fetchAndCache(tenantId: string, range: DateRangeKey): Promise<Das
 
   const accessToken = await getFreshAccessToken(connection);
   const accounts = await fetchInsightsForAllAccounts(accessToken, range);
+
+  // Persist any new campaigns we just saw. This is the only place
+  // MetaCampaign rows are written, so we never have to worry about
+  // missing rows when a user tries to set a goal.
+  try {
+    await syncCampaignsFromInsights({
+      tenantId,
+      metaConnectionId: connection.id,
+      accounts,
+    });
+  } catch (err) {
+    // Don't fail the dashboard fetch if sync hiccups — log and continue.
+    console.warn("[dashboard-service] campaign sync failed:", (err as Error).message);
+  }
 
   const payload: DashboardPayload = {
     range,
