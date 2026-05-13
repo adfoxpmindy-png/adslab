@@ -95,6 +95,7 @@ export function SetupBillingClient({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const selected = PLANS.find((p) => p.key === planKey)!;
   const price = interval === "MONTHLY" ? selected.priceMonthly : selected.priceYearly;
@@ -109,6 +110,10 @@ export function SetupBillingClient({
     }
     if (!publicKey) {
       setError("ระบบยังไม่ตั้งค่าการชำระเงิน — ติดต่อทีมงาน");
+      return;
+    }
+    if (!acceptedTerms) {
+      setError("กรุณายอมรับเงื่อนไขการใช้บริการและนโยบายการคืนเงินก่อนสมัคร");
       return;
     }
     setPending(true);
@@ -314,9 +319,40 @@ export function SetupBillingClient({
           </p>
         )}
 
-        <div className="mt-6 flex items-center justify-between border-t border-border pt-5">
+        {/* Required by Omise KYC: refund + terms acceptance must be
+            shown *before* the payment button, not just linked elsewhere. */}
+        <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border-input text-cyan-600 focus:ring-cyan-500"
+            />
+            <span className="text-xs leading-relaxed text-foreground">
+              ฉันยอมรับ{" "}
+              <a href="/terms" target="_blank" className="font-medium text-cyan-600 underline-offset-2 hover:underline">
+                ข้อกำหนดการใช้บริการ
+              </a>{" "}
+              และ{" "}
+              <a href="/refund-policy" target="_blank" className="font-medium text-cyan-600 underline-offset-2 hover:underline">
+                นโยบายการคืนเงิน
+              </a>{" "}
+              ของ AdsLab
+              <br />
+              <span className="mt-1 block text-[11px] text-muted-foreground">
+                • ทดลองใช้ฟรี 7 วัน — ไม่มีการเรียกเก็บเงินระหว่างทดลอง<br />
+                • เริ่มเก็บเงินอัตโนมัติในวันที่ 8 หากไม่ได้ยกเลิก<br />
+                • ขอคืนเงินภายใน 7 วันแรกของรอบบิล (pro-rated ตามวันที่เหลือ)<br />
+                • ยกเลิกการต่ออายุได้ตลอดเวลาที่ Settings → Billing
+              </span>
+            </span>
+          </label>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between border-t border-border pt-5">
           <div>
-            <p className="text-xs text-muted-foreground">รวมต่อรอบบิล (VAT รวมแล้ว)</p>
+            <p className="text-xs text-muted-foreground">รวมต่อรอบบิล (VAT 7% รวมแล้ว)</p>
             <p className="text-xl font-bold">
               ฿{price.toLocaleString("th-TH")}
               <span className="ml-1 text-sm font-normal text-muted-foreground">
@@ -327,7 +363,7 @@ export function SetupBillingClient({
               ทดลองใช้ฟรี 7 วัน • เริ่มเก็บเงินหลังครบ
             </p>
           </div>
-          <Button type="submit" size="lg" disabled={pending || !scriptReady}>
+          <Button type="submit" size="lg" disabled={pending || !scriptReady || !acceptedTerms}>
             {pending ? (
               <>
                 <Loader2 className="size-4 animate-spin" /> กำลังบันทึก
@@ -338,7 +374,7 @@ export function SetupBillingClient({
           </Button>
         </div>
         <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          ระบบชำระเงินผ่าน Omise (ปลอดภัย PCI DSS Level 1)
+          ระบบชำระเงินผ่าน Omise (ปลอดภัย PCI DSS Level 1) · เงินจะถูกเรียกเก็บเป็นสกุล THB
         </p>
       </form>
     </>

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { SiteFooter } from "@/components/site-footer";
 
 import { SetupBillingClient } from "./setup-billing-client";
 
@@ -90,6 +91,7 @@ export default async function SetupBillingPage({
           publicKey={process.env.OMISE_PUBLIC_KEY ?? ""}
         />
       </div>
+      <SiteFooter />
     </main>
   );
 }

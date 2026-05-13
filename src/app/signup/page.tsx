@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LegalFooter } from "@/components/legal-footer";
+import { SiteFooter } from "@/components/site-footer";
 
 type FieldErrors = Partial<Record<"name" | "email" | "password" | "tenantName", string>>;
 
@@ -60,7 +61,8 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
+    <div className="flex min-h-screen flex-col bg-muted/30">
+    <main className="flex flex-1 items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center text-center">
           <Image
@@ -170,5 +172,7 @@ export default function SignupPage() {
         <LegalFooter />
       </div>
     </main>
+    <SiteFooter />
+    </div>
   );
 }

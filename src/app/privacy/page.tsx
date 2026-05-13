@@ -1,16 +1,20 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { SiteFooter } from "@/components/site-footer";
+import { COMPANY } from "@/lib/company";
+
 export const metadata: Metadata = {
   title: "Privacy Policy / นโยบายความเป็นส่วนตัว · AdsLab",
   description: "How AdsLab collects, uses, and protects your data.",
 };
 
 const LAST_UPDATED = "2026-05-11";
-const CONTACT_EMAIL = "koondyasdw@gmail.com";
+const CONTACT_EMAIL = COMPANY.supportEmail;
 
 export default function PrivacyPage() {
   return (
+    <>
     <main className="mx-auto max-w-3xl px-6 py-12">
       <div className="mb-8">
         <Link href="/" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
@@ -190,11 +194,15 @@ export default function PrivacyPage() {
       <footer className="mt-16 border-t border-border pt-6 text-sm text-muted-foreground">
         <Link href="/terms" className="underline-offset-4 hover:underline">Terms of Service</Link>
         {" · "}
+        <Link href="/refund-policy" className="underline-offset-4 hover:underline">Refund Policy</Link>
+        {" · "}
         <Link href="/data-deletion" className="underline-offset-4 hover:underline">Data Deletion</Link>
         {" · "}
         <Link href="/" className="underline-offset-4 hover:underline">AdsLab</Link>
       </footer>
     </main>
+    <SiteFooter />
+    </>
   );
 }
 

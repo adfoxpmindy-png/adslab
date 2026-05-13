@@ -1,15 +1,19 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { SiteFooter } from "@/components/site-footer";
+import { COMPANY } from "@/lib/company";
+
 export const metadata: Metadata = {
   title: "Data Deletion / ลบข้อมูล · AdsLab",
   description: "How to request deletion of your data from AdsLab.",
 };
 
-const CONTACT_EMAIL = "koondyasdw@gmail.com";
+const CONTACT_EMAIL = COMPANY.supportEmail;
 
 export default function DataDeletionPage() {
   return (
+    <>
     <main className="mx-auto max-w-3xl px-6 py-12">
       <div className="mb-8">
         <Link href="/" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
@@ -127,9 +131,13 @@ export default function DataDeletionPage() {
         {" · "}
         <Link href="/terms" className="underline-offset-4 hover:underline">Terms of Service</Link>
         {" · "}
+        <Link href="/refund-policy" className="underline-offset-4 hover:underline">Refund Policy</Link>
+        {" · "}
         <Link href="/" className="underline-offset-4 hover:underline">AdsLab</Link>
       </footer>
     </main>
+    <SiteFooter />
+    </>
   );
 }
 

@@ -130,7 +130,7 @@ async function scenario1_happyPath(ctx: BrowserContext) {
     await page.click('button:has-text("เริ่มทดลองใช้ฟรี 7 วัน")');
     // Wait for redirect to dashboard
     await page.waitForURL(/\/t\/.+\/dashboard/, { timeout: 30_000 });
-    record("1.5 Submit → redirect to dashboard", page.url());
+    record("1.5 Submit → redirect to dashboard", true, page.url());
 
     // Verify Subscription record
     const sub = await prisma.tenantSubscription.findUnique({
