@@ -364,7 +364,7 @@ async function run() {
     today.setUTCHours(0, 0, 0, 0);
     await prisma.usageMetric.upsert({
       where: { tenantId_date: { tenantId: tenant.id, date: today } },
-      create: { tenantId: tenant.id, date: today, aiMessagesCount: 100, aiInputTokens: 0n, aiOutputTokens: 0n, adSpendThb: 0 },
+      create: { tenantId: tenant.id, date: today, aiMessagesCount: 100, aiInputTokens: BigInt(0), aiOutputTokens: BigInt(0), adSpendThb: 0 },
       update: { aiMessagesCount: 100 },
     });
     let threwAsExpected = false;
@@ -422,7 +422,7 @@ async function run() {
     const usage = await prisma.usageMetric.findUnique({
       where: { tenantId_date: { tenantId: tenant.id, date: today } },
     });
-    if (usage && usage.aiMessagesCount === 2 && usage.aiInputTokens === 300n) {
+    if (usage && usage.aiMessagesCount === 2 && usage.aiInputTokens === BigInt(300)) {
       pass("5.5 recordAiUsage accumulates", `2 msgs, 300 in / 150 out`);
     } else {
       fail("5.5 usage rollup", `got ${usage?.aiMessagesCount} msg, ${usage?.aiInputTokens} tok`);
