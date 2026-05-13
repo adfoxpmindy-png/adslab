@@ -3,7 +3,7 @@
  * Install:
  *   <script>
  *     (function(w,k){w._adslab=k;var s=document.createElement('script');
- *     s.async=1;s.src='https://adslab-theta.vercel.app/sdk.js?k='+k;
+ *     s.async=1;s.src='https://ads-lab.xyz/sdk.js?k='+k;
  *     document.head.appendChild(s);})(window,'<SITE_KEY>');
  *   </script>
  *
