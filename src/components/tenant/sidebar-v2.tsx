@@ -67,7 +67,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
     .toUpperCase();
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-sidebar lg:flex">
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col self-start overflow-y-auto border-r border-border bg-sidebar lg:flex">
       {/* Logo — uses brightness/invert in dark mode so the dark "AdsLab"
           wordmark stays readable on the dark sidebar bg */}
       <div className="flex h-16 shrink-0 items-center px-5">
