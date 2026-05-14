@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { aiChat } from "@/lib/ai/openrouter";
+import { generateCreativeImage } from "@/lib/ai/image-gen";
 
 /**
  * Generate an AI campaign plan from a minimal brief. Returns a structured
@@ -47,6 +48,8 @@ export type CampaignPlanResponse = {
     description: string;
     type: "image" | "video";
     expectedCtr: number;
+    /** AI-generated preview image URL (added server-side after plan) */
+    imageUrl?: string;
   }>;
 };
 
@@ -115,6 +118,19 @@ export async function POST(req: Request) {
     if (fenceMatch) jsonText = fenceMatch[1];
 
     const plan = JSON.parse(jsonText) as CampaignPlanResponse;
+
+    // Attach AI-generated creative image URLs (pollinations.ai — lazy load
+    // from the browser, so no server round-trip cost here).
+    for (const c of plan.creatives) {
+      const img = generateCreativeImage({
+        headline: c.headline,
+        description: c.description,
+        type: c.type,
+        productContext: body.data.product,
+      });
+      c.imageUrl = img.url;
+    }
+
     return NextResponse.json({ ok: true, plan });
   } catch (err) {
     console.error("[ai/campaign-plan]", err);

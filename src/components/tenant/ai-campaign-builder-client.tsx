@@ -498,9 +498,25 @@ function PlanPreview({
                 key={i}
                 className="rounded-lg border border-border bg-card p-2 transition-all hover:shadow-card-hover"
               >
-                <div className="aspect-square rounded-md bg-gradient-to-br from-violet-100 via-pink-100 to-amber-100 dark:from-violet-950/40 dark:via-pink-950/40 dark:to-amber-950/40 flex flex-col items-center justify-center text-violet-600 dark:text-violet-300">
-                  <Icon className="size-5" />
-                  <span className="mt-1 text-[9px] font-medium uppercase">{c.type}</span>
+                <div className="relative aspect-square overflow-hidden rounded-md bg-gradient-to-br from-violet-100 via-pink-100 to-amber-100 dark:from-violet-950/40 dark:via-pink-950/40 dark:to-amber-950/40">
+                  {c.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={c.imageUrl}
+                      alt={c.headline}
+                      className="absolute inset-0 size-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center text-violet-600 dark:text-violet-300">
+                      <Icon className="size-5" />
+                      <span className="mt-1 text-[9px] font-medium uppercase">{c.type}</span>
+                    </div>
+                  )}
+                  <span className="absolute top-1 right-1 inline-flex items-center gap-0.5 rounded-full bg-black/60 px-1.5 py-0.5 text-[8px] font-bold uppercase text-white">
+                    <Icon className="size-2.5" />
+                    {c.type}
+                  </span>
                 </div>
                 <p className="mt-2 line-clamp-2 text-[11px] font-medium leading-snug" title={c.headline}>
                   {c.headline}
