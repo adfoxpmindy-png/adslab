@@ -157,7 +157,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
 
       {/* Upgrade promo */}
       {showUpgrade && (
-        <div className="mx-3 my-2 rounded-2xl bg-gradient-to-br from-violet-50 via-indigo-50 to-pink-50 p-4 dark:from-violet-950/30 dark:via-indigo-950/30 dark:to-pink-950/30">
+        <div className="mx-3 my-2 rounded-2xl bg-gradient-to-br from-violet-50 via-indigo-50 to-pink-50 p-4 ring-1 ring-border/60 dark:bg-gradient-to-br dark:from-violet-900/40 dark:via-indigo-900/40 dark:to-pink-900/40 dark:ring-white/10">
           <div className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-card">
             <Crown className="size-4" />
           </div>
