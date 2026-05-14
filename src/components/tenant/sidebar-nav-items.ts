@@ -7,6 +7,7 @@ import {
   TrendingUp,
   Users,
   Wrench,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,6 +23,7 @@ export type SidebarNavItem = {
 
 export const SIDEBAR_NAV_ITEMS: SidebarNavItem[] = [
   { label: "ภาพรวม", href: (s) => `/t/${s}/dashboard`, icon: Home },
+  { label: "บูสต์ด่วน", href: (s) => `/t/${s}/boost`, icon: Zap },
   { label: "แคมเปญ", href: (s) => `/t/${s}/campaigns`, icon: Folder },
   { label: "กลุ่มเป้าหมาย", href: (s) => `/t/${s}/audiences`, icon: Users },
   { label: "ครีเอทีฟ", href: (s) => `/t/${s}/creatives`, icon: ImageIcon },
