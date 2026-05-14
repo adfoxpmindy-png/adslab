@@ -13,7 +13,7 @@ async function main() {
   const conn = await prisma.metaConnection.findUniqueOrThrow({ where: { tenantId: tenant.id } });
   const token = decrypt(conn.accessTokenEncrypted);
 
-  console.log("Token created:", conn.createdAt);
+  console.log("Token connected:", conn.connectedAt);
   console.log("Token expires:", conn.tokenExpiresAt);
 
   // Ask Meta: what permissions does this token actually have?
