@@ -33,7 +33,7 @@ async function main() {
 
   for (const mode of ["light", "dark"] as const) {
     const ctx = await browser.newContext({
-      viewport: { width: 1440, height: 1100 },
+      viewport: { width: 1440, height: 1500 },
       colorScheme: mode,
     });
     await ctx.addCookies([{

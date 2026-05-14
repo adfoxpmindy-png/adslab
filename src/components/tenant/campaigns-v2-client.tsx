@@ -1,19 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
+  AlertCircle,
   Calendar,
   Download,
   Filter,
+  Image as ImageIcon,
   Layers,
+  LayoutGrid,
+  Loader2,
   Network,
   Plus,
   Search,
   Settings2,
   Table as TableIcon,
 } from "lucide-react";
+
+import type {
+  AdNode,
+  AdSetNode,
+  CampaignStructure,
+} from "@/lib/meta/campaign-structure";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -189,7 +199,11 @@ export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
 
         {/* View */}
         {view === "table" ? (
-          <CampaignsTable rows={filtered} canEdit={canEdit} tenantSlug={tenantSlug} />
+          <CampaignsTable
+            rows={filtered}
+            canEdit={canEdit}
+            tenantSlug={tenantSlug}
+          />
         ) : (
           <CampaignsStructureMindmap rows={filtered.length ? filtered : campaigns} />
         )}
@@ -238,6 +252,12 @@ function FilterPill({
 // Table view
 // =============================================================================
 
+type StructureState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "loaded"; data: CampaignStructure }
+  | { status: "error"; error: string };
+
 function CampaignsTable({
   rows,
   canEdit,
@@ -247,6 +267,57 @@ function CampaignsTable({
   canEdit: boolean;
   tenantSlug: string;
 }) {
+  // Per-campaign: expanded? + lazy-loaded ad set tree
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [structures, setStructures] = useState<Record<string, StructureState>>({});
+  // Per-adset: expanded? to reveal nested ads
+  const [expandedAdSets, setExpandedAdSets] = useState<Set<string>>(new Set());
+
+  const toggleCampaign = useCallback(
+    (row: CampaignRow) => {
+      const id = row.metaCampaignId;
+      const isOpen = expanded.has(id);
+      setExpanded((prev) => {
+        const next = new Set(prev);
+        if (isOpen) next.delete(id);
+        else next.add(id);
+        return next;
+      });
+      // Fetch on first open (or if previous fetch errored — retry).
+      if (!isOpen) {
+        const current = structures[id];
+        if (current?.status === "loaded" || current?.status === "loading") return;
+        setStructures((s) => ({ ...s, [id]: { status: "loading" } }));
+        const url = `/api/meta/campaigns/${id}/structure?tenantSlug=${encodeURIComponent(tenantSlug)}`;
+        fetch(url)
+          .then(async (res) => {
+            if (!res.ok) {
+              const body = (await res.json().catch(() => ({}))) as { error?: string };
+              throw new Error(body.error ?? `HTTP ${res.status}`);
+            }
+            return (await res.json()) as CampaignStructure;
+          })
+          .then((data) => setStructures((s) => ({ ...s, [id]: { status: "loaded", data } })))
+          .catch((err: unknown) =>
+            setStructures((s) => ({
+              ...s,
+              [id]: { status: "error", error: err instanceof Error ? err.message : String(err) },
+            })),
+          );
+      }
+    },
+    [expanded, structures, tenantSlug],
+  );
+
+  const toggleAdSet = useCallback((adSetId: string) => {
+    setExpandedAdSets((prev) => {
+      const next = new Set(prev);
+      if (next.has(adSetId)) next.delete(adSetId);
+      else next.add(adSetId);
+      return next;
+    });
+  }, []);
+
   if (rows.length === 0) {
     return (
       <EmptyState
@@ -269,6 +340,7 @@ function CampaignsTable({
     <DataTableShell>
       <DataTableHead>
         <DataTableHeadRow>
+          <DataTableHeadCell className="w-9 pl-3" />
           <DataTableHeadCell>ชื่อ</DataTableHeadCell>
           <DataTableHeadCell>สถานะ</DataTableHeadCell>
           <DataTableHeadCell>วัตถุประสงค์</DataTableHeadCell>
@@ -281,44 +353,285 @@ function CampaignsTable({
         </DataTableHeadRow>
       </DataTableHead>
       <DataTableBody>
-        {rows.map((r) => (
-          <DataTableRow key={r.id}>
-            <DataTableCell>
-              <div className="flex items-start gap-2">
-                <Layers className="mt-0.5 size-4 shrink-0 text-violet-600 dark:text-violet-300" />
-                <div className="min-w-0">
-                  <p className="truncate font-medium" title={r.name}>
-                    {r.name}
-                  </p>
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {r.account.name}
-                  </p>
-                </div>
-              </div>
-            </DataTableCell>
-            <DataTableCell>
-              <CampaignStatusBadge status={r.effectiveStatus} />
-            </DataTableCell>
-            <DataTableCell>
-              <span className="text-xs text-muted-foreground">
-                {r.metaObjective ? prettyObjective(r.metaObjective) : "—"}
-              </span>
-            </DataTableCell>
-            <DataTableCell numeric>
-              <BudgetCell campaign={r} />
-            </DataTableCell>
-            <DataTableCell numeric>{formatThb(r.metrics.spend)}</DataTableCell>
-            <DataTableCell numeric>{formatNumber(r.metrics.impressions)}</DataTableCell>
-            <DataTableCell numeric>{r.metrics.ctr.toFixed(2)}%</DataTableCell>
-            <DataTableCell numeric>{formatThb(r.metrics.cpc)}</DataTableCell>
-            <DataTableCell numeric>
-              <RoasCell value={r.metrics.roas} />
-            </DataTableCell>
-          </DataTableRow>
-        ))}
+        {rows.map((r) => {
+          const isOpen = expanded.has(r.metaCampaignId);
+          const state = structures[r.metaCampaignId] ?? { status: "idle" };
+          return (
+            <CampaignRowGroup
+              key={r.id}
+              row={r}
+              expanded={isOpen}
+              state={state}
+              onToggleCampaign={() => toggleCampaign(r)}
+              expandedAdSets={expandedAdSets}
+              onToggleAdSet={toggleAdSet}
+            />
+          );
+        })}
       </DataTableBody>
     </DataTableShell>
   );
+}
+
+function CampaignRowGroup({
+  row,
+  expanded,
+  state,
+  onToggleCampaign,
+  expandedAdSets,
+  onToggleAdSet,
+}: {
+  row: CampaignRow;
+  expanded: boolean;
+  state: StructureState;
+  onToggleCampaign: () => void;
+  expandedAdSets: Set<string>;
+  onToggleAdSet: (id: string) => void;
+}) {
+  return (
+    <>
+      <DataTableRow expandable expanded={expanded} onToggle={onToggleCampaign}>
+        <DataTableCell>
+          <div className="flex items-start gap-2">
+            <Layers className="mt-0.5 size-4 shrink-0 text-violet-600 dark:text-violet-300" />
+            <div className="min-w-0">
+              <p className="truncate font-medium" title={row.name}>
+                {row.name}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">{row.account.name}</p>
+            </div>
+          </div>
+        </DataTableCell>
+        <DataTableCell>
+          <CampaignStatusBadge status={row.effectiveStatus} />
+        </DataTableCell>
+        <DataTableCell>
+          <span className="text-xs text-muted-foreground">
+            {row.metaObjective ? prettyObjective(row.metaObjective) : "—"}
+          </span>
+        </DataTableCell>
+        <DataTableCell numeric>
+          <BudgetCell campaign={row} />
+        </DataTableCell>
+        <DataTableCell numeric>{formatThb(row.metrics.spend)}</DataTableCell>
+        <DataTableCell numeric>{formatNumber(row.metrics.impressions)}</DataTableCell>
+        <DataTableCell numeric>{row.metrics.ctr.toFixed(2)}%</DataTableCell>
+        <DataTableCell numeric>{formatThb(row.metrics.cpc)}</DataTableCell>
+        <DataTableCell numeric>
+          <RoasCell value={row.metrics.roas} />
+        </DataTableCell>
+      </DataTableRow>
+
+      {expanded && state.status === "loading" && <NestedLoadingRow />}
+      {expanded && state.status === "error" && (
+        <NestedErrorRow message={state.error} onRetry={onToggleCampaign} />
+      )}
+      {expanded && state.status === "loaded" && state.data.adSets.length === 0 && (
+        <NestedEmptyRow message="แคมเปญนี้ยังไม่มี Ad Set" />
+      )}
+      {expanded &&
+        state.status === "loaded" &&
+        state.data.adSets.map((adset) => (
+          <AdSetRowGroup
+            key={adset.id}
+            adset={adset}
+            expanded={expandedAdSets.has(adset.id)}
+            onToggle={() => onToggleAdSet(adset.id)}
+          />
+        ))}
+    </>
+  );
+}
+
+function AdSetRowGroup({
+  adset,
+  expanded,
+  onToggle,
+}: {
+  adset: AdSetNode;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <>
+      <DataTableRow depth={1} expandable expanded={expanded} onToggle={onToggle}>
+        <DataTableCell>
+          <div className="flex items-start gap-2 pl-4">
+            <LayoutGrid className="mt-0.5 size-4 shrink-0 text-indigo-600 dark:text-indigo-300" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium" title={adset.name}>
+                {adset.name}
+              </p>
+              <p className="truncate text-[11px] text-muted-foreground">
+                {adset.ads.length} โฆษณา
+                {adset.optimizationGoal && ` · ${prettyOptGoal(adset.optimizationGoal)}`}
+              </p>
+            </div>
+          </div>
+        </DataTableCell>
+        <DataTableCell>
+          <CampaignStatusBadge status={adset.effectiveStatus} />
+        </DataTableCell>
+        <DataTableCell>
+          <span className="text-xs text-muted-foreground">Ad Set</span>
+        </DataTableCell>
+        <DataTableCell numeric>
+          <AdSetBudgetCell adset={adset} />
+        </DataTableCell>
+        <DataTableCell numeric>{formatThb(adset.metrics.spend)}</DataTableCell>
+        <DataTableCell numeric>{formatNumber(adset.metrics.impressions)}</DataTableCell>
+        <DataTableCell numeric>{adset.metrics.ctr.toFixed(2)}%</DataTableCell>
+        <DataTableCell numeric>{formatThb(adset.metrics.cpc)}</DataTableCell>
+        <DataTableCell numeric>
+          <RoasCell value={adset.metrics.roas} />
+        </DataTableCell>
+      </DataTableRow>
+
+      {expanded && adset.ads.length === 0 && (
+        <NestedEmptyRow depth={2} message="Ad Set นี้ยังไม่มีโฆษณา" />
+      )}
+      {expanded && adset.ads.map((ad) => <AdRow key={ad.id} ad={ad} />)}
+    </>
+  );
+}
+
+function AdRow({ ad }: { ad: AdNode }) {
+  return (
+    <DataTableRow depth={2}>
+      <td aria-hidden className="w-9 pl-3" />
+      <DataTableCell>
+        <div className="flex items-start gap-2 pl-8">
+          <AdThumbnail ad={ad} />
+          <div className="min-w-0">
+            <p className="truncate text-sm" title={ad.name}>
+              {ad.name}
+            </p>
+            <p className="truncate text-[11px] text-muted-foreground">Ad ID: {ad.id}</p>
+          </div>
+        </div>
+      </DataTableCell>
+      <DataTableCell>
+        <CampaignStatusBadge status={ad.effectiveStatus} />
+      </DataTableCell>
+      <DataTableCell>
+        <span className="text-xs text-muted-foreground">Ad</span>
+      </DataTableCell>
+      <DataTableCell numeric>
+        <span className="text-xs text-muted-foreground">—</span>
+      </DataTableCell>
+      <DataTableCell numeric>{formatThb(ad.metrics.spend)}</DataTableCell>
+      <DataTableCell numeric>{formatNumber(ad.metrics.impressions)}</DataTableCell>
+      <DataTableCell numeric>{ad.metrics.ctr.toFixed(2)}%</DataTableCell>
+      <DataTableCell numeric>{formatThb(ad.metrics.cpc)}</DataTableCell>
+      <DataTableCell numeric>
+        <RoasCell value={ad.metrics.roas} />
+      </DataTableCell>
+    </DataTableRow>
+  );
+}
+
+function AdThumbnail({ ad }: { ad: AdNode }) {
+  if (ad.thumbnailUrl) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img
+        src={ad.thumbnailUrl}
+        alt=""
+        className="mt-0.5 size-8 shrink-0 rounded-md border border-border object-cover"
+      />
+    );
+  }
+  return (
+    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted">
+      <ImageIcon className="size-3.5 text-muted-foreground" />
+    </div>
+  );
+}
+
+function AdSetBudgetCell({ adset }: { adset: AdSetNode }) {
+  if (adset.dailyBudget) {
+    return (
+      <span>
+        {formatThb(adset.dailyBudget / 100)}
+        <span className="ml-1 text-[10px] text-muted-foreground">/วัน</span>
+      </span>
+    );
+  }
+  if (adset.lifetimeBudget) {
+    return (
+      <span>
+        {formatThb(adset.lifetimeBudget / 100)}
+        <span className="ml-1 text-[10px] text-muted-foreground">total</span>
+      </span>
+    );
+  }
+  return <span className="text-xs text-muted-foreground">CBO</span>;
+}
+
+function NestedLoadingRow() {
+  return (
+    <tr className="border-b border-border/40 bg-muted/20">
+      <td colSpan={10} className="px-4 py-4">
+        <div className="flex items-center gap-2 pl-12 text-xs text-muted-foreground">
+          <Loader2 className="size-3.5 animate-spin" />
+          กำลังโหลด Ad Sets...
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function NestedErrorRow({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <tr className="border-b border-border/40 bg-destructive/5">
+      <td colSpan={10} className="px-4 py-3">
+        <div className="flex items-center gap-2 pl-12 text-xs text-destructive">
+          <AlertCircle className="size-3.5" />
+          <span>โหลดไม่สำเร็จ: {message}</span>
+          <button
+            type="button"
+            onClick={onRetry}
+            className="ml-2 rounded-md border border-destructive/30 px-2 py-0.5 text-[11px] font-medium hover:bg-destructive/10"
+          >
+            ลองอีกครั้ง
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function NestedEmptyRow({ message, depth = 1 }: { message: string; depth?: 1 | 2 }) {
+  return (
+    <tr className="border-b border-border/40 bg-muted/10">
+      <td colSpan={10} className="px-4 py-3">
+        <div
+          className={cn(
+            "text-xs text-muted-foreground",
+            depth === 1 ? "pl-12" : "pl-20",
+          )}
+        >
+          {message}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+const OPT_GOAL_LABELS: Record<string, string> = {
+  OFFSITE_CONVERSIONS: "Conversions",
+  LINK_CLICKS: "Clicks",
+  LANDING_PAGE_VIEWS: "Landing Page",
+  REACH: "Reach",
+  IMPRESSIONS: "Impressions",
+  LEAD_GENERATION: "Leads",
+  POST_ENGAGEMENT: "Engagement",
+  VIDEO_VIEWS: "Video Views",
+  THRUPLAY: "ThruPlay",
+};
+
+function prettyOptGoal(goal: string): string {
+  return OPT_GOAL_LABELS[goal] ?? goal;
 }
 
 function CampaignStatusBadge({ status }: { status: string }) {
