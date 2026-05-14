@@ -68,7 +68,8 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-sidebar lg:flex">
-      {/* Logo */}
+      {/* Logo — uses brightness/invert in dark mode so the dark "AdsLab"
+          wordmark stays readable on the dark sidebar bg */}
       <div className="flex h-16 shrink-0 items-center px-5">
         <Link href={`/t/${tenantSlug}/dashboard`} className="flex items-center" aria-label="AdsLab">
           <Image
@@ -77,7 +78,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
             width={400}
             height={120}
             priority
-            className="h-8 w-auto"
+            className="h-8 w-auto object-contain object-left dark:brightness-0 dark:invert"
           />
         </Link>
       </div>
@@ -113,12 +114,12 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
       {/* Connect accounts section */}
       <div className="mt-2 border-t border-border px-5 py-4">
         <p className="text-[11px] font-medium text-muted-foreground">เชื่อมต่อบัญชี</p>
-        <div className="mt-2 flex items-center gap-2">
+        <div className="mt-2.5 flex items-center gap-1.5">
           <PlatformLogo
             href={`/t/${tenantSlug}/settings/integrations`}
             label="Meta"
             active
-            color="#1877F2"
+            brandBg="#1877F2"
           >
             <svg viewBox="0 0 24 24" className="size-4">
               <path
@@ -127,7 +128,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
               />
             </svg>
           </PlatformLogo>
-          <PlatformLogo label="Google" color="#4285F4">
+          <PlatformLogo label="Google" brandBg="#4285F4">
             <svg viewBox="0 0 24 24" className="size-4">
               <path
                 fill="currentColor"
@@ -135,7 +136,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
               />
             </svg>
           </PlatformLogo>
-          <PlatformLogo label="TikTok" color="#000">
+          <PlatformLogo label="TikTok" brandBg="#111">
             <svg viewBox="0 0 24 24" className="size-4">
               <path
                 fill="currentColor"
@@ -143,7 +144,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
               />
             </svg>
           </PlatformLogo>
-          <PlatformLogo label="YouTube" color="#FF0000">
+          <PlatformLogo label="YouTube" brandBg="#FF0000">
             <svg viewBox="0 0 24 24" className="size-4">
               <path
                 fill="currentColor"
@@ -199,22 +200,26 @@ function PlatformLogo({
   href,
   label,
   active,
-  color,
+  brandBg,
   children,
 }: {
   href?: string;
   label: string;
   active?: boolean;
-  color: string;
+  brandBg: string;
   children: React.ReactNode;
 }) {
+  // Active: white-ish chip in light, dark-tinted chip in dark — icon rendered
+  // in the platform brand color. Inactive: same but desaturated + dim.
   const content = (
     <span
       className={cn(
-        "flex size-8 items-center justify-center rounded-full transition-all",
-        active ? "shadow-card" : "opacity-40 grayscale hover:opacity-70",
+        "flex size-9 items-center justify-center rounded-full transition-all",
+        active
+          ? "bg-white shadow-card ring-1 ring-border dark:bg-card dark:ring-white/10"
+          : "bg-muted opacity-50 hover:opacity-80 dark:bg-white/5",
       )}
-      style={active ? { backgroundColor: color, color: "white" } : { color }}
+      style={{ color: active ? brandBg : "currentColor" }}
       title={`${label}${!active ? " (soon)" : ""}`}
     >
       {children}
