@@ -155,6 +155,39 @@ model Tenant {
   invoices           Invoice[]
   usageMetrics       UsageMetric[]
   billingEvents      BillingEvent[]
+  creatives          TenantCreative[]
+}
+
+/// Tenant-scoped creative asset (image or video) uploaded to blob storage
+/// and reusable across campaigns. Soft-deleted via `deletedAt`.
+model TenantCreative {
+  id            String    @id @default(cuid())
+  tenantId      String
+  /// "image" | "video"
+  kind          String
+  /// Display name (defaults to original filename)
+  name          String
+  /// Public blob URL
+  url           String
+  /// Storage path returned by blob provider (used for delete)
+  pathname      String
+  /// MIME type (e.g. image/png, video/mp4)
+  contentType   String
+  sizeBytes     Int
+  width         Int?
+  height        Int?
+  /// "upload" | "ai-gen"
+  source        String    @default("upload")
+  /// Optional Meta image hash if this asset has been pre-uploaded to Meta
+  /// for ad creation. Saves a round trip in Campaign Builder.
+  metaImageHash String?
+  createdById   String?
+  createdAt     DateTime  @default(now())
+  deletedAt     DateTime?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, deletedAt, createdAt])
 }
 
 model TenantMember {

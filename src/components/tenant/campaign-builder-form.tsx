@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import { LibraryPicker } from "@/components/tenant/library-picker";
 import { SmartNameField } from "@/components/tenant/smart-name-field";
 import { cn } from "@/lib/utils";
 
@@ -253,7 +254,10 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
   const [callToAction, setCallToAction] = useState("SHOP_NOW");
 
   // Creative source — default "new_image" (uploading is simpler than picking)
-  const [creativeKind, setCreativeKind] = useState<"new_image" | "existing_post">("new_image");
+  const [creativeKind, setCreativeKind] = useState<
+    "new_image" | "existing_post" | "from_library"
+  >("new_image");
+  const [libraryPickerOpen, setLibraryPickerOpen] = useState(false);
   const [postId, setPostId] = useState("");
   const [manualPostId, setManualPostId] = useState("");
   const [pagePosts, setPagePosts] = useState<{ id: string; message: string; thumbnailUrl: string | null }[]>([]);
@@ -486,10 +490,11 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
     if (budgetType === "lifetime" && (!scheduleStart || !scheduleEnd)) {
       return toast.error("Lifetime budget ต้องระบุ start + end");
     }
-    if (creativeKind === "new_image" && !imageHash) return toast.error("อัพโหลด image ก่อน");
+    const needsImage = creativeKind === "new_image" || creativeKind === "from_library";
+    if (needsImage && !imageHash) return toast.error("เตรียมรูปก่อน");
     if (creativeKind === "existing_post" && !postId) return toast.error("เลือก post");
-    if (creativeKind === "new_image" && !linkUrl.trim()) return toast.error("กรอก URL");
-    if (creativeKind === "new_image" && !primaryText.trim()) return toast.error("กรอกข้อความ");
+    if (needsImage && !linkUrl.trim()) return toast.error("กรอก URL");
+    if (needsImage && !primaryText.trim()) return toast.error("กรอกข้อความ");
     if (isConversionGoal && !pixelId) return toast.error("เลือก Pixel สำหรับ Conversion goal");
     if (isConversionGoal && eventSource === "standard" && !customEventType) {
       return toast.error("เลือก event ที่จะ optimize");
@@ -861,11 +866,16 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
         <h3 className="border-b border-border pb-2 text-sm font-semibold">โฆษณา + รูป/โพสต์</h3>
 
         <Field label="แหล่งที่มาของโฆษณา">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <RadioPill
               checked={creativeKind === "new_image"}
               onClick={() => setCreativeKind("new_image")}
               label="📷 อัพโหลดรูปใหม่"
+            />
+            <RadioPill
+              checked={creativeKind === "from_library"}
+              onClick={() => setCreativeKind("from_library")}
+              label="🖼️ เลือกจากคลัง"
             />
             <RadioPill
               checked={creativeKind === "existing_post"}
@@ -875,7 +885,44 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
           </div>
         </Field>
 
-        {creativeKind === "new_image" ? (
+        {creativeKind === "from_library" ? (
+          <>
+            <Field label="รูปจากคลัง" required>
+              <button
+                type="button"
+                onClick={() => setLibraryPickerOpen(true)}
+                className="flex w-full cursor-pointer flex-col items-center gap-2 rounded-md border-2 border-dashed border-border p-5 hover:bg-muted/20"
+              >
+                {imagePreviewUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imagePreviewUrl} alt="preview" className="max-h-40 rounded" />
+                ) : (
+                  <ImageIcon className="size-8 text-muted-foreground" />
+                )}
+                <span className="text-xs text-muted-foreground">
+                  {imageHash ? "✓ เลือกแล้ว — กดเพื่อเปลี่ยน" : "กดเพื่อเลือกจากคลัง creatives"}
+                </span>
+              </button>
+            </Field>
+            <Field label={`ข้อความโฆษณา (${primaryText.length}/125)`} required>
+              <textarea
+                value={primaryText}
+                onChange={(e) => setPrimaryText(e.target.value.slice(0, 125))}
+                className="w-full rounded-md border border-border bg-background p-2 text-sm"
+                rows={3}
+                placeholder="ข้อความหลักที่จะแสดงเหนือรูปภาพ"
+              />
+            </Field>
+            <Field label="ลิงก์ปลายทาง" required>
+              <Input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://example.com/landing"
+              />
+            </Field>
+          </>
+        ) : creativeKind === "new_image" ? (
           <>
             <Field label="รูปภาพ" required>
               <label className="flex cursor-pointer flex-col items-center gap-2 rounded-md border-2 border-dashed border-border p-5 hover:bg-muted/20">
@@ -1161,7 +1208,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
               </Field>
             </div>
 
-            {creativeKind === "new_image" && (
+            {(creativeKind === "new_image" || creativeKind === "from_library") && (
               <>
                 <div className="grid grid-cols-2 gap-3">
                   <Field label={`Headline (${headline.length}/40)`}>
@@ -1273,6 +1320,17 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
           onPublishActive={() => publish("ACTIVE")}
         />
       )}
+
+      <LibraryPicker
+        tenantSlug={tenantSlug}
+        metaAccountId={metaAccountId}
+        open={libraryPickerOpen}
+        onClose={() => setLibraryPickerOpen(false)}
+        onPicked={({ url, hash }) => {
+          setImagePreviewUrl(url);
+          setImageHash(hash);
+        }}
+      />
     </div>
   );
 }
@@ -1315,7 +1373,7 @@ function PreviewModal({
   ageMin: number;
   ageMax: number;
   gender: "all" | "male" | "female";
-  creativeKind: "new_image" | "existing_post";
+  creativeKind: "new_image" | "existing_post" | "from_library";
   imagePreviewUrl: string | null;
   primaryText: string;
   headline: string;
@@ -1379,7 +1437,7 @@ function PreviewModal({
                 </div>
               </div>
               {/* Primary text — for new image OR existing post body */}
-              {creativeKind === "new_image" && primaryText && (
+              {(creativeKind === "new_image" || creativeKind === "from_library") && primaryText && (
                 <p className="px-3 pb-2 text-xs leading-relaxed">
                   {truncateForPreview(primaryText, 240)}
                 </p>
@@ -1390,7 +1448,7 @@ function PreviewModal({
                 </p>
               )}
               {/* Image */}
-              {creativeKind === "new_image" && imagePreviewUrl ? (
+              {(creativeKind === "new_image" || creativeKind === "from_library") && imagePreviewUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={imagePreviewUrl} alt="" className="aspect-square w-full bg-muted object-cover" />
               ) : creativeKind === "existing_post" && existingPost?.thumbnailUrl ? (
@@ -1402,7 +1460,7 @@ function PreviewModal({
                 </div>
               )}
               {/* Footer CTA bar (only for new_image with link) */}
-              {creativeKind === "new_image" && linkUrl && (
+              {(creativeKind === "new_image" || creativeKind === "from_library") && linkUrl && (
                 <div className="flex items-center gap-2 border-t border-border bg-muted/30 px-3 py-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] uppercase text-muted-foreground">
@@ -1459,9 +1517,11 @@ function PreviewModal({
             <SummaryRow
               label="Creative"
               value={
-                creativeKind === "new_image"
-                  ? `Image + ${linkUrl ? "link" : "no link"}`
-                  : "Existing post"
+                creativeKind === "existing_post"
+                  ? "Existing post"
+                  : creativeKind === "from_library"
+                    ? `Image (จากคลัง) + ${linkUrl ? "link" : "no link"}`
+                    : `Image (อัปโหลดใหม่) + ${linkUrl ? "link" : "no link"}`
               }
             />
             <SummaryRow
