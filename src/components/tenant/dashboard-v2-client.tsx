@@ -245,11 +245,15 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
                 <div>
                   <h3 className="text-base font-semibold tracking-tight">แนวโน้มประสิทธิภาพ</h3>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    เปรียบเทียบ ค่าใช้จ่าย vs ยอดขาย ตามบัญชี
+                    {payload.daily ? "ค่าใช้จ่าย, ยอดขาย, ROAS รายวัน" : "เปรียบเทียบตามบัญชี"}
                   </p>
                 </div>
               </div>
-              <PerAccountBarChart accounts={accounts} />
+              {payload.daily && payload.daily.length > 0 ? (
+                <DailyTrendChart series={payload.daily} />
+              ) : (
+                <PerAccountBarChart accounts={accounts} />
+              )}
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
@@ -305,7 +309,81 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
 }
 
 // =============================================================================
-// Per-account spend vs sales bar chart
+// Daily trend chart (preferred when payload.daily exists)
+// =============================================================================
+
+function DailyTrendChart({
+  series,
+}: {
+  series: Array<{ date: string; spendThb: number; salesThb: number; roas: number }>;
+}) {
+  const data = series.map((d) => ({
+    date: d.date.slice(5), // MM-DD
+    spend: Math.round(d.spendThb),
+    sales: Math.round(d.salesThb),
+    roas: Number(d.roas.toFixed(2)),
+  }));
+
+  return (
+    <ResponsiveContainer width="100%" height={320}>
+      <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.005 280)" />
+        <XAxis dataKey="date" tick={{ fontSize: 11, fill: "oklch(0.52 0.015 270)" }} />
+        <YAxis
+          yAxisId="left"
+          tick={{ fontSize: 11, fill: "oklch(0.52 0.015 270)" }}
+          tickFormatter={(v) => `฿${Math.round(v / 1000)}k`}
+        />
+        <YAxis
+          yAxisId="right"
+          orientation="right"
+          tick={{ fontSize: 11, fill: "oklch(0.52 0.015 270)" }}
+          tickFormatter={(v) => `${v.toFixed(1)}x`}
+        />
+        <Tooltip
+          contentStyle={{
+            background: "white",
+            border: "1px solid oklch(0.92 0.005 280)",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+        />
+        <Legend wrapperStyle={{ fontSize: 12 }} />
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="spend"
+          name="ค่าใช้จ่าย"
+          stroke="oklch(0.58 0.20 270)"
+          strokeWidth={2.5}
+          dot={{ r: 2 }}
+        />
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="sales"
+          name="ยอดขาย"
+          stroke="oklch(0.72 0.16 155)"
+          strokeWidth={2.5}
+          dot={{ r: 2 }}
+        />
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="roas"
+          name="ROAS"
+          stroke="oklch(0.72 0.18 340)"
+          strokeWidth={2}
+          strokeDasharray="3 3"
+          dot={false}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+// =============================================================================
+// Per-account spend vs sales bar chart (fallback when daily unavailable)
 // =============================================================================
 
 function PerAccountBarChart({ accounts }: { accounts: ParsedInsight[] }) {

@@ -104,6 +104,8 @@ export type DashboardPayload = {
   summary: DashboardSummary;
   accounts: ParsedInsight[];
   fetchedAt: string; // ISO
+  /** Optional per-day series for trend chart. Fetched via fetchDailyAggregates. */
+  daily?: Array<{ date: string; spendThb: number; salesThb: number; roas: number; clicks: number }>;
 };
 
 // -----------------------------------------------------------------------------

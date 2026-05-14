@@ -9,6 +9,7 @@ import {
   type DateRangeKey,
   type ParsedInsight,
 } from "./insights";
+import { fetchDailyAggregates } from "./daily-insights";
 
 const SCOPE_SUMMARY = "summary";
 
@@ -107,7 +108,16 @@ async function fetchAndCache(tenantId: string, range: DateRangeKey): Promise<Das
   if (connection.status !== "ACTIVE") throw new Error(`Connection status is ${connection.status}`);
 
   const accessToken = await getFreshAccessToken(connection);
-  const accounts = await fetchInsightsForAllAccounts(accessToken, range);
+  // Fetch per-account + per-day in parallel. If daily fetch fails (rate
+  // limit or network blip), still return main payload — chart just
+  // falls back to per-account bars.
+  const [accounts, daily] = await Promise.all([
+    fetchInsightsForAllAccounts(accessToken, range),
+    fetchDailyAggregates(accessToken, range).catch((err) => {
+      console.warn("[dashboard-service] daily fetch failed:", (err as Error).message);
+      return undefined;
+    }),
+  ]);
 
   // Persist any new campaigns we just saw. This is the only place
   // MetaCampaign rows are written, so we never have to worry about
@@ -128,6 +138,7 @@ async function fetchAndCache(tenantId: string, range: DateRangeKey): Promise<Das
     summary: aggregate(accounts),
     accounts,
     fetchedAt: new Date().toISOString(),
+    daily,
   };
 
   const ttlSec = getCacheTtlSec();
