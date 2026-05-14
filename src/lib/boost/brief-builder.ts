@@ -196,9 +196,10 @@ export function briefToCreateInput(args: {
     targeting: {
       // Minimum viable targeting for a boost — Meta needs SOMETHING here
       // or it rejects. "Thailand only" is a safe default since 99% of
-      // boosts target the page's local audience.
+      // boosts target the page's local audience. age_min=20 is the
+      // minimum Meta allows for Thailand-targeted ads as of 2025.
       geo_locations: { countries: ["TH"] },
-      age_min: 18,
+      age_min: 20,
       age_max: 65,
     },
     optimizationGoal: brief.optimizationGoal,
