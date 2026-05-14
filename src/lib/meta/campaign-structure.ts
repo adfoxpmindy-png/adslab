@@ -217,8 +217,12 @@ export async function fetchCampaignStructure(args: {
   // Limit to 50 ad sets per campaign, 50 ads per ad set — enough for the
   // overwhelming majority of campaigns. Hitting these limits is rare and
   // adds heavy pagination work for marginal value.
+  // Show every live status except DELETED/ARCHIVED. Newly created ads
+  // sit in PENDING_REVIEW / IN_PROCESS for minutes-to-hours before
+  // Meta promotes them to ACTIVE; omitting those buckets hides
+  // freshly boosted campaigns and makes the UI look empty.
   const adsSubQuery =
-    `ads.limit(50).filtering([{"field":"effective_status","operator":"IN","value":["ACTIVE","PAUSED","ADSET_PAUSED","CAMPAIGN_PAUSED","DISAPPROVED","WITH_ISSUES"]}])` +
+    `ads.limit(50).filtering([{"field":"effective_status","operator":"IN","value":["ACTIVE","PAUSED","ADSET_PAUSED","CAMPAIGN_PAUSED","DISAPPROVED","WITH_ISSUES","PENDING_REVIEW","PENDING_BILLING_INFO","PREAPPROVED","IN_PROCESS"]}])` +
     `{id,name,effective_status,configured_status,creative{id,thumbnail_url},${insightSubQuery}}`;
 
   const adSetsSubQuery =
