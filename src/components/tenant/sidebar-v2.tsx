@@ -3,21 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BarChart3,
-  ChevronDown,
-  Crown,
-  Folder,
-  Home,
-  Image as ImageIcon,
-  Settings,
-  TrendingUp,
-  Users,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { ChevronDown, Crown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { SIDEBAR_NAV_ITEMS, isPathActive } from "./sidebar-nav-items";
 
 /**
  * Sidebar v2 — matches new design mockup exactly.
@@ -32,12 +21,6 @@ import { cn } from "@/lib/utils";
  * Active state: indigo→violet→pink gradient bg + white text + soft shadow.
  */
 
-type SidebarItem = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-};
-
 type SidebarV2Props = {
   tenantSlug: string;
   showUpgrade?: boolean;
@@ -46,17 +29,11 @@ type SidebarV2Props = {
 
 export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Props) {
   const pathname = usePathname();
-
-  const items: SidebarItem[] = [
-    { label: "ภาพรวม", href: `/t/${tenantSlug}/dashboard`, icon: Home },
-    { label: "แคมเปญ", href: `/t/${tenantSlug}/campaigns`, icon: Folder },
-    { label: "กลุ่มเป้าหมาย", href: `/t/${tenantSlug}/audiences`, icon: Users },
-    { label: "ครีเอทีฟ", href: `/t/${tenantSlug}/creatives`, icon: ImageIcon },
-    { label: "รายงาน", href: `/t/${tenantSlug}/reports`, icon: BarChart3 },
-    { label: "วิเคราะห์", href: `/t/${tenantSlug}/ai-optimize`, icon: TrendingUp },
-    { label: "เครื่องมือ", href: `/t/${tenantSlug}/tools`, icon: Wrench },
-    { label: "การตั้งค่า", href: `/t/${tenantSlug}/settings/integrations`, icon: Settings },
-  ];
+  const items = SIDEBAR_NAV_ITEMS.map((item) => ({
+    label: item.label,
+    href: item.href(tenantSlug),
+    icon: item.icon,
+  }));
 
   const initials = user.name
     .split(" ")
@@ -226,11 +203,4 @@ function PlatformLogo({
     </span>
   );
   return href ? <Link href={href}>{content}</Link> : content;
-}
-
-/** A route is active when its path is the current pathname OR a parent of it. */
-function isPathActive(pathname: string | null, href: string): boolean {
-  if (!pathname) return false;
-  if (pathname === href) return true;
-  return pathname.startsWith(`${href}/`);
 }

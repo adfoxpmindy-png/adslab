@@ -7,6 +7,7 @@ import { TenantScopeCard } from "@/components/tenant/tenant-scope-card";
 import { NamingTemplatesCard } from "@/components/tenant/naming-templates-card";
 import { AISettings } from "@/components/tenant/ai-settings-card";
 import { SettingsTabs, type SettingsTab } from "@/components/tenant/settings-tabs";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { MetaIcon } from "@/components/icons/meta";
 import { getTenantScope } from "@/lib/tenant-scope";
 
@@ -99,15 +100,13 @@ export default async function IntegrationsPage({
     : { connected: false };
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          ตั้งค่า scope, naming convention, และ integrations ของ tenant
-        </p>
-      </header>
-
-      <SettingsTabs active={tab} />
+    <>
+      <SetPageTitle
+        title="การตั้งค่า"
+        subtitle="ตั้งค่า scope, naming convention, และ integrations ของ tenant"
+      />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+        <SettingsTabs active={tab} />
 
       {tab === "scope" && (
         connection && activeAccounts.length > 0 ? (
@@ -185,6 +184,7 @@ export default async function IntegrationsPage({
           />
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

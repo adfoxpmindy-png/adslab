@@ -4,6 +4,7 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { getPlan, type PlanKey } from "@/lib/billing/plans";
 import { splitVat } from "@/lib/billing/tier-rules";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 
 import { BillingActions } from "./billing-actions";
 
@@ -48,7 +49,12 @@ export default async function BillingPage({
   const Icon = sLabel.icon;
 
   return (
-    <div className="space-y-6">
+    <>
+      <SetPageTitle
+        title="การเรียกเก็บเงิน"
+        subtitle="ดูแผนปัจจุบัน + ประวัติการชำระเงิน + จัดการ subscription"
+      />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
       {/* Current plan card */}
       <section className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-start justify-between">
@@ -185,7 +191,8 @@ export default async function BillingPage({
           </table>
         )}
       </section>
-    </div>
+      </div>
+    </>
   );
 }
 

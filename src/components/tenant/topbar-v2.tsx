@@ -3,6 +3,7 @@ import { Bell } from "lucide-react";
 import { TenantSwitcher } from "@/components/tenant/tenant-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+import { MobileNav } from "./mobile-nav";
 import { TopbarPageTitle } from "./topbar-page-title";
 
 type TopbarV2Props = {
@@ -11,12 +12,14 @@ type TopbarV2Props = {
 };
 
 /**
- * Topbar v2: page title (from context) + tenant switcher + theme toggle +
- * notification bell. User profile lives in sidebar bottom per mockup.
+ * Topbar v2: hamburger (mobile only) + page title (from context) +
+ * tenant switcher + theme toggle + notification bell. User profile
+ * lives in sidebar bottom per mockup.
  */
 export function TopbarV2({ currentTenantSlug, tenants }: TopbarV2Props) {
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background px-6">
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b border-border bg-background px-4 sm:gap-4 sm:px-6">
+      <MobileNav tenantSlug={currentTenantSlug} />
       <TopbarPageTitle />
 
       <div className="ml-auto flex items-center gap-2">
