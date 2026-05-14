@@ -3,12 +3,21 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { graphFetch } from "./graph-api";
 import type { MetaTokenResponse, MetaUser } from "./types";
 
-/** Permissions requested at OAuth time. Keep in sync with Meta App Review. */
+/**
+ * Permissions requested at OAuth time. Keep in sync with Meta App Review.
+ *
+ * `pages_manage_ads` is REQUIRED to create ads that reference Page posts
+ * (boost-post creatives via `object_story_id`). Without it Meta returns
+ * "Post X cannot be promoted in ads" at the creative-creation step even
+ * if the post itself is fully ad-eligible.
+ */
 export const META_SCOPES = [
   "ads_read",
   "ads_management",
   "business_management",
   "pages_read_engagement",
+  "pages_manage_ads",
+  "pages_show_list",
 ];
 
 const STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes
