@@ -4,7 +4,8 @@ import { ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { MetaIcon } from "@/components/icons/meta";
-import { DashboardClient } from "@/components/tenant/dashboard-client";
+import { DashboardV2Client } from "@/components/tenant/dashboard-v2-client";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { cn } from "@/lib/utils";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { requireSession } from "@/lib/auth/session";
@@ -68,36 +69,51 @@ export default async function DashboardPage({
     }
   }
 
+  // OnboardingChecklist + ConnectMetaCta path: when Meta not yet
+  // connected, we don't render the v2 dashboard — show the connect
+  // prompt instead.
+  if (!isConnected) {
+    return (
+      <>
+        <SetPageTitle title="ภาพรวม" subtitle={tenant.name} />
+        <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
+          {isOwner && (
+            <OnboardingChecklist
+              tenantSlug={tenantSlug}
+              metaConnected={isConnected}
+              scopeSet={scopeSet}
+              hasNamingTemplate={namingCount > 0}
+              hasCampaign={campaignCount > 0}
+            />
+          )}
+          <ConnectMetaCta tenantSlug={tenantSlug} />
+        </div>
+      </>
+    );
+  }
+
   return (
-    <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-      <header className="flex flex-col gap-1">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">Workspace</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{tenant.name}</h1>
-      </header>
-
+    <>
       {isOwner && (
-        <OnboardingChecklist
-          tenantSlug={tenantSlug}
-          metaConnected={isConnected}
-          scopeSet={scopeSet}
-          hasNamingTemplate={namingCount > 0}
-          hasCampaign={campaignCount > 0}
-        />
+        <div className="mx-auto w-full max-w-screen-2xl px-6 pt-6">
+          <OnboardingChecklist
+            tenantSlug={tenantSlug}
+            metaConnected={isConnected}
+            scopeSet={scopeSet}
+            hasNamingTemplate={namingCount > 0}
+            hasCampaign={campaignCount > 0}
+          />
+        </div>
       )}
-
-      {!isConnected ? (
-        <ConnectMetaCta tenantSlug={tenantSlug} />
-      ) : (
-        <DashboardClient
-          tenantSlug={tenantSlug}
-          initialRange={DEFAULT_RANGE}
-          initialPayload={initialPayload}
-          initialFromCache={initialFromCache}
-          initialIsStale={initialIsStale}
-          canRefresh={role !== "VIEWER"}
-        />
-      )}
-    </div>
+      <DashboardV2Client
+        tenantSlug={tenantSlug}
+        initialRange={DEFAULT_RANGE}
+        initialPayload={initialPayload}
+        initialFromCache={initialFromCache}
+        initialIsStale={initialIsStale}
+        canRefresh={role !== "VIEWER"}
+      />
+    </>
   );
 }
 
