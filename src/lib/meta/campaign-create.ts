@@ -72,6 +72,13 @@ export type CreateInput = {
   creative:
     | { kind: "existing_post"; postId: string }
     | {
+        kind: "video_reel";
+        /** Bare video id (e.g. "994832796325634"), NOT pageId_videoId. */
+        videoId: string;
+        /** Optional caption. If omitted Meta uses the reel's existing caption. */
+        message?: string;
+      }
+    | {
         kind: "new_image";
         imageHash: string;
         primaryText: string;
@@ -306,6 +313,47 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
     creativeBody = {
       name: `${input.adName} creative`,
       object_story_id: storyId,
+    };
+  } else if (input.creative.kind === "video_reel") {
+    // Reels are video objects, not feed posts — Marketing API rejects
+    // object_story_id for them. Wrap in object_story_spec.video_data
+    // using the bare video id. Fetch a thumbnail from /VIDEO_ID/thumbnails
+    // because Meta requires image_url on video_data creatives.
+    const videoId = input.creative.videoId;
+    let thumbUrl: string | undefined;
+    try {
+      const thumbs = await graphFetch<{ data?: Array<{ uri: string; is_preferred?: boolean }> }>(
+        `/${videoId}/thumbnails`,
+        { accessToken },
+      );
+      const preferred = thumbs.data?.find((t) => t.is_preferred) ?? thumbs.data?.[0];
+      thumbUrl = preferred?.uri;
+    } catch (err) {
+      return logFailure(
+        input,
+        "creative",
+        `ดึง thumbnail ของ reel ไม่สำเร็จ: ${(err as Error).message}`,
+        { campaignMetaId, adSetMetaId },
+      );
+    }
+    if (!thumbUrl) {
+      return logFailure(input, "creative", "reel ไม่มี thumbnail", {
+        campaignMetaId,
+        adSetMetaId,
+      });
+    }
+    creativeBody = {
+      name: `${input.adName} creative`,
+      object_story_spec: {
+        page_id: input.pageId,
+        video_data: {
+          video_id: videoId,
+          image_url: thumbUrl,
+          // message is optional — when omitted Meta uses the reel's caption.
+          ...(input.creative.message ? { message: input.creative.message } : {}),
+          call_to_action: { type: "LEARN_MORE", value: {} },
+        },
+      },
     };
   } else {
     // Need the page token for some object_story_spec endpoints; ad
