@@ -8,6 +8,7 @@ import {
   Folder,
   Home,
   Image as ImageIcon,
+  MessageSquare,
   Settings,
   Sparkles,
   Users,
@@ -52,9 +53,10 @@ export function SidebarV2({ tenantSlug, showUpgrade = true }: SidebarV2Props) {
     { label: "ภาพรวม", href: `/t/${tenantSlug}/dashboard`, icon: Home },
     { label: "แคมเปญ", href: `/t/${tenantSlug}/campaigns`, icon: Folder },
     { label: "กลุ่มเป้าหมาย", href: `/t/${tenantSlug}/audiences`, icon: Users },
-    { label: "ครีเอทีฟ", href: `/t/${tenantSlug}/creatives`, icon: ImageIcon },
-    { label: "AI Optimize", href: `/t/${tenantSlug}/ai`, icon: Sparkles },
-    { label: "เครื่องมือ", href: `/t/${tenantSlug}/events`, icon: Wrench },
+    { label: "Customer Journey", href: `/t/${tenantSlug}/journey`, icon: ImageIcon },
+    { label: "AI Optimize", href: `/t/${tenantSlug}/ai-optimize`, icon: Sparkles },
+    { label: "Competitor Spy", href: `/t/${tenantSlug}/competitors`, icon: Wrench },
+    { label: "AI Master", href: `/t/${tenantSlug}/ai`, icon: MessageSquare },
     { label: "ตั้งค่า", href: `/t/${tenantSlug}/settings/integrations`, icon: Settings },
   ];
 
