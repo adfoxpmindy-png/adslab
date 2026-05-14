@@ -8,6 +8,7 @@ import { parseBoostPrompt, type BoostIntent } from "@/lib/ai/boost-parser";
 import { extractUrls, resolveAllUrls, type ResolveError } from "@/lib/meta/url-resolver";
 
 import { buildBriefs, type BoostBrief } from "./brief-builder";
+import { resolvePageToAccount } from "./page-account-resolver";
 
 export type PlanResult =
   | {
@@ -47,22 +48,15 @@ export async function planBoost(args: {
     return { ok: false, stage: "resolve", error: "resolve URL ไม่สำเร็จเลย" };
   }
 
-  // Default ad account per page (first active). UI lets user override.
-  const accounts = await prisma.metaAdAccount.findMany({
-    where: { metaConnectionId: connection.id, accountStatus: 1 },
-    orderBy: { name: "asc" },
-    select: { metaAccountId: true, name: true },
+  // For each resolved Page, find the ad account that has permission to
+  // promote its posts. Querying /act_xxx/promote_pages on every active
+  // ad account in parallel is the only reliable signal — Meta doesn't
+  // expose this mapping any other way.
+  const accountByPageId = await resolvePageToAccount({
+    metaConnectionId: connection.id,
+    pageIds: [...new Set(resolved.map((r) => r.pageId))],
+    accessToken,
   });
-  const defaultAccount = accounts[0];
-  const accountByPageId = new Map<string, { metaAccountId: string; name: string }>();
-  for (const r of resolved) {
-    if (defaultAccount) {
-      accountByPageId.set(r.pageId, {
-        metaAccountId: defaultAccount.metaAccountId,
-        name: defaultAccount.name,
-      });
-    }
-  }
 
   const briefs = buildBriefs({ intent: parsed.intent, resolvedUrls: resolved, accountByPageId });
 
