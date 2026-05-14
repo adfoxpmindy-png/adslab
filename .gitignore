@@ -45,3 +45,5 @@ next-env.d.ts
 
 /src/generated/prisma
 scripts/redesign-*.png
+
+.env*.local

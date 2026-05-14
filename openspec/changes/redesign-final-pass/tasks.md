@@ -31,8 +31,8 @@
 - [x] 5.3 `POST /api/creatives/[id]/meta-hash` — converts library item to Meta `image_hash`, caches result on `TenantCreative.metaImageHash` so next pick is free
 
 ## 6. Specs
-- [ ] 6.1 Update `openspec/specs/ui-design-system/spec.md` — add mobile responsive requirements
-- [ ] 6.2 New `openspec/specs/creative-library/spec.md` — new capability
+- [x] 6.1 Wrote `specs/ui-design-system/spec.md` delta — adds page-header pattern, viewport-locked sidebar, mobile drawer requirements
+- [x] 6.2 Wrote `specs/creative-library/spec.md` — new capability covering data model + API contract + frontend + storage
 
 ## 7. Verify
 - [x] 7.1 Type-check passes (tsc --noEmit, no errors)
@@ -46,6 +46,7 @@
   - `fe063e9` Creatives library: schema + API + UI + Campaign Builder integration
 - [ ] 8.2 Archive change via openspec-archive-change skill
 
-## 9. Operational follow-up (required for upload to actually work)
-- [ ] 9.1 User must enable Vercel Blob on the project: Vercel dashboard → Storage → Create → Blob → connect to `adslab` project. This auto-injects `BLOB_READ_WRITE_TOKEN`. Without it, the upload API will fail with "Vercel token not found" or similar.
-- [ ] 9.2 Once token is set, redeploy (any commit triggers it) and the upload + Campaign Builder library picker will fully work end-to-end.
+## 9. Operational follow-up
+- [x] 9.1 Created Vercel Blob store `adslab-creatives` (store_qn8nB5vAMNy8iTzH, iad1, public access) via `vercel blob create-store adslab-creatives --access public --yes` and auto-linked to the adslab project. `BLOB_READ_WRITE_TOKEN` now set in Production + Preview + Development env.
+- [x] 9.2 Redeployed (production: `adslab-7vxzj15e9`) so the new env var is live.
+- [x] 9.3 End-to-end verified on prod: upload 1x1 PNG → appears in /api/creatives list → meta-hash endpoint correctly invokes Meta (Meta rejected the 1x1 test image which proves the round-trip works; real user uploads will pass) → delete works.
