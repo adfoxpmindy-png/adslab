@@ -36,14 +36,19 @@ export type BoostBrief = {
   warnings: string[];
 };
 
+/**
+ * Map intent → Meta campaign objective. THRUPLAY (the video-views
+ * optimization) only works under OUTCOME_AWARENESS in Meta v23.0 —
+ * NOT under OUTCOME_ENGAGEMENT as you'd expect from the name.
+ */
 const OBJECTIVE_BY_HINT: Record<BoostIntent["objectiveHint"], MetaObjective> = {
-  views: "OUTCOME_ENGAGEMENT",
+  views: "OUTCOME_AWARENESS", // for THRUPLAY pairing
   engagement: "OUTCOME_ENGAGEMENT",
   clicks: "OUTCOME_TRAFFIC",
   conversions: "OUTCOME_SALES",
   reach: "OUTCOME_AWARENESS",
   leads: "OUTCOME_LEADS",
-  unknown: "OUTCOME_ENGAGEMENT", // safe default for boost-a-post
+  unknown: "OUTCOME_AWARENESS",
 };
 
 /**
