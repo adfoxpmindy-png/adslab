@@ -161,7 +161,7 @@ Client component (`BoostClient`):
 
 ## Meta API restrictions discovered during E2E (May 2026, API v23.0)
 
-Several Meta-side rules were learned via real campaign creation against the founder's demo tenant. Future agents extending this feature should be aware:
+These Meta-side rules surfaced during real campaign creation against the founder's demo tenant (4 reels of EV Plaza Page). All are encoded in the implementation; document so future agents don't rediscover them the hard way:
 
 1. **THRUPLAY only works under `OUTCOME_AWARENESS`** — pairing with `OUTCOME_ENGAGEMENT` triggers "performance goal cannot be used with campaign objective". Brief builder hardcodes `views → OUTCOME_AWARENESS`.
 
@@ -169,23 +169,46 @@ Several Meta-side rules were learned via real campaign creation against the foun
 
 3. **Thailand audiences require `age_min ≥ 20`** — `age_min=18` is rejected for ads served in Thailand. Brief builder defaults to 20.
 
-4. **Some reels are NOT promotable** — Meta returns "Post ID X cannot be promoted in ads. Please choose a post from another page". Causes: standalone reel not in Page's promotable pool, video monetization not approved, paid partnership content, or post too old. The UI surfaces a Thai-language hint explaining likely causes. Infrastructure-wise the API call is correctly formed; this is a per-post content restriction.
+4. **Reels are video objects, NOT page posts** — Meta exposes reels via `/PAGE_ID/video_reels`, not `/PAGE_ID/posts`. Marketing API rejects `object_story_id` (post format) for reels with "Post X cannot be promoted in ads" even when the reel is fully ad-eligible. Brief builder detects `mediaType==="reel"` and uses `kind:"video_reel"`, which builds `object_story_spec.video_data.video_id`. `createCampaignTree` then fetches `/VIDEO_ID/thumbnails` to satisfy Meta's required `image_url` field.
+
+5. **Pages need explicit Ad Account linkage in Business Manager** — even with `ads_management` scope granted, an ad account can only boost Pages listed in its `/act_xxx/promote_pages`. The boost planner queries `promote_pages` across all active ad accounts in parallel (`resolvePageToAccount`) and maps each resolved Page to the first matching account. Pages without a match get no default — UI surfaces a warning and asks for manual selection.
+
+6. **Only ACTIVE ad accounts (account_status=1) can create ads** — Meta rejects with "Only active accounts can create or edit ads" for DISABLED/UNSETTLED/PENDING_REVIEW accounts. The page-account resolver filters on `accountStatus=1` from our cached MetaAdAccount table.
+
+7. **Meta App MUST be in Live mode** — App in Development mode causes "ad creative was created with an app in development mode" at the creative-creation step. One-time Meta App configuration at `https://developers.facebook.com/apps/{APP_ID}/settings/basic/` before going to production.
+
+8. **`pages_manage_ads` scope is NOT requestable** — Meta returns "Invalid Scopes" unless the App has explicitly enabled `pages_manage_ads` via App Dashboard Use Cases. For boost flows the Page-in-BM linkage covers the page-post → ad creative path, so this scope is unnecessary.
+
+9. **Fresh ads sit in PENDING_REVIEW for minutes-to-hours** — Meta-side ad review takes time after creation. The campaign-structure endpoint's `effective_status` filter must include `PENDING_REVIEW`, `IN_PROCESS`, `PENDING_BILLING_INFO`, `PREAPPROVED` in addition to the usual ACTIVE/PAUSED variants — otherwise freshly boosted campaigns look empty in the expand-row view immediately after creation.
+
+10. **`fbadcode-*` codes from Meta Business Suite mobile app are NOT usable via Marketing API** — they require a Meta App capability (`boost_post_api` or similar) that's gated behind partner-level App Review. Probed via `boosted_component_id`, `adcode_id`, and others — all return "(#3) Application does not have the capability to make this API call". We build the full campaign tree ourselves instead.
 
 ## Acceptance
 
-- [x] Parser handles the founder's 4 real client message variants correctly (verified)
-- [x] URL resolver handles `share/v/...` redirect + `reel/...` direct + maps to known Page (4/4 founder URLs resolve)
-- [x] Plan endpoint returns valid briefs end-to-end
-- [x] Execute endpoint creates campaigns via existing `createCampaignTree()`
-- [x] Meta API restrictions above are correctly handled by brief builder
-- [x] UI surfaces actionable "not promotable" error guidance
+- [x] Parser handles the founder's 4 real client message variants correctly
+- [x] URL resolver handles `share/v/...` redirect + `reel/...` direct + maps to known Page (4/4 founder URLs)
+- [x] Plan endpoint returns valid briefs end-to-end with auto-picked ad accounts
+- [x] Execute endpoint creates Meta campaign + adset + ad + creative tree (4/4 success on founder's real client message — Meta campaign ids: 120248165236170166, 120248165236980166, 120248165237250166, 120248165237280166)
+- [x] All 10 Meta API restrictions above are correctly handled
 - [x] UI gates ACTIVE on KPI + purpose presence
 - [x] Sidebar shows "บูสต์ด่วน" item
-- [ ] End-to-end success on a known-boostable post (requires user to provide a fresh ad-eligible Page reel — the demo tenant's available reels all hit the per-post restriction described above)
+- [x] Campaign expand view shows PENDING_REVIEW ads (fresh boosts visible immediately)
+
+## Operational requirements (one-time per agency)
+
+Before the boost feature is usable in production, the agency MUST:
+
+1. Set `APP_URL=https://ads-lab.xyz` (plain type, not sensitive) in Vercel production env
+2. Whitelist `https://ads-lab.xyz/api/meta/oauth/callback` in Meta App Dashboard → Facebook Login → Settings → Valid OAuth Redirect URIs
+3. Switch Meta App from Development to Live mode (requires Privacy Policy URL, Terms URL, Data Deletion Callback, App Icon, Category, Business Verification)
+4. Each agency tenant must complete Meta OAuth → reconnect after any scope changes
+
+For production customers (Phase 2): submit App Review for Advanced Access on `ads_management`, `business_management`, `pages_read_engagement` to use across non-admin customer data.
 
 ## Future Work (out of scope for this change)
 
 - AI Chat tool-call wrapper so the same flow works inline in `/ai` chat
 - Boost job history page `/boost/history` listing past BoostJob rows
+- Cache page→account mapping per-tenant for 1h (currently re-queries every plan)
 - Per-page → ad account preference learning ("client X always goes to account Y")
 - Retry button on failed briefs (currently must re-paste prompt)
