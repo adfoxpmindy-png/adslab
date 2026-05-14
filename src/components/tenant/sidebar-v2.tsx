@@ -175,7 +175,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
       )}
 
       {/* User profile at bottom */}
-      <div className="mt-auto border-t border-border px-3 py-3">
+      <div data-sidebar-profile className="mt-auto border-t border-border px-3 py-3">
         <Link
           href={`/t/${tenantSlug}/settings/integrations`}
           className="flex items-center gap-2.5 rounded-xl p-2 transition-colors hover:bg-accent"

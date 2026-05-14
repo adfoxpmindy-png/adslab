@@ -33,7 +33,7 @@ async function main() {
 
   for (const mode of ["light", "dark"] as const) {
     const ctx = await browser.newContext({
-      viewport: { width: 1440, height: 900 },
+      viewport: { width: 1440, height: 1100 },
       colorScheme: mode,
     });
     await ctx.addCookies([{
@@ -55,10 +55,21 @@ async function main() {
     const page = await ctx.newPage();
     await page.goto(`${PROD}/t/demo/dashboard`, { waitUntil: "networkidle" });
     await page.waitForTimeout(2000);
+    const info = await page.locator("aside").first().evaluate((el: HTMLElement) => {
+      const r = el.getBoundingClientRect();
+      const profile = el.querySelector("[data-sidebar-profile]");
+      return {
+        asideH: r.height,
+        asideY: r.top,
+        profileBox: profile ? (profile as HTMLElement).getBoundingClientRect() : null,
+        childCount: el.children.length,
+      };
+    });
+    console.log(`  [${mode}] sidebar:`, JSON.stringify(info));
     await page.screenshot({
       path: `scripts/redesign-sidebar-${mode}.png`,
       fullPage: false,
-      clip: { x: 0, y: 0, width: 280, height: 900 },
+      clip: { x: 0, y: 0, width: 280, height: Math.max(1100, Math.ceil(info.asideH)) },
     });
     console.log(`✓ scripts/redesign-sidebar-${mode}.png`);
     await ctx.close();
