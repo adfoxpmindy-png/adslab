@@ -169,7 +169,19 @@ These Meta-side rules surfaced during real campaign creation against the founder
 
 3. **Thailand audiences require `age_min ≥ 20`** — `age_min=18` is rejected for ads served in Thailand. Brief builder defaults to 20.
 
-4. **Reels are video objects, NOT page posts** — Meta exposes reels via `/PAGE_ID/video_reels`, not `/PAGE_ID/posts`. Marketing API rejects `object_story_id` (post format) for reels with "Post X cannot be promoted in ads" even when the reel is fully ad-eligible. Brief builder detects `mediaType==="reel"` and uses `kind:"video_reel"`, which builds `object_story_spec.video_data.video_id`. `createCampaignTree` then fetches `/VIDEO_ID/thumbnails` to satisfy Meta's required `image_url` field.
+4. **Reel URL number is `video_id`, NOT `post_id`** — the digits in `facebook.com/reel/{id}` URL are the video id, but Meta's `object_story_id` field expects a *post id* which is DIFFERENT. Sending `pageId_videoId` triggers `error_subcode=2446187 "ไม่สามารถโปรโมทโพสต์นี้ได้"`. Two ways to boost a reel:
+   - **(A) `video_data.video_id`** — accepted but creates a Sponsored Dark Post. Boost views accumulate on the dark post, NOT the original reel. The agency owner has explicitly forbidden this behavior (see `MCP - Meta Ads/memory/no_reupload.md` — Reels must boost original to preserve organic engagement + social proof).
+   - **(B) `object_story_id` with REAL post_id** — boosts the original reel. The mapping `video_id → real post_id` is exposed via `GET /PAGE_ID/video_reels?fields=id,post_id` (requires Page access token from `/me/accounts`, not user token). URL resolver paginates up to 500 reels per page to find the match. Brief builder uses `existing_post` with `pageId_realPostId`.
+
+   Implemented Approach B in `url-resolver.ts → resolveReelPostId()`. Verified the 4 founder reels:
+   ```
+   URL video_id        → Real post_id
+   1015360974392298    → 1526512012599482
+   2046794962859921    → 1529991705584846
+   1002568998876934    → 1530628388854511
+   994832796325634     → 1530726708844679
+   ```
+   Resulting ads: `object_story_id === effective_object_story_id` (Meta confirms it's the original post being boosted, not a copy).
 
 5. **Pages need explicit Ad Account linkage in Business Manager** — even with `ads_management` scope granted, an ad account can only boost Pages listed in its `/act_xxx/promote_pages`. The boost planner queries `promote_pages` across all active ad accounts in parallel (`resolvePageToAccount`) and maps each resolved Page to the first matching account. Pages without a match get no default — UI surfaces a warning and asks for manual selection.
 
@@ -182,6 +194,8 @@ These Meta-side rules surfaced during real campaign creation against the founder
 9. **Fresh ads sit in PENDING_REVIEW for minutes-to-hours** — Meta-side ad review takes time after creation. The campaign-structure endpoint's `effective_status` filter must include `PENDING_REVIEW`, `IN_PROCESS`, `PENDING_BILLING_INFO`, `PREAPPROVED` in addition to the usual ACTIVE/PAUSED variants — otherwise freshly boosted campaigns look empty in the expand-row view immediately after creation.
 
 10. **`fbadcode-*` codes from Meta Business Suite mobile app are NOT usable via Marketing API** — they require a Meta App capability (`boost_post_api` or similar) that's gated behind partner-level App Review. Probed via `boosted_component_id`, `adcode_id`, and others — all return "(#3) Application does not have the capability to make this API call". We build the full campaign tree ourselves instead.
+
+11. **Multi-Advertiser Ads default ON since Aug 2024** — Meta silently enrolls new ads in their cross-advertiser feed unless `multi_advertiser_ads: { state: "OPT_OUT" }` is set explicitly on the **adset** (not the creative — creative-level `contextual_multi_ads` is silently dropped per `MCP - Meta Ads/memory/multi_advertiser_off.md`). Every adset created by AdsLab now passes this opt-out.
 
 ## Acceptance
 
