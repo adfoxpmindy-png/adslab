@@ -351,7 +351,14 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
                   <p className="text-sm font-medium">{r.pageName}</p>
                   <p className="truncate text-[11px] text-muted-foreground">post: {r.postId}</p>
                   {r.status === "failed" && (
-                    <p className="mt-1 text-xs text-destructive">{r.error}</p>
+                    <>
+                      <p className="mt-1 text-xs text-destructive">{r.error}</p>
+                      {/^.*ไม่สามารถโปรโมท|not promotable/i.test(r.error ?? "") && (
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                          💡 Meta บอกว่า reel นี้ promote ไม่ได้ — มักเกิดจาก: reel เก่ามาก / paid partnership / สิทธิ์ video monetization ยังไม่ผ่าน / standalone reel ไม่ผูกกับ Page post promotable pool. ลอง reel ใหม่ที่โพสจาก Page โดยตรง
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
                 {r.status === "success" && r.campaignInternalId && (

@@ -159,14 +159,29 @@ Client component (`BoostClient`):
 - Default Thailand-only targeting (won't accidentally serve to wrong country)
 - Status default is PAUSED; user must intentionally opt into ACTIVE
 
+## Meta API restrictions discovered during E2E (May 2026, API v23.0)
+
+Several Meta-side rules were learned via real campaign creation against the founder's demo tenant. Future agents extending this feature should be aware:
+
+1. **THRUPLAY only works under `OUTCOME_AWARENESS`** — pairing with `OUTCOME_ENGAGEMENT` triggers "performance goal cannot be used with campaign objective". Brief builder hardcodes `views → OUTCOME_AWARENESS`.
+
+2. **THRUPLAY rejects `destination_type=ON_AD`** — only MESSENGER/UNDEFINED/WEBSITE/APP are valid. Leave `destination_type` unset for THRUPLAY (same as REACH/IMPRESSIONS).
+
+3. **Thailand audiences require `age_min ≥ 20`** — `age_min=18` is rejected for ads served in Thailand. Brief builder defaults to 20.
+
+4. **Some reels are NOT promotable** — Meta returns "Post ID X cannot be promoted in ads. Please choose a post from another page". Causes: standalone reel not in Page's promotable pool, video monetization not approved, paid partnership content, or post too old. The UI surfaces a Thai-language hint explaining likely causes. Infrastructure-wise the API call is correctly formed; this is a per-post content restriction.
+
 ## Acceptance
 
 - [x] Parser handles the founder's 4 real client message variants correctly (verified)
 - [x] URL resolver handles `share/v/...` redirect + `reel/...` direct + maps to known Page (4/4 founder URLs resolve)
 - [x] Plan endpoint returns valid briefs end-to-end
 - [x] Execute endpoint creates campaigns via existing `createCampaignTree()`
+- [x] Meta API restrictions above are correctly handled by brief builder
+- [x] UI surfaces actionable "not promotable" error guidance
 - [x] UI gates ACTIVE on KPI + purpose presence
 - [x] Sidebar shows "บูสต์ด่วน" item
+- [ ] End-to-end success on a known-boostable post (requires user to provide a fresh ad-eligible Page reel — the demo tenant's available reels all hit the per-post restriction described above)
 
 ## Future Work (out of scope for this change)
 
