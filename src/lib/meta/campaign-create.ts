@@ -243,6 +243,13 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
     targeting: input.targeting,
     optimization_goal: input.optimizationGoal,
     billing_event: input.billingEvent,
+    // Meta defaults Multi-Advertiser Ads to ON since Aug 2024 (silently
+    // enrolls our ads in their cross-advertiser feed). The user has
+    // explicitly required this OFF for every adset — setting at the
+    // adset level is the only reliable opt-out per verified note in
+    // multi_advertiser_off.md (creative-level contextual_multi_ads
+    // is silently dropped by Meta in this configuration).
+    multi_advertiser_ads: { state: "OPT_OUT" },
   };
   if (input.budgetMode === "ABO") {
     adSetBody.bid_strategy = "LOWEST_COST_WITHOUT_CAP";

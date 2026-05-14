@@ -140,10 +140,30 @@ export async function resolveFbUrl(args: {
   const pageName = node.from.name ?? "(unknown)";
 
   // Step 4: build canonical boostable post id.
-  // For reels/videos: needs `{pageId}_{videoId}` format.
-  // For posts: usually already in that format from URL.
-  const postId =
-    assumedType === "post" ? rawContentId : buildPostId(pageId, rawContentId);
+  // CRITICAL: For Reels, the number in the URL is the video_id, NOT the
+  // post_id Meta expects in object_story_id. Sending pageId_videoId
+  // triggers Meta's "ไม่สามารถโปรโมทโพสต์นี้ได้" (error_subcode 2446187)
+  // — verified across 6+ E2E runs. Real post_id must be resolved via
+  // /PAGE_ID/video_reels?fields=id,post_id which Meta only exposes with
+  // a Page-level access token, not the user token.
+  let postId: string;
+  if (assumedType === "post") {
+    postId = rawContentId;
+  } else if (assumedType === "reel") {
+    const realPostId = await resolveReelPostId({
+      pageId,
+      videoId: rawContentId,
+      userAccessToken: args.accessToken,
+    });
+    if (!realPostId) {
+      throw new Error(
+        `หา post_id ของ reel ${rawContentId} ไม่เจอ — อาจ reel ใหม่เกินไป หรือคุณไม่ใช่ admin ของ Page ${pageName}`,
+      );
+    }
+    postId = `${pageId}_${realPostId}`;
+  } else {
+    postId = buildPostId(pageId, rawContentId);
+  }
 
   const mediaType: ResolvedFbUrl["mediaType"] =
     assumedType === "reel" ? "reel" : assumedType === "video" ? "video" : "image";
@@ -157,6 +177,63 @@ export async function resolveFbUrl(args: {
     mediaType,
     permalinkUrl: node.permalink_url ?? canonical,
   };
+}
+
+/**
+ * Resolve a Reel's real post_id from its video_id (the number in the URL).
+ *
+ * Meta only exposes the video_id → post_id mapping via
+ * `/PAGE_ID/video_reels?fields=id,post_id`, which requires a Page-level
+ * access token. We fetch it from `/me/accounts` using the user token,
+ * then iterate the Page's reels until we find the match.
+ *
+ * Pages can have many reels; we paginate up to ~500 reels which covers
+ * the overwhelming majority of cases.
+ */
+async function resolveReelPostId(args: {
+  pageId: string;
+  videoId: string;
+  userAccessToken: string;
+}): Promise<string | null> {
+  // Step A: get the Page access token (we are admin via /me/accounts)
+  let pageToken: string | null = null;
+  let cursor = "";
+  for (let page = 0; page < 5; page++) {
+    const url = new URL("https://graph.facebook.com/v23.0/me/accounts");
+    url.searchParams.set("fields", "id,access_token");
+    url.searchParams.set("limit", "100");
+    if (cursor) url.searchParams.set("after", cursor);
+    url.searchParams.set("access_token", args.userAccessToken);
+    const res = await fetch(url.toString());
+    if (!res.ok) return null;
+    const body = (await res.json()) as {
+      data?: Array<{ id: string; access_token?: string }>;
+      paging?: { cursors?: { after?: string } };
+    };
+    const match = body.data?.find((p) => p.id === args.pageId);
+    if (match?.access_token) {
+      pageToken = match.access_token;
+      break;
+    }
+    if (!body.paging?.cursors?.after) break;
+    cursor = body.paging.cursors.after;
+  }
+  if (!pageToken) return null;
+
+  // Step B: iterate the Page's reels looking for our video_id
+  let next: string | null = `https://graph.facebook.com/v23.0/${args.pageId}/video_reels?fields=id,post_id&limit=100&access_token=${pageToken}`;
+  for (let page = 0; page < 5 && next; page++) {
+    const res = await fetch(next);
+    if (!res.ok) return null;
+    const body = (await res.json()) as {
+      data?: Array<{ id: string; post_id?: string }>;
+      paging?: { next?: string };
+    };
+    const match = body.data?.find((r) => r.id === args.videoId);
+    if (match?.post_id) return match.post_id;
+    next = body.paging?.next ?? null;
+  }
+  return null;
 }
 
 /** Resolve many URLs in parallel; surface per-URL errors instead of failing whole batch. */

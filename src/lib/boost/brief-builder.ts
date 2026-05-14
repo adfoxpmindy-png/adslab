@@ -214,16 +214,11 @@ export function briefToCreateInput(args: {
     adName: `${brief.campaignName} — Ad`,
     pageId: brief.resolved.pageId,
     initialStatus,
-    creative:
-      brief.resolved.mediaType === "reel"
-        ? {
-            // Reels are video objects, not page posts — use the bare
-            // video id (without page prefix) via video_data shape.
-            kind: "video_reel",
-            videoId: brief.resolved.postId.includes("_")
-              ? brief.resolved.postId.split("_").pop()!
-              : brief.resolved.postId,
-          }
-        : { kind: "existing_post", postId: brief.resolved.postId },
+    // URL resolver now returns the REAL post_id for reels (resolved via
+    // /PAGE_ID/video_reels?fields=id,post_id). So both reels and posts
+    // can use the existing_post creative kind — Meta promotes the
+    // original post, no dark post is created. See no_reupload.md /
+    // boost_video_reel.md memory.
+    creative: { kind: "existing_post", postId: brief.resolved.postId },
   };
 }
