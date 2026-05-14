@@ -33,6 +33,10 @@ type Form = {
   durationDays: number;
   features: string[];
   message: string;
+  primaryAudience: string;
+  secondaryAudience: string;
+  placements: { facebook: boolean; instagram: boolean; tiktok: boolean; audienceNetwork: boolean };
+  language: "th" | "en" | "mixed";
 };
 
 const STEPS = [
@@ -60,6 +64,10 @@ export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) 
     durationDays: 7,
     features: [],
     message: "",
+    primaryAudience: "",
+    secondaryAudience: "",
+    placements: { facebook: true, instagram: true, tiktok: false, audienceNetwork: false },
+    language: "th",
   });
   const [plan, setPlan] = useState<CampaignPlanResponse | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -258,6 +266,74 @@ function BuilderForm({
             />
           </div>
         </div>
+
+        <FieldWithCount
+          id="primaryAudience"
+          label="กลุ่มเป้าหมายหลัก"
+          max={200}
+          value={form.primaryAudience}
+          onChange={(v) => onChange({ ...form, primaryAudience: v })}
+          placeholder="เช่น ผู้หญิง อายุ 18-34 สนใจสกินแคร์ ความงาม ไลฟ์สไตล์"
+          textarea
+        />
+
+        <FieldWithCount
+          id="secondaryAudience"
+          label="กลุ่มเป้าหมายเพิ่มเติม (ไม่บังคับ)"
+          max={200}
+          value={form.secondaryAudience}
+          onChange={(v) => onChange({ ...form, secondaryAudience: v })}
+          placeholder="เช่น ผู้ชาย อายุ 20-35 ออกกำลังกาย ดูแลผิว"
+          textarea
+        />
+
+        <div>
+          <Label>ตำแหน่งการแสดงผล</Label>
+          <div className="mt-1.5 grid grid-cols-2 gap-2">
+            <PlacementChip
+              label="Facebook"
+              icon="f"
+              color="#1877F2"
+              checked={form.placements.facebook}
+              onChange={(v) => onChange({ ...form, placements: { ...form.placements, facebook: v } })}
+            />
+            <PlacementChip
+              label="Instagram"
+              icon="◉"
+              color="#E4405F"
+              checked={form.placements.instagram}
+              onChange={(v) => onChange({ ...form, placements: { ...form.placements, instagram: v } })}
+            />
+            <PlacementChip
+              label="TikTok"
+              icon="♪"
+              color="#000"
+              checked={form.placements.tiktok}
+              onChange={(v) => onChange({ ...form, placements: { ...form.placements, tiktok: v } })}
+            />
+            <PlacementChip
+              label="Audience Network"
+              icon="◈"
+              color="#4A90E2"
+              checked={form.placements.audienceNetwork}
+              onChange={(v) => onChange({ ...form, placements: { ...form.placements, audienceNetwork: v } })}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="language">ภาษาที่ใช้</Label>
+          <select
+            id="language"
+            value={form.language}
+            onChange={(e) => onChange({ ...form, language: e.target.value as Form["language"] })}
+            className="mt-1 flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="th">ภาษาไทย</option>
+            <option value="en">English</option>
+            <option value="mixed">ผสม (Thai + English)</option>
+          </select>
+        </div>
       </section>
 
       {/* Section 2: Additional info */}
@@ -328,6 +404,39 @@ function BuilderForm({
         )}
       </button>
     </div>
+  );
+}
+
+function PlacementChip({
+  label,
+  icon,
+  color,
+  checked,
+  onChange,
+}: {
+  label: string;
+  icon: string;
+  color: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-all",
+        checked
+          ? "border-violet-300 bg-violet-50 text-violet-700 shadow-card dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-300"
+          : "border-border bg-card text-muted-foreground hover:bg-accent",
+      )}
+    >
+      <span style={{ color }} className="text-base font-bold leading-none">
+        {icon}
+      </span>
+      {label}
+      {checked && <Check className="ml-auto size-3.5" />}
+    </button>
   );
 }
 
