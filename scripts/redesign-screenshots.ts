@@ -11,7 +11,7 @@ import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
 const PROD = "https://ads-lab.xyz";
-const TENANT_SLUG = "adstfl"; // grandfathered, 31 ad accounts
+const TENANT_SLUG = "demo"; // only tenant with Meta ACTIVE — for real data screenshots
 
 async function main() {
   const cs = process.env.DATABASE_URL!;
@@ -46,10 +46,11 @@ async function main() {
   const page = await ctx.newPage();
 
   const pages: Array<{ name: string; url: string; waitFor?: string }> = [
-    { name: "dashboard", url: `${PROD}/t/${TENANT_SLUG}/dashboard`, waitFor: "h1" },
-    { name: "campaigns-table", url: `${PROD}/t/${TENANT_SLUG}/campaigns`, waitFor: "table" },
-    { name: "ai-optimize", url: `${PROD}/t/${TENANT_SLUG}/ai-optimize`, waitFor: "h1" },
-    { name: "landing", url: `${PROD}/`, waitFor: "h1" },
+    { name: "dashboard", url: `${PROD}/t/${TENANT_SLUG}/dashboard` },
+    { name: "campaigns-table", url: `${PROD}/t/${TENANT_SLUG}/campaigns` },
+    { name: "ai-optimize", url: `${PROD}/t/${TENANT_SLUG}/ai-optimize` },
+    { name: "ai-campaign-builder", url: `${PROD}/t/${TENANT_SLUG}/campaigns/ai-new` },
+    { name: "competitors", url: `${PROD}/t/${TENANT_SLUG}/competitors` },
   ];
 
   for (const p of pages) {

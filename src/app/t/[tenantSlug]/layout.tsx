@@ -86,16 +86,23 @@ export default async function TenantLayout({
   // Free tier (and below) sees the upgrade promo. Hide for Scale+.
   const showUpgrade = !["scale", "enterprise"].includes(subscription.planKey);
 
+  // Resolve user's role in this tenant for sidebar profile label.
+  const myMembership = await prisma.tenantMember.findFirst({
+    where: { userId: session.userId, tenantId: tenantRecord!.id },
+    select: { role: true },
+  });
+  const role = myMembership?.role ?? "VIEWER";
+
   return (
     <PageTitleProvider>
       <div className="flex min-h-screen w-full bg-canvas">
-        <SidebarV2 tenantSlug={tenantSlug} showUpgrade={showUpgrade} />
+        <SidebarV2
+          tenantSlug={tenantSlug}
+          showUpgrade={showUpgrade}
+          user={{ name: user.name, email: user.email, role }}
+        />
         <div className="flex min-w-0 flex-1 flex-col">
-          <TopbarV2
-            currentTenantSlug={tenantSlug}
-            tenants={tenants}
-            user={{ name: user.name, email: user.email }}
-          />
+          <TopbarV2 currentTenantSlug={tenantSlug} tenants={tenants} />
           <PlatformBar
             tenantSlug={tenantSlug}
             accounts={inScopeAccounts}
