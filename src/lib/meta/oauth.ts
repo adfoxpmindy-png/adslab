@@ -6,17 +6,18 @@ import type { MetaTokenResponse, MetaUser } from "./types";
 /**
  * Permissions requested at OAuth time. Keep in sync with Meta App Review.
  *
- * `pages_manage_ads` is REQUIRED to create ads that reference Page posts
- * (boost-post creatives via `object_story_id`). Without it Meta returns
- * "Post X cannot be promoted in ads" at the creative-creation step even
- * if the post itself is fully ad-eligible.
+ * Note on `pages_manage_ads`: Meta rejects this scope for apps that
+ * haven't explicitly enabled it via App Dashboard → Use Cases. For
+ * boost-post creation we rely instead on `ads_management` +
+ * `business_management` — the Page must be claimed by the same
+ * Business Manager that owns the ad account, then the user's BM-level
+ * permissions cover the page-post → ad linkage.
  */
 export const META_SCOPES = [
   "ads_read",
   "ads_management",
   "business_management",
   "pages_read_engagement",
-  "pages_manage_ads",
   "pages_show_list",
 ];
 
