@@ -44,7 +44,7 @@
 - [x] 8.1 Commits:
   - `a36adfc` Settings consistency + mobile responsive sidebar
   - `fe063e9` Creatives library: schema + API + UI + Campaign Builder integration
-- [ ] 8.2 Archive change via openspec-archive-change skill
+- [x] 8.2 Archive change via openspec-archive-change skill
 
 ## 9. Operational follow-up
 - [x] 9.1 Created Vercel Blob store `adslab-creatives` (store_qn8nB5vAMNy8iTzH, iad1, public access) via `vercel blob create-store adslab-creatives --access public --yes` and auto-linked to the adslab project. `BLOB_READ_WRITE_TOKEN` now set in Production + Preview + Development env.
