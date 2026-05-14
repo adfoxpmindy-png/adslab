@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, History } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope } from "@/lib/tenant-scope";
 
 const PAGE_SIZE = 30;
@@ -137,30 +138,21 @@ export default async function CampaignHistoryPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-      <header>
+    <>
+      <SetPageTitle
+        title="ประวัติ Action"
+        subtitle="ทุก action ที่ทำผ่าน AdsLab — ใคร / เมื่อไหร่ / กับ campaign ไหน / before → after"
+      />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <Link
           href={`/t/${tenantSlug}/campaigns`}
-          className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
           กลับไปหน้า Campaigns
         </Link>
-        <div className="flex items-start gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <History className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Audit Log</p>
-            <h1 className="text-2xl font-semibold tracking-tight">ประวัติ Action</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              ทุก action ที่ทำผ่าน AdsLab — ใคร / เมื่อไหร่ / กับ campaign ไหน / before → after
-            </p>
-          </div>
-        </div>
-      </header>
 
-      {/* Filters */}
+        {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-card/40 px-3 py-2">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Filter
@@ -273,30 +265,31 @@ export default async function CampaignHistoryPage({
         </Card>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 text-sm">
-          {page > 1 && (
-            <Link
-              href={buildHref({ page: String(page - 1) })}
-              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
-            >
-              ก่อนหน้า
-            </Link>
-          )}
-          <span className="text-xs text-muted-foreground tabular-nums">
-            หน้า {page} / {totalPages}
-          </span>
-          {page < totalPages && (
-            <Link
-              href={buildHref({ page: String(page + 1) })}
-              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
-            >
-              ถัดไป
-            </Link>
-          )}
-        </div>
-      )}
-    </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 text-sm">
+            {page > 1 && (
+              <Link
+                href={buildHref({ page: String(page - 1) })}
+                className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+              >
+                ก่อนหน้า
+              </Link>
+            )}
+            <span className="text-xs text-muted-foreground tabular-nums">
+              หน้า {page} / {totalPages}
+            </span>
+            {page < totalPages && (
+              <Link
+                href={buildHref({ page: String(page + 1) })}
+                className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+              >
+                ถัดไป
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

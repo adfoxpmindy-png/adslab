@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Tags, Target } from "lucide-react";
+import { Tags } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,8 +10,12 @@ import { resolveCampaignGoals } from "@/lib/goals/resolver";
 import { evaluateCampaign } from "@/lib/goals/evaluator";
 import { cn } from "@/lib/utils";
 import { GoalsClient } from "@/components/tenant/goals-client";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope, applyScopeFilter } from "@/lib/tenant-scope";
 import type { ParsedCampaignInsight, DashboardPayload } from "@/lib/meta/insights";
+
+const GOALS_SUBTITLE =
+  "ตั้ง objective ของแต่ละ campaign เพื่อให้ AI ประเมินด้วยเกณฑ์ที่ถูกต้อง (Awareness ใช้ CPM, Sales ใช้ ROAS เป็นต้น)";
 
 export default async function GoalsPage({
   params,
@@ -33,26 +37,20 @@ export default async function GoalsPage({
 
   if (!isConnected) {
     return (
-      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-        <header className="flex items-start gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <Target className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Campaign Goals</p>
-            <h1 className="text-2xl font-semibold tracking-tight">เป้าหมาย Campaign</h1>
-          </div>
-        </header>
-        <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน Goals</p>
-          <Link
-            href={`/t/${tenantSlug}/settings/integrations`}
-            className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-          >
-            ไปที่ Settings
-          </Link>
-        </Card>
-      </div>
+      <>
+        <SetPageTitle title="เป้าหมาย Campaign" subtitle={GOALS_SUBTITLE} />
+        <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+          <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
+            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน Goals</p>
+            <Link
+              href={`/t/${tenantSlug}/settings/integrations`}
+              className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+            >
+              ไปที่ Settings
+            </Link>
+          </Card>
+        </div>
+      </>
     );
   }
 
@@ -158,35 +156,25 @@ export default async function GoalsPage({
   });
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <Target className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Campaign Goals</p>
-            <h1 className="text-2xl font-semibold tracking-tight">เป้าหมาย Campaign</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              ตั้ง objective ของแต่ละ campaign เพื่อให้ AI ประเมินด้วยเกณฑ์ที่ถูกต้อง
-              (Awareness ใช้ CPM, Sales ใช้ ROAS เป็นต้น)
-            </p>
-          </div>
+    <>
+      <SetPageTitle title="เป้าหมาย Campaign" subtitle={GOALS_SUBTITLE} />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+        <div className="flex justify-end">
+          <Link
+            href={`/t/${tenantSlug}/goals/naming`}
+            className={cn(buttonVariants({ size: "sm", variant: "outline" }), "gap-2")}
+          >
+            <Tags className="size-3.5" />
+            กฎตามชื่อ Campaign
+          </Link>
         </div>
-        <Link
-          href={`/t/${tenantSlug}/goals/naming`}
-          className={cn(buttonVariants({ size: "sm", variant: "outline" }), "gap-2")}
-        >
-          <Tags className="size-3.5" />
-          กฎตามชื่อ Campaign
-        </Link>
-      </header>
 
-      <GoalsClient
-        tenantSlug={tenantSlug}
-        campaigns={enriched}
-        canEdit={canEdit}
-      />
-    </div>
+        <GoalsClient
+          tenantSlug={tenantSlug}
+          campaigns={enriched}
+          canEdit={canEdit}
+        />
+      </div>
+    </>
   );
 }

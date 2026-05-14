@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { CampaignBuilderForm } from "@/components/tenant/campaign-builder-form";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getTenantScope } from "@/lib/tenant-scope";
 
 export default async function NewCampaignPage({
@@ -54,67 +55,57 @@ export default async function NewCampaignPage({
   ]);
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6 px-6 py-8">
-      <header>
+    <>
+      <SetPageTitle
+        title="สร้าง Campaign ใหม่"
+        subtitle="สร้าง Campaign → Ad Set → Ad ใน Meta ครั้งเดียวจบ. ทุกตัวจะเริ่มต้นที่ PAUSED ปลอดภัย"
+      />
+      <div className="mx-auto w-full max-w-4xl space-y-6 px-6 py-6">
         <Link
           href={`/t/${tenantSlug}/campaigns`}
-          className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
           กลับไปหน้า Campaigns
         </Link>
-        <div className="flex items-start gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <Plus className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Stage 3 — Campaign Builder
-            </p>
-            <h1 className="text-2xl font-semibold tracking-tight">สร้าง Campaign ใหม่</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              สร้าง Campaign → Ad Set → Ad ใน Meta ครั้งเดียวจบ. ทุกตัวจะเริ่มต้นที่ PAUSED ปลอดภัย
-            </p>
-          </div>
-        </div>
-      </header>
 
-      {pages.length === 0 ? (
-        <Card className="space-y-2 border-amber-300 bg-amber-50 p-5 text-sm dark:bg-amber-950/30">
-          <p className="font-medium">ไม่พบ Facebook Page ที่จัดการ</p>
-          <p className="text-muted-foreground">
-            ทุกโฆษณาต้อง publish &ldquo;in name of&rdquo; Page Facebook. ตรวจสอบว่า user ที่เชื่อม Meta
-            เป็น admin/editor ของ Page อย่างน้อย 1 หน้า แล้ว reconnect Meta ใหม่
-          </p>
-          <Link
-            href={`/t/${tenantSlug}/settings/integrations`}
-            className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
-          >
-            ไปที่ Settings
-          </Link>
-        </Card>
-      ) : adAccounts.length === 0 ? (
-        <Card className="border-amber-300 bg-amber-50 p-5 text-sm dark:bg-amber-950/30">
-          <p>ไม่พบ ad account ที่ active. ตรวจสอบ Meta Business Manager</p>
-        </Card>
-      ) : (
-        <CampaignBuilderForm
-          tenantSlug={tenantSlug}
-          adAccounts={adAccounts.map((a) => ({
-            id: a.metaAccountId,
-            name: a.name,
-            currency: a.currency,
-            business: a.businessName,
-          }))}
-          pages={pages.map((p) => ({
-            id: p.metaPageId,
-            name: p.name,
-            category: p.category,
-            pictureUrl: p.pictureUrl,
-          }))}
-          canEdit={role === "OWNER" || role === "MEDIA_BUYER"}
-        />
-      )}
-    </div>
+          {pages.length === 0 ? (
+          <Card className="space-y-2 border-amber-300 bg-amber-50 p-5 text-sm dark:bg-amber-950/30">
+            <p className="font-medium">ไม่พบ Facebook Page ที่จัดการ</p>
+            <p className="text-muted-foreground">
+              ทุกโฆษณาต้อง publish &ldquo;in name of&rdquo; Page Facebook. ตรวจสอบว่า user ที่เชื่อม Meta
+              เป็น admin/editor ของ Page อย่างน้อย 1 หน้า แล้ว reconnect Meta ใหม่
+            </p>
+            <Link
+              href={`/t/${tenantSlug}/settings/integrations`}
+              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+            >
+              ไปที่ Settings
+            </Link>
+          </Card>
+        ) : adAccounts.length === 0 ? (
+          <Card className="border-amber-300 bg-amber-50 p-5 text-sm dark:bg-amber-950/30">
+            <p>ไม่พบ ad account ที่ active. ตรวจสอบ Meta Business Manager</p>
+          </Card>
+        ) : (
+          <CampaignBuilderForm
+            tenantSlug={tenantSlug}
+            adAccounts={adAccounts.map((a) => ({
+              id: a.metaAccountId,
+              name: a.name,
+              currency: a.currency,
+              business: a.businessName,
+            }))}
+            pages={pages.map((p) => ({
+              id: p.metaPageId,
+              name: p.name,
+              category: p.category,
+              pictureUrl: p.pictureUrl,
+            }))}
+            canEdit={role === "OWNER" || role === "MEDIA_BUYER"}
+          />
+        )}
+      </div>
+    </>
   );
 }

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Megaphone } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -39,16 +38,7 @@ export default async function CampaignsPage({
     return (
       <>
         <SetPageTitle title="แคมเปญ" subtitle="จัดการและวางแผนแคมเปญของคุณ" />
-        <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-          <header className="flex items-start gap-3">
-            <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-              <Megaphone className="size-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Campaigns</p>
-              <h1 className="text-2xl font-semibold tracking-tight">จัดการ Campaigns</h1>
-            </div>
-          </header>
+        <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
             <Link

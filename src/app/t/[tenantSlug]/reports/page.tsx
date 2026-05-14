@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Sparkles, FileText } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { ReportsClient } from "@/components/tenant/reports-client";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope, applyScopeFilter } from "@/lib/tenant-scope";
 
 const STATUS_LABEL: Record<string, { label: string; tone: string }> = {
@@ -99,23 +99,13 @@ export default async function ReportsListPage({
     scopeId ? scopes.find((s) => s.id === scopeId) ?? null : null;
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <Sparkles className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">AI Reports</p>
-            <h1 className="text-2xl font-semibold tracking-tight">รายงานประจำวัน</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              ฉบับ &quot;ทั้งหมด&quot; สร้างอัตโนมัติทุกเช้า 9 โมง — รายงาน scope กดเองตามต้องการ
-            </p>
-          </div>
-        </div>
-      </header>
-
-      {!isConnected ? (
+    <>
+      <SetPageTitle
+        title="รายงานประจำวัน"
+        subtitle={'ฉบับ "ทั้งหมด" สร้างอัตโนมัติทุกเช้า 9 โมง — รายงาน scope กดเองตามต้องการ'}
+      />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+        {!isConnected ? (
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
           <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน AI Reports</p>
           <Link
@@ -160,7 +150,8 @@ export default async function ReportsListPage({
           statusLabels={STATUS_LABEL}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

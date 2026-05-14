@@ -1,7 +1,6 @@
-import { Bot } from "lucide-react";
-
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { AIPageClient } from "@/components/tenant/ai-page-client";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 
 export default async function AIPage({
   params,
@@ -15,20 +14,9 @@ export default async function AIPage({
   await requireTenantMember(tenantSlug);
 
   return (
-    <div className="h-[calc(100vh-6rem)] w-full">
-      <div className="mx-auto flex h-full w-full max-w-screen-2xl flex-col px-6 py-4">
-        <header className="mb-3 flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <Bot className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              AI
-            </p>
-            <h1 className="text-2xl font-semibold tracking-tight">AI Master</h1>
-          </div>
-        </header>
-
+    <>
+      <SetPageTitle title="AI Master" subtitle="ผู้ช่วย AI สำหรับวิเคราะห์ + จัดการแคมเปญ" />
+      <div className="mx-auto flex h-[calc(100vh-9rem)] w-full max-w-screen-2xl flex-col px-6 py-6">
         <div className="min-h-0 flex-1">
           <AIPageClient
             tenantSlug={tenantSlug}
@@ -36,6 +24,6 @@ export default async function AIPage({
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }

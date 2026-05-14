@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -9,7 +8,11 @@ import { prisma } from "@/lib/prisma";
 import { listAudiences } from "@/lib/meta/audiences";
 import { cn } from "@/lib/utils";
 import { AudiencesClient } from "@/components/tenant/audiences-client";
+import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope } from "@/lib/tenant-scope";
+
+const AUDIENCES_SUBTITLE =
+  "สร้าง Custom Audience จาก customer list, Pixel, หรือ Lookalike — audiences ที่สร้างจะปรากฏใน Campaign Builder ทันที";
 
 export default async function AudiencesPage({
   params,
@@ -31,26 +34,20 @@ export default async function AudiencesPage({
 
   if (!isConnected) {
     return (
-      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-        <header className="flex items-start gap-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-            <Users className="size-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Audiences</p>
-            <h1 className="text-2xl font-semibold tracking-tight">จัดการกลุ่มเป้าหมาย</h1>
-          </div>
-        </header>
-        <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
-          <Link
-            href={`/t/${tenantSlug}/settings/integrations`}
-            className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-          >
-            ไปที่ Settings
-          </Link>
-        </Card>
-      </div>
+      <>
+        <SetPageTitle title="จัดการกลุ่มเป้าหมาย" subtitle={AUDIENCES_SUBTITLE} />
+        <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+          <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
+            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
+            <Link
+              href={`/t/${tenantSlug}/settings/integrations`}
+              className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+            >
+              ไปที่ Settings
+            </Link>
+          </Card>
+        </div>
+      </>
     );
   }
 
@@ -91,32 +88,21 @@ export default async function AudiencesPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
-      <header className="flex items-start gap-3">
-        <div className="flex size-9 items-center justify-center rounded-md bg-primary/10">
-          <Users className="size-5 text-primary" />
-        </div>
-        <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Audiences</p>
-          <h1 className="text-2xl font-semibold tracking-tight">จัดการกลุ่มเป้าหมาย</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            สร้าง Custom Audience จาก customer list, Pixel, หรือ Lookalike — audiences ที่สร้าง
-            จะปรากฏใน Campaign Builder ทันที
-          </p>
-        </div>
-      </header>
-
-      <AudiencesClient
-        tenantSlug={tenantSlug}
-        canEdit={canEdit}
-        accounts={accounts.map((a) => ({
-          id: a.metaAccountId,
-          name: a.name,
-          business: a.businessName,
-          businessId: a.businessId,
-        }))}
-        audiences={allAudiences}
-      />
-    </div>
+    <>
+      <SetPageTitle title="จัดการกลุ่มเป้าหมาย" subtitle={AUDIENCES_SUBTITLE} />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+        <AudiencesClient
+          tenantSlug={tenantSlug}
+          canEdit={canEdit}
+          accounts={accounts.map((a) => ({
+            id: a.metaAccountId,
+            name: a.name,
+            business: a.businessName,
+            businessId: a.businessId,
+          }))}
+          audiences={allAudiences}
+        />
+      </div>
+    </>
   );
 }
