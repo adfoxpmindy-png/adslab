@@ -650,16 +650,18 @@ function buildDestinationType(
     return "WEBSITE";
   }
 
-  // REACH / IMPRESSIONS / THRUPLAY for awareness/engagement → no
-  // explicit destination (or ON_AD by default)
+  // REACH / IMPRESSIONS / THRUPLAY / AD_RECALL_LIFT → no explicit
+  // destination. Meta rejects `ON_AD` for these as of v23.0 — only
+  // MESSENGER / UNDEFINED / WEBSITE / APP are accepted, so we leave
+  // it unset and let Meta apply its default (UNDEFINED).
   if (
     optimizationGoal === "REACH" ||
     optimizationGoal === "IMPRESSIONS" ||
-    optimizationGoal === "AD_RECALL_LIFT"
+    optimizationGoal === "AD_RECALL_LIFT" ||
+    optimizationGoal === "THRUPLAY"
   ) {
-    return undefined; // Meta default works for these
+    return undefined;
   }
-  if (optimizationGoal === "THRUPLAY") return "ON_AD";
 
   return undefined;
 }
