@@ -287,7 +287,7 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
     );
     adSetMetaId = res.id;
   } catch (err) {
-    return logFailure(input, "adset", metaErrorMsg(err), { campaignMetaId });
+    return logFailure(input, "adset", metaErrorMsg(err), { campaignMetaId }, accessToken);
   }
 
   // ---- 4. Create Creative ----
@@ -341,13 +341,17 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
         "creative",
         `ดึง thumbnail ของ reel ไม่สำเร็จ: ${(err as Error).message}`,
         { campaignMetaId, adSetMetaId },
+        accessToken,
       );
     }
     if (!thumbUrl) {
-      return logFailure(input, "creative", "reel ไม่มี thumbnail", {
-        campaignMetaId,
-        adSetMetaId,
-      });
+      return logFailure(
+        input,
+        "creative",
+        "reel ไม่มี thumbnail",
+        { campaignMetaId, adSetMetaId },
+        accessToken,
+      );
     }
     creativeBody = {
       name: `${input.adName} creative`,
@@ -395,10 +399,13 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
     );
     creativeId = res.id;
   } catch (err) {
-    return logFailure(input, "creative", metaErrorMsg(err), {
-      campaignMetaId,
-      adSetMetaId,
-    });
+    return logFailure(
+      input,
+      "creative",
+      metaErrorMsg(err),
+      { campaignMetaId, adSetMetaId },
+      accessToken,
+    );
   }
 
   // ---- 5. Create Ad ----
@@ -416,11 +423,13 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
     });
     adMetaId = res.id;
   } catch (err) {
-    return logFailure(input, "ad", metaErrorMsg(err), {
-      campaignMetaId,
-      adSetMetaId,
-      creativeId,
-    });
+    return logFailure(
+      input,
+      "ad",
+      metaErrorMsg(err),
+      { campaignMetaId, adSetMetaId, creativeId },
+      accessToken,
+    );
   }
 
   // ---- 6. Sync into our DB ----
@@ -726,12 +735,58 @@ function metaErrorMsg(err: unknown): string {
   return e.userMessage ?? e.message ?? "Unknown Meta error";
 }
 
+/**
+ * Roll back partial Meta entities on failure. Deleting the campaign
+ * cascades to its adsets/ads/creatives in Meta — one DELETE is enough.
+ *
+ * Skipped when `failedAt === "sync"`: the Meta entities created
+ * successfully and the user may still want them; only our local DB
+ * write failed, which we recover by re-syncing.
+ *
+ * Also removes any DB rows that may have been written by background
+ * sync jobs that raced ahead of the failure path — keeps DB and Meta
+ * consistent even if a poll happened mid-create.
+ */
+async function rollbackPartialCreation(
+  input: CreateInput,
+  failedAt: "campaign" | "adset" | "creative" | "ad" | "sync",
+  partial: { campaignMetaId?: string; adSetMetaId?: string; creativeId?: string },
+  accessToken: string,
+): Promise<void> {
+  if (failedAt === "sync") return;
+  if (!partial.campaignMetaId) return;
+
+  // Meta: delete the campaign — cascades to adset, creative, ad
+  try {
+    await graphFetch(`/${partial.campaignMetaId}`, { method: "DELETE", accessToken });
+  } catch {
+    // Best-effort — if Meta deletion fails (already gone, permission glitch),
+    // we still proceed to DB cleanup so the local view stays accurate.
+  }
+
+  // DB: delete any campaign row that may exist (background sync could have
+  // written it between create and our failure). Cascades to adsets/ads.
+  try {
+    await prisma.metaCampaign.deleteMany({
+      where: { metaCampaignId: partial.campaignMetaId },
+    });
+  } catch {
+    // Best-effort.
+  }
+}
+
 async function logFailure(
   input: CreateInput,
   failedAt: "campaign" | "adset" | "creative" | "ad" | "sync",
   error: string,
   partial: { campaignMetaId?: string; adSetMetaId?: string; creativeId?: string },
+  accessToken?: string,
 ): Promise<CreateResult> {
+  // Rollback FIRST — if log write fails we still want the rollback to happen.
+  if (accessToken) {
+    await rollbackPartialCreation(input, failedAt, partial, accessToken);
+  }
+
   // Best-effort audit — even without a campaign row to FK to. We use
   // the source ad-account id as a stand-in for campaignId so the row is
   // searchable by Meta account.
