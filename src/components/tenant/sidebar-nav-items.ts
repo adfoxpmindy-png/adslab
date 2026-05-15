@@ -1,5 +1,7 @@
 import {
   BarChart3,
+  Brain,
+  Camera,
   Folder,
   Home,
   Image as ImageIcon,
@@ -27,10 +29,12 @@ export const SIDEBAR_NAV_ITEMS: SidebarNavItem[] = [
   { label: "บูสต์ด่วน", href: (s) => `/t/${s}/boost`, icon: Zap },
   { label: "กฎอัตโนมัติ", href: (s) => `/t/${s}/rules`, icon: Shield },
   { label: "แคมเปญ", href: (s) => `/t/${s}/campaigns`, icon: Folder },
+  { label: "โฆษณา", href: (s) => `/t/${s}/ads`, icon: Camera },
   { label: "กลุ่มเป้าหมาย", href: (s) => `/t/${s}/audiences`, icon: Users },
   { label: "ครีเอทีฟ", href: (s) => `/t/${s}/creatives`, icon: ImageIcon },
   { label: "รายงาน", href: (s) => `/t/${s}/reports`, icon: BarChart3 },
   { label: "วิเคราะห์", href: (s) => `/t/${s}/ai-optimize`, icon: TrendingUp },
+  { label: "ความจำ AI", href: (s) => `/t/${s}/ai/memory`, icon: Brain },
   { label: "เครื่องมือ", href: (s) => `/t/${s}/tools`, icon: Wrench },
   { label: "การตั้งค่า", href: (s) => `/t/${s}/settings/integrations`, icon: Settings },
 ];

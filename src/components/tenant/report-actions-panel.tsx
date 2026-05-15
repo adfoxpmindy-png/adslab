@@ -19,6 +19,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  OutcomeBadgeView,
+  ConfidenceBadgeView,
+} from "@/components/tenant/ai-result-badges";
+import type { OutcomeBadge } from "@/lib/reports/enrich-suggestions";
+import type { ConfidenceResult } from "@/lib/ai/recommendation-stats";
 
 type Suggestion = {
   id: string;
@@ -40,6 +46,8 @@ type Suggestion = {
   appliedLogId?: string;
   errorMessage?: string;
   newCampaignName?: string;
+  outcomeBadge?: OutcomeBadge | null;
+  confidenceBadge?: ConfidenceResult | null;
 };
 
 type Props = {
@@ -186,7 +194,7 @@ export function ReportActionsPanel({
                   isDismissed && "opacity-50",
                 )}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Icon className="size-4 text-primary" />
                   <span className="text-xs font-medium uppercase tracking-wide">
                     {ACTION_LABEL[s.action]}
@@ -200,6 +208,10 @@ export function ReportActionsPanel({
                     <span className="rounded-md bg-zinc-200 px-1.5 py-0.5 text-[10px] uppercase text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                       ข้าม
                     </span>
+                  )}
+                  {s.outcomeBadge && <OutcomeBadgeView badge={s.outcomeBadge} />}
+                  {s.confidenceBadge && !s.outcomeBadge && (
+                    <ConfidenceBadgeView result={s.confidenceBadge} />
                   )}
                 </div>
 

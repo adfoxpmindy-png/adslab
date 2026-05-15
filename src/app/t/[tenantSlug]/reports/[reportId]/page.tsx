@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { renderMarkdown } from "@/lib/markdown";
 import { ReportActionsPanel } from "@/components/tenant/report-actions-panel";
 import type { ValidatedSuggestion } from "@/lib/reports/extract-actions";
+import { enrichReportSuggestions, isFreshReport } from "@/lib/reports/enrich-suggestions";
 
 const STATUS_LABEL: Record<string, string> = {
   COMPLETED: "เสร็จแล้ว",
@@ -45,6 +46,15 @@ export default async function ReportViewerPage({
   const dateLabel = report.reportDate.toISOString().slice(0, 10);
   const canApply = role === "OWNER" || role === "MEDIA_BUYER";
   const suggestions = (report.suggestedActions as ValidatedSuggestion[] | null) ?? [];
+  const enrichedSuggestions =
+    suggestions.length > 0
+      ? await enrichReportSuggestions({
+          tenantId: tenant.id,
+          reportDate: report.reportDate,
+          suggestions,
+          includeConfidence: isFreshReport(report.generatedAt),
+        })
+      : [];
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 px-6 py-8">
@@ -82,11 +92,11 @@ export default async function ReportViewerPage({
         </Card>
       )}
 
-      {report.status === "COMPLETED" && suggestions.length > 0 && (
+      {report.status === "COMPLETED" && enrichedSuggestions.length > 0 && (
         <ReportActionsPanel
           tenantSlug={tenantSlug}
           reportId={report.id}
-          suggestions={suggestions}
+          suggestions={enrichedSuggestions}
           canApply={canApply}
         />
       )}
