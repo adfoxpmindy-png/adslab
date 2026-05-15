@@ -157,6 +157,7 @@ model Tenant {
   billingEvents      BillingEvent[]
   creatives          TenantCreative[]
   boostJobs          BoostJob[]
+  autoRules          AutoRule[]
 }
 
 /// AI Quick Boost — natural-language → bulk campaign creation. One row
@@ -185,6 +186,82 @@ model BoostJob {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, createdAt])
+}
+
+/// User-defined automation rule: monitors live metrics on the user's Meta
+/// campaigns/adsets and dispatches an action when the condition matches.
+/// One rule = one (condition, action) pair. Multi-condition compound
+/// rules are deferred to Phase 2.
+model AutoRule {
+  id              String    @id @default(cuid())
+  tenantId        String
+  /// Who created the rule (for audit + role checks at modify time).
+  createdByUserId String
+  /// Human-readable name shown in UI + emails.
+  name            String
+  /// Whether this rule is being evaluated on the hourly tick. Disabled
+  /// rules stay in the DB but are skipped (their count doesn't apply to
+  /// tier cap either).
+  enabled         Boolean   @default(true)
+  /// Minimum minutes between evaluations of this rule. Allows users to
+  /// throttle expensive rules. Valid values: 60, 360, 720, 1440 (the UI
+  /// presents these as 1h, 6h, 12h, 24h). Defaults to 60.
+  minIntervalMinutes Int    @default(60)
+  /// Structured condition payload: { metric, op, value, windowHours,
+  /// scope }. See src/lib/rules/types.ts → RuleCondition.
+  condition       Json
+  /// Action enum: "pause_adset" | "pause_campaign" | "notify_email" |
+  /// "notify_in_app". See src/lib/rules/types.ts → RuleAction.
+  action          String
+  /// Optional list of target Meta entity ids this rule applies to
+  /// (e.g. specific adset_ids or campaign_ids). Empty = applies to all
+  /// of the rule's scope (campaign/adset).
+  targetIds       String[]  @default([])
+  /// Bookkeeping for the runner to skip rules that fired too recently.
+  lastFiredAt     DateTime?
+  /// Bookkeeping for `minIntervalMinutes` throttling.
+  lastEvaluatedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  runs   AutoRuleRun[]
+
+  @@index([tenantId, enabled])
+  @@index([enabled, lastEvaluatedAt])
+}
+
+/// Audit row: one per (rule, tick) evaluation. Stored so users can see
+/// "what would have fired" even before they enable a rule, plus track
+/// which rules are flapping vs steady.
+model AutoRuleRun {
+  id              String    @id @default(cuid())
+  ruleId          String
+  /// When this evaluation happened.
+  tickAt          DateTime  @default(now())
+  /// Snapshot of the metric Meta returned for the rule's window.
+  evaluatedMetric String
+  evaluatedValue  Float?
+  threshold       Float
+  /// Did the condition match this tick?
+  matched         Boolean
+  /// One of: "matched" | "not_matched" | "skipped_no_data" |
+  /// "matched_in_cooldown" | "skipped_orphan" | "error". See
+  /// src/lib/rules/types.ts → RuleRunStatus.
+  status          String
+  /// If the action fired, what was the result? "fired" | "no_change_needed"
+  /// | "error" | null (when not matched).
+  actionResult    String?
+  /// Free-form error string when status === "error" or actionResult === "error".
+  errorMessage    String?
+  /// Which target entity was evaluated (adset_id or campaign_id). Lets
+  /// the UI show "this rule evaluated against adset X" instead of the
+  /// abstract rule.
+  targetId        String
+
+  rule AutoRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId, tickAt])
 }
 
 /// Tenant-scoped creative asset (image or video) uploaded to blob storage

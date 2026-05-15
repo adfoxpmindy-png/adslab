@@ -114,3 +114,30 @@ export function isDowngrade(from: PlanKey, to: PlanKey): boolean {
   const b = tierIndex(to);
   return a >= 0 && b >= 0 && b < a;
 }
+
+/**
+ * Max number of active auto-rules a tenant can have at a given tier.
+ * Trial users (no active plan) fall through to 0 — they see the rules
+ * page but get an upsell card prompting them to choose a plan.
+ *
+ * Numbers tuned so each tier has clear value vs the one below it without
+ * being so high that misconfigured rules can spam Meta on free / cheap
+ * tiers. Disabled rules don't count toward the cap.
+ */
+export function maxActiveRulesForPlan(planKey: PlanKey | null | undefined): number {
+  if (!planKey) return 0;
+  switch (planKey) {
+    case "starter":
+      return 5;
+    case "growth":
+      return 20;
+    case "pro":
+      return 100;
+    case "scale":
+      return 500;
+    case "enterprise":
+      return 999;
+    default:
+      return 0;
+  }
+}
