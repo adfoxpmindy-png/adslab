@@ -41,10 +41,12 @@ type Args = {
   limit: number;
   concurrency: number;
   dryRun: boolean;
+  /** Comma-sep priority list of sub languages to try (e.g. "en,th"). */
+  langs: string[];
 };
 
 function parseArgs(): Args {
-  const a: Args = { channel: "", limit: 50, concurrency: 5, dryRun: false };
+  const a: Args = { channel: "", limit: 50, concurrency: 5, dryRun: false, langs: ["en"] };
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i];
@@ -52,6 +54,7 @@ function parseArgs(): Args {
     else if (k === "--limit") a.limit = parseInt(argv[++i], 10);
     else if (k === "--concurrency") a.concurrency = parseInt(argv[++i], 10);
     else if (k === "--dry-run") a.dryRun = true;
+    else if (k === "--lang" || k === "--langs") a.langs = argv[++i].split(",");
   }
   if (!a.channel) {
     console.error("Missing --channel <handle>");
@@ -108,31 +111,41 @@ async function listChannelVideos(channel: string, limit: number): Promise<VideoM
     });
 }
 
-/** Fetch English auto-captions for a video. Returns raw VTT text or null. */
-async function fetchCaptions(videoId: string): Promise<string | null> {
-  const dir = await mkdtemp(join(tmpdir(), "ytcap-"));
-  try {
-    const args = [
-      "--write-auto-sub",
-      "--sub-lang",
-      "en",
-      "--skip-download",
-      "--convert-subs",
-      "vtt",
-      "--no-warnings",
-      "-o",
-      join(dir, "%(id)s.%(ext)s"),
-      `https://www.youtube.com/watch?v=${videoId}`,
-    ];
-    const { code } = await run("yt-dlp", args);
-    if (code !== 0) return null;
-    const files = await readdir(dir);
-    const vtt = files.find((f) => f.endsWith(".vtt"));
-    if (!vtt) return null;
-    return await readFile(join(dir, vtt), "utf-8");
-  } finally {
-    await rm(dir, { recursive: true, force: true }).catch(() => {});
+/**
+ * Fetch auto-captions for a video, trying each language in priority
+ * order. Returns the first hit as raw VTT or null if all langs miss.
+ */
+async function fetchCaptions(
+  videoId: string,
+  langs: string[],
+): Promise<{ vtt: string; lang: string } | null> {
+  for (const lang of langs) {
+    const dir = await mkdtemp(join(tmpdir(), "ytcap-"));
+    try {
+      const args = [
+        "--write-auto-sub",
+        "--sub-lang",
+        lang,
+        "--skip-download",
+        "--convert-subs",
+        "vtt",
+        "--no-warnings",
+        "-o",
+        join(dir, "%(id)s.%(ext)s"),
+        `https://www.youtube.com/watch?v=${videoId}`,
+      ];
+      const { code } = await run("yt-dlp", args);
+      if (code !== 0) continue;
+      const files = await readdir(dir);
+      const vtt = files.find((f) => f.endsWith(".vtt"));
+      if (!vtt) continue;
+      const text = await readFile(join(dir, vtt), "utf-8");
+      return { vtt: text, lang };
+    } finally {
+      await rm(dir, { recursive: true, force: true }).catch(() => {});
+    }
   }
+  return null;
 }
 
 /**
@@ -202,7 +215,8 @@ async function ingestVideo(
   systemUserId: string,
   video: VideoMeta,
   channel: string,
-): Promise<{ status: "ingested" | "skipped" | "failed"; reason?: string; chunkCount?: number }> {
+  langs: string[],
+): Promise<{ status: "ingested" | "skipped" | "failed"; reason?: string; chunkCount?: number; lang?: string }> {
   // Shorts filter
   if (video.durationSec > 0 && video.durationSec < 60) {
     return { status: "skipped", reason: "shorts" };
@@ -220,13 +234,13 @@ async function ingestVideo(
     return { status: "skipped", reason: "already_ingested" };
   }
 
-  // Fetch captions
-  const vtt = await fetchCaptions(video.id);
-  if (!vtt) {
-    return { status: "skipped", reason: "no_english_captions" };
+  // Fetch captions (try each language in priority order)
+  const cap = await fetchCaptions(video.id, langs);
+  if (!cap) {
+    return { status: "skipped", reason: `no_captions_for_langs:${langs.join(",")}` };
   }
 
-  const cleaned = cleanVtt(vtt);
+  const cleaned = cleanVtt(cap.vtt);
   if (cleaned.length < 200) {
     return { status: "skipped", reason: "transcript_too_short" };
   }
@@ -252,6 +266,7 @@ async function ingestVideo(
           publishedAt: video.uploadDate,
           durationSeconds: video.durationSec,
           url: `https://www.youtube.com/watch?v=${video.id}`,
+          captionLang: cap.lang,
         },
         status: "processing",
         createdByUserId: systemUserId,
@@ -279,7 +294,7 @@ async function ingestVideo(
       data: { status: "ready", chunkCount: chunks.length },
     });
 
-    return { status: "ingested", chunkCount: chunks.length };
+    return { status: "ingested", chunkCount: chunks.length, lang: cap.lang };
   } catch (err) {
     // Best-effort cleanup of partial document
     if (documentId) {
@@ -312,6 +327,7 @@ async function main() {
   console.log(`Channel: ${args.channel}`);
   console.log(`Limit:   ${args.limit === 0 ? "all" : args.limit}`);
   console.log(`Concurrency: ${args.concurrency}`);
+  console.log(`Langs:   ${args.langs.join(",")}`);
   console.log(`Dry-run: ${args.dryRun}\n`);
 
   const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });
@@ -374,16 +390,16 @@ async function main() {
   let chunkTotal = 0;
 
   await processConcurrent(videos, args.concurrency, async (v, i) => {
-    const r = await ingestVideo(prisma, systemTenant.id, systemUserId, v, args.channel);
+    const r = await ingestVideo(prisma, systemTenant.id, systemUserId, v, args.channel, args.langs);
     const prefix = `[${i + 1}/${videos.length}]`;
     if (r.status === "ingested") {
       ingested++;
       chunkTotal += r.chunkCount ?? 0;
-      console.log(`  ${prefix} ✓ ${v.title.slice(0, 50)} (${r.chunkCount} chunks)`);
+      console.log(`  ${prefix} ✓ [${r.lang}] ${v.title.slice(0, 50)} (${r.chunkCount} chunks)`);
     } else if (r.status === "skipped") {
       if (r.reason === "shorts") skippedShorts++;
       else if (r.reason === "already_ingested") skippedExisting++;
-      else if (r.reason === "no_english_captions") skippedNoCaptions++;
+      else if (r.reason?.startsWith("no_captions")) skippedNoCaptions++;
       else if (r.reason === "transcript_too_short") skippedShort++;
       console.log(`  ${prefix} ↷ skip [${r.reason}] ${v.title.slice(0, 50)}`);
     } else {
