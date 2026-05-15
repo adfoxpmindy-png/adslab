@@ -76,14 +76,23 @@ export function buildOAuthUrl(state: string): string {
   const appId = process.env.META_APP_ID;
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const version = process.env.META_GRAPH_VERSION ?? "v23.0";
+  const configId = process.env.META_CONFIG_ID;
   if (!appId) throw new Error("META_APP_ID is not set");
 
   const url = new URL(`https://www.facebook.com/${version}/dialog/oauth`);
   url.searchParams.set("client_id", appId);
   url.searchParams.set("redirect_uri", `${appUrl}/api/meta/oauth/callback`);
-  url.searchParams.set("scope", META_SCOPES.join(","));
   url.searchParams.set("state", state);
   url.searchParams.set("response_type", "code");
+  // Facebook Login for Business: configuration on Meta's side defines
+  // which permissions + assets are requested, so we send config_id and
+  // omit the scope parameter. Falls back to legacy scope-based OAuth
+  // when META_CONFIG_ID is unset (useful for older Meta apps).
+  if (configId) {
+    url.searchParams.set("config_id", configId);
+  } else {
+    url.searchParams.set("scope", META_SCOPES.join(","));
+  }
   return url.toString();
 }
 
