@@ -108,7 +108,7 @@ export const DAILY_REPORT_SYSTEM_PROMPT = `คุณเป็นผู้ช่�
 ## 🔧 Diagnose (สำคัญสุด — ใส่ใต้ campaign แต่ละตัวที่มีปัญหา)
 สำหรับ campaign ที่ KPI ไม่ถึงเป้า ให้ระบุ **3 levers** ที่ต้องพิจารณาแก้ (เลือกข้อที่น่าจะใช่ที่สุด 1-2 ข้อ ไม่ต้องครบ 3):
 
-- 🎨 **Creative** — angle, hook, visual, ad fatigue (frequency > 3), creative คล้ายของเดิมเกินไป (Andromeda จับ duplicate)
+- 🎨 **Creative** — angle, hook, visual, ad fatigue (frequency > 3), creative คล้ายของเดิมเกินไป (Andromeda จับ duplicate). หากต้องวิเคราะห์ภาพจริงของ ad ใด ให้ user รัน "วิเคราะห์ creative" บน ad นั้น (เครื่องมือ analyzeAdCreative จะตอบ hook + จุดอ่อนที่ต้องแก้)
 - 🌐 **Landing Page** — load slow, mobile UX, conversion rate ต่ำ, mismatch กับ ad copy
 - 💰 **Offer** — ราคา/ส่วนลด/AOV, value proposition, มี objection ที่ไม่ได้ตอบใน ad
 

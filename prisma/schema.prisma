@@ -158,6 +158,7 @@ model Tenant {
   creatives          TenantCreative[]
   boostJobs          BoostJob[]
   autoRules          AutoRule[]
+  aiRecommendations  AIRecommendation[]
 }
 
 /// AI Quick Boost — natural-language → bulk campaign creation. One row
@@ -262,6 +263,60 @@ model AutoRuleRun {
   rule AutoRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
 
   @@index([ruleId, tickAt])
+}
+
+/// Closed-loop optimization: every concrete AI recommendation across
+/// the three emission channels (daily-report, chat-tool, rules-suggest)
+/// is logged here. After 7 days a cron computes its outcome and writes
+/// an AIRecommendationOutcome row. Future AI prompts inject recent
+/// outcomes so the AI "remembers what worked" per-tenant.
+model AIRecommendation {
+  id              String   @id @default(cuid())
+  tenantId        String
+  /// "daily_report" | "chat_tool" | "rules_suggest"
+  source          String
+  /// "pause" | "resume" | "scale_budget" | "refresh_creative" |
+  /// "change_budget" | "change_targeting" | "diagnose" | "other"
+  actionType      String
+  /// "campaign" | "adset" | "ad"
+  targetKind      String
+  /// Meta numeric id of the entity (campaign/adset/ad).
+  targetMetaId    String
+  /// Free-form rationale the AI provided.
+  reasoning       String?
+  /// Full action payload (e.g. for SET_BUDGET: { dailyBudget: 800 }).
+  payload         Json?
+  /// Null when sourced from cron (daily-report); populated for chat
+  /// tool calls so we can show "your AI told you to do X" attribution.
+  createdByUserId String?
+  /// When sourced from chat, the conversation id for traceability.
+  conversationId  String?
+  createdAt       DateTime @default(now())
+
+  tenant  Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  outcome AIRecommendationOutcome?
+
+  @@index([tenantId, createdAt])
+  @@index([createdAt])
+}
+
+/// One-to-one outcome record for an AIRecommendation, computed after a
+/// 7-day holding window. Captures whether the user followed the advice
+/// and how the target's KPI moved.
+model AIRecommendationOutcome {
+  id               String   @id @default(cuid())
+  recommendationId String   @unique
+  /// "followed" | "ignored" | "opposite" | "target_deleted" | "no_data"
+  actionTaken      String
+  /// Structured KPI delta. Shape:
+  /// `{ metric: "cpv"|"roas"|"spend"|"ctr"|"cpm", before: number,
+  ///    after: number, percentChange: number }`. Null when target was
+  /// deleted or no insight data was available for the windows.
+  kpiDelta         Json?
+  errorMessage     String?
+  computedAt       DateTime @default(now())
+
+  recommendation AIRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
 }
 
 /// Tenant-scoped creative asset (image or video) uploaded to blob storage
@@ -544,6 +599,13 @@ model MetaAd {
   effectiveStatus     String
   configuredStatus    String?
   lastFetchedAt       DateTime @default(now())
+  /// Cached vision LLM evaluation of the ad's creative. Shape matches
+  /// the analyzeAdCreative tool's return type — `hook`, `weaknesses`,
+  /// `strengths`, etc. Populated by AI tool calls; never edited by user.
+  creativeAnalysis    Json?
+  /// When the creativeAnalysis was last refreshed. 7-day TTL: the AI
+  /// tool re-runs vision past that.
+  creativeAnalyzedAt  DateTime?
 
   adSet MetaAdSet @relation(fields: [metaAdSetInternalId], references: [id], onDelete: Cascade)
 

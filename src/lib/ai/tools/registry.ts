@@ -4,6 +4,7 @@ import { pauseCampaignTool } from "./pause-campaign";
 import { resumeCampaignTool } from "./resume-campaign";
 import { setCampaignBudgetTool } from "./set-campaign-budget";
 import { searchKnowledgeTool } from "./search-knowledge";
+import { analyzeAdCreativeTool } from "./analyze-ad-creative";
 import type { ToolDef } from "./types";
 
 /**
@@ -16,6 +17,7 @@ const TOOLS: ToolDef[] = [
   listCampaignsTool as unknown as ToolDef,
   getCampaignInsightsTool as unknown as ToolDef,
   searchKnowledgeTool as unknown as ToolDef,
+  analyzeAdCreativeTool as unknown as ToolDef,
   // ---- MUTATE ----
   pauseCampaignTool as unknown as ToolDef,
   resumeCampaignTool as unknown as ToolDef,

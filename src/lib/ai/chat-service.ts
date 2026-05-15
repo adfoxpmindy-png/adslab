@@ -8,6 +8,76 @@ import { getEffectiveScope, getTenantScope } from "@/lib/tenant-scope";
 
 import { getAllTools, getToolByName, toolsForApi } from "./tools/registry";
 import type { ToolContext } from "./tools/types";
+import {
+  captureRecommendation,
+  listRecentForTenant,
+  renderOutcomesForPrompt,
+  type RecommendationActionType,
+  type RecommendationTargetKind,
+} from "./recommendations";
+
+/**
+ * Map an AI tool call (pauseCampaign, setBudget, etc.) to our internal
+ * recommendation taxonomy and persist it. Best-effort.
+ */
+async function captureRecommendationFromToolCall(args: {
+  tenantId: string;
+  toolName: string;
+  toolArgs: Record<string, unknown>;
+  userId: string;
+  conversationId: string;
+  reasoning: string;
+}): Promise<void> {
+  // Tool-name → action mapping. Add new tools here as the surface grows.
+  // Unknown tools fall through to "other" so we still log them.
+  let actionType: RecommendationActionType = "other";
+  let targetKind: RecommendationTargetKind = "campaign";
+  let targetMetaId: string | null = null;
+  switch (args.toolName) {
+    case "pauseCampaign":
+      actionType = "pause";
+      targetKind = "campaign";
+      targetMetaId = String(args.toolArgs.campaignId ?? args.toolArgs.metaCampaignId ?? "");
+      break;
+    case "resumeCampaign":
+      actionType = "resume";
+      targetKind = "campaign";
+      targetMetaId = String(args.toolArgs.campaignId ?? args.toolArgs.metaCampaignId ?? "");
+      break;
+    case "setCampaignBudget":
+    case "setBudget":
+      actionType = "change_budget";
+      targetKind = "campaign";
+      targetMetaId = String(args.toolArgs.campaignId ?? args.toolArgs.metaCampaignId ?? "");
+      break;
+    case "duplicateCampaign":
+      actionType = "scale_budget";
+      targetKind = "campaign";
+      targetMetaId = String(args.toolArgs.sourceCampaignId ?? args.toolArgs.campaignId ?? "");
+      break;
+    case "pauseAdSet":
+      actionType = "pause";
+      targetKind = "adset";
+      targetMetaId = String(args.toolArgs.adSetId ?? args.toolArgs.adsetId ?? "");
+      break;
+    default:
+      // Unknown mutate tool — log as "other" so we can audit later.
+      const id = args.toolArgs.campaignId ?? args.toolArgs.adSetId ?? args.toolArgs.adId ?? "";
+      targetMetaId = String(id ?? "");
+  }
+  if (!targetMetaId) return; // can't capture without a target
+  void captureRecommendation({
+    tenantId: args.tenantId,
+    source: "chat_tool",
+    actionType,
+    targetKind,
+    targetMetaId,
+    reasoning: args.reasoning,
+    payload: args.toolArgs,
+    createdByUserId: args.userId,
+    conversationId: args.conversationId,
+  });
+}
 
 /**
  * Multi-turn tool-use loop for AI Master.
@@ -51,6 +121,7 @@ Tools:
 - For campaign data, USE listCampaigns / getCampaignInsights / etc. Never invent campaign names or numbers.
 - For mutations (pause, budget), CALL the mutate tool — the user sees a confirmation card before it executes.
 - For "how do I…" strategy questions, CALL searchKnowledge proactively with a focused English query. Synthesize the chunks into YOUR voice — never quote verbatim, never mention sources, channels, or URLs.
+- For diagnosing a SPECIFIC ad's creative quality (hook, visual hierarchy, on-screen text), CALL analyzeAdCreative with that ad's id. Only call it when (a) the user named a specific ad, or (b) you've already narrowed to ONE underperforming ad within an adset — never speculatively across a list. Use the structured result (hook, strengths, weaknesses, suggestedFixes) to ground concrete creative fixes. If it returns no_visual_asset or quota_exceeded, fall back to metrics-only analysis.
 - If a tool returns an error or "not found", say so plainly and suggest the next step.`;
 
 export type SendMessageInput = {
@@ -212,6 +283,17 @@ export async function sendMessage(
           pendingAction: "pending",
         },
       });
+      // Capture this mutate intent as an AIRecommendation regardless of
+      // the user's later approve/reject — the outcomes cron will detect
+      // whether it was followed by reading Meta state after 7 days.
+      void captureRecommendationFromToolCall({
+        tenantId,
+        toolName: tc.name,
+        toolArgs: tc.arguments,
+        userId,
+        conversationId,
+        reasoning: summary,
+      });
       pendingMutate = {
         messageId: pendingRow.id,
         toolName: tc.name,
@@ -292,6 +374,21 @@ async function buildSystemPrompt(
     parts.push(`\n## Persona\n${persona.role}`);
     if (persona.customInstructions) {
       parts.push(`\n## Custom instructions\n${persona.customInstructions}`);
+    }
+  }
+
+  // Inject the tenant's recent AI-recommendation outcomes so the model
+  // can bias toward patterns that previously worked. Best-effort; if
+  // the history is empty (new tenant) or query fails we just skip.
+  if (process.env.FEATURE_AI_LEARNING !== "off") {
+    try {
+      const history = await listRecentForTenant(tenantId, 10);
+      const outcomesBlock = renderOutcomesForPrompt(history);
+      if (outcomesBlock) {
+        parts.push("\n" + outcomesBlock);
+      }
+    } catch {
+      // Skip silently
     }
   }
 

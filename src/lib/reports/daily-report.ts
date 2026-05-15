@@ -13,6 +13,12 @@ import {
   buildDailyReportUserMessage,
 } from "./prompt";
 import { fetchReportKnowledge, renderKnowledgeForPrompt } from "./knowledge-injection";
+import {
+  captureRecommendation,
+  listRecentForTenant,
+  renderOutcomesForPrompt,
+  type RecommendationActionType,
+} from "@/lib/ai/recommendations";
 
 /**
  * Convert a JS Date to the Bangkok-local YYYY-MM-DD date string.
@@ -249,6 +255,20 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       // Knowledge injection is best-effort — don't fail the report
     }
 
+    // Outcomes feedback: append a summary of recent recommendation
+    // outcomes for THIS tenant so the AI biases toward what worked.
+    // Best-effort — if the table is empty (new tenant) or the query
+    // fails, the report still ships.
+    if (process.env.FEATURE_AI_LEARNING !== "off") {
+      try {
+        const history = await listRecentForTenant(input.tenantId, 10);
+        const outcomesBlock = renderOutcomesForPrompt(history);
+        if (outcomesBlock) userMessage += "\n\n" + outcomesBlock;
+      } catch {
+        // No-op
+      }
+    }
+
     const result = await aiChat({
       role: "analysis",
       system: DAILY_REPORT_SYSTEM_PROMPT,
@@ -270,6 +290,39 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
     // report so the viewer can render an Actions panel without re-parsing.
     const suggestedActions = await extractAndValidateActions(rawContentMd, input.tenantId);
     const contentMd = stripActionsBlock(rawContentMd);
+
+    // Capture each suggested action as an AIRecommendation for the
+    // learning loop. Best-effort: capture failures must NOT block the
+    // report. The mapping below converts the report's action enum to
+    // our internal RecommendationActionType taxonomy.
+    for (const a of suggestedActions) {
+      let actionType: RecommendationActionType;
+      switch (a.action) {
+        case "PAUSE":
+          actionType = "pause";
+          break;
+        case "RESUME":
+          actionType = "resume";
+          break;
+        case "SET_BUDGET":
+          actionType = "change_budget";
+          break;
+        case "DUPLICATE":
+          actionType = "scale_budget"; // duplicate is for scaling winners
+          break;
+        default:
+          actionType = "other";
+      }
+      void captureRecommendation({
+        tenantId: input.tenantId,
+        source: "daily_report",
+        actionType,
+        targetKind: "campaign",
+        targetMetaId: a.metaCampaignId,
+        reasoning: a.reason,
+        payload: a.params ? (a.params as Record<string, unknown>) : null,
+      });
+    }
     // OpenRouter doesn't always surface cache_read_input_tokens via the OpenAI
     // SDK; estimate cost assuming half of input was cached after first call.
     const estimatedCachedTokens = Math.round(promptTokens * 0.6);

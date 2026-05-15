@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { generateDailyReportsForAllTenants } from "@/lib/reports/daily-report";
 import { prisma } from "@/lib/prisma";
 import { runTickForTenant } from "@/lib/rules/runner";
+import { computeOutcomesForTenant } from "@/lib/ai/outcomes";
 
 // Vercel will also call this with `Authorization: Bearer <CRON_SECRET>`
 // when scheduled via vercel.json. Manual invocation requires the same.
@@ -49,12 +50,32 @@ export async function POST(request: Request) {
     }
   }
 
+  // Third piggyback: compute AI-recommendation outcomes for every
+  // tenant that has any recommendation older than 7 days. Failure per
+  // tenant is logged and doesn't block other work.
+  const outcomeResults: Array<{ tenantId: string; ok: boolean; error?: string; computed?: number; skipped?: number }> = [];
+  if (process.env.FEATURE_AI_LEARNING !== "off") {
+    const recTenants = await prisma.tenant.findMany({
+      where: { aiRecommendations: { some: {} } },
+      select: { id: true },
+    });
+    for (const t of recTenants) {
+      try {
+        const r = await computeOutcomesForTenant(t.id);
+        outcomeResults.push({ tenantId: t.id, ok: true, computed: r.computed, skipped: r.skipped });
+      } catch (err) {
+        outcomeResults.push({ tenantId: t.id, ok: false, error: (err as Error).message });
+      }
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     total: results.length,
     counts,
     results,
     rules: { tenantsProcessed: ruleTenants.length, results: ruleResults },
+    outcomes: { tenantsProcessed: outcomeResults.length, results: outcomeResults },
   });
 }
 
