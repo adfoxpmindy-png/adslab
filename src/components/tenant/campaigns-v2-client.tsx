@@ -16,6 +16,7 @@ import {
   Plus,
   Search,
   Settings2,
+  Stethoscope,
   Table as TableIcon,
 } from "lucide-react";
 
@@ -365,6 +366,7 @@ function CampaignsTable({
               onToggleCampaign={() => toggleCampaign(r)}
               expandedAdSets={expandedAdSets}
               onToggleAdSet={toggleAdSet}
+              tenantSlug={tenantSlug}
             />
           );
         })}
@@ -380,6 +382,7 @@ function CampaignRowGroup({
   onToggleCampaign,
   expandedAdSets,
   onToggleAdSet,
+  tenantSlug,
 }: {
   row: CampaignRow;
   expanded: boolean;
@@ -387,19 +390,32 @@ function CampaignRowGroup({
   onToggleCampaign: () => void;
   expandedAdSets: Set<string>;
   onToggleAdSet: (id: string) => void;
+  tenantSlug: string;
 }) {
+  // Build a focused diagnose prompt for the AI. The system prompt already
+  // teaches the 3-lever framework + senior-media-buyer tone, so the AI
+  // will ground the answer in real Meta data + Nick's playbook.
+  const diagnosePrompt = `Diagnose แคมเปญ "${row.name}" (id: ${row.metaCampaignId}) — ใช้ getCampaignInsights ดึง 7-day metrics, แล้วบอก 3 levers (creative / landing page / offer) ตัวไหนน่าจะคือปัญหา + แนะนำ action ที่ทำได้พรุ่งนี้`;
   return (
     <>
       <DataTableRow expandable expanded={expanded} onToggle={onToggleCampaign}>
         <DataTableCell>
           <div className="flex items-start gap-2">
             <Layers className="mt-0.5 size-4 shrink-0 text-violet-600 dark:text-violet-300" />
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate font-medium" title={row.name}>
                 {row.name}
               </p>
               <p className="truncate text-[11px] text-muted-foreground">{row.account.name}</p>
             </div>
+            <Link
+              href={`/t/${tenantSlug}/ai?q=${encodeURIComponent(diagnosePrompt)}`}
+              onClick={(e) => e.stopPropagation()}
+              className="ml-1 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-opacity hover:bg-violet-50 hover:text-violet-700 hover:opacity-100 dark:hover:bg-violet-950/40 dark:hover:text-violet-300"
+              title="Diagnose แคมเปญนี้ด้วย AI (เปิด AI Chat พร้อมคำถาม)"
+            >
+              <Stethoscope className="size-3.5" />
+            </Link>
           </div>
         </DataTableCell>
         <DataTableCell>

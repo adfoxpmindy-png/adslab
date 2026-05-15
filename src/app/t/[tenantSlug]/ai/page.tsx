@@ -7,10 +7,10 @@ export default async function AIPage({
   searchParams,
 }: {
   params: Promise<{ tenantSlug: string }>;
-  searchParams: Promise<{ c?: string }>;
+  searchParams: Promise<{ c?: string; q?: string }>;
 }) {
   const { tenantSlug } = await params;
-  const { c } = await searchParams;
+  const { c, q } = await searchParams;
   await requireTenantMember(tenantSlug);
 
   return (
@@ -21,6 +21,7 @@ export default async function AIPage({
           <AIPageClient
             tenantSlug={tenantSlug}
             initialConversationId={c ?? null}
+            initialPrompt={q ?? null}
           />
         </div>
       </div>

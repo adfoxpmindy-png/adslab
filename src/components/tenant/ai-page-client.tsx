@@ -38,17 +38,20 @@ type Conversation = {
 export function AIPageClient({
   tenantSlug,
   initialConversationId,
+  initialPrompt,
 }: {
   tenantSlug: string;
   initialConversationId: string | null;
+  initialPrompt?: string | null;
 }) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(initialConversationId);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialPrompt ?? "");
   const [sending, setSending] = useState(false);
   const [loadingList, setLoadingList] = useState(true);
   const [loadingThread, setLoadingThread] = useState(false);
+  const [prefillConsumed, setPrefillConsumed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Initial load: list + ensure there's an active conversation
@@ -109,6 +112,21 @@ export function AIPageClient({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Auto-send prefill prompt (from /ai?q=…) once the conversation is ready.
+  // Used by "Diagnose with AI" deep-links from /campaigns and /reports.
+  useEffect(() => {
+    if (!prefillConsumed && initialPrompt && activeId && !sending && !loadingThread) {
+      setPrefillConsumed(true);
+      // Small delay lets the input render with the prefill before we fire send,
+      // so the user sees their question appear before AI responds.
+      const t = setTimeout(() => {
+        void send();
+      }, 200);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId, loadingThread, initialPrompt, prefillConsumed]);
 
   async function fetchList(): Promise<Conversation[]> {
     try {
