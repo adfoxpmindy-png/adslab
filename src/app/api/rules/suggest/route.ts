@@ -13,6 +13,7 @@ import { NextResponse } from "next/server";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { aiChat } from "@/lib/ai/openrouter";
+import { searchKnowledge } from "@/lib/ai/rag";
 import type { RuleAction, RuleCondition } from "@/lib/rules/types";
 
 type Candidate = {
@@ -42,12 +43,37 @@ export async function POST(request: Request) {
     select: { createdAt: true, errorMessage: true },
   });
 
+  // Ground suggestions in expert wisdom from the system knowledge base
+  // (Nick Theriot + Nattawut Puphet). Best-effort — if the corpus is
+  // empty, suggestions still work, just less grounded.
+  let knowledgeContext = "";
+  try {
+    const chunks = await searchKnowledge(
+      tenant.id,
+      "when should you pause a Facebook ad set automatically based on CPV or ROAS",
+      3,
+    );
+    if (chunks.length > 0) {
+      knowledgeContext =
+        "\n\nExpert wisdom you can reference when crafting rules:\n" +
+        chunks
+          .map(
+            (c, i) =>
+              `[${i + 1}] (from "${c.documentTitle}") ${c.content.slice(0, 400)}…`,
+          )
+          .join("\n");
+    }
+  } catch {
+    // Optional grounding — ignore failures
+  }
+
   const candidates = await callAiForCandidates({
     pauseCount: recentPauses.length,
     pauseSamples: recentPauses.slice(0, 5).map((p) => ({
       reason: p.errorMessage ?? "(no annotation)",
       pausedAt: p.createdAt.toISOString().slice(0, 10),
     })),
+    knowledgeContext,
   });
 
   return NextResponse.json({ candidates });
@@ -60,6 +86,7 @@ export async function POST(request: Request) {
 async function callAiForCandidates(stats: {
   pauseCount: number;
   pauseSamples: Array<{ reason: string; pausedAt: string }>;
+  knowledgeContext?: string;
 }): Promise<Candidate[]> {
   const systemPrompt = `You suggest Meta-ad auto-rules for a Thai media-buying agency.
 Output EXACTLY a JSON object: { "candidates": Candidate[] } with 3 items.
@@ -72,6 +99,7 @@ For zero-history tenants, suggest universally safe rules (spend overage, frequen
   const userMessage = `Tenant stats (last 30 days):
 - Manual pause events: ${stats.pauseCount}
 - Pause samples: ${JSON.stringify(stats.pauseSamples)}
+${stats.knowledgeContext ?? ""}
 
 Return 3 candidate rules now as JSON.`;
 

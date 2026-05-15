@@ -12,6 +12,7 @@ import {
   DAILY_REPORT_SYSTEM_PROMPT,
   buildDailyReportUserMessage,
 } from "./prompt";
+import { fetchReportKnowledge, renderKnowledgeForPrompt } from "./knowledge-injection";
 
 /**
  * Convert a JS Date to the Bangkok-local YYYY-MM-DD date string.
@@ -217,7 +218,7 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
     });
 
     // 5. Build prompt + call Claude
-    const userMessage = buildDailyReportUserMessage({
+    let userMessage = buildDailyReportUserMessage({
       tenantName: tenant.name,
       dateLabel: thaiDateLabel(reportDateStr),
       today: todayPayload,
@@ -225,6 +226,28 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       goalsByCampaignId,
       scopeName: scope?.name ?? null,
     });
+
+    // Ground recommendations in expert knowledge (Nick Theriot + Nattawut
+    // Puphet via system RAG). Best-effort — if knowledge base is empty,
+    // the report just won't carry citations.
+    try {
+      const knowledge = await fetchReportKnowledge(input.tenantId, {
+        totalSpend: todayPayload.summary.spendThb,
+        totalImpressions: todayPayload.summary.impressions,
+        campaignCount: allCampaigns.length,
+        awarenessHighCpm:
+          todayPayload.summary.cpm > 50 &&
+          [...goalsByCampaignId.values()].some((g) => g.objective === "AWARENESS"),
+        // No frequency in DashboardSummary — derive a coarse proxy
+        // from impressions vs. reach is unavailable here; skip.
+        highFrequency: false,
+        unresolved: [...goalsByCampaignId.values()].some((g) => !g.resolved),
+      });
+      const knowledgeBlock = renderKnowledgeForPrompt(knowledge);
+      if (knowledgeBlock) userMessage += "\n\n" + knowledgeBlock;
+    } catch {
+      // Knowledge injection is best-effort — don't fail the report
+    }
 
     const result = await aiChat({
       role: "analysis",
