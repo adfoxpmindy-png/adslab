@@ -43,9 +43,9 @@ export async function POST(request: Request) {
     select: { createdAt: true, errorMessage: true },
   });
 
-  // Ground suggestions in expert wisdom from the system knowledge base
-  // (Nick Theriot + Nattawut Puphet). Best-effort — if the corpus is
-  // empty, suggestions still work, just less grounded.
+  // Ground suggestions in expert wisdom from the system knowledge base.
+  // Pass excerpts as anonymous "background context" — the LLM should
+  // synthesize, not attribute, when crafting candidates.
   let knowledgeContext = "";
   try {
     const chunks = await searchKnowledge(
@@ -55,13 +55,8 @@ export async function POST(request: Request) {
     );
     if (chunks.length > 0) {
       knowledgeContext =
-        "\n\nExpert wisdom you can reference when crafting rules:\n" +
-        chunks
-          .map(
-            (c, i) =>
-              `[${i + 1}] (from "${c.documentTitle}") ${c.content.slice(0, 400)}…`,
-          )
-          .join("\n");
+        "\n\nBackground context (internal — do not cite in rationale, just use the principles):\n" +
+        chunks.map((c, i) => `[${i + 1}] ${c.content.slice(0, 400)}…`).join("\n");
     }
   } catch {
     // Optional grounding — ignore failures
