@@ -1,8 +1,96 @@
-# Spec: UI Design System — Final Pass Additions
+# Spec: UI Design System
 
-This delta extends `ui-design-system` with:
-1. Mobile responsive shell (drawer + hamburger)
-2. Standardized page header pattern (`SetPageTitle` everywhere — no inline `<h1>` headers)
+**Capability:** Brand-aligned design tokens, component primitives, and app shell that all page-level UIs build on. AdsLab's visual identity is anchored by an **indigo → violet → pink gradient** (replacing the previous cyan accent).
+
+---
+
+## Brand identity
+
+The brand is a 3-stop linear gradient: **indigo (270°) → violet (295°) → pink (340°)** in OKLCH color space. Applied to:
+
+- Logo
+- Primary CTA buttons
+- Active sidebar nav state
+- AI feature badges
+- Gradient text accents on hero / landing
+
+Used **sparingly** — at most 1 brand-gradient surface per visible viewport, plus the sidebar active item. Overuse cheapens the effect.
+
+## Design tokens (CSS custom properties)
+
+Defined in `src/app/globals.css` under `:root` (light) and `.dark`.
+
+```
+--brand-indigo  --brand-violet  --brand-pink
+--brand --brand-foreground
+
+--canvas             page background
+--background         card / panel bg
+--surface-elevated   card-on-card
+
+--success / -foreground
+--warning / -foreground
+--info    / -foreground
+--destructive
+
+--shadow-card          subtle 1-2px elevation
+--shadow-card-hover    4-12px hover elevation
+--shadow-popover       larger floating panels
+```
+
+Exposed to Tailwind via `@theme inline { --color-brand-indigo: …; … }` so utilities like `bg-brand-indigo`, `from-brand-violet`, `shadow-card` work in JSX.
+
+## Typography
+
+- Thai: **IBM Plex Sans Thai**
+- English/Latin + numbers: **Inter**
+- Tabular numerals for currency / metric columns: `.tabular-nums { font-variant-numeric: tabular-nums; }`
+
+## Component primitives — `src/components/ui-system/`
+
+| Component | Purpose | Reuse-target |
+|---|---|---|
+| `<KpiCard>` | Headline metric with icon + delta | Dashboard top row |
+| `<StatusBadge>` | Status pill with dot + soft bg | Tables, cards |
+| `<BrandButton>` | Gradient CTA, hover lift | Page primary actions |
+| `<MetricDelta>` | Inline % change with arrow | KPI cards, table cells |
+| `<SectionHeader>` | Title + subtitle + actions slot | Page + section headers |
+| `<DataTableShell>` | Hierarchical table primitive | Campaigns, audiences |
+| `<EmptyState>` | No-data placeholder with CTA | Every list view |
+
+All primitives use Tailwind v4 utilities; no styled-components or CSS-in-JS.
+
+## App shell — `src/components/tenant/`
+
+| Component | Purpose |
+|---|---|
+| `<SidebarV2>` | 240px sidebar, white bg, gradient active state, upgrade card, user avatar |
+| `<TopbarV2>` | Header with page title (from context), tenant switcher, theme toggle, notification, user dropdown |
+| `<MobileSidebar>` | Drawer variant of the sidebar for `< lg` viewports |
+| `<MobileNav>` | Hamburger trigger that opens the drawer |
+| `<PageTitleProvider>` | React context so server-rendered pages can set the topbar title via `<SetPageTitle>` |
+
+## Sidebar information architecture
+
+Old (8 items) → New (9 items including post-launch additions):
+
+| Old | New |
+|---|---|
+| Dashboard | ภาพรวม |
+| Reports | รายงาน |
+| Campaigns | แคมเปญ |
+| Audiences | กลุ่มเป้าหมาย |
+| Journey | (folded under เครื่องมือ) |
+| AI Master | (top-right floating button) |
+| Goals | (folded under แคมเปญ) |
+| Settings | ตั้งค่า |
+| — | บูสต์ด่วน |
+| — | กฎอัตโนมัติ |
+| — | โฆษณา *(per-ad view + วิเคราะห์ภาพ button)* |
+| — | ครีเอทีฟ |
+| — | วิเคราะห์ *(AI Optimize Center)* |
+| — | ความจำ AI *(AI learning loop history)* |
+| — | เครื่องมือ *(Events / Journey / Naming hub)* |
 
 ## Page header pattern (consistency contract)
 
@@ -84,7 +172,7 @@ While open:
 - Width: `w-72 max-w-[85vw]` (288px or 85% of viewport, whichever is smaller)
 - Height: `h-dvh` (full dynamic viewport — accounts for mobile browser UI)
 - Logo + X button in 64px header strip
-- 8 nav items below, same data as desktop sidebar (sourced from shared `sidebar-nav-items.ts`)
+- Nav items below, same data as desktop sidebar (sourced from shared `sidebar-nav-items.ts`)
 - Active item uses the same `bg-brand-gradient` styling as desktop
 
 ### Z-index layering
@@ -111,8 +199,16 @@ Both `SidebarV2` (desktop) and `MobileSidebar` (mobile) MUST consume this — ne
 
 ## Acceptance
 
+- [x] Design tokens defined in `globals.css` for light + dark
+- [x] Brand gradient utility classes (`.bg-brand-gradient`, `.text-brand-gradient`)
+- [x] 7 primitive components shipped + typecheck clean
+- [x] Sidebar v2 + Topbar v2 + PageTitleProvider in tenant layout
+- [x] Existing pages render without errors (build pass)
+- [x] Sidebar active item correctly highlights on every route
+- [x] Logo replaced with new gradient PNG
+- [x] No regression in keyboard nav / focus rings / screen reader behavior
 - [x] All 10+ tenant pages render with topbar title (no inline icon-block headers)
-- [x] Desktop sidebar has identical bottom-left positioning across all pages (measured: aside height = 900 on every page tested)
+- [x] Desktop sidebar has identical bottom-left positioning across all pages
 - [x] Mobile viewport (≤ lg) shows hamburger + working drawer
-- [x] Drawer auto-closes on route change (verified via playwright)
+- [x] Drawer auto-closes on route change
 - [x] Adding a nav item only requires editing `sidebar-nav-items.ts`
