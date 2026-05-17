@@ -163,14 +163,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
       {/* User profile at bottom — dropdown with profile / settings / logout */}
       <div data-sidebar-profile className="mt-auto border-t border-border px-3 py-3">
         <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <button
-                type="button"
-                className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors hover:bg-accent"
-              />
-            }
-          >
+          <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors hover:bg-accent">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-xs font-bold text-white shadow-card">
               {initials}
             </div>
