@@ -24,8 +24,8 @@ const MINOR_UNITS_PER_THB = 100;
 
 // Validation bounds. Founders can request override if they really need
 // to push more than ฿1M/day, but it's almost always a typo.
-const MIN_BUDGET_THB = 20;
-const MAX_BUDGET_THB = 1_000_000;
+export const MIN_BUDGET_THB = 20;
+export const MAX_BUDGET_THB = 1_000_000;
 
 /** True if budget can be edited at the campaign level (CBO). */
 export function isCboCampaign(c: {

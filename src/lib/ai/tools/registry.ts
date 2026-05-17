@@ -5,6 +5,11 @@ import { resumeCampaignTool } from "./resume-campaign";
 import { setCampaignBudgetTool } from "./set-campaign-budget";
 import { searchKnowledgeTool } from "./search-knowledge";
 import { analyzeAdCreativeTool } from "./analyze-ad-creative";
+import { pauseAdSetTool } from "./pause-adset";
+import { resumeAdSetTool } from "./resume-adset";
+import { pauseAdTool } from "./pause-ad";
+import { setAdSetBudgetTool } from "./set-adset-budget";
+import { duplicateCampaignTool } from "./duplicate-campaign";
 import type { ToolDef } from "./types";
 
 /**
@@ -22,6 +27,11 @@ const TOOLS: ToolDef[] = [
   pauseCampaignTool as unknown as ToolDef,
   resumeCampaignTool as unknown as ToolDef,
   setCampaignBudgetTool as unknown as ToolDef,
+  pauseAdSetTool as unknown as ToolDef,
+  resumeAdSetTool as unknown as ToolDef,
+  pauseAdTool as unknown as ToolDef,
+  setAdSetBudgetTool as unknown as ToolDef,
+  duplicateCampaignTool as unknown as ToolDef,
 ];
 
 export function getAllTools(): ToolDef[] {

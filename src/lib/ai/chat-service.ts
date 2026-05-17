@@ -60,6 +60,21 @@ async function captureRecommendationFromToolCall(args: {
       targetKind = "adset";
       targetMetaId = String(args.toolArgs.adSetId ?? args.toolArgs.adsetId ?? "");
       break;
+    case "resumeAdSet":
+      actionType = "resume";
+      targetKind = "adset";
+      targetMetaId = String(args.toolArgs.adSetId ?? args.toolArgs.adsetId ?? "");
+      break;
+    case "pauseAd":
+      actionType = "pause";
+      targetKind = "ad";
+      targetMetaId = String(args.toolArgs.adId ?? "");
+      break;
+    case "setAdSetBudget":
+      actionType = "change_budget";
+      targetKind = "adset";
+      targetMetaId = String(args.toolArgs.adSetId ?? args.toolArgs.adsetId ?? "");
+      break;
     default:
       // Unknown mutate tool — log as "other" so we can audit later.
       const id = args.toolArgs.campaignId ?? args.toolArgs.adSetId ?? args.toolArgs.adId ?? "";
@@ -119,7 +134,10 @@ Default playbook you operate from (this is how YOU think — don't cite where it
 
 Tools:
 - For campaign data, USE listCampaigns / getCampaignInsights / etc. Never invent campaign names or numbers.
-- For mutations (pause, budget), CALL the mutate tool — the user sees a confirmation card before it executes.
+- For mutations (pause, budget, duplicate), CALL the mutate tool — the user sees a confirmation card before it executes.
+- Choose the SMALLEST scope of action that solves the problem: pauseAd (one ad) < pauseAdSet (one ad set, sibling ad sets stay running) < pauseCampaign (whole campaign). Killing scope larger than necessary wastes the winners inside.
+- Use setAdSetBudget when the ad set is ABO (its own budget). Use setCampaignBudget when the campaign is CBO (budget at campaign level). If you call the wrong one, Meta rejects it — check via listCampaigns / getCampaignInsights first.
+- Use duplicateCampaign for SCALING a winner (typical pattern: source ROAS ≥ 2x for 7 days → duplicate at 1.5x budget, initialStatus PAUSED so the user can inspect before activating). Don't use it as a shortcut to "make a new campaign from scratch".
 - For "how do I…" strategy questions, CALL searchKnowledge proactively with a focused English query. Synthesize the chunks into YOUR voice — never quote verbatim, never mention sources, channels, or URLs.
 - For diagnosing a SPECIFIC ad's creative quality (hook, visual hierarchy, on-screen text), CALL analyzeAdCreative with that ad's id. Only call it when (a) the user named a specific ad, or (b) you've already narrowed to ONE underperforming ad within an adset — never speculatively across a list. Use the structured result (hook, strengths, weaknesses, suggestedFixes) to ground concrete creative fixes. If it returns no_visual_asset or quota_exceeded, fall back to metrics-only analysis.
 - If a tool returns an error or "not found", say so plainly and suggest the next step.`;
