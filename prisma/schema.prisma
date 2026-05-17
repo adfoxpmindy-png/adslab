@@ -128,6 +128,7 @@ model User {
   memberships             TenantMember[]
   emailVerificationTokens EmailVerificationToken[]
   connectedMetaAccounts   MetaConnection[]         @relation("MetaConnectionConnector")
+  connectedPageAccounts   MetaPageConnection[]     @relation("MetaPageConnectionConnector")
 }
 
 model Tenant {
@@ -159,6 +160,8 @@ model Tenant {
   boostJobs          BoostJob[]
   autoRules          AutoRule[]
   aiRecommendations  AIRecommendation[]
+  metaPageConnection MetaPageConnection?
+  pagePosts          PagePost[]
 }
 
 /// AI Quick Boost — natural-language → bulk campaign creation. One row
@@ -661,6 +664,102 @@ model MetaPage {
 
   @@unique([metaConnectionId, metaPageId])
   @@index([metaConnectionId])
+}
+
+// Separate Meta-app OAuth for organic page management. Distinct from
+// MetaConnection (which is the ads-only app) because Meta refuses to add
+// the "Manage Page" use case to a Marketing-API app. See
+// memory/reference_meta_app_type_constraint.md for the discovery story.
+// One tenant may have zero or one of each connection type independently.
+model MetaPageConnection {
+  id                   String               @id @default(cuid())
+  tenantId             String               @unique
+  // AES-256-GCM encrypted user access token from the page-management app
+  accessTokenEncrypted String
+  tokenExpiresAt       DateTime?
+  metaUserId           String
+  metaUserName         String
+  connectedByUserId    String
+  status               MetaConnectionStatus @default(ACTIVE)
+  connectedAt          DateTime             @default(now())
+  lastSyncedAt         DateTime?
+
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connectedBy User              @relation("MetaPageConnectionConnector", fields: [connectedByUserId], references: [id])
+  managedPages MetaManagedPage[]
+
+  @@index([metaUserId])
+  @@index([status])
+}
+
+// Pages reachable via the page-management connection. Mirrors MetaPage
+// but parented by MetaPageConnection so the token chains stay separate.
+model MetaManagedPage {
+  id                       String   @id @default(cuid())
+  metaPageConnectionId     String
+  metaPageId               String
+  name                     String
+  category                 String?
+  pictureUrl               String?
+  pageAccessTokenEncrypted String
+  lastFetchedAt            DateTime @default(now())
+
+  connection MetaPageConnection @relation(fields: [metaPageConnectionId], references: [id], onDelete: Cascade)
+  posts      PagePost[]
+
+  @@unique([metaPageConnectionId, metaPageId])
+  @@index([metaPageConnectionId])
+}
+
+// Organic page posts composed in AdsLab. Status tracks lifecycle from
+// initial DB write (PENDING) → scheduled on Meta (SCHEDULED) → published
+// (PUBLISHED) or cancelled/failed.
+model PagePost {
+  id                   String         @id @default(cuid())
+  tenantId             String
+  // FK to MetaManagedPage.id — the page this post belongs to.
+  managedPageId        String
+  // Convenience: Meta page id, denormalized for fast lookup.
+  metaPageId           String
+  // Caption text (Thai/English mixed allowed).
+  caption              String         @db.Text
+  // Array of public Vercel-Blob URLs. Photos OR a single video URL.
+  mediaUrls            Json
+  // Auto-detected from media count + content-type.
+  postKind             PagePostKind   @default(PHOTO)
+  // The scheduled publish time the user picked.
+  scheduledAt          DateTime
+  // Meta post id once it accepts the schedule; null until then.
+  metaPostId           String?
+  status               PagePostStatus @default(PENDING)
+  errorMessage         String?        @db.Text
+  // AI-tool-call origin (when present): conversation id from chat-service.
+  conversationId       String?
+  createdByUserId      String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  // Set once publish completes (we observe via reconciliation).
+  publishedAt          DateTime?
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  managedPage MetaManagedPage @relation(fields: [managedPageId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, scheduledAt])
+  @@index([managedPageId, status])
+}
+
+enum PagePostKind {
+  PHOTO
+  ALBUM
+  VIDEO
+}
+
+enum PagePostStatus {
+  PENDING     // row created, Meta call in flight
+  SCHEDULED   // Meta accepted with scheduled_publish_time
+  PUBLISHED   // Meta confirmed publish
+  CANCELLED   // user cancelled or Meta DELETE succeeded
+  FAILED      // Meta rejected the schedule call
 }
 
 // The goal/intent attached to a campaign. Three sources of truth,

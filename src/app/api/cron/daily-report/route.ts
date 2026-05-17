@@ -4,6 +4,7 @@ import { generateDailyReportsForAllTenants } from "@/lib/reports/daily-report";
 import { prisma } from "@/lib/prisma";
 import { runTickForTenant } from "@/lib/rules/runner";
 import { computeOutcomesForTenant } from "@/lib/ai/outcomes";
+import { cleanupOldPostBlobs } from "@/lib/meta/page-posts";
 
 // Vercel will also call this with `Authorization: Bearer <CRON_SECRET>`
 // when scheduled via vercel.json. Manual invocation requires the same.
@@ -69,6 +70,18 @@ export async function POST(request: Request) {
     }
   }
 
+  // Fourth piggyback: blob cleanup for old PUBLISHED page posts. Media
+  // older than 30 days lives on Meta already; AdsLab's local copy is
+  // pure overhead. Run lightly — only deletes ~200 blobs per tick.
+  let blobCleanup: { cleaned: number; failed: number } | null = null;
+  if (process.env.FEATURE_PAGE_POST_CLEANUP !== "off") {
+    try {
+      blobCleanup = await cleanupOldPostBlobs();
+    } catch (err) {
+      console.warn("[cron/daily-report] blob cleanup failed:", (err as Error).message);
+    }
+  }
+
   return NextResponse.json({
     ok: true,
     total: results.length,
@@ -76,6 +89,7 @@ export async function POST(request: Request) {
     results,
     rules: { tenantsProcessed: ruleTenants.length, results: ruleResults },
     outcomes: { tenantsProcessed: outcomeResults.length, results: outcomeResults },
+    pagePostBlobCleanup: blobCleanup,
   });
 }
 

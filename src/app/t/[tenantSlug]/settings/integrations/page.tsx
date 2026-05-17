@@ -2,6 +2,10 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 
 import { MetaConnectionCard, type MetaConnectionData } from "@/components/tenant/meta-connection-card";
+import {
+  PageConnectionCard,
+  type PageConnectionData,
+} from "@/components/tenant/page-connection-card";
 import { ComingSoonCard } from "@/components/tenant/coming-soon-card";
 import { TenantScopeCard } from "@/components/tenant/tenant-scope-card";
 import { NamingTemplatesCard } from "@/components/tenant/naming-templates-card";
@@ -13,6 +17,8 @@ import { getTenantScope } from "@/lib/tenant-scope";
 
 type SearchParams = Promise<{
   connected?: string;
+  page_connected?: string;
+  sync_failed?: string;
   error?: string;
   tab?: string;
 }>;
@@ -30,7 +36,7 @@ export default async function IntegrationsPage({
   searchParams: SearchParams;
 }) {
   const { tenantSlug } = await params;
-  const { connected, error, tab: tabRaw } = await searchParams;
+  const { connected, page_connected: pageConnected, error, tab: tabRaw } = await searchParams;
   const tab = parseTab(tabRaw);
   const { tenant, role } = await requireTenantMember(tenantSlug);
   const canEditScope = role === "OWNER";
@@ -55,6 +61,17 @@ export default async function IntegrationsPage({
         },
         orderBy: { name: "asc" },
       },
+    },
+  });
+
+  const pageConnection = await prisma.metaPageConnection.findFirst({
+    where: { tenant: { slug: tenantSlug } },
+    select: {
+      metaUserName: true,
+      status: true,
+      connectedAt: true,
+      lastSyncedAt: true,
+      _count: { select: { managedPages: true } },
     },
   });
 
@@ -166,6 +183,36 @@ export default async function IntegrationsPage({
               role={role}
               data={data}
               flash={{ success: connected === "1", error: error ?? null }}
+            />
+          </section>
+
+          <section className="space-y-3">
+            <header className="flex items-start gap-3">
+              <div className="flex size-9 items-center justify-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-300">
+                <MetaIcon className="size-5" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight">Page Management</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  เขียน + ตั้งเวลาโพสต์เพจ Facebook (แยกจากการเชื่อมโฆษณา)
+                </p>
+              </div>
+            </header>
+            <PageConnectionCard
+              tenantSlug={tenantSlug}
+              role={role}
+              data={
+                pageConnection
+                  ? {
+                      metaUserName: pageConnection.metaUserName,
+                      status: pageConnection.status,
+                      connectedAt: pageConnection.connectedAt.toISOString(),
+                      lastSyncedAt: pageConnection.lastSyncedAt?.toISOString() ?? null,
+                      pageCount: pageConnection._count.managedPages,
+                    }
+                  : (null as PageConnectionData)
+              }
+              flashSuccess={pageConnected === "1"}
             />
           </section>
 

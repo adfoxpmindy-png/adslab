@@ -10,6 +10,7 @@ import { resumeAdSetTool } from "./resume-adset";
 import { pauseAdTool } from "./pause-ad";
 import { setAdSetBudgetTool } from "./set-adset-budget";
 import { duplicateCampaignTool } from "./duplicate-campaign";
+import { schedulePagePostTool } from "./schedule-page-post";
 import type { ToolDef } from "./types";
 
 /**
@@ -32,6 +33,7 @@ const TOOLS: ToolDef[] = [
   pauseAdTool as unknown as ToolDef,
   setAdSetBudgetTool as unknown as ToolDef,
   duplicateCampaignTool as unknown as ToolDef,
+  schedulePagePostTool as unknown as ToolDef,
 ];
 
 export function getAllTools(): ToolDef[] {
