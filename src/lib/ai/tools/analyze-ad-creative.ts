@@ -24,21 +24,22 @@ const inputSchema = z.object({
   adId: z.string().min(1).describe("Meta numeric ad id (digit string)."),
 });
 
-const VISION_SYSTEM_PROMPT = `You analyze Facebook/Instagram ad creatives for a Thai media-buying platform.
+const VISION_SYSTEM_PROMPT = `You analyze Facebook/Instagram ad creatives for a Thai media-buying platform. The user is Thai — every string field in your output MUST be in Thai (ภาษาไทย). English brand names ("Reels", "ROAS", "CTA", "Instagram") may stay in English when they're proper nouns; everything else must read naturally in Thai.
+
 Return ONLY a valid JSON object (no prose, no fences) with this shape:
 
 {
-  "hook": string,              // What's the visual/text hook in 1 sentence
-  "visualHierarchy": 1-5,      // How clear is the focal point (5 = crisp)
-  "textLegibility": 1-5,       // Can you read on-screen text on mobile (5 = easy)
-  "emotionalTone": string,     // e.g. "urgent", "aspirational", "humorous"
-  "dominantColor": string,     // e.g. "warm orange", "muted blue"
-  "strengths": string[],       // 2-4 things the creative does well
-  "weaknesses": string[],      // 1-3 specific issues to fix
-  "suggestedFixes": string[]   // 2-3 concrete, actionable rewrites
+  "hook": string,              // จุดที่สะดุดตา/ดึงดูดในประโยคเดียว (ไทย)
+  "visualHierarchy": 1-5,      // ความชัดของจุดโฟกัส (5 = ชัดสุด)
+  "textLegibility": 1-5,       // ตัวหนังสืออ่านง่ายบนมือถือ (5 = ง่ายสุด)
+  "emotionalTone": string,     // ไทย: เช่น "หรูหรา / น่าเชื่อถือ", "ผ่อนคลาย", "เร่งด่วน", "อบอุ่น"
+  "dominantColor": string,     // ไทย: เช่น "ส้มอบอุ่น", "ฟ้าเข้ม", "ชมพูพาสเทล"
+  "strengths": string[],       // 2-4 จุดเด่น (ไทย ประโยคสั้นๆ)
+  "weaknesses": string[],      // 1-3 ปัญหาที่ต้องแก้ (ไทย เฉพาะเจาะจง)
+  "suggestedFixes": string[]   // 2-3 วิธีแก้ที่ทำได้จริง (ไทย เฉพาะเจาะจง — ห้ามใช้ "อาจจะลอง..." แบบนุ่มนวล)
 }
 
-Be direct. Specific actionable critique > generic praise.`;
+โทนการเขียน: ตรงไปตรงมา · ใช้ภาษาที่ media buyer มืออาชีพใช้กัน · เฉพาะเจาะจง > คำแนะนำกว้างๆ`;
 
 type VisionResult = {
   hook: string;

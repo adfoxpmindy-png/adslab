@@ -2,10 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronDown, Crown } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown, Crown, Settings, LogOut, User as UserIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { SIDEBAR_NAV_ITEMS, isPathActive } from "./sidebar-nav-items";
 
 /**
@@ -29,6 +37,7 @@ type SidebarV2Props = {
 
 export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const items = SIDEBAR_NAV_ITEMS.map((item) => ({
     label: item.label,
     href: item.href(tenantSlug),
@@ -151,23 +160,54 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
         </div>
       )}
 
-      {/* User profile at bottom */}
+      {/* User profile at bottom — dropdown with profile / settings / logout */}
       <div data-sidebar-profile className="mt-auto border-t border-border px-3 py-3">
-        <Link
-          href={`/t/${tenantSlug}/settings/integrations`}
-          className="flex items-center gap-2.5 rounded-xl p-2 transition-colors hover:bg-accent"
-        >
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-xs font-bold text-white shadow-card">
-            {initials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold leading-tight">{user.name}</p>
-            <p className="truncate text-[11px] capitalize text-muted-foreground">
-              {user.role.toLowerCase()}
-            </p>
-          </div>
-          <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button
+                type="button"
+                className="flex w-full items-center gap-2.5 rounded-xl p-2 text-left transition-colors hover:bg-accent"
+              />
+            }
+          >
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-gradient text-xs font-bold text-white shadow-card">
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold leading-tight">{user.name}</p>
+              <p className="truncate text-[11px] capitalize text-muted-foreground">
+                {user.role.toLowerCase()}
+              </p>
+            </div>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="top" className="w-56">
+            <DropdownMenuLabel className="truncate">
+              {user.email}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
+              <UserIcon className="mr-2 size-4" />
+              โปรไฟล์ + บัญชี
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
+              <Settings className="mr-2 size-4" />
+              ตั้งค่า
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST" });
+                router.push("/login");
+              }}
+              className="text-rose-600 dark:text-rose-300"
+            >
+              <LogOut className="mr-2 size-4" />
+              ออกจากระบบ
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </aside>
   );
