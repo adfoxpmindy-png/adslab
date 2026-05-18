@@ -58,7 +58,9 @@ export const BoostIntentSchema = z.object({
 export type BoostKpi = z.infer<typeof BoostKpiSchema>;
 export type BoostIntent = z.infer<typeof BoostIntentSchema>;
 
-const SYSTEM_PROMPT = `You are AdsLab's boost-request parser for Thai media buyers. The user pastes a free-form client message (usually in Thai) and you extract a structured plan.
+const SYSTEM_PROMPT = `You are AdsLab's boost-request parser for SE-Asia media buyers. The user pastes a free-form client message (usually in Thai, sometimes English or Lao) and you extract a structured plan.
+
+For free-form string fields ("purpose", "assumptions[]", "notes"), respond in the same language as the input message (Thai → Thai, English → English, Lao → Lao). Structured fields (enums, numbers, ISO dates) follow the schema regardless.
 
 Always reason in Bangkok local time (UTC+7). When the user says "พรุ่งนี้" or "วันนี้", interpret relative to the current Bangkok date provided in the user message.
 

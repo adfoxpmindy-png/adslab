@@ -50,7 +50,10 @@
     "success": "ສຳເລັດ",
     "back": "ກັບ",
     "next": "ຕໍ່ໄປ",
-    "close": "ປິດ"
+    "close": "ປິດ",
+    "tryAgain": "ລອງໃໝ່",
+    "settingsLink": "ໄປທີ່ Settings",
+    "connectMetaFirst": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນຈິ່ງໃຊ້ໄດ້"
   },
   "status": {
     "active": "ກຳລັງແລ່ນ",
@@ -60,5 +63,59 @@
     "cancelled": "ຍົກເລີກ",
     "failed": "ລົ້ມເຫລວ",
     "pending": "ລໍຖ້າ"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "ພາບລວມ",
+      "subtitle": "ສະຫຼຸບຜົນການໂຄສະນາທັງໝົດ"
+    },
+    "boost": {
+      "title": "ບູສດ່ວນ",
+      "subtitle": "ສະເພາະ OWNER + MEDIA_BUYER"
+    },
+    "campaigns": {
+      "title": "ແຄມເປນ",
+      "subtitle": "ຈັດການ + ວາງແຜນແຄມເປນຂອງທ່ານ"
+    },
+    "ads": {
+      "title": "ໂຄສະນາ",
+      "subtitle": "ເບິ່ງ + ວິເຄາະຄຣີເອທີຟຂອງແຕ່ລະໂຄສະນາ"
+    },
+    "audiences": {
+      "title": "ກຸ່ມເປົ້າໝາຍ"
+    },
+    "creatives": {
+      "title": "ຄຣີເອທີຟ",
+      "subtitle": "ຄັງຮູບ + ວິດີໂອ ທີ່ໃຊ້ໃນແຄມເປນ"
+    },
+    "posts": {
+      "title": "ໂພສເພຈ",
+      "subtitle": "ຂຽນ + ກຳນົດເວລາໂພສ Facebook"
+    },
+    "postsNew": {
+      "title": "ຂຽນໂພສໃໝ່"
+    },
+    "reports": {
+      "title": "ລາຍງານ"
+    },
+    "aiOptimize": {
+      "title": "AI Optimization Center",
+      "subtitle": "AI ວິເຄາະ + ແນະນຳວິທີປັບປຸງປະສິດທິພາບແບບເຣຍລ໌ໄທມ໌"
+    },
+    "memory": {
+      "title": "ຄວາມຈຳ AI",
+      "subtitle": "ສິ່ງທີ່ AI ໄດ້ຮຽນຮູ້ຈາກບັນຊີຂອງທ່ານ"
+    },
+    "tools": {
+      "title": "ເຄື່ອງມື",
+      "subtitle": "ເຄື່ອງມື AI + ເຄື່ອງມືຂັ້ນສູງທັງໝົດ"
+    },
+    "goals": {
+      "title": "ເປົ້າໝາຍ Campaign"
+    },
+    "ai": {
+      "title": "AI Master",
+      "subtitle": "ຜູ້ຊ່ວຍ AI ສຳລັບວິເຄາະ + ຈັດການແຄມເປນ"
+    }
   }
 }

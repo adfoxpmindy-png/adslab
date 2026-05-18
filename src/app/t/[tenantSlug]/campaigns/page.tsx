@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -34,18 +35,20 @@ export default async function CampaignsPage({
   const canEdit = role === "OWNER" || role === "MEDIA_BUYER";
 
   void highlight;
+  const tPages = await getTranslations("pages.campaigns");
+  const tCommon = await getTranslations("common");
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle title="แคมเปญ" subtitle="จัดการและวางแผนแคมเปญของคุณ" />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
+            <p className="text-sm font-medium">{tCommon("connectMetaFirst")}</p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "gap-2")}
             >
-              ไปที่ Settings
+              {tCommon("settingsLink")}
             </Link>
           </Card>
         </div>

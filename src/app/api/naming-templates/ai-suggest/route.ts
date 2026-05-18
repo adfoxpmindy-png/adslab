@@ -6,6 +6,8 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { aiChat } from "@/lib/ai/openrouter";
 import { detectPatternsFromNames } from "@/lib/naming-template";
+import { resolveUserLocale } from "@/lib/i18n/server";
+import { localeDirective } from "@/lib/i18n/prompt";
 
 /**
  * POST /api/naming-templates/ai-suggest?tenantSlug=<slug>
@@ -25,7 +27,10 @@ const bodySchema = z.object({
   sampleSize: z.number().int().min(20).max(500).optional().default(200),
 });
 
-const SUGGESTION_PROMPT = `You analyze a list of advertising campaign names from a Thai media-buying agency and propose naming TEMPLATES the team should standardize on.
+function buildSuggestionPrompt(localeInstruction: string): string {
+  return `You analyze a list of advertising campaign names from an SE-Asia media-buying agency and propose naming TEMPLATES the team should standardize on.
+
+${localeInstruction}
 
 Output rules (strict):
   - Return ONLY valid JSON matching the schema below — no prose, no markdown.
@@ -41,14 +46,15 @@ Schema:
 {
   "templates": [
     {
-      "name": "short Thai or English label, ≤30 chars",
+      "name": "short label in user's language, ≤30 chars",
       "pattern": "the template string with {Placeholders}",
-      "description": "one Thai sentence explaining when to use this",
+      "description": "one sentence in user's language explaining when to use this",
       "evidence_examples": ["existing name 1", "existing name 2"]
     }
   ],
-  "notes": "optional 1 sentence Thai summary of what you found"
+  "notes": "optional 1-sentence summary in user's language"
 }`;
+}
 
 export async function POST(request: Request) {
   const url = new URL(request.url);
@@ -56,7 +62,8 @@ export async function POST(request: Request) {
   if (!tenantSlug) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
-  await requireSession();
+  const session = await requireSession();
+  const locale = await resolveUserLocale(session.userId);
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
 
   const body = await request.json().catch(() => ({}));
@@ -115,7 +122,7 @@ export async function POST(request: Request) {
   try {
     const result = await aiChat({
       role: parsed.data.mode,
-      system: SUGGESTION_PROMPT,
+      system: buildSuggestionPrompt(localeDirective(locale)),
       messages: [{ role: "user", content: userMsg }],
       // Templates are tiny; cap output to keep cost predictable.
       maxTokens: 800,

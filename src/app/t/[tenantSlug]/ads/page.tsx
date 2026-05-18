@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -32,11 +33,12 @@ export default async function AdsPage({
     select: { id: true, status: true },
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
+  const tPages = await getTranslations("pages.ads");
 
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle title="โฆษณา" subtitle="ดู + วิเคราะห์ creative แต่ละชิ้น" />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
@@ -127,7 +129,7 @@ export default async function AdsPage({
 
   return (
     <>
-      <SetPageTitle title="โฆษณา" subtitle="ดู + วิเคราะห์ creative ของ ad แต่ละชิ้น" />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-4 px-6 py-6">
         <AdsClient
           tenantSlug={tenantSlug}

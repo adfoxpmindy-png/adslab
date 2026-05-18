@@ -1,4 +1,5 @@
 import { Brain, TrendingUp, BarChart3, Clock } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { requireTenantMember } from "@/lib/auth/tenant";
@@ -74,14 +75,12 @@ export default async function MemoryPage({
 
   const totalOutcomes = feed.length + breakdown.reduce((s, b) => s + b.total, 0);
   const hasAnyData = breakdown.length > 0 || feed.length > 0;
+  const tPages = await getTranslations("pages.memory");
 
   if (!hasAnyData) {
     return (
       <>
-        <SetPageTitle
-          title="ความจำ AI"
-          subtitle="สิ่งที่ AI เรียนรู้จากบัญชีคุณ"
-        />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-3xl space-y-6 px-6 py-8">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
@@ -104,10 +103,7 @@ export default async function MemoryPage({
 
   return (
     <>
-      <SetPageTitle
-        title="ความจำ AI"
-        subtitle="สิ่งที่ AI เรียนรู้จากบัญชีคุณ"
-      />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-4xl space-y-6 px-6 py-8">
         <Card className="p-5">
           <div className="mb-3 flex items-center gap-2">

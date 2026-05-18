@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -24,11 +25,12 @@ export default async function PostsPage({
     select: { id: true, status: true, metaUserName: true },
   });
   const isConnected = pageConnection !== null && pageConnection.status === "ACTIVE";
+  const tPages = await getTranslations("pages.posts");
 
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle title="โพสต์เพจ" subtitle="เขียน + ตั้งเวลาโพสต์เพจ Facebook" />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <p className="text-sm font-medium">ยังไม่ได้เชื่อม Page Management</p>

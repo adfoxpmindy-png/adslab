@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export default async function NewPostPage({
 }) {
   const { tenantSlug } = await params;
   const { tenant } = await requireTenantMember(tenantSlug);
+  const tPages = await getTranslations("pages.postsNew");
 
   const pageConnection = await prisma.metaPageConnection.findUnique({
     where: { tenantId: tenant.id },
@@ -24,7 +26,7 @@ export default async function NewPostPage({
   if (!pageConnection || pageConnection.status !== "ACTIVE") {
     return (
       <>
-        <SetPageTitle title="เขียนโพสต์ใหม่" />
+        <SetPageTitle title={tPages("title")} />
         <div className="mx-auto w-full max-w-3xl px-6 py-6">
           <Card className="border-dashed p-6 text-center">
             <p className="text-sm">ต้องเชื่อม Page Management ก่อน</p>

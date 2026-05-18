@@ -5,6 +5,8 @@ import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { aiChat } from "@/lib/ai/openrouter";
 import { generateCreativeImage } from "@/lib/ai/image-gen";
+import { resolveUserLocale } from "@/lib/i18n/server";
+import { localeDirective } from "@/lib/i18n/prompt";
 
 /**
  * Generate an AI campaign plan from a minimal brief. Returns a structured
@@ -53,9 +55,11 @@ export type CampaignPlanResponse = {
   }>;
 };
 
-const SYSTEM_PROMPT = `คุณคือ AI media buyer ที่ช่วยวางแผนแคมเปญ Meta ads. ต้องตอบเป็น JSON เท่านั้น (no markdown, no commentary).
+const SYSTEM_PROMPT_BASE = `คุณคือ AI media buyer ที่ช่วยวางแผนแคมเปญ Meta ads. ต้องตอบเป็น JSON เท่านั้น (no markdown, no commentary).
 
-ภาษาที่ใช้ใน field ค่าๆ: ภาษาไทย ทั้งหมด ยกเว้น metric numbers
+{{LOCALE_DIRECTIVE}}
+
+ภาษาที่ใช้ใน field ค่าๆ: ตามภาษาที่ระบุข้างต้น ยกเว้น metric numbers
 
 Output schema (ห้ามเปลี่ยน key หรือ shape):
 {
@@ -88,7 +92,7 @@ Output schema (ห้ามเปลี่ยน key หรือ shape):
 - adSets ต้องแบ่ง budgetPercent รวมเป็น 100
 - adSets ควรครอบคลุม audience หลายกลุ่ม (อย่าทับซ้อนกันมาก)
 - creatives ควรหลากหลาย (อย่างน้อย 1 video, 1 image)
-- คำพูดต้องเป็นภาษาไทยธรรมชาติ ไม่แปลตรงๆ`;
+- คำพูดต้องเป็นภาษาธรรมชาติของผู้ใช้ (ตาม locale directive ด้านบน) ไม่แปลตรงๆ`;
 
 export async function POST(req: Request) {
   const session = await requireSession();
@@ -102,12 +106,13 @@ export async function POST(req: Request) {
 
   await requireTenantMember(body.data.tenantSlug);
 
+  const locale = await resolveUserLocale(session.userId);
   const userPrompt = buildUserPrompt(body.data);
 
   try {
     const result = await aiChat({
       role: "analysis",
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT_BASE.replace("{{LOCALE_DIRECTIVE}}", localeDirective(locale)),
       messages: [{ role: "user", content: userPrompt }],
       temperature: 0.7,
     });

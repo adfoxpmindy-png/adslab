@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -22,14 +23,12 @@ export default async function BoostPage({
     select: { id: true, status: true },
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
+  const tPages = await getTranslations("pages.boost");
 
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle
-          title="บูสต์ด่วน"
-          subtitle="วางข้อความจากลูกค้า → AI ตีความ → สร้างหลาย campaigns ใน 2 คลิก"
-        />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน Quick Boost</p>
@@ -48,7 +47,7 @@ export default async function BoostPage({
   if (!canEdit) {
     return (
       <>
-        <SetPageTitle title="บูสต์ด่วน" subtitle="OWNER + MEDIA_BUYER เท่านั้น" />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <p className="text-sm font-medium">ฟีเจอร์นี้เปิดให้ OWNER + MEDIA_BUYER</p>
@@ -66,10 +65,7 @@ export default async function BoostPage({
 
   return (
     <>
-      <SetPageTitle
-        title="บูสต์ด่วน"
-        subtitle="วางข้อความจากลูกค้า → AI ตีความ → สร้างหลาย campaigns ใน 2 คลิก"
-      />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <BoostClient
           tenantSlug={tenantSlug}

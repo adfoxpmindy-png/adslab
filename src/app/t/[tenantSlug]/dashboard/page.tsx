@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -72,10 +73,11 @@ export default async function DashboardPage({
   // OnboardingChecklist + ConnectMetaCta path: when Meta not yet
   // connected, we don't render the v2 dashboard — show the connect
   // prompt instead.
+  const tPages = await getTranslations("pages.dashboard");
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle title="ภาพรวม" subtitle={tenant.name} />
+        <SetPageTitle title={tPages("title")} subtitle={tenant.name} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
           {isOwner && (
             <OnboardingChecklist

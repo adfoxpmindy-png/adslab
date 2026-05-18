@@ -11,9 +11,13 @@
 import { NextResponse } from "next/server";
 
 import { requireTenantMember } from "@/lib/auth/tenant";
+import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { aiChat } from "@/lib/ai/openrouter";
 import { searchKnowledge } from "@/lib/ai/rag";
+import { resolveUserLocale } from "@/lib/i18n/server";
+import { localeDirective } from "@/lib/i18n/prompt";
+import type { Locale } from "@/i18n/locales";
 import type { RuleAction, RuleCondition } from "@/lib/rules/types";
 
 type Candidate = {
@@ -27,7 +31,9 @@ export async function POST(request: Request) {
   const url = new URL(request.url);
   const tenantSlug = url.searchParams.get("tenantSlug");
   if (!tenantSlug) return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
+  const locale = await resolveUserLocale(session.userId);
 
   // Recent manual pauses on this tenant — the strongest signal of what
   // a human would have automated.
@@ -69,6 +75,7 @@ export async function POST(request: Request) {
       pausedAt: p.createdAt.toISOString().slice(0, 10),
     })),
     knowledgeContext,
+    locale,
   });
 
   return NextResponse.json({ candidates });
@@ -82,10 +89,14 @@ async function callAiForCandidates(stats: {
   pauseCount: number;
   pauseSamples: Array<{ reason: string; pausedAt: string }>;
   knowledgeContext?: string;
+  locale: Locale;
 }): Promise<Candidate[]> {
-  const systemPrompt = `You suggest Meta-ad auto-rules for a Thai media-buying agency.
+  const systemPrompt = `You suggest Meta-ad auto-rules for an SE-Asia media-buying agency.
+
+${localeDirective(stats.locale)}
+
 Output EXACTLY a JSON object: { "candidates": Candidate[] } with 3 items.
-Candidate schema: { name: string (Thai or English, <60 chars), condition: { metric: "cpv"|"roas"|"spend"|"frequency"|"ctr", op: "gt"|"lt"|"gte"|"lte", value: number, windowHours: 1|2|6|24, scope: "adset"|"campaign" }, action: "pause_adset"|"pause_campaign"|"notify_email"|"notify_in_app", rationale: string (Thai, 1-2 sentences, ≤200 chars) }
+Candidate schema: { name: string (in user's language, <60 chars), condition: { metric: "cpv"|"roas"|"spend"|"frequency"|"ctr", op: "gt"|"lt"|"gte"|"lte", value: number, windowHours: 1|2|6|24, scope: "adset"|"campaign" }, action: "pause_adset"|"pause_campaign"|"notify_email"|"notify_in_app", rationale: string (in user's language, 1-2 sentences, ≤200 chars) }
 
 If tenant has manual pause history, propose at least one rule that mirrors what they were doing manually.
 Skew conservative — defaults should rarely false-positive. For thresholds, use round numbers (฿5, ฿10, not ฿4.73).

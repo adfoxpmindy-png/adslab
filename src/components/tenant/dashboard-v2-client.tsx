@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Calendar, ChevronRight, CircleDollarSign, MousePointerClick, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   CartesianGrid,
@@ -107,12 +108,13 @@ export function DashboardV2Client({
     }
   }
 
+  const tPages = useTranslations("pages.dashboard");
   const fromCache = !loading && (payload === initialPayload ? initialFromCache : false);
   const isStale = !loading && (payload === initialPayload ? initialIsStale : false);
 
   return (
     <>
-      <SetPageTitle title="ภาพรวม" subtitle="สรุปผลการทำโฆษณาทั้งหมด" />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
 
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         {/* Top date controls */}

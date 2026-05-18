@@ -50,7 +50,10 @@
     "success": "สำเร็จ",
     "back": "กลับ",
     "next": "ถัดไป",
-    "close": "ปิด"
+    "close": "ปิด",
+    "tryAgain": "ลองอีกครั้ง",
+    "settingsLink": "ไปที่ Settings",
+    "connectMetaFirst": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน"
   },
   "status": {
     "active": "กำลังรัน",
@@ -60,5 +63,59 @@
     "cancelled": "ยกเลิก",
     "failed": "ล้มเหลว",
     "pending": "รอดำเนินการ"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "ภาพรวม",
+      "subtitle": "สรุปผลการทำโฆษณาทั้งหมด"
+    },
+    "boost": {
+      "title": "บูสต์ด่วน",
+      "subtitle": "OWNER + MEDIA_BUYER เท่านั้น"
+    },
+    "campaigns": {
+      "title": "แคมเปญ",
+      "subtitle": "จัดการและวางแผนแคมเปญของคุณ"
+    },
+    "ads": {
+      "title": "โฆษณา",
+      "subtitle": "ดู + วิเคราะห์ creative ของ ad แต่ละชิ้น"
+    },
+    "audiences": {
+      "title": "จัดการกลุ่มเป้าหมาย"
+    },
+    "creatives": {
+      "title": "ครีเอทีฟ",
+      "subtitle": "คลังภาพ + วิดีโอ ที่ใช้ในแคมเปญ"
+    },
+    "posts": {
+      "title": "โพสต์เพจ",
+      "subtitle": "เขียน + ตั้งเวลาโพสต์เพจ Facebook"
+    },
+    "postsNew": {
+      "title": "เขียนโพสต์ใหม่"
+    },
+    "reports": {
+      "title": "รายงาน"
+    },
+    "aiOptimize": {
+      "title": "AI Optimization Center",
+      "subtitle": "AI วิเคราะห์และแนะนำแนวทางเพิ่มประสิทธิภาพแคมเปญแบบเรียลไทม์"
+    },
+    "memory": {
+      "title": "ความจำ AI",
+      "subtitle": "สิ่งที่ AI เรียนรู้จากบัญชีคุณ"
+    },
+    "tools": {
+      "title": "เครื่องมือ",
+      "subtitle": "รวมเครื่องมือ AI + tools ขั้นสูงทั้งหมด"
+    },
+    "goals": {
+      "title": "เป้าหมาย Campaign"
+    },
+    "ai": {
+      "title": "AI Master",
+      "subtitle": "ผู้ช่วย AI สำหรับวิเคราะห์ + จัดการแคมเปญ"
+    }
   }
 }

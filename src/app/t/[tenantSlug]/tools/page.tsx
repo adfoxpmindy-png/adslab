@@ -10,6 +10,7 @@ import {
   Target,
   Zap,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
@@ -30,6 +31,7 @@ export default async function ToolsPage({
 }) {
   const { tenantSlug } = await params;
   await requireTenantMember(tenantSlug);
+  const tPages = await getTranslations("pages.tools");
 
   const tools: Tool[] = [
     {
@@ -92,7 +94,7 @@ export default async function ToolsPage({
 
   return (
     <>
-      <SetPageTitle title="เครื่องมือ" subtitle="รวมเครื่องมือ AI + tools ขั้นสูงทั้งหมด" />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <SectionHeader title="เครื่องมือทั้งหมด" subtitle={`${tools.length} tools`} />
 

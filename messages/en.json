@@ -50,7 +50,10 @@
     "success": "Done",
     "back": "Back",
     "next": "Next",
-    "close": "Close"
+    "close": "Close",
+    "tryAgain": "Try again",
+    "settingsLink": "Go to Settings",
+    "connectMetaFirst": "Connect Meta before using this"
   },
   "status": {
     "active": "Active",
@@ -60,5 +63,59 @@
     "cancelled": "Cancelled",
     "failed": "Failed",
     "pending": "Pending"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Overview",
+      "subtitle": "Summary of all ad performance"
+    },
+    "boost": {
+      "title": "Quick Boost",
+      "subtitle": "OWNER + MEDIA_BUYER only"
+    },
+    "campaigns": {
+      "title": "Campaigns",
+      "subtitle": "Manage and plan your campaigns"
+    },
+    "ads": {
+      "title": "Ads",
+      "subtitle": "View and analyze each ad's creative"
+    },
+    "audiences": {
+      "title": "Audiences"
+    },
+    "creatives": {
+      "title": "Creatives",
+      "subtitle": "Image + video library used by your campaigns"
+    },
+    "posts": {
+      "title": "Page Posts",
+      "subtitle": "Compose and schedule Facebook page posts"
+    },
+    "postsNew": {
+      "title": "New post"
+    },
+    "reports": {
+      "title": "Reports"
+    },
+    "aiOptimize": {
+      "title": "AI Optimization Center",
+      "subtitle": "AI analyzes your campaigns and suggests real-time optimizations"
+    },
+    "memory": {
+      "title": "AI Memory",
+      "subtitle": "What the AI has learned from your accounts"
+    },
+    "tools": {
+      "title": "Tools",
+      "subtitle": "All AI tools and advanced utilities"
+    },
+    "goals": {
+      "title": "Campaign Goals"
+    },
+    "ai": {
+      "title": "AI Master",
+      "subtitle": "AI assistant for analysis + campaign management"
+    }
   }
 }

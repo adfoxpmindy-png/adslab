@@ -1,4 +1,5 @@
 import { ImagePlus, Image as ImageIcon, Sparkles, Video } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
@@ -16,6 +17,7 @@ export default async function CreativesPage({
 }) {
   const { tenantSlug } = await params;
   const { tenant, role } = await requireTenantMember(tenantSlug);
+  const tPages = await getTranslations("pages.creatives");
   const canEdit = role === "OWNER" || role === "MEDIA_BUYER";
 
   const [initial, counts] = await Promise.all([
@@ -38,7 +40,7 @@ export default async function CreativesPage({
 
   return (
     <>
-      <SetPageTitle title="ครีเอทีฟ" subtitle="คลังภาพ + วิดีโอ ที่ใช้ในแคมเปญ" />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <KpiCard label="ภาพ" value={String(counts.image)} icon={ImageIcon} tint="brand" />
