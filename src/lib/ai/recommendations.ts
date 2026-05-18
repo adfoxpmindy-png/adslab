@@ -118,12 +118,16 @@ export async function listRecentForTenant(
  */
 export function renderOutcomesForPrompt(history: RecommendationWithOutcome[]): string {
   if (history.length === 0) return "";
+  // Internal context block — model reads it but is instructed never to
+  // quote it. Kept in English so it (a) doesn't leak Thai phrasing into
+  // non-Thai user responses and (b) shares a single prompt-cache entry
+  // across locales.
   const lines: string[] = [];
-  lines.push("=== ประวัติคำแนะนำ AI ที่ผ่านมาของ tenant นี้ (ใช้เพื่อปรับ recommendation ครั้งต่อไป — ห้ามอ้างถึงตรง ๆ ในคำตอบ) ===");
+  lines.push("=== Recent AI recommendations for THIS tenant (use to tune your next recommendation — do NOT cite verbatim in your reply) ===");
   for (const r of history) {
     const summary = `[${r.actionType} → ${r.targetKind} ${r.targetMetaId}]`;
     if (!r.outcome) {
-      lines.push(`${summary} ยังไม่ครบ 7 วัน — รอผล`);
+      lines.push(`${summary} pending — within 7-day waiting window`);
       continue;
     }
     const o = r.outcome;
@@ -139,6 +143,6 @@ export function renderOutcomesForPrompt(history: RecommendationWithOutcome[]): s
     }
   }
   lines.push("");
-  lines.push("→ ถ้า pattern ที่เห็นว่าได้ผลดีกับ tenant นี้ (positive percent change) แนะนำซ้ำได้. ถ้า ignored บ่อย ให้ปรับ tone หรือเสนอ angle อื่น");
+  lines.push("→ If a pattern shows positive percent change for this tenant, repeat the recommendation. If the user often ignored it, change tone or propose a different angle next time.");
   return lines.join("\n");
 }

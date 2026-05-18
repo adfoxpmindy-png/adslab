@@ -119,5 +119,39 @@
       "title": "AI Master",
       "subtitle": "AI assistant for analysis + campaign management"
     }
+  },
+  "optimizationEngine": {
+    "pause": {
+      "title": "Pause campaign {name}",
+      "reasonRoasLow": "ROAS {roas}x below 1.0x target",
+      "reasonNegativeRoi": "Spent {spend} in 7 days · negative ROI",
+      "impact": "Saves {amount}/month"
+    },
+    "decreaseBudget": {
+      "title": "Reduce budget on {name}",
+      "reasonRoasMarginal": "ROAS {roas}x below 2.0x target",
+      "reasonReduceToTest": "Cut budget 30% to retest efficiency",
+      "impact": "Reduces spend by {amount}/month"
+    },
+    "increaseBudget": {
+      "title": "Scale up {name}",
+      "reasonRoasHigh": "ROAS {roas}x above target — safe to scale",
+      "reasonCtrHealthy": "CTR {ctr}% — creative still has headroom",
+      "impact": "Adds ~{amount}/month in revenue (at +50% budget)"
+    },
+    "refreshCreative": {
+      "title": "Refresh creative for {name}",
+      "subtitle": "Creative fatigue detected",
+      "reasonCtrLow": "CTR {ctr}% below 1.0% threshold",
+      "reasonImpressionsHigh": "{impressions} impressions — audience has seen the creative enough, refresh it",
+      "impact": "CTR +15-25%"
+    },
+    "expandAudience": {
+      "title": "Expand audience for {name}",
+      "subtitle": "Audience too narrow",
+      "reasonCtrLow": "CTR {ctr}% below 0.8% threshold",
+      "reasonLowFrequency": "Low frequency — likely saturating the current audience",
+      "impact": "Reach +35-60%"
+    }
   }
 }

@@ -119,5 +119,39 @@
       "title": "AI Master",
       "subtitle": "ຜູ້ຊ່ວຍ AI ສຳລັບວິເຄາະ + ຈັດການແຄມເປນ"
     }
+  },
+  "optimizationEngine": {
+    "pause": {
+      "title": "ຢຸດແຄມເປນ {name}",
+      "reasonRoasLow": "ROAS {roas}x ຕ່ຳກວ່າເປົ້າ 1.0x",
+      "reasonNegativeRoi": "ໃຊ້ງົບ {spend} ໃນ 7 ວັນ · ROI ຕິດລົບ",
+      "impact": "ປະຫຍັດ {amount}/ເດືອນ"
+    },
+    "decreaseBudget": {
+      "title": "ຫຼຸດງົບ {name}",
+      "reasonRoasMarginal": "ROAS {roas}x ຕ່ຳກວ່າເປົ້າ 2.0x",
+      "reasonReduceToTest": "ຫຼຸດງົບ 30% ເພື່ອທົດສອບປະສິດທິພາບ",
+      "impact": "ຫຼຸດ spend ລົງ {amount}/ເດືອນ"
+    },
+    "increaseBudget": {
+      "title": "ເພີ່ມງົບ {name}",
+      "reasonRoasHigh": "ROAS {roas}x ສູງກວ່າເປົ້າ — scale ໄດ້",
+      "reasonCtrHealthy": "CTR {ctr}% creative ຍັງບໍ່ອີ່ມຕົວ",
+      "impact": "ເພີ່ມຍອດຂາຍ ~{amount}/ເດືອນ (ຖ້າເພີ່ມງົບ 50%)"
+    },
+    "refreshCreative": {
+      "title": "ປ່ຽນ creative {name}",
+      "subtitle": "ກວດພົບ Creative fatigue",
+      "reasonCtrLow": "CTR {ctr}% ຕ່ຳກວ່າເກນ 1.0%",
+      "reasonImpressionsHigh": "Impressions {impressions} — ຄົນເຫັນຫຼາຍແລ້ວ ຄວນປ່ຽນ creative",
+      "impact": "CTR ເພີ່ມຂຶ້ນ 15-25%"
+    },
+    "expandAudience": {
+      "title": "ຂະຫຍາຍກຸ່ມເປົ້າໝາຍ {name}",
+      "subtitle": "ກຸ່ມເປົ້າໝາຍແຄບເກີນໄປ",
+      "reasonCtrLow": "CTR {ctr}% ຕ່ຳກວ່າເກນ 0.8%",
+      "reasonLowFrequency": "Frequency ຕ່ຳ — ອາດ saturate ກຸ່ມເປົ້າໝາຍເດີມ",
+      "impact": "Reach ເພີ່ມຂຶ້ນ 35-60%"
+    }
   }
 }

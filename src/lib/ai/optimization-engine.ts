@@ -14,8 +14,14 @@
  * judgment calls.
  */
 
+import { getTranslations } from "next-intl/server";
+
 import { getDashboardData, filterDashboardPayload } from "@/lib/meta/dashboard-service";
 import type { ParsedInsight, ParsedCampaignInsight } from "@/lib/meta/insights";
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
+import { formatCurrency, formatNumber as fmtNumber } from "@/lib/i18n/format";
+
+type TFn = (key: string, values?: Record<string, string | number>) => string;
 
 // =============================================================================
 // Types
@@ -96,16 +102,22 @@ const RULES = {
 export async function generateRecommendations(opts: {
   tenantId: string;
   scopeAccountIds: string[] | null;
+  /** User locale — if absent we use the default (Thai). Caller resolves
+   * via resolveUserLocale(userId) when in a server-component context. */
+  locale?: Locale;
 }): Promise<{ recommendations: OptimizationRecommendation[]; summary: OptimizationSummary }> {
+  const locale = opts.locale ?? DEFAULT_LOCALE;
   const result = await getDashboardData(opts.tenantId, "last_7d");
   const payload = filterDashboardPayload(result.payload, opts.scopeAccountIds);
+
+  const t = await getTranslations({ locale, namespace: "optimizationEngine" });
 
   const recommendations: OptimizationRecommendation[] = [];
 
   for (const account of payload.accounts) {
     for (const campaign of account.campaigns) {
       if (campaign.spend < RULES.minSpend) continue;
-      recommendations.push(...analyzeCampaign(campaign, account));
+      recommendations.push(...analyzeCampaign(campaign, account, t, locale));
     }
   }
 
@@ -127,8 +139,11 @@ export async function generateRecommendations(opts: {
 function analyzeCampaign(
   c: ParsedCampaignInsight,
   account: ParsedInsight,
+  t: TFn,
+  locale: Locale,
 ): OptimizationRecommendation[] {
   const out: OptimizationRecommendation[] = [];
+  const money = (v: number) => formatCurrency(v, locale, "THB");
   const baseCommon = {
     campaignName: c.campaignName,
     campaignId: c.campaignId,
@@ -151,13 +166,13 @@ function analyzeCampaign(
       ...baseCommon,
       id: `pause-${c.campaignId}`,
       actionKind: "pause_adset",
-      title: `หยุดแคมเปญ ${truncate(c.campaignName, 30)}`,
+      title: t("pause.title", { name: truncate(c.campaignName, 30) }),
       subtitle: c.metaObjective ?? "Campaign",
       reasons: [
-        `ROAS ${c.roas.toFixed(2)}x ต่ำกว่าเป้า 1.0x`,
-        `ใช้งบไป ${formatThb(c.spend)} ใน 7 วัน, ROI ติดลบ`,
+        t("pause.reasonRoasLow", { roas: c.roas.toFixed(2) }),
+        t("pause.reasonNegativeRoi", { spend: money(c.spend) }),
       ],
-      predictedImpact: `ประหยัด ${formatThb(monthlySpend)}/เดือน`,
+      predictedImpact: t("pause.impact", { amount: money(monthlySpend) }),
       severity: "high",
     });
     return out; // stop other rules for this campaign — pause supersedes
@@ -170,13 +185,13 @@ function analyzeCampaign(
       ...baseCommon,
       id: `reduce-${c.campaignId}`,
       actionKind: "decrease_budget",
-      title: `ลดงบ ${truncate(c.campaignName, 30)}`,
+      title: t("decreaseBudget.title", { name: truncate(c.campaignName, 30) }),
       subtitle: c.metaObjective ?? "Campaign",
       reasons: [
-        `ROAS ${c.roas.toFixed(2)}x — ต่ำกว่าเป้า 2.0x`,
-        `ลดงบลง 30% เพื่อทดสอบประสิทธิภาพ`,
+        t("decreaseBudget.reasonRoasMarginal", { roas: c.roas.toFixed(2) }),
+        t("decreaseBudget.reasonReduceToTest"),
       ],
-      predictedImpact: `ลด spend ลง ${formatThb((c.spend / 7) * 30 * 0.3)}/เดือน`,
+      predictedImpact: t("decreaseBudget.impact", { amount: money((c.spend / 7) * 30 * 0.3) }),
       severity: "medium",
     });
   }
@@ -188,13 +203,13 @@ function analyzeCampaign(
       ...baseCommon,
       id: `scale-${c.campaignId}`,
       actionKind: "increase_budget",
-      title: `เพิ่มงบ ${truncate(c.campaignName, 30)}`,
+      title: t("increaseBudget.title", { name: truncate(c.campaignName, 30) }),
       subtitle: c.metaObjective ?? "Campaign",
       reasons: [
-        `ROAS ${c.roas.toFixed(2)}x สูงกว่าเป้า — scale ได้`,
-        `CTR ${c.ctr.toFixed(2)}% แสดงว่า creative ยังไม่อิ่มตัว`,
+        t("increaseBudget.reasonRoasHigh", { roas: c.roas.toFixed(2) }),
+        t("increaseBudget.reasonCtrHealthy", { ctr: c.ctr.toFixed(2) }),
       ],
-      predictedImpact: `เพิ่มยอดขาย ~${formatThb(projGain)}/เดือน (ถ้าเพิ่มงบ 50%)`,
+      predictedImpact: t("increaseBudget.impact", { amount: money(projGain) }),
       severity: "high",
     });
   }
@@ -205,13 +220,15 @@ function analyzeCampaign(
       ...baseCommon,
       id: `creative-${c.campaignId}`,
       actionKind: "refresh_creative",
-      title: `เปลี่ยน creative ${truncate(c.campaignName, 26)}`,
-      subtitle: "Creative fatigue detected",
+      title: t("refreshCreative.title", { name: truncate(c.campaignName, 26) }),
+      subtitle: t("refreshCreative.subtitle"),
       reasons: [
-        `CTR ${c.ctr.toFixed(2)}% ต่ำกว่าเกณฑ์ 1.0%`,
-        `Impressions ${formatNumber(c.impressions)} — คนเห็นแล้วเยอะ ควรเปลี่ยน creative`,
+        t("refreshCreative.reasonCtrLow", { ctr: c.ctr.toFixed(2) }),
+        t("refreshCreative.reasonImpressionsHigh", {
+          impressions: fmtNumber(c.impressions, locale, { maximumFractionDigits: 0 }),
+        }),
       ],
-      predictedImpact: "CTR เพิ่มขึ้น 15-25%",
+      predictedImpact: t("refreshCreative.impact"),
       severity: "medium",
     });
   }
@@ -222,13 +239,13 @@ function analyzeCampaign(
       ...baseCommon,
       id: `audience-${c.campaignId}`,
       actionKind: "expand_audience",
-      title: `ขยายกลุ่มเป้าหมาย ${truncate(c.campaignName, 22)}`,
-      subtitle: "กลุ่มเป้าหมายแคบเกินไป",
+      title: t("expandAudience.title", { name: truncate(c.campaignName, 22) }),
+      subtitle: t("expandAudience.subtitle"),
       reasons: [
-        `CTR ${c.ctr.toFixed(2)}% ต่ำกว่าเกณฑ์ 0.8%`,
-        `Frequency ต่ำ — อาจ saturate กลุ่มเป้าหมายเดิม`,
+        t("expandAudience.reasonCtrLow", { ctr: c.ctr.toFixed(2) }),
+        t("expandAudience.reasonLowFrequency"),
       ],
-      predictedImpact: "Reach เพิ่มขึ้น 35-60%",
+      predictedImpact: t("expandAudience.impact"),
       severity: "low",
     });
   }

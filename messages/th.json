@@ -119,5 +119,39 @@
       "title": "AI Master",
       "subtitle": "ผู้ช่วย AI สำหรับวิเคราะห์ + จัดการแคมเปญ"
     }
+  },
+  "optimizationEngine": {
+    "pause": {
+      "title": "หยุดแคมเปญ {name}",
+      "reasonRoasLow": "ROAS {roas}x ต่ำกว่าเป้า 1.0x",
+      "reasonNegativeRoi": "ใช้งบไป {spend} ใน 7 วัน · ROI ติดลบ",
+      "impact": "ประหยัด {amount}/เดือน"
+    },
+    "decreaseBudget": {
+      "title": "ลดงบ {name}",
+      "reasonRoasMarginal": "ROAS {roas}x ต่ำกว่าเป้า 2.0x",
+      "reasonReduceToTest": "ลดงบลง 30% เพื่อทดสอบประสิทธิภาพ",
+      "impact": "ลด spend ลง {amount}/เดือน"
+    },
+    "increaseBudget": {
+      "title": "เพิ่มงบ {name}",
+      "reasonRoasHigh": "ROAS {roas}x สูงกว่าเป้า — scale ได้",
+      "reasonCtrHealthy": "CTR {ctr}% creative ยังไม่อิ่มตัว",
+      "impact": "เพิ่มยอดขาย ~{amount}/เดือน (ถ้าเพิ่มงบ 50%)"
+    },
+    "refreshCreative": {
+      "title": "เปลี่ยน creative {name}",
+      "subtitle": "Creative fatigue ตรวจพบ",
+      "reasonCtrLow": "CTR {ctr}% ต่ำกว่าเกณฑ์ 1.0%",
+      "reasonImpressionsHigh": "Impressions {impressions} — คนเห็นแล้วเยอะ ควรเปลี่ยน creative",
+      "impact": "CTR เพิ่มขึ้น 15-25%"
+    },
+    "expandAudience": {
+      "title": "ขยายกลุ่มเป้าหมาย {name}",
+      "subtitle": "กลุ่มเป้าหมายแคบเกินไป",
+      "reasonCtrLow": "CTR {ctr}% ต่ำกว่าเกณฑ์ 0.8%",
+      "reasonLowFrequency": "Frequency ต่ำ — อาจ saturate กลุ่มเป้าหมายเดิม",
+      "impact": "Reach เพิ่มขึ้น 35-60%"
+    }
   }
 }

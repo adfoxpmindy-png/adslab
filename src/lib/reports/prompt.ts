@@ -276,22 +276,25 @@ function slimAccount(a: ParsedInsight, lookup: CampaignGoalLookup) {
 
 /** Build the user message containing this tenant's data for the report. */
 export function buildDailyReportUserMessage(ctx: ReportContext): string {
+  // Context block — model reads it but never quotes verbatim. Kept in
+  // English so it doesn't bias the model toward Thai output for non-Thai
+  // users and so prompt caching shares one entry across locales.
   const lines: string[] = [];
   lines.push(`Workspace: ${ctx.tenantName}`);
-  lines.push(`รายงานสำหรับวันที่: ${ctx.dateLabel}`);
+  lines.push(`Report date: ${ctx.dateLabel}`);
   if (ctx.scopeName) {
     // Make the scope unmissable so the AI doesn't accidentally talk
-    // about "ทั้งหมด" when the user only wanted one client.
-    lines.push(`🎯 SCOPE: ${ctx.scopeName} (รายงานเฉพาะ scope นี้ — ห้ามอ้าง account/campaign นอก scope)`);
+    // about "everything" when the user only wanted one client.
+    lines.push(`🎯 SCOPE: ${ctx.scopeName} (this report is for THIS scope only — do not reference accounts/campaigns outside it)`);
   }
   lines.push("");
 
-  lines.push("=== Summary (วันที่รายงาน) ===");
+  lines.push("=== Summary (current report date) ===");
   lines.push(JSON.stringify(ctx.today.summary, null, 2));
   lines.push("");
 
   if (ctx.prevDay) {
-    lines.push("=== Summary (วันก่อนหน้า สำหรับเปรียบเทียบ) ===");
+    lines.push("=== Summary (previous day, for comparison) ===");
     lines.push(JSON.stringify(ctx.prevDay.summary, null, 2));
     lines.push("");
   }

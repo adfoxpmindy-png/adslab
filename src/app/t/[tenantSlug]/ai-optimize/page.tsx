@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { getEffectiveScope } from "@/lib/tenant-scope";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
 export default async function AIOptimizePage({
@@ -26,14 +28,12 @@ export default async function AIOptimizePage({
     select: { id: true, status: true },
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
+  const tPages = await getTranslations("pages.aiOptimize");
 
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle
-          title="AI Optimization Center"
-          subtitle="AI วิเคราะห์และแนะนำแนวทางเพิ่มประสิทธิภาพแคมเปญแบบเรียลไทม์"
-        />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-8">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
@@ -56,17 +56,16 @@ export default async function AIOptimizePage({
   }
 
   const scope = await getEffectiveScope(session.userId, tenant.id);
+  const locale = await resolveUserLocale(session.userId);
   const { recommendations, summary } = await generateRecommendations({
     tenantId: tenant.id,
     scopeAccountIds: scope.accountIds,
+    locale,
   });
 
   return (
     <>
-      <SetPageTitle
-        title="AI Optimization Center"
-        subtitle="AI วิเคราะห์และแนะนำแนวทางเพิ่มประสิทธิภาพแคมเปญแบบเรียลไทม์"
-      />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <AIOptimizeClient
         tenantSlug={tenantSlug}
         recommendations={recommendations}
