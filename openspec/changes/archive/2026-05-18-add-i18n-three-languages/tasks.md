@@ -52,18 +52,18 @@
 
 ### 8. Lao dictionary
 
-- [ ] 8.1 Generate Lao translations via Claude for all keys currently in `th.json`. Provide Thai + English context in the prompt.
+- [x] 8.1 Generate Lao translations via Claude for all keys currently in `th.json`. Provide Thai + English context in the prompt.
 - [ ] 8.2 Mark each Lao value with confidence comment if uncertain.
 - [ ] 8.3 Update `lo.json` and remove the Thai-fallback placeholders.
 
 ### 9. Page-by-page migration (priority order)
 
-- [ ] 9.1 Dashboard (`/t/[slug]/dashboard`).
-- [ ] 9.2 Campaigns (`/t/[slug]/campaigns`) — table headers, status pills, action menu.
+- [x] 9.1 Dashboard (`/t/[slug]/dashboard`).
+- [x] 9.2 Campaigns (`/t/[slug]/campaigns`) — table headers, status pills, action menu.
 - [ ] 9.3 Reports (`/t/[slug]/reports` + `/reports/[date]`).
-- [ ] 9.4 Ads (`/t/[slug]/ads`) — vision button, panel.
-- [ ] 9.5 AI Memory (`/t/[slug]/ai/memory`).
-- [ ] 9.6 Posts (`/t/[slug]/posts` + `/posts/new`).
+- [x] 9.4 Ads (`/t/[slug]/ads`) — vision button, panel.
+- [x] 9.5 AI Memory (`/t/[slug]/ai/memory`).
+- [x] 9.6 Posts (`/t/[slug]/posts` + `/posts/new`).
 - [ ] 9.7 Audiences + Creatives.
 - [ ] 9.8 Settings (Integrations + Scope + Naming).
 
@@ -79,7 +79,7 @@
 
 ### 12. Ship + archive PR 2
 
-- [ ] 12.1 Commit + push + archive PR 2.
+- [x] 12.1 Commit + push + archive PR 2.
 - [ ] 12.2 Add in-app feedback widget on language switcher: "พบคำแปลที่ไม่ดี? บอกเราใน chat support" (or DM founder).
 
 ## Out of scope (do NOT include)
