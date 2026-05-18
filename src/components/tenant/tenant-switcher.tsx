@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -39,23 +40,25 @@ export function TenantSwitcher({ currentSlug, tenants }: TenantSwitcherProps) {
         <ChevronsUpDown className="size-3.5 text-muted-foreground shrink-0" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
-        <DropdownMenuLabel className="text-xs uppercase tracking-wide">
-          Workspaces
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {tenants.map((tenant) => (
-          <DropdownMenuItem
-            key={tenant.slug}
-            onClick={() => {
-              if (tenant.slug !== currentSlug) {
-                router.push(`/t/${tenant.slug}/dashboard`);
-              }
-            }}
-          >
-            <span className="flex-1 truncate">{tenant.name}</span>
-            {tenant.slug === currentSlug && <Check className="size-4 text-primary" />}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs uppercase tracking-wide">
+            Workspaces
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {tenants.map((tenant) => (
+            <DropdownMenuItem
+              key={tenant.slug}
+              onClick={() => {
+                if (tenant.slug !== currentSlug) {
+                  router.push(`/t/${tenant.slug}/dashboard`);
+                }
+              }}
+            >
+              <span className="flex-1 truncate">{tenant.name}</span>
+              {tenant.slug === currentSlug && <Check className="size-4 text-primary" />}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

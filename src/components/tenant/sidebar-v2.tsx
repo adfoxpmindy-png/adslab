@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -182,30 +183,32 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" side="top" className="w-56">
-            <DropdownMenuLabel className="truncate">
-              {user.email}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
-              <UserIcon className="mr-2 size-4" />
-              {tProfile("profile")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
-              <Settings className="mr-2 size-4" />
-              {tProfile("settings")}
-            </DropdownMenuItem>
-            <LanguageSwitcher />
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={async () => {
-                await fetch("/api/auth/logout", { method: "POST" });
-                router.push("/login");
-              }}
-              className="text-rose-600 dark:text-rose-300"
-            >
-              <LogOut className="mr-2 size-4" />
-              {tProfile("logout")}
-            </DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="truncate">
+                {user.email}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
+                <UserIcon className="mr-2 size-4" />
+                {tProfile("profile")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
+                <Settings className="mr-2 size-4" />
+                {tProfile("settings")}
+              </DropdownMenuItem>
+              <LanguageSwitcher />
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={async () => {
+                  await fetch("/api/auth/logout", { method: "POST" });
+                  router.push("/login");
+                }}
+                className="text-rose-600 dark:text-rose-300"
+              >
+                <LogOut className="mr-2 size-4" />
+                {tProfile("logout")}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
