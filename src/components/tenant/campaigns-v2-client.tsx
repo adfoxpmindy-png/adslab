@@ -559,7 +559,7 @@ function AdRow({ ad }: { ad: AdNode }) {
 
 function AdThumbnail({ ad }: { ad: AdNode }) {
   if (ad.thumbnailUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
+     
     return (
       <img
         src={ad.thumbnailUrl}

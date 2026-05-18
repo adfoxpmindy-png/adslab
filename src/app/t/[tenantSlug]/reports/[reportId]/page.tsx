@@ -115,7 +115,7 @@ export default async function ReportViewerPage({
         <Card className="p-8">
           <article
             className="prose-sm"
-            // eslint-disable-next-line react/no-danger
+             
             dangerouslySetInnerHTML={{ __html: renderMarkdown(report.contentMd) }}
           />
         </Card>
