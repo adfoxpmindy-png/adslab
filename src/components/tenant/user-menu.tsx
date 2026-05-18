@@ -5,7 +5,7 @@ import { LogOut, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type UserMenuProps = {
   name: string;
@@ -38,9 +39,8 @@ export function UserMenu({ name, email }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="icon-sm" aria-label={t("ariaLabel")} />
-        }
+        aria-label={t("ariaLabel")}
+        className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }))}
       >
         <Avatar className="size-7">
           <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">

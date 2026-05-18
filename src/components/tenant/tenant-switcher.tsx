@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type Tenant = { slug: string; name: string };
 
@@ -29,9 +30,10 @@ export function TenantSwitcher({ currentSlug, tenants }: TenantSwitcherProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="sm" className="gap-1.5 max-w-[200px] justify-between" />
-        }
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm" }),
+          "gap-1.5 max-w-[200px] justify-between",
+        )}
       >
         <span className="truncate font-medium">{current?.name ?? t("notFound")}</span>
         <ChevronsUpDown className="size-3.5 text-muted-foreground shrink-0" />
