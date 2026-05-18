@@ -21,7 +21,7 @@ export const pauseAdTool = defineTool({
     required: ["adId"],
     additionalProperties: false,
   },
-  summarize: (input) => `หยุด ad ${input.adId}`,
+  summarize: (input) => `Pause ad ${input.adId}`,
   async handler(input, ctx) {
     const result = await performAdAction({
       tenantId: ctx.tenantId,

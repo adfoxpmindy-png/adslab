@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import {
   performCampaignAction,
@@ -82,6 +83,7 @@ export async function POST(request: Request) {
     | { ok: true; logId: string; newCampaignName?: string }
     | { ok: false; error: string; logId: string | null };
   if (suggestion.action === "DUPLICATE") {
+    const locale = await resolveUserLocale(session.userId);
     const dup = await duplicateCampaign({
       tenantId: tenant.id,
       userId: session.userId,
@@ -92,6 +94,7 @@ export async function POST(request: Request) {
       dailyBudgetMultiplier: suggestion.params?.dailyBudgetMultiplier,
       lifetimeBudgetMultiplier: suggestion.params?.lifetimeBudgetMultiplier,
       initialStatus: suggestion.params?.initialStatus ?? "PAUSED",
+      locale,
     });
     result = dup.ok
       ? { ok: true, logId: dup.logId, newCampaignName: dup.name }

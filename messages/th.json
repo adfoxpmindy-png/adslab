@@ -1,4 +1,185 @@
 {
+  "comingSoon": {
+    "badge": "Coming Soon",
+    "emailRequired": "ใส่ email",
+    "submitFailed": "ไม่สำเร็จ",
+    "registered": "ลงทะเบียนความสนใจแล้ว — เราจะแจ้งเมื่อเปิดให้ใช้",
+    "registeredInline": "ลงทะเบียนแล้ว",
+    "willNotifyWhenReady": "เราจะแจ้งเมื่อ {title} พร้อมใช้",
+    "promptLabel": "อยากใช้ {title}? — ใส่ email เพื่อให้เราแจ้งเมื่อพร้อม",
+    "submit": "ลงทะเบียน"
+  },
+  "company": {
+    "legalName": "นภดล รัตนน้ำอ้อม",
+    "address": "8/26 ถนนวิภาวดีรังสิต ซอยวิภาวดีรังสิต 22 แขวงจอมพล เขตจตุจักร กรุงเทพฯ 10900",
+    "entityLabel": {
+      "juristic": "ดำเนินการโดย",
+      "individual": "ผู้ให้บริการ"
+    }
+  },
+  "siteFooter": {
+    "taxIdLabel": {
+      "juristic": "เลขผู้เสียภาษี",
+      "individual": "เลขประจำตัวประชาชน"
+    },
+    "addressLabel": "ที่อยู่",
+    "contactHeading": "ติดต่อ",
+    "emailLabel": "Email",
+    "phoneLabel": "โทร",
+    "policyHeading": "นโยบาย",
+    "links": {
+      "privacy": "นโยบายความเป็นส่วนตัว (Privacy Policy)",
+      "terms": "ข้อกำหนดการใช้บริการ (Terms of Service)",
+      "refund": "นโยบายการคืนเงิน (Refund Policy)",
+      "dataDeletion": "การลบข้อมูล (Data Deletion)"
+    },
+    "copyright": "© {year} {brand}. ระบบชำระเงินผ่าน Omise (PCI DSS Level 1)."
+  },
+  "billing": {
+    "gate": {
+      "aiMsgLimit": "เกินโควต้า AI วันนี้ ({limit} ข้อความ/วัน) — อัปเกรดเพื่อใช้ต่อ",
+      "adAccountLimit": "เกินจำนวน ad accounts ที่ tier นี้รองรับ ({limit}) — อัปเกรด หรือซื้อ Extra Ad Account เพิ่ม",
+      "eventSdkAddon": "ฟีเจอร์ Event SDK ต้องเปิด add-on ก่อน (฿590/เดือน)",
+      "whiteLabelAddon": "White-label เปิดเป็น add-on ฿490/เดือน หรืออัปเกรดเป็น Scale (รวมฟรี)",
+      "priorityAiAddon": "Priority AI (Claude Opus) ต้องเปิด add-on ก่อน (฿890/เดือน)"
+    }
+  },
+  "api": {
+    "auth": {
+      "signup": {
+        "invalidEmail": "รูปแบบอีเมลไม่ถูกต้อง",
+        "passwordTooShort": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+        "nameTooShort": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
+        "tenantNameTooShort": "ชื่อ Agency ต้องมีอย่างน้อย 2 ตัวอักษร",
+        "invalidPayload": "ข้อมูลไม่ถูกต้อง",
+        "emailTaken": "อีเมลนี้ถูกใช้แล้ว"
+      },
+      "login": {
+        "invalidEmail": "รูปแบบอีเมลไม่ถูกต้อง",
+        "passwordRequired": "กรุณากรอกรหัสผ่าน",
+        "invalidPayload": "ข้อมูลไม่ถูกต้อง",
+        "invalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
+      },
+      "unauthorized": "กรุณาเข้าสู่ระบบ"
+    },
+    "rules": {
+      "upgradeRequired": "Auto-rules ต้องการ plan แบบจ่ายเงินขั้นต่ำ Starter",
+      "limitReached": "ถึง limit {limit} rules ของ plan แล้ว — disabled หรือลบ rule เก่า หรือ upgrade plan",
+      "planNoActivate": "Plan ปัจจุบันไม่อนุญาตให้ activate rules",
+      "limitReachedRules": "ถึง limit {cap} rules แล้ว"
+    },
+    "boost": {
+      "plan": {
+        "noFacebookLinks": "ไม่พบลิงก์ Facebook ในข้อความ",
+        "connectionInactive": "Meta connection ไม่ active",
+        "resolveFailed": "resolve URL ไม่สำเร็จเลย"
+      },
+      "kpi": {
+        "atLeast": "ขั้นต่ำ",
+        "atMost": "ไม่เกิน"
+      }
+    },
+    "emailVerification": {
+      "userNotFound": "ไม่พบบัญชีผู้ใช้",
+      "alreadyVerified": "อีเมลของคุณยืนยันเรียบร้อยแล้ว"
+    },
+    "pagePosts": {
+      "adsNotEnabled": "Page นี้ยังไม่ได้เปิด ads — เปิดบน Meta Ads Manager ก่อน (Page Settings → Advertising) หรือใช้ Post ID/URL วางด้านล่าง"
+    },
+    "audiences": {
+      "lookalikeNote": "Meta จะคำนวณ Lookalike ภายใน ~6 ชั่วโมง — size จะเริ่มจาก 0 แล้วเพิ่มขึ้น",
+      "minRowsRequired": "ต้องมีอย่างน้อย {min} แถว (Meta minimum). ตอนนี้มี {count}",
+      "connectionNotReady": "Meta connection ไม่พร้อมใช้งาน"
+    },
+    "creatives": {
+      "fileTooLarge": "ไฟล์ใหญ่เกินไป (เกิน {maxMb}MB)",
+      "unsupportedType": "ประเภทไฟล์ไม่รองรับ: {type}"
+    },
+    "scopes": {
+      "nameTaken": "Scope ชื่อนี้มีอยู่แล้ว"
+    },
+    "metaImages": {
+      "mustBeJpgPng": "ไฟล์ต้องเป็น JPG หรือ PNG เท่านั้น",
+      "tooLarge": "ไฟล์เกิน 8MB ({sizeMb}MB)"
+    },
+    "common": {
+      "forbidden": "ไม่มีสิทธิ์"
+    },
+    "meta": {
+      "campaignCreate": {
+        "conversionGoalNeedsPixel": "Conversion goal ต้องเลือก Pixel",
+        "conversionGoalNeedsEvent": "Conversion goal ต้องเลือก event หรือ Custom Conversion"
+      },
+      "duplicate": {
+        "dailyBudgetEitherOr": "ระบุได้แค่ dailyBudget หรือ dailyBudgetMultiplier",
+        "lifetimeBudgetEitherOr": "ระบุได้แค่ lifetimeBudget หรือ lifetimeBudgetMultiplier"
+      },
+      "oauth": {
+        "ownerOnly": "เฉพาะ OWNER เชื่อมต่อ Meta ได้"
+      },
+      "pageOauth": {
+        "ownerOnly": "เฉพาะ OWNER เชื่อมต่อ Page Management ได้"
+      },
+      "pixels": {
+        "alreadyExists": "Ad account นี้มี Pixel อยู่แล้ว: \"{name}\" (ID {id}) — Meta จำกัด 1 Pixel ต่อ ad account",
+        "shareNeedsBm": "Target ad account ไม่ได้อยู่ใน Business Manager — Pixel share ใช้ได้กับ BM accounts เท่านั้น"
+      },
+      "campaignActions": {
+        "dailyOrLifetime": "ต้องระบุ daily หรือ lifetime"
+      }
+    },
+    "namingRules": {
+      "patternExists": "มีกฎสำหรับ pattern นี้แล้ว"
+    },
+    "namingTemplates": {
+      "noCampaigns": "ไม่มี campaign ใน tenant นี้สำหรับวิเคราะห์"
+    }
+  },
+  "rootMetadata": {
+    "description": "ยิงแอดให้เร็ว แม่น scale ได้ — Thai-first SaaS สำหรับ media buyer",
+    "ogDescription": "ยิงแอดให้เร็ว แม่น scale ได้"
+  },
+  "meta": {
+    "adsetActions": {
+      "adSetNotFound": "Ad set {id} ไม่พบใน tenant นี้",
+      "budgetEitherOr": "ต้องระบุอย่างใดอย่างหนึ่ง: dailyBudget หรือ lifetimeBudget",
+      "noOwnBudget": "Ad set นี้ไม่มี budget ของตัวเอง — แก้ที่ campaign แทน (CBO)",
+      "useLifetimeInstead": "Ad set นี้ใช้ lifetime budget อยู่ — แก้แบบ lifetime แทน",
+      "useDailyInstead": "Ad set นี้ใช้ daily budget อยู่ — แก้แบบ daily แทน",
+      "budgetBelowMin": "Budget ต่ำกว่าขั้นต่ำ ฿{min}",
+      "budgetAboveMax": "Budget เกินเพดาน ฿{max} — ตรวจสอบว่าใส่ตัวเลขถูกหรือไม่"
+    },
+    "campaignActions": {
+      "budgetAtAdSet": "Budget อยู่ที่ระดับ ad set — แก้ใน Meta Ads Manager",
+      "budgetEitherOr": "ต้องระบุอย่างใดอย่างหนึ่ง: dailyBudget หรือ lifetimeBudget",
+      "useLifetimeInstead": "Campaign นี้ใช้ lifetime budget อยู่ — แก้แบบ lifetime แทน",
+      "useDailyInstead": "Campaign นี้ใช้ daily budget อยู่ — แก้แบบ daily แทน",
+      "budgetBelowMin": "Budget ต่ำกว่าขั้นต่ำ ฿{min}",
+      "budgetAboveMax": "Budget เกินเพดาน ฿{max} — ตรวจสอบว่าใส่ตัวเลขถูกหรือไม่",
+      "endTimePast": "end_time ต้องไม่ใช่อดีต"
+    },
+    "urlResolver": {
+      "emptyUrl": "ลิงก์ว่างเปล่า",
+      "redirectFailed": "ตามลิงก์ไม่ได้: {message}",
+      "unsupportedUrl": "รูปแบบ URL ไม่รองรับ: {url}",
+      "metaUnknown": "Meta ไม่รู้จัก content นี้ ({id}): {message}",
+      "noOwnerPage": "ไม่พบ Page เจ้าของ post นี้ — อาจเป็น user post ที่ boost ไม่ได้",
+      "reelPostIdNotFound": "หา post_id ของ reel {videoId} ไม่เจอ — อาจ reel ใหม่เกินไป หรือคุณไม่ใช่ admin ของ Page {pageName}"
+    },
+    "campaignCreate": {
+      "budgetNotNumber": "{name} ต้องเป็นตัวเลข",
+      "budgetBelowMin": "{name} ต่ำกว่าขั้นต่ำ ฿{min}",
+      "budgetAboveMax": "{name} เกินเพดาน ฿{max}",
+      "cboBudgetRequired": "CBO ต้องระบุ budget ระดับ campaign",
+      "aboBudgetRequired": "ABO ต้องระบุ budget ระดับ ad set",
+      "connectionNotFound": "ไม่พบ Meta connection",
+      "connectionInactive": "Connection {status} — เชื่อมใหม่ก่อน",
+      "adAccountNotInTenant": "Ad account นี้ไม่อยู่ใน Meta connection ของ tenant",
+      "pfbidResolveFailed": "แปลง pfbid post id ไม่สำเร็จ: {message}",
+      "reelThumbnailFailed": "ดึง thumbnail ของ reel ไม่สำเร็จ: {message}",
+      "reelNoThumbnail": "reel ไม่มี thumbnail"
+    }
+  },
   "sidebar": {
     "nav": {
       "overview": "ภาพรวม",
@@ -37,6 +218,23 @@
     "en": "English",
     "lo": "ລາວ (beta)"
   },
+  "userMenu": {
+    "ariaLabel": "เมนูผู้ใช้",
+    "profileSoon": "โปรไฟล์ (เร็วๆ นี้)",
+    "logout": "ออกจากระบบ"
+  },
+  "platformBar": {
+    "loading": "กำลังโหลด...",
+    "accountsLabel": "Accounts: {count}",
+    "accountsLabelAll": "Accounts: ทั้งหมด ({count})",
+    "accountsLabelScope": "Accounts: {count}/{total} (scope)",
+    "accountsLabelPartial": "Accounts: {count}/{total}",
+    "accountsLabelShort": "ทั้งหมด",
+    "searchPlaceholder": "ค้นหา ad account...",
+    "selectAll": "เลือกทั้งหมด",
+    "clearAll": "ล้างทั้งหมด",
+    "notFound": "ไม่พบ account"
+  },
   "common": {
     "save": "บันทึก",
     "cancel": "ยกเลิก",
@@ -55,7 +253,65 @@
     "tryAgain": "ลองอีกครั้ง",
     "settingsLink": "ไปที่ Settings",
     "connectMetaFirst": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน",
-    "all": "ทั้งหมด"
+    "all": "ทั้งหมด",
+    "datePicker": {
+      "placeholder": "เลือกวันที่",
+      "time": "เวลา",
+      "timezone": "น. (UTC+7)",
+      "clear": "ล้าง",
+      "today": "วันนี้",
+      "ok": "ตกลง",
+      "weekdays": [
+        "อา",
+        "จ",
+        "อ",
+        "พ",
+        "พฤ",
+        "ศ",
+        "ส"
+      ],
+      "months": [
+        "มกราคม",
+        "กุมภาพันธ์",
+        "มีนาคม",
+        "เมษายน",
+        "พฤษภาคม",
+        "มิถุนายน",
+        "กรกฎาคม",
+        "สิงหาคม",
+        "กันยายน",
+        "ตุลาคม",
+        "พฤศจิกายน",
+        "ธันวาคม"
+      ],
+      "yearOffset": "543"
+    },
+    "smartNameField": {
+      "matchesTemplate": "ตรง template \"{name}\"",
+      "noTemplateMatch": "ยังไม่ตรง template ใดของ tenant — ใช้ suggestion ด้านล่างได้",
+      "truncateWarning": "เกิน {limit} ตัวอักษร — Meta UI จะตัดให้สั้นใน list",
+      "nearLimit": "ใกล้ limit ของ Meta ({limit})",
+      "suggestions": "แนะนำ:",
+      "collapse": "ย่อ",
+      "moreOthers": "+{count} อื่นๆ",
+      "noTemplatesHint": "ตั้ง naming template ใน Settings → Naming Standards เพื่อให้ระบบเสนอชื่ออัตโนมัติ"
+    },
+    "journey": {
+      "loadFailed": "โหลด journey ไม่สำเร็จ",
+      "modeOverview": "Overview",
+      "modeDrillIn": "Drill-in",
+      "selectCampaign": "-- เลือก campaign --",
+      "rangeToday": "วันนี้",
+      "rangeYesterday": "เมื่อวาน",
+      "range7d": "7 วันล่าสุด",
+      "range30d": "30 วันล่าสุด",
+      "spend": "Spend",
+      "drawing": "กำลังวาด journey...",
+      "emptyTitle": "ยังไม่มี data ใน range / scope นี้",
+      "emptyHint": "เลือก date range อื่น หรือลอง sync dashboard ก่อน — journey ใช้ insights cache เดียวกับ Dashboard",
+      "try30d": "ลองดู 30d",
+      "openInCampaigns": "เปิดใน Campaigns"
+    }
   },
   "languageSwitcher": {
     "errorChange": "เปลี่ยนภาษาไม่สำเร็จ"
@@ -107,6 +363,7 @@
     "cancelBtn": "ยกเลิก",
     "back": "กลับไปลิสต์โพสต์",
     "compose": {
+      "noPagesEmpty": "ยังไม่มีเพจที่จัดการได้ — sync ใหม่ในหน้า Settings → Page Management",
       "pageLabel": "เพจที่จะโพสต์",
       "mediaLabel": "รูป / วิดีโอ",
       "videoOnlyOne": "วิดีโอใช้ได้ทีละ 1 ไฟล์เท่านั้น (ห้ามผสมรูป)",
@@ -145,10 +402,133 @@
     "goToPostsCta": "ไปที่ \"โพสต์เพจ\"",
     "reauthorize": "re-authorize"
   },
+  "metaConnection": {
+    "flashSuccess": "เชื่อมต่อ Meta สำเร็จ",
+    "flashError": "เชื่อมต่อ Meta ล้มเหลว: {error}",
+    "syncSuccess": "ซิงค์เรียบร้อย — {count} ad accounts",
+    "syncFailedDefault": "Sync failed",
+    "disconnectFailedDefault": "Disconnect failed",
+    "disconnectConfirm": "ต้องการยกเลิกการเชื่อมต่อ Meta หรือไม่? ข้อมูล cached จะถูกลบ",
+    "disconnectSuccess": "ยกเลิกการเชื่อมต่อแล้ว",
+    "notConnectedTitle": "ยังไม่ได้เชื่อมต่อ Meta",
+    "notConnectedBody": "เชื่อมต่อเพื่อให้ AdsLab อ่านข้อมูล ad accounts และเริ่ม optimize",
+    "connectBtn": "เชื่อมต่อกับ Meta",
+    "ownerOnly": "เฉพาะ OWNER เท่านั้นที่เชื่อมต่อได้",
+    "connectedAt": "เชื่อมต่อ {when}",
+    "lastSynced": "ซิงค์ล่าสุด {when}",
+    "syncing": "กำลังซิงค์...",
+    "syncBtn": "ซิงค์",
+    "disconnecting": "กำลังยกเลิก...",
+    "disconnectBtn": "ยกเลิก",
+    "tokenExpired": "Token หมดอายุหรือถูกยกเลิก กรุณาเชื่อมต่อใหม่",
+    "reconnect": "เชื่อมต่ออีกครั้ง"
+  },
   "settings": {
     "pageMgmt": {
       "title": "Page Management",
       "subtitle": "เขียน + ตั้งเวลาโพสต์เพจ Facebook (แยกจากการเชื่อมโฆษณา)"
+    },
+    "tenantScope": {
+      "saving": "กำลังบันทึก...",
+      "saveFailedDefault": "ไม่สำเร็จ",
+      "savedToast": "บันทึก Tenant Scope แล้ว",
+      "saveFailed": "บันทึกไม่สำเร็จ",
+      "description": "กำหนดว่า Tenant นี้ \"ดูแล\" ad accounts + campaigns ไหน — ทุกหน้าใน tenant จะ filter ตามนี้โดย default (user แต่ละคนยังกรองเพิ่มเองได้)",
+      "currentLabel": "ตอนนี้: {summary}",
+      "summaryAllAccounts": "ทุก account ({total})",
+      "summaryAccountsCount": "{count}/{total} accounts",
+      "summaryAllCampaigns": "ทุก campaigns ใน scope",
+      "summaryCampaignsCount": "{count}/{total} campaigns",
+      "unsavedChanges": "มีการแก้ไขที่ยังไม่บันทึก",
+      "saveBtn": "บันทึก",
+      "ownerOnly": "เฉพาะ OWNER ถึงแก้ได้",
+      "accountSection": {
+        "countAll": "ทั้งหมด ({total})",
+        "countSome": "{count}/{total}",
+        "searchPlaceholder": "ค้นหา ad account...",
+        "selectAll": "เลือกทั้งหมด",
+        "clear": "ล้าง"
+      },
+      "campaignSection": {
+        "countAll": "ทุก campaign ใน scope ({total})",
+        "countSome": "{count}/{total}",
+        "searchPlaceholder": "ค้นหา campaign...",
+        "selectAll": "ทั้งหมด",
+        "clear": "ล้าง",
+        "emptyNote": "ไม่มี campaigns ใน accounts ที่เลือก"
+      },
+      "patternSection": {
+        "summaryEmpty": "ยังไม่ตั้ง",
+        "summaryActive": "{count} pattern, match {matched} campaigns ตอนนี้",
+        "explainerBefore": "Pattern จะ",
+        "explainerHighlight": "auto-include campaign ที่ชื่อ match",
+        "explainerAfter": "ทั้งของเก่าและที่จะสร้างใหม่ในอนาคต — เช่น \"contains Sale\" → Sale0426, Sale0526, Sale0626 (ใหม่เดือนหน้า) เข้า scope อัตโนมัติ",
+        "delete": "ลบ",
+        "patternPlaceholder": "เช่น Sale หรือ Promo",
+        "addBtn": "+ เพิ่ม",
+        "previewLine": "Preview: match {matched} campaigns ตอนนี้ — {names}",
+        "previewExtra": "+{extra} อื่นๆ"
+      }
+    },
+    "ai": {
+      "persona": {
+        "heading": "AI Persona",
+        "subtitle": "ปรับ tone + บทบาทของ AI Master ให้เหมาะกับทีมและธุรกิจ",
+        "loading": "กำลังโหลด...",
+        "roleLabel": "บทบาท (Role)",
+        "rolePlaceholder": "เช่น Thai media buyer expert",
+        "customLabel": "คำสั่งเพิ่มเติม (Custom Instructions)",
+        "customPlaceholder": "เช่น ต้องตอบเป็น bullet points สั้นๆ, อย่าใช้คำว่า 'optimize', ระบุ ROAS เสมอเมื่อพูดถึง campaign",
+        "customNote": "คำสั่งจะถูก inject เข้า system prompt ทุก chat — ทั้งทีมเห็น",
+        "ragLabel": "ให้ AI ใช้ Knowledge Base (RAG) — ค้นเอกสารก่อนตอบ",
+        "saveBtn": "บันทึก",
+        "savedToast": "บันทึก AI Persona แล้ว"
+      },
+      "knowledge": {
+        "heading": "AI Knowledge",
+        "subtitle": "Upload เอกสาร / paste text / ใส่ URL — AI จะใช้เป็น context ตอนตอบคำถาม domain-specific",
+        "addBtn": "เพิ่มเอกสาร",
+        "loading": "กำลังโหลด...",
+        "empty": {
+          "title": "ยังไม่มีเอกสาร",
+          "subtitle": "Upload เอกสาร — ตัวอย่างเช่น brand guidelines, target audience research, past campaign learnings, ad copy templates"
+        },
+        "confirmDelete": "ลบเอกสารนี้?",
+        "deletedToast": "ลบแล้ว"
+      },
+      "upload": {
+        "title": "เพิ่มเอกสาร Knowledge",
+        "subtitle": "เอกสารที่ AI จะใช้ตอบ — แชร์ใน tenant ทั้งทีม",
+        "modes": {
+          "text": "Paste Text",
+          "pdf": "Upload PDF",
+          "url": "From URL"
+        },
+        "titleLabel": "ชื่อเอกสาร",
+        "titleLabelPdfHint": "(เว้นว่าง = ใช้ชื่อไฟล์)",
+        "titlePlaceholder": "เช่น Brand voice guidelines",
+        "text": {
+          "label": "เนื้อหา",
+          "placeholder": "วางเนื้อหาที่นี่...",
+          "summary": "{chars} ตัวอักษร · ประมาณ {chunks} chunks"
+        },
+        "pdf": {
+          "choose": "เลือกไฟล์ PDF",
+          "changeHint": "{size} KB — กดเพื่อเปลี่ยน"
+        },
+        "url": {
+          "label": "URL"
+        },
+        "processing": "กำลังประมวลผล + embed...",
+        "errors": {
+          "selectPdf": "เลือกไฟล์ PDF",
+          "enterUrl": "ใส่ URL",
+          "titleAndText": "ใส่ title + text"
+        },
+        "cancel": "ยกเลิก",
+        "submit": "อัพโหลด",
+        "successAdded": "เพิ่มเอกสาร \"{title}\" ({chunks} chunks)"
+      }
     }
   },
   "status": {
@@ -158,20 +538,323 @@
     "published": "ลงแล้ว",
     "cancelled": "ยกเลิก",
     "failed": "ล้มเหลว",
-    "pending": "รอดำเนินการ"
+    "pending": "รอดำเนินการ",
+    "closed": "ปิดการใช้งาน",
+    "activeAlt": "กำลังใช้งาน",
+    "pausedAlt": "หยุดชั่วคราว"
   },
   "pages": {
     "dashboard": {
       "title": "ภาพรวม",
-      "subtitle": "สรุปผลการทำโฆษณาทั้งหมด"
+      "subtitle": "สรุปผลการทำโฆษณาทั้งหมด",
+      "presets": {
+        "today": "วันนี้",
+        "yesterday": "เมื่อวาน",
+        "last_7d": "7 วันล่าสุด",
+        "last_30d": "30 วันล่าสุด"
+      },
+      "syncedAt": "ซิงค์ {when}",
+      "stale": "(stale)",
+      "cached": "(cached)",
+      "syncBtn": "ซิงค์",
+      "toast": {
+        "fetchFailed": "โหลดข้อมูลไม่สำเร็จ",
+        "syncSuccess": "ซิงค์ข้อมูลใหม่เรียบร้อย",
+        "refreshFailed": "Refresh ไม่สำเร็จ"
+      },
+      "kpi": {
+        "spend": "ค่าใช้จ่ายรวม",
+        "sales": "ยอดขายรวม",
+        "roas": "ROAS (รวม)",
+        "clicks": "คลิก (ทั้งหมด)"
+      },
+      "empty": {
+        "title": "ยังไม่มีข้อมูล campaign ในช่วงที่เลือก",
+        "description": "ลองเลือกช่วงเวลาอื่น หรือไปสร้าง campaign ใหม่"
+      },
+      "trend": {
+        "title": "แนวโน้มประสิทธิภาพ",
+        "subtitleDaily": "ค่าใช้จ่าย, ยอดขาย, ROAS รายวัน",
+        "subtitleAccount": "เปรียบเทียบตามบัญชี"
+      },
+      "platform": {
+        "title": "ประสิทธิภาพตามแพลตฟอร์ม",
+        "subtitle": "สัดส่วน spend แต่ละ platform",
+        "noSpend": "ยังไม่มี spend",
+        "totalSpend": "ค่าใช้จ่ายรวม"
+      },
+      "chart": {
+        "spend": "ค่าใช้จ่าย",
+        "sales": "ยอดขาย",
+        "roas": "ROAS",
+        "noData": "ไม่มีข้อมูลในช่วงนี้"
+      },
+      "tile": {
+        "campaigns": "แคมเปญที่ใช้งานอยู่",
+        "accounts": "บัญชีโฆษณา",
+        "conversions": "conversions ทั้งหมด",
+        "active": "กำลังใช้งาน",
+        "paused": "หยุดชั่วคราว",
+        "closed": "ปิดการใช้งาน",
+        "accountActive": "active",
+        "accountOther": "อื่นๆ",
+        "purchases": "purchases"
+      },
+      "top": {
+        "title": "แคมเปญที่มีประสิทธิภาพสูงสุด",
+        "subtitle": "5 อันดับแรกตาม spend",
+        "campaign": "แคมเปญ",
+        "spend": "ค่าใช้จ่าย",
+        "sales": "ยอดขาย",
+        "clicks": "คลิก",
+        "status": "สถานะ"
+      },
+      "onboarding": {
+        "headerTitle": "เริ่มต้นใช้งาน AdsLab",
+        "headerDone": "{done}/{total} เสร็จแล้ว",
+        "subtitle": "ทำตามขั้นตอนข้างล่างเพื่อเริ่ม run แคมเปญแรกได้ใน ~5 นาที",
+        "collapse": "ย่อ",
+        "expand": "ขยาย",
+        "dismiss": "ซ่อนตลอดไป",
+        "steps": {
+          "meta": {
+            "label": "เชื่อมต่อ Meta Business Manager",
+            "description": "OAuth กับ Facebook เพื่อให้ AdsLab อ่านข้อมูล + จัดการ ads",
+            "cta": "เชื่อมเลย"
+          },
+          "scope": {
+            "label": "เลือก ad accounts ที่ tenant นี้ดูแล",
+            "description": "แทนที่จะดูทุก account ใน BM — เลือกเฉพาะที่เกี่ยวข้อง",
+            "cta": "ตั้ง Scope"
+          },
+          "naming": {
+            "label": "กำหนด Naming Convention",
+            "description": "AdsLab จะแนะนำชื่อตามมาตรฐานที่ตั้งไว้ + auto-pin เข้า scope",
+            "cta": "ตั้ง Template"
+          },
+          "campaign": {
+            "label": "สร้าง Campaign แรก",
+            "description": "ใช้ Campaign Builder — Smart Name Field + AI suggestions",
+            "cta": "สร้าง Campaign"
+          }
+        }
+      },
+      "connectMetaCtaTitle": "เชื่อม Meta เพื่อเริ่มใช้งาน",
+      "connectMetaCtaDescription": "เชื่อมต่อ Facebook Business Manager ของคุณกับ AdsLab เพื่อให้ AI วิเคราะห์ และ optimize แคมเปญของคุณได้ทุกวัน"
+    },
+    "dashboardV1": {
+      "presets": {
+        "today": "วันนี้",
+        "yesterday": "เมื่อวาน",
+        "last_7d": "7 วันล่าสุด",
+        "last_30d": "30 วันล่าสุด"
+      },
+      "custom": "กำหนดเอง",
+      "syncedAt": "ซิงค์ {when}",
+      "stale": "(stale)",
+      "cached": "(cached)",
+      "sync": "ซิงค์",
+      "fromDate": "ตั้งแต่",
+      "toDate": "ถึง",
+      "apply": "นำมาใช้",
+      "emptyTitle": "ยังไม่มี campaign ที่ทำงานในช่วงที่เลือก",
+      "emptyDescription": "ลองเลือกช่วงเวลาอื่น หรือไปสร้าง campaign ใน Meta Ads Manager ก่อน",
+      "cpm": {
+        "good": "ดี",
+        "warn": "เฝ้าระวัง",
+        "bad": "แพง"
+      },
+      "roas": {
+        "good": "ดี",
+        "warn": "เฝ้าระวัง",
+        "bad": "ต่ำ"
+      },
+      "toast": {
+        "fetchFailed": "โหลดข้อมูลไม่สำเร็จ",
+        "syncSuccess": "ซิงค์ข้อมูลใหม่เรียบร้อย"
+      }
     },
     "boost": {
       "title": "บูสต์ด่วน",
-      "subtitle": "OWNER + MEDIA_BUYER เท่านั้น"
+      "subtitle": "OWNER + MEDIA_BUYER เท่านั้น",
+      "gate": {
+        "needMeta": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน Quick Boost",
+        "cta": "ไปที่ Settings",
+        "ownerOnly": "ฟีเจอร์นี้เปิดให้ OWNER + MEDIA_BUYER"
+      },
+      "input": {
+        "title": "วางข้อความที่ได้รับจากลูกค้า",
+        "subtitle": "AI จะตีความ + ดึง URL + เตรียมแคมเปญให้คุณตรวจก่อน publish",
+        "examplePrompt": "บูสต์วีดีโอให้หน่อยครับ เป็น Views โพสละ 1250 บาท ให้จบพรุ่งนี้ 10.00 น. https://facebook.com/reel/2046794962859921\nhttps://facebook.com/reel/1002568998876934",
+        "useExample": "ใช้ตัวอย่าง",
+        "analyzeBtn": "วิเคราะห์ + วางแผน",
+        "analyzing": "AI กำลังวิเคราะห์..."
+      },
+      "intent": {
+        "understood": "AI เข้าใจว่า:",
+        "urlErrors": "URL ที่ resolve ไม่สำเร็จ:"
+      },
+      "kpiGate": {
+        "title": "KPI + จุดประสงค์",
+        "subtitle": "AI ต้องรู้เพื่อช่วยประเมินผลทีหลัง — และจำเป็นถ้าจะเปิดทันที",
+        "kpiLabel": "KPI",
+        "kpiPlaceholder": "เช่น 10,000 views ขั้นต่ำ / CPV ≤ 0.5 บาท",
+        "purposeLabel": "จุดประสงค์",
+        "purposePlaceholder": "เช่น ทดสอบ creative / ก่อน launch / promote campaign"
+      },
+      "plan": {
+        "headerTitle": "แผน {count} แคมเปญ",
+        "headerSubtitle": "รวม ฿{total} — ตรวจ + แก้ไขก่อนสร้าง",
+        "summary": "{count} แคมเปญ · ฿{total}",
+        "defaultStatusNote": "สถานะเริ่มต้น: PAUSED (ปลอดภัย) — เปิดทีหลังที่หน้า /campaigns ได้",
+        "saveDraft": "สร้างเป็น Draft (PAUSED)",
+        "publishActive": "ยืนยันใช้เงิน ฿{total} + เปิดทันที",
+        "publishActiveTooltip": "ใส่ KPI + จุดประสงค์ก่อน"
+      },
+      "results": {
+        "title": "ผลลัพธ์ — สำเร็จ {success}/{total}",
+        "subtitle": "คลิกชื่อ campaign เพื่อไปหน้ารายละเอียด",
+        "newBoost": "บูสต์งานใหม่",
+        "view": "ดู",
+        "reelNotPromotable": "Meta บอกว่า reel นี้ promote ไม่ได้ — มักเกิดจาก: reel เก่ามาก / paid partnership / สิทธิ์ video monetization ยังไม่ผ่าน / standalone reel ไม่ผูกกับ Page post promotable pool. ลอง reel ใหม่ที่โพสจาก Page โดยตรง"
+      },
+      "brief": {
+        "removeAria": "ลบจากแผน",
+        "selectPlaceholder": "— เลือก —",
+        "budgetLabel": "งบ (THB lifetime)",
+        "startLabel": "เริ่ม",
+        "endLabel": "สิ้นสุด",
+        "durationHours": "รัน {hours} ชม.",
+        "durationDays": "รัน ~{days} วัน"
+      },
+      "toast": {
+        "promptTooShort": "ใส่ข้อความให้ยาวกว่านี้หน่อย",
+        "planFailed": "วางแผนไม่สำเร็จ: {message}",
+        "noBriefs": "ไม่มี campaign จะสร้าง",
+        "needKpiPurpose": "ใส่ KPI + จุดประสงค์ก่อนถึงจะเปิดทันทีได้",
+        "executeSuccess": "สร้าง {success}/{total} campaign สำเร็จ",
+        "executeFailed": "รันไม่สำเร็จ: {message}"
+      },
+      "confirm": {
+        "executeActive": "ยืนยันใช้เงินจริง ฿{total} กับ {count} campaigns? KPI: {kpi}\nจุดประสงค์: {purpose} กด OK เพื่อเปิดทันที"
+      },
+      "kpi": {
+        "atLeast": "ขั้นต่ำ",
+        "atMost": "ไม่เกิน"
+      },
+      "briefBuilder": {
+        "warningNoAccount": "Page \"{name}\" ({pageId}) ยังไม่มี ad account ที่เชื่อมไว้ — เลือกเองได้ในการ์ดนี้",
+        "warningNoEndTime": "ไม่ได้ระบุเวลาสิ้นสุด — ตั้งให้ +24 ชม จากตอนเริ่ม",
+        "warningNoObjective": "ไม่ได้ระบุ objective — ใช้ Engagement เป็นค่า default"
+      }
     },
     "campaigns": {
       "title": "แคมเปญ",
-      "subtitle": "จัดการและวางแผนแคมเปญของคุณ"
+      "subtitle": "จัดการและวางแผนแคมเปญของคุณ",
+      "mindmap": {
+        "empty": "ไม่มีแคมเปญในขณะนี้",
+        "campaignLabel": "แคมเปญ",
+        "campaignsCountUnit": "แคมเปญ",
+        "otherHub": "อื่นๆ"
+      },
+      "view": {
+        "structure": "โครงสร้าง",
+        "table": "ตาราง"
+      },
+      "action": {
+        "columns": "คอลัมน์",
+        "export": "ส่งออก",
+        "create": "สร้างแคมเปญ"
+      },
+      "search": {
+        "placeholder": "ค้นหาแคมเปญ, Ad Set, Ads..."
+      },
+      "filter": {
+        "status": "สถานะ",
+        "objective": "วัตถุประสงค์",
+        "other": "อื่นๆ"
+      },
+      "table": {
+        "name": "ชื่อ",
+        "status": "สถานะ",
+        "objective": "วัตถุประสงค์",
+        "budget": "งบประมาณ",
+        "spend": "ค่าใช้จ่าย"
+      },
+      "budget": {
+        "perDay": "/วัน"
+      },
+      "diagnose": {
+        "tooltip": "Diagnose แคมเปญนี้ด้วย AI (เปิด AI Chat พร้อมคำถาม)",
+        "prompt": "Diagnose แคมเปญ \"{name}\" (id: {id}) — ใช้ getCampaignInsights ดึง 7-day metrics, แล้วบอก 3 levers (creative / landing page / offer) ตัวไหนน่าจะคือปัญหา + แนะนำ action ที่ทำได้พรุ่งนี้"
+      },
+      "empty": {
+        "title": "ไม่พบแคมเปญที่ตรงเงื่อนไข",
+        "description": "ลองล้างฟิลเตอร์หรือสร้างแคมเปญใหม่"
+      },
+      "loading": {
+        "adSets": "กำลังโหลด Ad Sets...",
+        "structure": "กำลังโหลดมุมมองโครงสร้าง..."
+      },
+      "errorLoad": "โหลดไม่สำเร็จ: {message}",
+      "adset": {
+        "empty": "แคมเปญนี้ยังไม่มี Ad Set",
+        "noAds": "Ad Set นี้ยังไม่มีโฆษณา",
+        "adsCount": "{count} โฆษณา"
+      },
+      "duplicateErrors": {
+        "abo": "Budget อยู่ที่ระดับ ad set (ABO) — ปรับ budget ตอน duplicate ไม่ได้",
+        "dailyExclusive": "ระบุได้แค่อย่างใดอย่างหนึ่ง: dailyBudget หรือ dailyBudgetMultiplier",
+        "lifetimeExclusive": "ระบุได้แค่อย่างใดอย่างหนึ่ง: lifetimeBudget หรือ lifetimeBudgetMultiplier",
+        "sourceDailyMode": "Source ใช้ daily budget — ใช้ dailyBudget หรือ dailyBudgetMultiplier",
+        "sourceLifetimeMode": "Source ใช้ lifetime budget — ใช้ lifetimeBudget หรือ lifetimeBudgetMultiplier",
+        "multiplierRange": "Multiplier ต้องอยู่ระหว่าง 0 ถึง {max}",
+        "budgetBelowMin": "Budget ต่ำกว่าขั้นต่ำ ฿{min}",
+        "budgetAboveMax": "Budget เกินเพดาน ฿{max}",
+        "connectionNotReady": "Meta connection ไม่พร้อมใช้งาน",
+        "campaignNotFound": "Campaign {id} ไม่พบใน tenant นี้",
+        "activateNow": "ACTIVE ทันที"
+      }
+    },
+    "campaignsNew": {
+      "title": "สร้าง Campaign ใหม่",
+      "subtitle": "สร้าง Campaign → Ad Set → Ad ใน Meta ครั้งเดียวจบ. ทุกตัวจะเริ่มต้นที่ PAUSED ปลอดภัย",
+      "backLink": "กลับไปหน้า Campaigns",
+      "noPages": {
+        "title": "ไม่พบ Facebook Page ที่จัดการ",
+        "body": "ทุกโฆษณาต้อง publish \"in name of\" Page Facebook. ตรวจสอบว่า user ที่เชื่อม Meta เป็น admin/editor ของ Page อย่างน้อย 1 หน้า แล้ว reconnect Meta ใหม่",
+        "settingsCta": "ไปที่ Settings"
+      },
+      "noAccounts": "ไม่พบ ad account ที่ active. ตรวจสอบ Meta Business Manager"
+    },
+    "campaignsHistory": {
+      "title": "ประวัติ Action",
+      "subtitle": "ทุก action ที่ทำผ่าน AdsLab — ใคร / เมื่อไหร่ / กับ campaign ไหน / before → after",
+      "backLink": "กลับไปหน้า Campaigns",
+      "filterLabel": "Filter",
+      "action": {
+        "all": "ทุก action",
+        "pause": "Pause",
+        "resume": "Resume",
+        "setBudget": "แก้ Budget",
+        "setEndDate": "แก้ End Date"
+      },
+      "result": {
+        "all": "ทุกผลลัพธ์",
+        "success": "สำเร็จ",
+        "failed": "ล้มเหลว"
+      },
+      "userAll": "ทุก user",
+      "filterSubmit": "กรอง",
+      "filterClear": "ล้าง",
+      "totalSuffix": "{count} รายการ",
+      "empty": {
+        "title": "ยังไม่มีประวัติ action",
+        "body": "กด Pause/Resume หรือแก้ budget ในหน้า Campaigns เพื่อสร้าง audit log แรก"
+      },
+      "pageIndicator": "หน้า {page} / {total}",
+      "prev": "ก่อนหน้า",
+      "next": "ถัดไป"
     },
     "ads": {
       "title": "โฆษณา",
@@ -179,41 +862,2254 @@
     },
     "audiences": {
       "title": "จัดการกลุ่มเป้าหมาย",
-      "subtitle": "สร้าง Custom Audience จาก customer list, Pixel, หรือ Lookalike — audiences ที่สร้างจะปรากฏใน Campaign Builder ทันที"
+      "subtitle": "สร้าง Custom Audience จาก customer list, Pixel, หรือ Lookalike — audiences ที่สร้างจะปรากฏใน Campaign Builder ทันที",
+      "tabs": {
+        "audiences": "Audiences",
+        "pixels": "Pixels",
+        "conversions": "Custom Conversions",
+        "events": "Events (SDK)",
+        "new": "NEW"
+      },
+      "subtype": {
+        "customer": "Customer list",
+        "pixel": "Pixel (website)",
+        "lookalike": "Lookalike",
+        "engagement": "Engagement",
+        "app": "App activity"
+      },
+      "filter": {
+        "allTypes": "ทุก type",
+        "allAccounts": "ทุก account",
+        "allBusinesses": "ทุก Business",
+        "showing": "แสดง {filtered} / {total}",
+        "totalLabel": "รวม:",
+        "audiencesUnit": "audiences",
+        "conversionsUnit": "custom conversions"
+      },
+      "actions": {
+        "create": "สร้าง Audience",
+        "createFirst": "สร้าง Audience ตัวแรก",
+        "createPixel": "สร้าง Pixel",
+        "createPixelFirst": "สร้าง Pixel ตัวแรก",
+        "createConversion": "สร้าง Custom Conversion",
+        "createConversionFirst": "สร้าง Custom Conversion ตัวแรก",
+        "createRule": "สร้าง Rule",
+        "createRuleFirst": "สร้าง Rule ตัวแรก",
+        "create2": "สร้าง",
+        "back": "← กลับ",
+        "cancel": "ยกเลิก"
+      },
+      "search": {
+        "placeholder": "ค้นหาชื่อ audience..."
+      },
+      "list": {
+        "deleteTitle": "ลบ audience",
+        "deleteConfirm": "ลบ audience \"{name}\"? (ทำใน Meta จริง — ยกเลิกไม่ได้)",
+        "deleting": "กำลังลบ...",
+        "deleted": "ลบแล้ว",
+        "deleteFail": "ลบไม่สำเร็จ",
+        "emptyTitle": "ยังไม่มี audience",
+        "emptyDescription": "สร้าง audience จาก customer list (อีเมล/เบอร์โทร), Lookalike, หรือ Pixel — ใช้ใน Campaign Builder ได้ทันที",
+        "emptyFiltered": "ไม่พบ audience ที่ตรงเงื่อนไข"
+      },
+      "pixels": {
+        "bannerTitle": "ทำไม Pixel สร้างได้แค่ไม่กี่ตัว?",
+        "bannerLimit": "Meta limit <strong>5 Pixels ต่อ Business Manager</strong> (ถ้า BM ไม่ verify) — ถ้า verify BM แล้วจะได้สูงสุด 100 Pixels",
+        "bannerShare": "แต่ <strong>1 Pixel ใช้กับหลาย ad accounts ได้</strong> ใน BM เดียวกัน — กดปุ่ม \"Share\" เพื่อขยาย Pixel ไปยัง ad accounts อื่น",
+        "bannerScope": "Pixel แต่ละตัว = 1 เว็บไซต์ / 1 ลูกค้า ไม่ใช่ 1 ad account",
+        "totalLabel": "Pixels ทั้งหมด:",
+        "noBM": "(ไม่มี BM)",
+        "loading": "กำลังโหลด Pixels...",
+        "emptyTitle": "ยังไม่มี Pixel",
+        "emptyDescription": "สร้าง Pixel เพื่อติด tracking code บนเว็บไซต์ — แล้วจึงสร้าง Website Custom Audience จากคนที่เข้าเว็บได้",
+        "idPrefix": "ID",
+        "bmPrefix": "BM:",
+        "firedAt": "ยิงล่าสุด {when}",
+        "usedWith": "ใช้กับ {count} ad account{plural}",
+        "andOthers": "+{count} อื่นๆ",
+        "unavailable": "unavailable",
+        "openEventsManager": "เปิดใน Events Manager (Facebook)",
+        "eventsManager": "Events Manager",
+        "shareTitle": "ใช้ Pixel นี้กับ ad account อื่นใน BM เดียวกัน",
+        "share": "Share",
+        "copyCode": "Copy code",
+        "copied": "คัดลอกแล้ว",
+        "copyFail": "คัดลอกไม่สำเร็จ"
+      },
+      "sharePixel": {
+        "title": "Share Pixel",
+        "subtitle": "ขยาย <strong>{name}</strong> ไปยัง ad account อื่นใน BM เดียวกัน",
+        "subtitleWithBM": "({bm})",
+        "notInBM": "Pixel นี้ไม่ได้อยู่ใน Business Manager — share ไม่ได้",
+        "allShared": "ไม่มี ad account อื่นใน BM นี้ที่ยังไม่ได้รับ Pixel แล้ว — Pixel นี้ใช้กับทุก ad account ใน BM แล้วครับ",
+        "targetLabel": "Target Ad Account",
+        "hint": "แสดงเฉพาะ ad accounts ที่อยู่ใน BM เดียวกัน — Meta ไม่อนุญาตให้ share ข้าม BM",
+        "pickAccount": "เลือก ad account",
+        "loading": "กำลัง share Pixel...",
+        "successPrefix": "Share Pixel ไป",
+        "fail": "Share ไม่สำเร็จ",
+        "submit": "Share Pixel"
+      },
+      "createPixel": {
+        "title": "สร้าง Pixel ใหม่",
+        "subtitle": "Pixel ใช้ติด tracking code บนเว็บไซต์",
+        "adAccountLabel": "Ad Account",
+        "storageHint": "Pixel จะถูกฝากไว้ใน Business Manager: <strong>{business}</strong> — ดูใน Events Manager หลังจากสร้าง",
+        "nameLabel": "ชื่อ Pixel",
+        "namePlaceholder": "เช่น Main Website Pixel",
+        "limitWarning": "Meta จำกัด <strong>1 Pixel ต่อ ad account</strong> — ถ้า account นี้มี Pixel อยู่แล้ว ระบบจะแจ้งเตือนแทนการสร้างซ้ำ",
+        "nameRequired": "ตั้งชื่อ Pixel",
+        "loading": "กำลังสร้าง Pixel...",
+        "successPrefix": "สร้าง Pixel",
+        "fail": "สร้างไม่สำเร็จ"
+      },
+      "pixelCode": {
+        "title": "Install Code — {name}",
+        "subtitle": "วาง code นี้ใน <head> ของทุกหน้าในเว็บไซต์ (Pixel ID {id})",
+        "storedIn": "ฝากไว้ใน BM:",
+        "openEventsManager": "เปิด Events Manager",
+        "empty": "ยังไม่มี install code — ลอง refresh"
+      },
+      "createAudience": {
+        "title": "สร้าง Audience ใหม่",
+        "subtitle": "เลือกแหล่งข้อมูลที่จะใช้สร้าง audience",
+        "customerTitle": "Customer list",
+        "customerDesc": "อัพโหลดอีเมล/เบอร์โทรลูกค้าเดิม → retarget",
+        "websiteTitle": "Website visitors (Pixel)",
+        "websiteDesc": "คนเข้าเว็บไซต์ จับโดย Pixel — retarget visitors",
+        "lookalikeTitle": "Lookalike",
+        "lookalikeDesc": "คนคล้ายกับ audience ที่มีอยู่ — expand prospecting",
+        "soon": "soon"
+      },
+      "customerList": {
+        "adAccountLabel": "Ad Account",
+        "nameLabel": "ชื่อ Audience",
+        "namePlaceholder": "เช่น Customers Q1 2026",
+        "descLabel": "คำอธิบาย (optional)",
+        "descPlaceholder": "เช่น Email list จาก Shopify, ครั้งล่าสุด 1 เม.ย. 2026",
+        "uploadLabel": "อัพโหลด CSV (อีเมล / เบอร์โทร)",
+        "parsing": "กำลังอ่านไฟล์...",
+        "found": "พบ {emails} email + {phones} เบอร์โทร",
+        "changeFile": "กดเพื่อเปลี่ยนไฟล์",
+        "dropHint": "เลือก CSV / TXT — column ไหนก็ได้ (email หรือ phone)",
+        "minWarning": "Meta ต้องการอย่างน้อย {min} แถว — ตอนนี้มี {total}",
+        "readyHint": "พร้อมส่ง — PII จะถูก hash ด้วย SHA-256 ในเบราว์เซอร์ (server ไม่เห็น raw data)",
+        "submit": "สร้าง Audience",
+        "errNameRequired": "ตั้งชื่อ audience",
+        "errMinRows": "ต้องมีอย่างน้อย {min} แถว (Meta minimum) — ตอนนี้มี {total}",
+        "loadingHash": "กำลัง hash {total} แถว...",
+        "loadingUpload": "กำลังสร้าง audience + อัพโหลด...",
+        "success": "สร้าง \"{name}\" สำเร็จ — {users} แถว",
+        "fail": "สร้างไม่สำเร็จ",
+        "parseFail": "Parse CSV ไม่สำเร็จ: {message}"
+      },
+      "lookalike": {
+        "ratioClosest": "ใกล้เคียงที่สุด (~แคบ)",
+        "ratioClose": "ใกล้เคียง",
+        "ratioMixed": "ผสมๆ",
+        "ratioWidest": "กว้างที่สุด",
+        "adAccountLabel": "Ad Account",
+        "sourceLabel": "Source Audience (audience ต้นแบบ)",
+        "sourceEmpty": "ไม่มี source audience ที่ใช้ได้ใน account นี้ — ต้องมี Custom/Website audience ขนาด ≥ 100 ก่อน",
+        "sourcePlaceholder": "-- เลือก source --",
+        "nameLabel": "ชื่อ Lookalike",
+        "namePlaceholder": "เช่น Lookalike Customers TH 1%",
+        "countryLabel": "ประเทศ (ISO code)",
+        "similarityLabel": "Similarity",
+        "processingHint": "Lookalike จะใช้เวลา ~6 ชม. ในการประมวลผล — ขนาดจะเริ่มที่ 0 แล้วเพิ่มขึ้น",
+        "submit": "สร้าง Lookalike",
+        "errNameRequired": "ตั้งชื่อ Lookalike",
+        "errSourceRequired": "เลือก source audience",
+        "loading": "กำลังสร้าง Lookalike...",
+        "success": "สร้าง Lookalike \"{name}\" สำเร็จ — Meta คำนวณภายใน ~6 ชม.",
+        "fail": "สร้างไม่สำเร็จ"
+      },
+      "website": {
+        "adAccountLabel": "Ad Account",
+        "pixelLabel": "Pixel",
+        "loadingSuffix": "(loading...)",
+        "noPixel": "ไม่มี Pixel ใน account นี้ — สร้าง Pixel ก่อน (Tab \"Pixels\")",
+        "pixelPlaceholder": "-- เลือก Pixel --",
+        "nameLabel": "ชื่อ Audience",
+        "namePlaceholder": "เช่น Website visitors 30d",
+        "ruleLabel": "เงื่อนไข",
+        "ruleAll": "ทุกคนที่เข้าเว็บ",
+        "ruleUrlContains": "URL ที่มีคำว่า...",
+        "ruleEvent": "Pixel event = ...",
+        "ruleUrlPlaceholder": "เช่น /product หรือ /thank-you",
+        "ruleEventPlaceholder": "เช่น Purchase, AddToCart, Lead",
+        "retentionLabel": "เก็บข้อมูล (วัน)",
+        "retentionUnit": "{days} วัน",
+        "submit": "สร้าง Audience",
+        "errNameRequired": "ตั้งชื่อ audience",
+        "errPixelRequired": "เลือก Pixel",
+        "errRuleValueRequired": "กรอกค่าเงื่อนไข",
+        "loading": "กำลังสร้าง audience...",
+        "success": "สร้าง \"{name}\"",
+        "fail": "สร้างไม่สำเร็จ"
+      },
+      "conversions": {
+        "bannerTitle": "Custom Conversion คืออะไร?",
+        "bannerItem1": "กำหนด URL pattern → conversion event โดยไม่ต้องเขียน code event บนเว็บ",
+        "bannerItem2": "เช่น \"URL ที่มีคำว่า <code>/thank-you</code>\" = Purchase event (Meta จะนับให้อัตโนมัติ)",
+        "bannerItem3": "เหมาะกับเว็บที่ติด Pixel basic แล้ว แต่ไม่มี dev มา map events",
+        "loading": "กำลังโหลด...",
+        "emptyTitle": "ยังไม่มี Custom Conversion",
+        "emptyDescription": "สร้าง Custom Conversion เพื่อ map URL → conversion event โดยไม่ต้องเขียน event code บนเว็บ",
+        "deleteTitle": "ลบ Custom Conversion",
+        "deleteConfirm": "ลบ Custom Conversion \"{name}\"? (ทำใน Meta จริง — ยกเลิกไม่ได้)",
+        "deleting": "กำลังลบ...",
+        "deleted": "ลบแล้ว",
+        "deleteFail": "ลบไม่สำเร็จ",
+        "pixelPrefix": "Pixel:",
+        "categoryPrefix": "Category:",
+        "rulePrefix": "Rule:"
+      },
+      "createConversion": {
+        "title": "สร้าง Custom Conversion",
+        "subtitle": "map URL pattern → conversion event โดยไม่ต้องเขียน code event บนเว็บ",
+        "adAccountLabel": "Ad Account",
+        "pixelLabel": "Pixel",
+        "loadingSuffix": "(loading...)",
+        "noPixel": "ไม่มี Pixel ใน account นี้ — สร้าง Pixel ก่อน (tab \"Pixels\")",
+        "pixelPlaceholder": "-- เลือก Pixel --",
+        "nameLabel": "ชื่อ Conversion",
+        "namePlaceholder": "เช่น Order Complete, Lead Form Submit",
+        "urlRuleLabel": "กฎ URL",
+        "urlContains": "URL contains",
+        "urlEquals": "URL equals",
+        "urlNotContains": "URL NOT contains",
+        "valuePlaceholder": "เช่น /thank-you หรือ /checkout/complete",
+        "matchHint": "Meta จะ match กับ URL ของ PageView ที่ Pixel นี้ยิงในเว็บ",
+        "categoryLabel": "Category (สำหรับ Meta optimization)",
+        "categoryHint": "ใช้บอก Meta ว่า conversion นี้คล้าย event มาตรฐานตัวไหน — มีผลกับ optimization",
+        "errNameRequired": "ตั้งชื่อ",
+        "errPixelRequired": "เลือก Pixel",
+        "errUrlRequired": "กรอก URL pattern",
+        "loading": "กำลังสร้าง Custom Conversion...",
+        "success": "สร้าง \"{name}\" สำเร็จ",
+        "fail": "สร้างไม่สำเร็จ",
+        "eventPurchase": "Purchase — ซื้อสำเร็จ",
+        "eventAddToCart": "Add to Cart — ใส่ตะกร้า",
+        "eventInitiateCheckout": "Initiate Checkout — เริ่ม checkout",
+        "eventLead": "Lead — กรอกฟอร์ม",
+        "eventCompleteRegistration": "Complete Registration — สมัครสมาชิก",
+        "eventAddPaymentInfo": "Add Payment Info — กรอกข้อมูลจ่าย",
+        "eventViewContent": "View Content — ดูสินค้า",
+        "eventSearch": "Search — ค้นหา",
+        "eventSubscribe": "Subscribe — สมัครรับข้อมูล",
+        "eventContact": "Contact — ติดต่อ",
+        "eventAddToWishlist": "Add to Wishlist",
+        "eventFindLocation": "Find Location",
+        "eventDonate": "Donate",
+        "eventSchedule": "Schedule",
+        "eventStartTrial": "Start Trial",
+        "eventSubmitApplication": "Submit Application",
+        "eventCustomizeProduct": "Customize Product",
+        "eventOther": "Other — กำหนดเอง"
+      },
+      "events": {
+        "logPageTitle": "SDK Event Log",
+        "logPageSubtitle": "ดู events ที่ SDK ยิงเข้ามา + สถานะ CAPI relay — ใช้ debug rules ก่อนรัน campaign จริง",
+        "log": {
+          "allEvents": "ทุก event",
+          "allStatuses": "ทุก status",
+          "loading": "กำลังโหลด...",
+          "empty": "ยังไม่มี event log — ติด SDK บนเว็บแล้ว rule จะเริ่มยิง events เข้ามาที่นี่"
+        },
+        "bannerTitle": "Events SDK — track event ทันทีโดยไม่ต้องเขียน code",
+        "bannerItem1": "ติด <strong>1 script tag</strong> บนเว็บ → SDK ของเรา fire Meta Pixel events ตาม rule ที่ตั้งไว้ที่นี่",
+        "bannerItem2": "Triggers: URL match, click selector, form submit, scroll %, time on page",
+        "bannerItem3": "ส่งทั้ง <strong>browser Pixel + server CAPI</strong> (ปลอด ad blocker / iOS 14)",
+        "totalLabel": "Rules ทั้งหมด:",
+        "enabledLabel": "(เปิดอยู่ {count})",
+        "viewLog": "ดู Event Log",
+        "sdkInstallCode": "SDK Install Code",
+        "installSdkFirst": "ติด SDK ก่อน",
+        "loading": "กำลังโหลด...",
+        "emptyTitle": "ยังไม่มี Event Rule",
+        "emptyDescription": "สร้าง rule เพื่อให้ SDK ของเรา auto-fire Meta Pixel events บนเว็บลูกค้า — ไม่ต้องเขียน event code เอง",
+        "needPixel": "ต้องสร้าง Pixel ก่อนใน tab Pixels",
+        "rulesUnit": "rule",
+        "rulesUnitPlural": "rules",
+        "installCode": "Install code",
+        "disabled": "disabled",
+        "enableTitle": "เปิด rule",
+        "disableTitle": "ปิด rule",
+        "deleteTitle": "ลบ rule",
+        "deleteConfirm": "ลบ rule \"{name}\"?",
+        "deleteFail": "ลบไม่สำเร็จ",
+        "deleted": "ลบแล้ว",
+        "updateFail": "อัพเดทไม่สำเร็จ",
+        "firesUnit": "fires",
+        "lastFiredPrefix": "last"
+      },
+      "createRule": {
+        "title": "สร้าง Event Rule",
+        "subtitle": "เมื่อ trigger match → SDK fire Meta Pixel event + ส่ง CAPI",
+        "pixelLabel": "Pixel",
+        "noPixel": "ไม่มี Pixel",
+        "nameLabel": "ชื่อ Rule",
+        "namePlaceholder": "เช่น Track Purchase on Thank-You Page",
+        "eventLabel": "Event Name (Meta standard)",
+        "triggerLabel": "Trigger",
+        "trigUrl": "URL match",
+        "trigClick": "Click on selector",
+        "trigForm": "Form submit",
+        "trigScroll": "Scroll percentage",
+        "trigTime": "Time on page",
+        "trigCustom": "Custom window event",
+        "opContains": "contains",
+        "opEquals": "equals",
+        "opNotContains": "not contains",
+        "opStartsWith": "starts with",
+        "opRegex": "regex",
+        "fireOncePerSession": "ยิงครั้งเดียวต่อ session",
+        "urlPlaceholder": "/thank-you",
+        "clickPlaceholder": ".add-to-cart-button หรือ #checkout-btn",
+        "formPlaceholder": "ว่างไว้ = form ใดก็ได้ หรือ \"form.lead-form\"",
+        "secondsUnit": "วินาที",
+        "customPlaceholder": "ชื่อ window event เช่น myAppPurchase",
+        "errNameRequired": "ตั้งชื่อ rule",
+        "errPixelRequired": "เลือก Pixel",
+        "errTriggerIncomplete": "กรอกข้อมูล trigger ให้ครบ",
+        "loading": "กำลังสร้าง rule...",
+        "success": "สร้าง \"{name}\" สำเร็จ",
+        "fail": "สร้างไม่สำเร็จ"
+      },
+      "sdkInstall": {
+        "title": "SDK Install Code",
+        "subtitle": "สำหรับ Pixel: <strong>{name}</strong> · วาง snippet นี้ใน <head> ของทุกหน้าในเว็บไซต์",
+        "warning": "ใช้แทน Meta Pixel basic code เดิม — SDK ของเรา inject Pixel เอง ห้ามติด 2 ที่ในหน้าเดียวกัน (จะนับ event ซ้ำ)",
+        "empty": "โหลด install code ไม่สำเร็จ — ลอง refresh"
+      },
+      "ruleCondition": {
+        "anyForm": "any form",
+        "urlOp": "URL {op} \"{value}\"",
+        "selector": "selector \"{value}\"",
+        "formSelector": "form \"{value}\""
+      },
+      "time": {
+        "minutesAgo": "{n} นาทีที่แล้ว",
+        "hoursAgo": "{n} ชม. ที่แล้ว",
+        "daysAgo": "{n} วันที่แล้ว",
+        "monthsAgo": "{n} เดือนที่แล้ว"
+      }
     },
     "creatives": {
       "title": "ครีเอทีฟ",
-      "subtitle": "คลังภาพ + วิดีโอ ที่ใช้ในแคมเปญ"
+      "subtitle": "คลังภาพ + วิดีโอ ที่ใช้ในแคมเปญ",
+      "searchPlaceholder": "ค้นหาตามชื่อ...",
+      "filterAll": "ทั้งหมด",
+      "filterImage": "ภาพ",
+      "filterVideo": "วิดีโอ",
+      "upload": "อัปโหลด",
+      "loadMore": "โหลดเพิ่ม",
+      "loadMoreFailed": "โหลดเพิ่มไม่สำเร็จ: {message}",
+      "deleted": "ลบแล้ว",
+      "delete": "ลบ",
+      "deleteFailed": "ลบไม่สำเร็จ: {message}",
+      "deleteConfirm": "ลบ creative นี้? Ad ที่ใช้อยู่จะยังคงอยู่ใน Meta",
+      "emptyAllTitle": "ยังไม่มี creative ในคลัง",
+      "emptyAllDescription": "อัปโหลดรูป/วิดีโอเพื่อใช้ในแคมเปญ — Campaign Builder จะดึงจากคลังนี้ได้เลย",
+      "emptyFilteredTitle": "ไม่พบ creative ที่ตรงเงื่อนไข",
+      "emptyFilteredDescription": "ลองล้างฟิลเตอร์หรืออัปโหลดใหม่",
+      "uploadModalTitle": "อัปโหลด creative",
+      "uploadModalHint": "รองรับ jpg, png, webp, gif, mp4 (สูงสุด 10MB ต่อไฟล์)",
+      "close": "ปิด",
+      "uploadingProgress": "กำลังอัปโหลด {done} / {total}",
+      "chooseFiles": "เลือกไฟล์ (เลือกได้หลายไฟล์)",
+      "orDragHere": "หรือลากวางที่นี่ได้",
+      "uploadFileFailed": "อัปโหลด {name} ไม่สำเร็จ: {message}",
+      "uploadDoneCount": "อัปโหลด {count} ไฟล์เสร็จแล้ว",
+      "libraryPicker": {
+        "title": "เลือกจากคลัง creative",
+        "subtitle": "เลือก image creative ที่อัปโหลดไว้ — ระบบจะส่งให้ Meta อัตโนมัติ",
+        "close": "ปิด",
+        "loading": "กำลังโหลด...",
+        "emptyTitle": "คลังว่างเปล่า",
+        "emptyDescription": "อัปโหลด creative ก่อนที่หน้า \"ครีเอทีฟ\"",
+        "loadFailed": "โหลดคลังไม่สำเร็จ: {message}",
+        "prepareFailed": "เตรียมรูปไม่สำเร็จ: {message}"
+      },
+      "kpiImage": "ภาพ",
+      "kpiVideo": "วิดีโอ",
+      "kpiAi": "สร้างด้วย AI",
+      "kpiTotal": "ทั้งหมด"
     },
     "posts": {
       "title": "โพสต์เพจ",
-      "subtitle": "เขียน + ตั้งเวลาโพสต์เพจ Facebook"
+      "subtitle": "เขียน + ตั้งเวลาโพสต์เพจ Facebook",
+      "serverErrors": {
+        "unsupportedFileType": "ประเภทไฟล์ไม่รองรับ: {type}",
+        "fileTooLarge": "ไฟล์ใหญ่เกิน {maxMb}MB",
+        "captionEmpty": "Caption ห้ามว่าง",
+        "captionTooLong": "Caption ยาวเกิน {max} ตัวอักษร",
+        "mediaRequired": "ต้องมีรูป/วิดีโออย่างน้อย 1 ชิ้น",
+        "scheduleTooSoon": "เวลาที่ตั้งต้องห่างจากนี้อย่างน้อย 10 นาที",
+        "scheduleTooFar": "เวลาที่ตั้งต้องไม่เกิน 6 เดือนข้างหน้า",
+        "pageNotConnected": "Page {pageId} ไม่ได้เชื่อมต่อกับ tenant นี้ (เชื่อม Page Management ก่อน)",
+        "cannotCancelStatus": "ไม่สามารถยกเลิกโพสต์สถานะ {status}",
+        "missingMetaPostId": "ไม่มี Meta post id",
+        "invalidScheduledAt": "scheduledAt ไม่ใช่ ISO datetime ที่ถูกต้อง"
+      }
     },
     "postsNew": {
       "title": "เขียนโพสต์ใหม่"
     },
     "reports": {
-      "title": "รายงาน"
+      "title": "รายงาน",
+      "generate": {
+        "progress": {
+          "fetching": "กำลังดึงข้อมูลจาก Meta...",
+          "analyzingAccounts": "วิเคราะห์ ad accounts...",
+          "thinking": "Claude กำลังคิด...",
+          "writing": "เขียนรายงานเป็นภาษาไทย...",
+          "almostDone": "เกือบเสร็จแล้ว..."
+        },
+        "button": "สร้างรายงานเดี๋ยวนี้",
+        "skipped": "มีรายงานของวันนี้อยู่แล้ว — กำลังพาไปดู",
+        "success": "สร้างรายงานสำเร็จ",
+        "failed": "สร้างรายงานไม่สำเร็จ"
+      },
+      "progress": {
+        "fetching": "กำลังดึงข้อมูลจาก Meta...",
+        "analyzing": "วิเคราะห์ campaigns...",
+        "thinking": "Claude กำลังคิด...",
+        "writing": "เขียนรายงานเป็นภาษาไทย...",
+        "almostDone": "เกือบเสร็จแล้ว..."
+      },
+      "toolbar": {
+        "scope": "Scope",
+        "allDefault": "ทั้งหมด (default)",
+        "createNew": "สร้างใหม่",
+        "editTooltip": "แก้ไข scope นี้",
+        "edit": "แก้ไข",
+        "deleteTooltip": "ลบ scope นี้",
+        "generateScope": "สร้างรายงาน scope นี้",
+        "generateNow": "สร้างรายงานเดี๋ยวนี้"
+      },
+      "toast": {
+        "generateFail": "สร้างรายงานไม่สำเร็จ",
+        "alreadyExistsToday": "มีรายงานของวันนี้อยู่แล้ว — กำลังพาไปดู",
+        "generateSuccess": "สร้างรายงานสำเร็จ",
+        "confirmDelete": "ลบ scope \"{name}\"? (รายงานเก่าจะยังอยู่)",
+        "deleted": "ลบ scope แล้ว",
+        "deleteFail": "ลบไม่สำเร็จ",
+        "nameScope": "ตั้งชื่อ scope ก่อน",
+        "saving": "กำลังบันทึก...",
+        "saveFail": "บันทึกไม่สำเร็จ",
+        "saved": "บันทึก scope แล้ว"
+      },
+      "list": {
+        "emptyForScope": "ยังไม่มีรายงานสำหรับ scope นี้",
+        "empty": "ยังไม่มีรายงาน",
+        "emptyHint": "คลิก \"สร้างรายงาน\" เพื่อให้ AI สรุปข้อมูลของเมื่อวานให้คุณ",
+        "emailSent": "ส่งอีเมลแล้ว"
+      },
+      "modal": {
+        "editTitle": "แก้ไข Scope",
+        "createTitle": "สร้าง Scope ใหม่",
+        "hint": "เลือกชุด ads accounts / campaigns ที่ต้องการให้ AI วิเคราะห์เฉพาะกลุ่ม — เว้นว่างทั้งสองส่วน = ทั้ง workspace",
+        "accountsHeading": "Ad Accounts",
+        "allAccounts": "ทุก account (ไม่ filter)",
+        "accountsSelected": "เลือก {selected} / {total}",
+        "campaignsHeading": "Campaigns",
+        "allCampaignsInAccounts": "ทุก campaign ใน accounts ที่เลือก",
+        "campaignsSelected": "เลือก {selected}",
+        "campaignSearchPlaceholder": "ค้นหาชื่อ campaign...",
+        "campaignsEmpty": "ไม่มี campaign — ลองล้าง filter หรือเลือก accounts น้อยลง",
+        "scopeNameLabel": "ชื่อ scope",
+        "scopeNamePlaceholder": "เช่น FROST, Asahi Q2, New Launches...",
+        "cancel": "ยกเลิก",
+        "saveEdit": "บันทึกการแก้ไข",
+        "createBtn": "สร้าง scope"
+      },
+      "page": {
+        "title": "รายงานประจำวัน",
+        "subtitle": "ฉบับ \"ทั้งหมด\" สร้างอัตโนมัติทุกเช้า 9 โมง — รายงาน scope กดเองตามต้องการ",
+        "needMetaConnection": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน AI Reports",
+        "goToSettings": "ไปที่ Settings",
+        "statusCompleted": "เสร็จแล้ว",
+        "statusGenerating": "กำลังสร้าง...",
+        "statusFailed": "ล้มเหลว"
+      },
+      "actionsPanel": {
+        "title": "AI แนะนำให้ทำ",
+        "stats": "{pending} รอ · {applied} ทำแล้ว · {dismissed} ข้าม",
+        "applied": "ทำแล้ว",
+        "dismissed": "ข้าม",
+        "dismiss": "ข้าม",
+        "doing": "กำลังทำ...",
+        "skipping": "กำลังข้าม...",
+        "done": "ทำแล้ว",
+        "skipped": "ข้ามแล้ว",
+        "failed": "ไม่สำเร็จ",
+        "confirmAction": "{action} campaign \"{name}\"?",
+        "actionPause": "หยุด",
+        "actionResume": "เปิด",
+        "actionSetBudget": "ปรับ budget",
+        "actionSetEndDate": "ตั้ง end date",
+        "actionDuplicate": "Duplicate",
+        "paramSetBudgetDaily": "เป็น ฿{amount}/day",
+        "paramSetBudgetLifetime": "เป็น ฿{amount} lifetime",
+        "paramSetEndDate": "เป็น {when}",
+        "paramDailyBudgetMultiplier": "×{value} budget",
+        "paramLifetimeBudgetMultiplier": "×{value} lifetime budget",
+        "paramActiveImmediately": "ACTIVE ทันที"
+      },
+      "viewer": {
+        "backToList": "กลับไปรายการรายงาน",
+        "statusLabel": "สถานะ: {status}",
+        "statusCompleted": "เสร็จแล้ว",
+        "statusGenerating": "กำลังสร้าง...",
+        "statusFailed": "ล้มเหลว",
+        "emailedAt": "ส่งอีเมลเมื่อ {when}",
+        "generationFailed": "การสร้างรายงานล้มเหลว",
+        "generatingMessage": "AI กำลังวิเคราะห์ข้อมูลของคุณ..."
+      },
+      "badges": {
+        "pending": "รอผล",
+        "ignored": "ไม่ได้ทำ",
+        "targetDeleted": "เป้าหมายถูกลบ",
+        "noData": "ไม่มีข้อมูล",
+        "followed": "ทำตาม",
+        "confidenceTooltip": "30 วัน: ทำตาม {successful}/{total} ครั้ง สำเร็จ {percent}%",
+        "confidenceLabel": "เคยแนะนำ {total} ครั้ง · สำเร็จ {percent}%"
+      }
     },
     "aiOptimize": {
       "title": "AI Optimization Center",
-      "subtitle": "AI วิเคราะห์และแนะนำแนวทางเพิ่มประสิทธิภาพแคมเปญแบบเรียลไทม์"
+      "subtitle": "AI วิเคราะห์และแนะนำแนวทางเพิ่มประสิทธิภาพแคมเปญแบบเรียลไทม์",
+      "gate": {
+        "title": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน",
+        "description": "AI Optimization Center ต้องการข้อมูลจริงจาก Meta เพื่อวิเคราะห์ + แนะนำการปรับปรุง",
+        "cta": "ไปที่ Settings"
+      },
+      "kpi": {
+        "opportunities": "โอกาสในการปรับปรุง",
+        "roasUplift": "คาดการณ์ ROAS เพิ่มขึ้น",
+        "savings": "ประหยัดงบประมาณได้",
+        "affectedCampaigns": "แคมเปญที่ได้รับผลกระทบ"
+      },
+      "empty": {
+        "title": "แคมเปญของคุณทำงานได้ดีอยู่แล้ว",
+        "description": "ตอนนี้ AI ยังไม่พบจุดที่ต้องปรับปรุง — ลองมาเช็คใหม่อีกครั้งใน 24 ชั่วโมง หรือเพิ่มงบให้แคมเปญที่ทำได้ดีเพื่อ scale"
+      },
+      "tab": {
+        "all": "ทั้งหมด",
+        "high": "ความสำคัญสูง",
+        "medium": "ความสำคัญกลาง",
+        "low": "ความสำคัญต่ำ"
+      },
+      "refreshData": "รีเฟรชข้อมูล",
+      "emptyTab": {
+        "title": "ไม่มีคำแนะนำในระดับนี้",
+        "description": "ลองดูที่ tab อื่น หรือกดรีเฟรชเพื่อให้ AI วิเคราะห์ใหม่"
+      },
+      "table": {
+        "action": "คำแนะนำ",
+        "target": "แคมเปญ/ชุดโฆษณา",
+        "reason": "เหตุผล",
+        "predicted": "ผลลัพธ์ที่คาดว่าจะได้รับ",
+        "severity": "ความสำคัญ",
+        "actions": "การดำเนินการ"
+      },
+      "applyBtn": "ใช้คำแนะนำ",
+      "applySuccess": "ใช้คำแนะนำแล้ว (demo — ยังไม่ apply จริง)",
+      "applySuccessShort": "ใช้คำแนะนำแล้ว (demo)",
+      "panel": {
+        "aiLabel": "คำแนะนำสำหรับคุณ",
+        "context": "ใน {subtitle} ของแคมเปญ",
+        "reasons": "เหตุผล",
+        "current": "ประสิทธิภาพปัจจุบัน",
+        "predicted": "ผลลัพธ์ที่คาดว่าจะได้รับ",
+        "applyBtn": "ใช้คำแนะนำนี้",
+        "selectHint": "เลือกคำแนะนำในตารางเพื่อดูรายละเอียด"
+      },
+      "severity": {
+        "high": "สูง",
+        "medium": "กลาง",
+        "low": "ต่ำ"
+      }
     },
     "memory": {
       "title": "ความจำ AI",
-      "subtitle": "สิ่งที่ AI เรียนรู้จากบัญชีคุณ"
+      "subtitle": "สิ่งที่ AI เรียนรู้จากบัญชีคุณ",
+      "emptyTitle": "AI กำลังเก็บข้อมูล",
+      "emptyBody": "เริ่มเห็นผลใน 7 วันหลังคำแนะนำแรก — AI จะคำนวณว่าการแนะนำของมันได้ผลจริงหรือไม่ แล้วเรียนรู้เพื่อแนะนำให้ดีขึ้นในครั้งต่อไป",
+      "emptyTracking": "ตอนนี้ track อยู่ {pending} คำแนะนำ",
+      "successRateHeading": "อัตราความสำเร็จ 4 สัปดาห์ล่าสุด",
+      "weekPrefix": "สัปดาห์ {week}",
+      "pendingNote": "+ อีก {pending} คำแนะนำกำลังรอผล (ครบ 7 วันเมื่อไหร่ AI จะคำนวณให้)",
+      "breakdownHeading": "แยกตามประเภทคำแนะนำ",
+      "noBreakdownYet": "ยังไม่มีข้อมูลพอจะแบ่งกลุ่ม",
+      "tableTypeCol": "ประเภท",
+      "tableTotalCol": "ทั้งหมด",
+      "tableSuccessCol": "สำเร็จ",
+      "recentHeading": "ผลลัพธ์ล่าสุด (20 รายการ)",
+      "noOutcomesYet": "ยังไม่มีผลลัพธ์ที่คำนวณเสร็จ",
+      "showingNote": "แสดง 20 ล่าสุดจากทั้งหมด {totalOutcomes} ผลลัพธ์",
+      "actionType": {
+        "pause": "หยุดแคมเปญ",
+        "resume": "เปิดแคมเปญ",
+        "scaleBudget": "เพิ่ม / duplicate budget",
+        "changeBudget": "ปรับ budget",
+        "refreshCreative": "เปลี่ยน creative",
+        "changeTargeting": "ปรับ audience",
+        "diagnose": "วิเคราะห์ปัญหา",
+        "other": "อื่นๆ"
+      }
+    },
+    "login": {
+      "tagline": "ยิงแอดให้เร็ว แม่น scale ได้",
+      "title": "เข้าสู่ระบบ",
+      "subtitle": "ใช้บัญชีของคุณเพื่อจัดการแคมเปญ",
+      "emailLabel": "อีเมล",
+      "passwordLabel": "รหัสผ่าน",
+      "submit": "เข้าสู่ระบบ",
+      "submitting": "กำลังเข้าสู่ระบบ...",
+      "noAccount": "ยังไม่มีบัญชี?",
+      "signup": "สมัครสมาชิก",
+      "errors": {
+        "generic": "เกิดข้อผิดพลาด",
+        "serverUnreachable": "เชื่อมต่อ server ไม่ได้ ลองอีกครั้ง"
+      }
+    },
+    "signup": {
+      "tagline": "ยิงแอดให้เร็ว แม่น scale ได้",
+      "title": "สมัครสมาชิก",
+      "subtitle": "เริ่มใช้งานฟรี 30 วัน",
+      "nameLabel": "ชื่อของคุณ",
+      "namePlaceholder": "เช่น อินดี้",
+      "tenantLabel": "ชื่อ Agency / Workspace",
+      "tenantPlaceholder": "เช่น My Agency",
+      "emailLabel": "อีเมล",
+      "passwordLabel": "รหัสผ่าน",
+      "passwordPlaceholder": "อย่างน้อย 8 ตัวอักษร",
+      "submit": "สมัครสมาชิก",
+      "submitting": "กำลังสมัคร...",
+      "haveAccount": "มีบัญชีอยู่แล้ว?",
+      "login": "เข้าสู่ระบบ",
+      "errors": {
+        "generic": "เกิดข้อผิดพลาด",
+        "serverUnreachable": "เชื่อมต่อ server ไม่ได้ ลองอีกครั้ง"
+      }
     },
     "tools": {
       "title": "เครื่องมือ",
-      "subtitle": "รวมเครื่องมือ AI + tools ขั้นสูงทั้งหมด"
+      "subtitle": "รวมเครื่องมือ AI + tools ขั้นสูงทั้งหมด",
+      "sectionTitle": "เครื่องมือทั้งหมด",
+      "toolCount": "{count} tools",
+      "items": {
+        "aiMaster": {
+          "label": "AI Master",
+          "description": "ผู้ช่วย AI แชทตอบเรื่อง campaign + ทำคำสั่ง pause/scale ได้"
+        },
+        "journey": {
+          "label": "Customer Journey",
+          "description": "แผนที่เกาะลอยแสดงเส้นทางลูกค้า จาก ad → page → conversion"
+        },
+        "competitors": {
+          "label": "Competitor Spy",
+          "description": "ติดตามและวิเคราะห์โฆษณาคู่แข่งในอุตสาหกรรมของคุณ"
+        },
+        "events": {
+          "label": "Event Tracking SDK",
+          "description": "Pixel + CAPI events tracking — ติดตั้งบนเว็บลูกค้าได้เลย"
+        },
+        "customConversions": {
+          "label": "Custom Conversions",
+          "description": "สร้าง custom event + conversion rules บน Meta โดยตรง"
+        },
+        "namingTemplates": {
+          "label": "Naming Templates",
+          "description": "Template สำหรับ campaign/ad set name + AI auto-suggest"
+        },
+        "goals": {
+          "label": "Goals",
+          "description": "ตั้งเป้าหมาย KPI ของแต่ละ campaign + AI ประเมินผล"
+        },
+        "aiOptimize": {
+          "label": "AI Optimize",
+          "description": "AI วิเคราะห์ + แนะนำการปรับปรุงแคมเปญแบบเรียลไทม์"
+        }
+      }
+    },
+    "verifyEmail": {
+      "titleSuccess": "ยืนยันอีเมลสำเร็จ",
+      "titleUsed": "อีเมลถูกยืนยันแล้ว",
+      "titleExpired": "ลิงก์หมดอายุ",
+      "titleInvalid": "ลิงก์ไม่ถูกต้อง",
+      "descSuccess": "ขอบคุณที่ยืนยันอีเมล — บัญชีของคุณพร้อมใช้งานแล้ว",
+      "descUsed": "ลิงก์ยืนยันนี้ถูกใช้งานไปแล้ว",
+      "descExpired": "ลิงก์ยืนยันมีอายุ 24 ชั่วโมง — กรุณาขอเมลใหม่",
+      "descInvalid": "ไม่พบลิงก์ยืนยันที่ตรงกัน หรือลิงก์อาจเสียหาย",
+      "goToDashboard": "ไปที่แดชบอร์ด",
+      "loginPrompt": "กรุณาเข้าสู่ระบบเพื่อขอเมลยืนยันใหม่",
+      "loginBtn": "เข้าสู่ระบบ",
+      "usedPrefix": "คุณสามารถ",
+      "usedLink": "เข้าสู่แดชบอร์ด",
+      "usedSuffix": "ได้เลย",
+      "resend": {
+        "send": "ส่งเมลยืนยันใหม่",
+        "sending": "กำลังส่ง...",
+        "successMsg": "ส่งเมลใหม่เรียบร้อย กรุณาตรวจสอบกล่องจดหมาย",
+        "failedMsg": "ส่งเมลใหม่ไม่สำเร็จ",
+        "connectionError": "เชื่อมต่อ server ไม่ได้"
+      }
+    },
+    "settingsBilling": {
+      "title": "การเรียกเก็บเงิน",
+      "subtitle": "ดูแผนปัจจุบัน + ประวัติการชำระเงิน + จัดการ subscription",
+      "noSubscription": "ไม่พบข้อมูลการสมัคร",
+      "currentPlan": "แพ็กเกจปัจจุบัน",
+      "pricePeriod": "฿{price} / {periodLabel} (VAT รวมแล้ว)",
+      "periodMonth": "เดือน",
+      "periodYear": "ปี",
+      "aiMsgPerDay": "AI message/วัน",
+      "unlimited": "ไม่จำกัด",
+      "trialUntil": "ทดลองใช้จนถึง",
+      "nextBilling": "รอบบิลถัดไป",
+      "willCancelToday": "จะยกเลิกในวันนี้",
+      "perMonth": "฿{price}/เดือน",
+      "includedInPlan": "รวมในแผน",
+      "addOnOn": "เปิดอยู่",
+      "addOnOff": "ปิดอยู่",
+      "invoicesHeading": "ประวัติการชำระเงิน",
+      "noInvoices": "ยังไม่มีรายการ",
+      "tableDate": "วันที่",
+      "tableAmount": "จำนวนเงิน",
+      "tableStatus": "สถานะ",
+      "tableVat": "VAT",
+      "vatSplit": "฿{base} + ฿{vat} VAT",
+      "status": {
+        "trialing": "กำลังทดลองใช้",
+        "active": "ใช้งานอยู่",
+        "pastDue": "ค้างชำระ",
+        "suspended": "ถูกระงับ",
+        "cancelled": "ยกเลิกแล้ว"
+      },
+      "invoiceStatus": {
+        "pending": "รอชำระ",
+        "paid": "ชำระแล้ว",
+        "failed": "ไม่สำเร็จ",
+        "refunded": "คืนเงินแล้ว"
+      },
+      "actions": {
+        "actionFailed": "ดำเนินการไม่สำเร็จ",
+        "addonEnabled": "เปิด add-on แล้ว",
+        "addonDisabled": "ปิด add-on แล้ว",
+        "cancelConfirm": "ยืนยันยกเลิกการสมัคร? คุณยังใช้งานได้จนถึงสิ้นรอบบิลปัจจุบัน",
+        "cancelFailed": "ยกเลิกไม่สำเร็จ",
+        "cancelSuccess": "ยกเลิกการสมัครเรียบร้อย",
+        "cancel": "ยกเลิกการสมัคร",
+        "addonOn": "เปิด {label}",
+        "addonOff": "ปิด {label}"
+      }
     },
     "goals": {
       "title": "เป้าหมาย Campaign",
-      "subtitle": "ตั้ง objective ของแต่ละ campaign เพื่อให้ AI ประเมินด้วยเกณฑ์ที่ถูกต้อง (Awareness ใช้ CPM, Sales ใช้ ROAS เป็นต้น)"
+      "subtitle": "ตั้ง objective ของแต่ละ campaign เพื่อให้ AI ประเมินด้วยเกณฑ์ที่ถูกต้อง (Awareness ใช้ CPM, Sales ใช้ ROAS เป็นต้น)",
+      "gate": {
+        "needMeta": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน Goals",
+        "cta": "ไปที่ Settings"
+      },
+      "namingRulesLink": "กฎตามชื่อ Campaign",
+      "objective": {
+        "AWARENESS": "Awareness (สร้างการรับรู้)",
+        "ENGAGEMENT": "Engagement (มีส่วนร่วม)",
+        "TRAFFIC": "Traffic (เข้าเว็บ/หน้า)",
+        "LEADS": "Leads (เก็บ lead/แชท)",
+        "SALES": "Sales (ซื้อ/Conversion)",
+        "APP_PROMOTION": "App Promotion (ติดตั้งแอป)",
+        "STORE_VISITS": "Store Visits (เดินเข้าหน้าร้าน)"
+      },
+      "source": {
+        "userManual": "ตั้งเอง",
+        "autoName": "จากชื่อ",
+        "autoMeta": "จาก Meta",
+        "tenantDefault": "ค่า default",
+        "unresolved": "ยังไม่ตั้ง"
+      },
+      "stats": {
+        "totalLabel": "รวม:",
+        "campaignsUnit": "campaigns",
+        "unresolvedLabel": "ยังไม่ตั้ง:"
+      },
+      "search": {
+        "placeholder": "ค้นหา campaign หรือ ad account..."
+      },
+      "filter": {
+        "allSources": "ทุก source",
+        "allAccounts": "ทุก account"
+      },
+      "bulk": {
+        "selected": "เลือก {count} campaigns —",
+        "setObjective": "ตั้ง objective:",
+        "saveAll": "บันทึกทั้งหมด",
+        "clear": "ล้าง"
+      },
+      "toast": {
+        "notSelected": "ยังไม่ได้เลือก campaign",
+        "settingFor": "กำลังตั้ง goal ให้ {count} campaigns...",
+        "saveFail": "บันทึกไม่สำเร็จ",
+        "savedCount": "บันทึก {count} campaigns",
+        "saving": "กำลังบันทึก...",
+        "saved": "บันทึกแล้ว",
+        "savingTarget": "กำลังบันทึก target...",
+        "targetSaved": "บันทึก target แล้ว",
+        "clearingOverride": "กำลังลบ override...",
+        "revertedToAuto": "กลับไปใช้ค่า auto",
+        "deleteFail": "ลบไม่สำเร็จ",
+        "invalidNumber": "กรอกตัวเลขให้ถูกต้อง"
+      },
+      "empty": {
+        "title": "ไม่พบ campaign ที่ตรงกับเงื่อนไข",
+        "subtitle": "ลองล้าง filter หรือลองค้นหาคำอื่น"
+      },
+      "list": {
+        "selectAllToggle": "เลือก/ยกเลิกทั้งหมดในมุมมองนี้ ({count})",
+        "selectionSummary": "{filtered} / {total} campaigns",
+        "accountCampaignsCount": "· {count} campaigns"
+      },
+      "row": {
+        "setObjectivePlaceholder": "ตั้ง objective...",
+        "setTargetTooltip": "ตั้ง target",
+        "clearOverrideTooltip": "ล้าง override",
+        "checkboxAria": "เลือก {name}",
+        "evalTargetTooltip": "เป้า {target}",
+        "evalCustomSuffix": "(custom)"
+      },
+      "modal": {
+        "title": "ตั้ง target สำหรับ campaign นี้",
+        "primaryKpi": "Primary KPI",
+        "targetLabel": "Target value (เว้นว่าง = ใช้ default)",
+        "targetPlaceholder": "เช่น 2.5 สำหรับ ROAS, 50 สำหรับ CPM",
+        "cancel": "ยกเลิก",
+        "save": "บันทึก"
+      }
     },
     "ai": {
       "title": "AI Master",
-      "subtitle": "ผู้ช่วย AI สำหรับวิเคราะห์ + จัดการแคมเปญ"
+      "subtitle": "ผู้ช่วย AI สำหรับวิเคราะห์ + จัดการแคมเปญ",
+      "newConversation": "New conversation",
+      "newDefaultTitle": "New conversation",
+      "untitled": "Untitled",
+      "messagesCount": "{count} messages",
+      "noConversations": "ยังไม่มี conversation",
+      "loadingThread": "กำลังโหลด...",
+      "thinking": "AI กำลังคิด...",
+      "inputPlaceholder": "พิมพ์คำถามหรือสั่งงาน — เช่น 'ROAS ของ campaign ไหนต่ำสุดในสัปดาห์นี้'",
+      "toolsHint": "AI ใช้ tools (listCampaigns, getCampaignInsights, searchKnowledge, pause/resume/setBudget) ค้นข้อมูลจริงและสั่งงาน",
+      "empty": {
+        "headline": "AI Master พร้อมรับคำสั่ง",
+        "subtitle": "คุยภาษาคนได้ — สั่งหยุด/เปิด/แก้ budget หรือถามข้อมูลจาก campaign จริง",
+        "tryAsking": "ลองถาม"
+      },
+      "toast": {
+        "createFailed": "สร้าง conversation ใหม่ไม่ได้",
+        "sendFailed": "ส่งไม่สำเร็จ"
+      },
+      "relative": {
+        "justNow": "เพิ่งใช้",
+        "minutes": "{value}m ที่แล้ว",
+        "hours": "{value}h ที่แล้ว",
+        "days": "{value}d ที่แล้ว",
+        "unknown": "—"
+      },
+      "chat": {
+        "fabLabel": "ถาม AI",
+        "expertSubtitle": "ผู้เชี่ยวชาญ Meta Ads",
+        "openFullPage": "เปิดแบบเต็มหน้า",
+        "emptyHint": "เริ่มต้นด้วยคำถาม เช่น:",
+        "thinking": "AI กำลังคิด...",
+        "inputPlaceholder": "พิมพ์คำถามหรือสั่งงาน...",
+        "toolsHint": "AI ใช้ tools (listCampaigns, getCampaignInsights) ค้นข้อมูลจริง",
+        "startFailed": "เริ่ม AI chat ไม่สำเร็จ",
+        "sendFailed": "ส่งไม่สำเร็จ",
+        "decisionFailed": "Decision failed",
+        "samplePrompts": {
+          "listActive": "list campaigns ที่ active",
+          "worstBudget": "campaign ไหนเสีย budget เยอะที่สุดในสัปดาห์นี้",
+          "digittribeRoas": "ROAS ของ Digittribe เป็นยังไง"
+        },
+        "confirm": {
+          "title": "AI ขอยืนยันก่อนทำ action",
+          "cancel": "ยกเลิก",
+          "confirm": "ยืนยัน"
+        },
+        "approved": "ทำแล้ว:",
+        "cancelled": "ยกเลิก:",
+        "resultLabel": "ผลลัพธ์:"
+      }
+    },
+    "landing": {
+      "meta": {
+        "title": "AdsLab · Thai-first SaaS สำหรับมือยิงแอด Meta",
+        "description": "เครื่องมือช่วย media buyer และเอเจนซี่ยิงแอด Meta ได้แม่นและเร็วขึ้น ด้วย AI ภาษาไทย — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK ครบในที่เดียว",
+        "ogTitle": "AdsLab · Thai-first SaaS สำหรับมือยิงแอด Meta",
+        "ogDescription": "ยิงแอดให้เร็ว แม่น scale ได้ — ทดลองฟรี 7 วัน"
+      },
+      "header": {
+        "pricing": "ราคา",
+        "login": "เข้าสู่ระบบ",
+        "signup": "เริ่มต้นฟรี 7 วัน"
+      },
+      "hero": {
+        "pill": "Thai-first · SaaS สำหรับมือยิงแอด Meta",
+        "headline": "ยิงแอดให้เร็ว แม่น scale ได้",
+        "subtitle": "เครื่องมือ optimize Meta ads ด้วย AI ภาษาไทย — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK ทำงานครบในที่เดียว",
+        "ctaPrimary": "เริ่มต้นฟรี 7 วัน",
+        "ctaSecondary": "ดูแพ็กเกจ",
+        "microcopy": "ไม่มีค่าสมัคร · ยกเลิกได้ตลอดเวลา · เริ่มเก็บเงินเมื่อหมดทดลอง 7 วัน"
+      },
+      "features": {
+        "heading": "ครอบคลุมทุกอย่างที่มือยิงแอดต้องการ",
+        "subheading": "เริ่มจาก dashboard รวมข้อมูล → AI วิเคราะห์ + แนะนำ → ลงมือเพิ่มประสิทธิภาพ",
+        "dashboardTitle": "Unified Dashboard",
+        "dashboardDesc": "ดู spend / ROAS / CTR / CPM ของทุก ad account ในที่เดียว พร้อม filter ตามช่วงเวลา + ลูกค้า",
+        "aiTitle": "AI Master — ผู้ช่วยภาษาไทย",
+        "aiDesc": "สั่งงาน AI ผ่าน chat: ดู insight, pause campaign, ปรับ budget, ค้นข้อมูลจาก knowledge base ของคุณเอง",
+        "audienceTitle": "Audience + Custom Conversions",
+        "audienceDesc": "สร้าง Custom/Lookalike audiences + Custom Conversions ตรงจากระบบ ส่งเข้า Meta ทันที",
+        "builderTitle": "Campaign Builder",
+        "builderDesc": "สร้าง + duplicate campaign แบบมี AI ช่วยตั้งชื่อ + แนะนำ targeting ตามเป้าหมาย",
+        "sdkTitle": "Event SDK + CAPI",
+        "sdkDesc": "ติด Pixel + Conversions API ในคลิกเดียว ครบทุก event type — PixelYourSite-style แต่ภาษาไทย",
+        "journeyTitle": "Customer Journey Map",
+        "journeyDesc": "แผนที่เกาะลอย แสดงเส้นทางลูกค้าจาก ad → page → conversion สวยและเข้าใจง่าย"
+      },
+      "pricing": {
+        "heading": "ราคาตาม ad spend ของคุณ",
+        "subheading": "จ่ายตามที่คุณใช้จริง · ทุกแพ็กเกจรวม VAT 7% แล้ว · ยกเลิกได้ตลอดเวลา",
+        "perMonth": "/เดือน",
+        "recommendedBadge": "แนะนำ",
+        "starterSuitable": "ad spend < ฿10,000/เดือน",
+        "starterBullets": [
+          "1 ad account",
+          "AI message 30 ข้อความ/วัน",
+          "Dashboard + AI Master",
+          "Customer Journey"
+        ],
+        "growthSuitable": "ad spend ฿10k–฿30k/เดือน",
+        "growthBullets": [
+          "3 ad accounts",
+          "AI 100 ข้อความ/วัน",
+          "ทุกฟีเจอร์ของ Starter",
+          "Custom Conversions"
+        ],
+        "proSuitable": "ad spend ฿30k–฿100k/เดือน",
+        "proBullets": [
+          "10 ad accounts",
+          "AI 300 ข้อความ/วัน",
+          "ทุกฟีเจอร์ของ Growth",
+          "Audience Management"
+        ],
+        "scaleSuitable": "ad spend ฿100k–฿500k/เดือน",
+        "scaleBullets": [
+          "25 ad accounts",
+          "AI ไม่จำกัด",
+          "White-label Reports ฟรี",
+          "Priority Support"
+        ],
+        "addonsHeading": "Add-ons (เปิด/ปิดได้ทุก tier)",
+        "addon1Name": "Event SDK + Pixel Tracking",
+        "addon1Price": "฿590/เดือน",
+        "addon2Name": "Extra Ad Account",
+        "addon2Price": "฿190/account/เดือน",
+        "addon3Name": "White-label Reports",
+        "addon3Price": "฿490/เดือน (ฟรีสำหรับ Scale+)",
+        "addon4Name": "Priority AI (Claude Opus)",
+        "addon4Price": "฿890/เดือน",
+        "enterpriseQuestion": "ad spend > ฿1,000,000/เดือน?",
+        "enterpriseCta": "ติดต่อทีมขาย",
+        "enterpriseSuffix": "สำหรับแพ็กเกจ Enterprise",
+        "payHeading": "การชำระเงิน + คืนเงิน",
+        "pay1": "ทดลองใช้ฟรี 7 วัน — บันทึกบัตรเครดิตล่วงหน้า, ไม่มีการเรียกเก็บระหว่างทดลอง",
+        "pay2": "เริ่มเก็บเงินอัตโนมัติในวันที่ 8 ถ้าไม่ได้ยกเลิก (มีอีเมลเตือนล่วงหน้า 3 ครั้ง)",
+        "pay3": "ขอคืนเงินภายใน 7 วันแรกของรอบบิล — คืนตามสัดส่วน (pro-rated)",
+        "pay4": "ยกเลิกการต่ออายุได้ตลอดเวลา · ใช้งานต่อได้จนสิ้นรอบบิล",
+        "pay5": "ชำระผ่าน Omise (PCI DSS Level 1) · รองรับ Visa, Mastercard, JCB, AMEX",
+        "payLinkPrefix": "อ่านรายละเอียดเพิ่มที่",
+        "payRefundLink": "นโยบายการคืนเงิน",
+        "payTermsLink": "ข้อกำหนดการใช้บริการ"
+      },
+      "cta": {
+        "heading": "พร้อมยิงแอดให้คม?",
+        "subtitle": "สมัครฟรี 7 วัน · ไม่มีค่าสมัคร · ยกเลิกได้ตลอด",
+        "button": "เริ่มต้นฟรี 7 วัน"
+      }
+    },
+    "events": {
+      "logPageTitle": "SDK Event Log",
+      "logPageSubtitle": "ดู events ที่ SDK ยิงเข้ามา + สถานะ CAPI relay — ใช้ debug rules ก่อนรัน campaign จริง",
+      "log": {
+        "allEvents": "ทุก event",
+        "allStatuses": "ทุก status",
+        "loading": "กำลังโหลด...",
+        "empty": "ยังไม่มี event log — ติด SDK บนเว็บแล้ว rule จะเริ่มยิง events เข้ามาที่นี่"
+      }
+    },
+    "campaignBuilder": {
+      "objective": {
+        "OUTCOME_SALES": {
+          "label": "Sales",
+          "sublabel": "ขายของ / Conversion"
+        },
+        "OUTCOME_LEADS": {
+          "label": "Leads",
+          "sublabel": "เก็บ Lead / Inbox"
+        },
+        "OUTCOME_ENGAGEMENT": {
+          "label": "Engagement",
+          "sublabel": "มีส่วนร่วม (video / chat)"
+        },
+        "OUTCOME_TRAFFIC": {
+          "label": "Traffic",
+          "sublabel": "เข้าเว็บ / Link Clicks"
+        },
+        "OUTCOME_AWARENESS": {
+          "label": "Awareness",
+          "sublabel": "สร้างการรับรู้"
+        },
+        "OUTCOME_APP_PROMOTION": {
+          "label": "App Promotion",
+          "sublabel": "ติดตั้งแอป"
+        }
+      },
+      "optimizationGoal": {
+        "LINK_CLICKS": {
+          "label": "Link Clicks",
+          "descSales": "ส่งคนไปเว็บ (post ต้องมี link)",
+          "descTraffic": "เน้นจำนวนคลิก"
+        },
+        "CONVERSATIONS": {
+          "label": "Messages",
+          "descSales": "ขายผ่านแชท Page",
+          "descLeads": "ส่งคนมาแชท Page",
+          "descEngagement": "ส่งคนมาแชท Page"
+        },
+        "OFFSITE_CONVERSIONS": {
+          "label": "Conversions (Pixel)",
+          "desc": "Optimize ตาม event บนเว็บ — ต้องตั้ง Pixel ก่อน"
+        },
+        "VALUE": {
+          "label": "Value (Pixel)",
+          "desc": "Optimize ตามมูลค่าซื้อ (ต้อง Pixel + value events)"
+        },
+        "THRUPLAY": {
+          "label": "Video Views",
+          "labelAwareness": "Video Views (Thruplay)",
+          "descEngagement": "ดูวิดีโอจบ ≥15s (post ต้องเป็น video)",
+          "descAwareness": "ดูวิดีโอจบ ≥15s"
+        },
+        "LANDING_PAGE_VIEWS": {
+          "label": "Landing Page Views",
+          "desc": "คลิก + เปิดหน้า web จริง"
+        },
+        "REACH": {
+          "label": "Reach",
+          "descAwareness": "คนเห็นโฆษณามากที่สุด",
+          "descAppPromotion": "App-specific optimization ต้องตั้งค่า app ก่อน — ใช้ Reach แทน"
+        },
+        "IMPRESSIONS": {
+          "label": "Impressions",
+          "desc": "ครั้งที่โฆษณาแสดง"
+        }
+      },
+      "pixelEvent": {
+        "PURCHASE": "Purchase — ซื้อสำเร็จ",
+        "ADD_TO_CART": "Add to Cart — ใส่ตะกร้า",
+        "INITIATE_CHECKOUT": "Initiate Checkout — เริ่ม checkout",
+        "LEAD": "Lead — กรอกฟอร์ม",
+        "COMPLETE_REGISTRATION": "Complete Registration — สมัครสมาชิก",
+        "ADD_PAYMENT_INFO": "Add Payment Info — กรอกข้อมูลจ่าย",
+        "VIEW_CONTENT": "View Content — ดูสินค้า",
+        "SEARCH": "Search — ค้นหา",
+        "SUBSCRIBE": "Subscribe — สมัครรับข้อมูล",
+        "CONTACT": "Contact — ติดต่อ"
+      },
+      "field": {
+        "campaignName": "ชื่อ Campaign",
+        "objective": "วัตถุประสงค์",
+        "optimization": "วิธีเพิ่มประสิทธิภาพ",
+        "pixelConversion": "Pixel + Conversion",
+        "budget": "Budget",
+        "facebookPage": "Facebook Page",
+        "creativeSource": "แหล่งที่มาของโฆษณา",
+        "imageFromLibrary": "รูปจากคลัง",
+        "adText": "ข้อความโฆษณา ({count}/125)",
+        "linkDestination": "ลิงก์ปลายทาง",
+        "image": "รูปภาพ",
+        "selectPostCount": "เลือกโพสต์ ({count} โพสต์)",
+        "selectPostLoading": "เลือกโพสต์ (loading...)",
+        "location": "ตำแหน่งที่ตั้ง",
+        "gender": "เพศ",
+        "ageMin": "อายุต่ำสุด",
+        "ageMax": "อายุสูงสุด",
+        "interests": "ความสนใจ (Interests)",
+        "customAudienceLoading": "Custom Audience (loading...)",
+        "customAudienceCount": "Custom Audience ({count} ตัวใน account)",
+        "budgetMode": "Budget mode",
+        "specialAdCategory": "Special Ad Category",
+        "headline": "Headline ({count}/40)",
+        "description": "Description ({count}/30)",
+        "callToAction": "Call To Action",
+        "adSetName": "ชื่อ Ad Set (เว้นว่าง=auto)",
+        "adName": "ชื่อ Ad (เว้นว่าง=auto)",
+        "scheduleStart": "เริ่ม",
+        "scheduleEnd": "สิ้นสุด",
+        "scheduleHint": "ระบุวันและเวลาทั้ง 2 ช่อง — เวลาประเทศไทย (UTC+7)"
+      },
+      "placeholder": {
+        "campaignName": "เช่น Summer Sale 2026",
+        "primaryText": "ข้อความหลักที่จะแสดงเหนือรูปภาพ",
+        "linkUrl": "https://example.com/landing",
+        "headline": "หัวข้อสั้น",
+        "description": "คำอธิบาย",
+        "scheduleStart": "เลือกวัน + เวลาเริ่ม",
+        "scheduleEnd": "เลือกวัน + เวลาสิ้นสุด",
+        "manualPostId": "วาง URL หรือ Post ID (รองรับ pfbid... และ <pageid>_<postid>)",
+        "searchInterest": "ค้นหาความสนใจ (เช่น 'fashion', 'cooking', 'gaming', 'travel')",
+        "searchGeo": "ค้นหา ประเทศ / จังหวัด / เมือง (เช่น 'Bangkok', 'เชียงใหม่', 'Asia')",
+        "searchPage": "ค้นหา Page (มี {count} Pages)...",
+        "pixelSelect": "-- เลือก Pixel --",
+        "customConversionSelect": "-- เลือก Custom Conversion --",
+        "currency": "฿"
+      },
+      "creative": {
+        "newImage": "อัพโหลดรูปใหม่",
+        "fromLibrary": "เลือกจากคลัง",
+        "existingPost": "ใช้โพสต์ที่มี",
+        "selectedClickToChange": "เลือกแล้ว — กดเพื่อเปลี่ยน",
+        "clickToPickLibrary": "กดเพื่อเลือกจากคลัง creatives",
+        "uploaded": "อัพโหลดแล้ว — กดเพื่อเปลี่ยน",
+        "uploadFile": "เลือกไฟล์ JPG/PNG (≤ 8MB)",
+        "uploading": "กำลังอัพโหลด...",
+        "uploadSuccess": "อัพโหลด image แล้ว",
+        "title": "โฆษณา + รูป/โพสต์",
+        "linkUrlHint": "URL ที่ user จะไปเมื่อกดบนโฆษณา (จำเป็นสำหรับ image ad ที่มี Call to Action) — ถ้าไม่ต้องการ CTA ให้ใช้ &ldquo;ใช้โพสต์ที่มี&rdquo; โดยเลือก post ที่ไม่มี link"
+      },
+      "post": {
+        "loading": "กำลังโหลด...",
+        "fetchFail": "ดึงโพสต์ไม่สำเร็จ",
+        "noPromotable": "ไม่มี promotable post ใน Page นี้",
+        "noPromotableDescription": "Meta คืน 0 โพสต์ — อาจเพราะ Page ยังไม่ได้โพสต์อะไร หรือ โพสต์เก่ามาก (Meta จำกัด ~3 เดือนล่าสุด) ลองใส่ post ID ด้านล่าง",
+        "noText": "(no text)",
+        "manualHint": "หรือใส่ Post ID / URL ของ Facebook โพสต์โดยตรง",
+        "willUse": "จะใช้:",
+        "willUseResolveHint": "(server จะ resolve เป็น canonical ID ตอนสร้าง)",
+        "formatError": "จับ format ไม่ได้ — ลอง paste URL เต็มๆ หรือเลขล้วน"
+      },
+      "page": {
+        "notFound": "ไม่พบ Page — กดปุ่ม &ldquo;ดึง Pages ใหม่&rdquo; ด้านล่าง",
+        "noResults": "ไม่พบ &ldquo;{query}&rdquo;",
+        "change": "เปลี่ยน",
+        "cancel": "ยกเลิก",
+        "refresh": "↻ ดึง Pages ใหม่จาก Meta (ถ้าไม่เจอ Page ที่ต้องการ)",
+        "refreshing": "กำลัง sync Pages...",
+        "syncSuccess": "Sync Pages แล้ว — refresh หน้าเพื่อเห็น list ใหม่",
+        "syncFail": "Sync Pages ไม่สำเร็จ"
+      },
+      "pixel": {
+        "loading": "กำลังโหลด Pixels...",
+        "loadingConversions": "กำลังโหลด Custom Conversions...",
+        "noPixelWarn": "ไม่มี Pixel ใน Ad Account นี้ — ไปที่",
+        "audiencesPixelsTab": "Audiences → tab Pixels",
+        "toCreate": "เพื่อสร้างก่อน",
+        "noCustomConversionWarn": "ไม่มี Custom Conversion — สร้างที่",
+        "audiencesConversionsTab": "Audiences → tab Custom Conversions",
+        "eventStandard": "Standard event",
+        "eventCustom": "Custom Conversion (URL rule)",
+        "hintCustom": "Custom Conversion = map URL pattern → event โดยไม่ต้องเขียน event code บนเว็บ",
+        "hintStandard": "Meta จะ optimize ส่งโฆษณาให้คนที่มีโอกาส trigger event นี้สูง — Pixel ต้องยิง event ~50/สัปดาห์ถึงจะ optimize ดี"
+      },
+      "budget": {
+        "daily": "ต่อวัน",
+        "lifetime": "ตลอดอายุ campaign",
+        "perDaySuffix": "/วัน",
+        "lifetimeSuffix": "ตลอด lifetime"
+      },
+      "audience": {
+        "loading": "กำลังโหลด...",
+        "empty": "ไม่มี — สร้างใน Meta Ads Manager หรือรอ Stage 4 (audience builder)"
+      },
+      "gender": {
+        "all": "ทุกเพศ",
+        "male": "ชาย",
+        "female": "หญิง"
+      },
+      "advanced": {
+        "toggle": "ตัวเลือกขั้นสูง",
+        "toggleHint": "(targeting / audience / headline / CTA / etc.)",
+        "ageWarning1": "Meta บังคับ",
+        "ageWarning2": "สำหรับโฆษณาที่ target ไทย — น้อยกว่านั้น Meta จะปฏิเสธ",
+        "specialAdNone": "ไม่ใช่"
+      },
+      "interest": {
+        "searching": "กำลังค้นหา...",
+        "relatedTitle": "ความสนใจที่เกี่ยวข้อง",
+        "noSuggestions": "Meta ไม่มีคำแนะนำสำหรับชุดที่เลือก — ลองเพิ่ม interest อื่นเป็น seed",
+        "broadHint": "ไม่ใส่ก็ได้ — Meta จะใช้ broad targeting (ทุกคนที่ตรง location + age + gender)"
+      },
+      "geo": {
+        "searching": "กำลังค้นหา...",
+        "include": "+ รวม",
+        "exclude": "− ไม่รวม"
+      },
+      "submit": {
+        "clearDraft": "ล้าง draft",
+        "clearDraftConfirm": "ล้าง draft และเริ่มใหม่?",
+        "creating": "กำลังสร้าง...",
+        "previewBtn": "ดูตัวอย่างก่อนสร้าง →"
+      },
+      "preview": {
+        "title": "ดูตัวอย่างก่อนสร้าง Campaign",
+        "subtitle": "ตรวจให้แน่ใจก่อนกดเผยแพร่ — Meta จะเริ่มคิดเงินทันทีถ้าเลือก ACTIVE",
+        "adPreviewLabel": "ตัวอย่างโฆษณา",
+        "postNoImage": "(post นี้ไม่มีรูปภาพ)",
+        "imageFallback": "(image)",
+        "back": "← กลับไปแก้",
+        "saveDraft": "บันทึก draft (PAUSED)",
+        "publishNow": "เผยแพร่ทันที (ACTIVE)",
+        "publishConfirm": "เผยแพร่ทันที = Meta จะเริ่มคิดเงิน + เริ่ม run โฆษณาทันที — ยืนยัน?",
+        "summaryInclude": "รวม:",
+        "summaryExclude": "ไม่รวม:",
+        "summaryAge": "อายุ:",
+        "summaryGender": "เพศ:",
+        "summaryInterests": "ความสนใจ:",
+        "summaryWorldwide": "ทั้งโลก (ไม่ filter)",
+        "summaryBudget": "฿{amount}{suffix}",
+        "creativeExistingPost": "Existing post",
+        "creativeFromLibraryWithLink": "Image (จากคลัง) + link",
+        "creativeFromLibraryNoLink": "Image (จากคลัง) + no link",
+        "creativeNewImageWithLink": "Image (อัปโหลดใหม่) + link",
+        "creativeNewImageNoLink": "Image (อัปโหลดใหม่) + no link",
+        "noPage": "(no page)"
+      },
+      "toast": {
+        "publishing": "กำลังเผยแพร่ campaign...",
+        "savingDraft": "กำลังบันทึก draft (PAUSED)...",
+        "verbPublished": "เผยแพร่",
+        "verbSavedDraft": "บันทึก draft",
+        "publishSuccess": "{verb} \"{name}\" สำเร็จ",
+        "publishFail": "สร้างไม่สำเร็จ"
+      },
+      "validate": {
+        "campaignName": "กรอกชื่อ campaign",
+        "page": "เลือก Facebook Page",
+        "budgetMinDaily": "Budget ต่อวันขั้นต่ำ ฿20",
+        "budgetMinLifetime": "Lifetime budget ขั้นต่ำ ฿20",
+        "lifetimeNeedsDates": "Lifetime budget ต้องระบุ start + end",
+        "needImage": "เตรียมรูปก่อน",
+        "needPost": "เลือก post",
+        "needLink": "กรอก URL",
+        "needPrimaryText": "กรอกข้อความ",
+        "needPixel": "เลือก Pixel สำหรับ Conversion goal",
+        "needEvent": "เลือก event ที่จะ optimize",
+        "needCustomConversion": "เลือก Custom Conversion"
+      }
+    },
+    "refundPolicy": {
+      "metaTitle": "นโยบายการคืนเงิน · AdsLab",
+      "metaDescription": "เงื่อนไขการคืนเงินสำหรับการสมัครสมาชิก AdsLab",
+      "backHome": "← กลับหน้าหลัก",
+      "title": "นโยบายการคืนเงิน",
+      "lastUpdated": "Refund Policy · ปรับปรุงล่าสุด: 13 พฤษภาคม 2026",
+      "trial": {
+        "heading": "1. ทดลองใช้ฟรี 7 วัน",
+        "body1": "ผู้สมัครสมาชิก AdsLab ใหม่ทุกบัญชีจะได้สิทธิ์ทดลองใช้งานฟรีเป็นเวลา <strong>7 วัน</strong> นับจากวันที่บันทึกข้อมูลบัตรเครดิตเรียบร้อย ระหว่างช่วงทดลองใช้ คุณสามารถใช้งานฟีเจอร์ของแพ็กเกจที่เลือกได้เต็มรูปแบบ และ<strong>ยกเลิกได้ตลอดเวลาโดยไม่มีการเรียกเก็บเงิน</strong>",
+        "body2": "หากคุณไม่ยกเลิกก่อนสิ้นสุดช่วงทดลองใช้ ระบบจะเริ่มเรียกเก็บเงินตามแพ็กเกจที่เลือกในวันถัดไปโดยอัตโนมัติ เราจะส่งอีเมลแจ้งเตือนล่วงหน้า 2 วัน, 1 วัน และในวันที่ครบกำหนดเพื่อให้คุณตัดสินใจ"
+      },
+      "prorated": {
+        "heading": "2. การคืนเงินสำหรับรอบบิลใหม่ (Pro-rated refund)",
+        "body": "หลังจากเรียกเก็บเงินรอบใหม่ (หลังหมดช่วงทดลอง หรือต่ออายุประจำเดือน/ปี) คุณมีสิทธิ์ขอคืนเงิน<strong>ภายใน 7 วันแรกของรอบบิล</strong> โดยจำนวนเงินที่คืนจะคำนวณตามสัดส่วนวันที่เหลือของรอบบิล (pro-rated)",
+        "formulaLabel": "สูตรการคำนวณ:",
+        "formula": "เงินคืน = จำนวนเงินที่จ่าย × (วันที่เหลือในรอบบิล ÷ จำนวนวันทั้งหมดในรอบบิล)",
+        "exampleLabel": "ตัวอย่าง:",
+        "exampleBody": "สมัครแพ็กเกจ Starter ฿1,490/เดือน ใช้งานไป 3 วัน ขอคืนเงิน",
+        "exampleCalc": "เงินคืน = ฿1,490 × (27 ÷ 30) = ฿1,341"
+      },
+      "cancel": {
+        "heading": "3. การยกเลิกการสมัคร",
+        "body": "คุณสามารถยกเลิกการสมัครได้ตลอดเวลาจากหน้า <code>Settings → Billing → ยกเลิกการสมัคร</code> เมื่อยกเลิก:",
+        "item1": "คุณยังคงเข้าใช้งานได้จนถึงสิ้นสุดรอบบิลปัจจุบัน (ไม่มีการคืนเงินอัตโนมัติ)",
+        "item2": "ไม่มีการต่ออายุอัตโนมัติในรอบถัดไป",
+        "item3": "ข้อมูลของคุณจะยังคงอยู่ในระบบ 90 วัน หากกลับมาสมัครใหม่ภายในเวลานี้ ข้อมูลทั้งหมดจะถูกกู้คืน"
+      },
+      "nonRefundable": {
+        "heading": "4. กรณีที่ขอคืนเงินไม่ได้",
+        "body": "ในกรณีต่อไปนี้ เราไม่สามารถคืนเงินให้ได้:",
+        "item1": "เกินกำหนด 7 วันแรกของรอบบิล (คุณยังคงสามารถยกเลิกไม่ให้ต่ออายุได้)",
+        "item2": "บัญชีของคุณถูกระงับเนื่องจากละเมิดข้อกำหนดการใช้บริการ",
+        "item3": "การชำระเงินผ่านช่องทางอื่นที่ไม่ใช่ Omise (เช่น โอนตรง — ไม่รองรับใน Phase ปัจจุบัน)"
+      },
+      "process": {
+        "heading": "5. ขั้นตอนการขอคืนเงิน",
+        "step1": "ไปที่ <code>Settings → Billing</code> ในแดชบอร์ดของคุณ",
+        "step2": "ในรายการ Invoice ที่ต้องการ คลิก <code>ขอคืนเงิน</code>",
+        "step3": "ระบบจะประมวลผลและคืนเงินกลับไปยังบัตรเครดิตเดิมผ่าน Omise ภายใน 5-10 วันทำการ",
+        "step4": "คุณจะได้รับอีเมลยืนยันเมื่อ refund สำเร็จ",
+        "specialContact": "หากพบปัญหาหรือต้องการคืนเงินด้วยเหตุผลพิเศษ ติดต่อเราที่"
+      },
+      "planChange": {
+        "heading": "6. การเปลี่ยนแพ็กเกจ",
+        "body": "หากคุณอัปเกรดแพ็กเกจ (เช่น Starter → Pro) ระหว่างรอบบิล ระบบจะเรียกเก็บส่วนต่าง pro-rated ของวันที่เหลือ หากคุณดาวน์เกรด แพ็กเกจใหม่จะเริ่มในรอบบิลถัดไป (ไม่มีการคืนส่วนต่าง)"
+      },
+      "contact": {
+        "heading": "7. ติดต่อสอบถาม",
+        "emailLabel": "อีเมล:",
+        "phoneLabel": "โทรศัพท์:",
+        "addressLabel": "ที่อยู่:"
+      },
+      "english": {
+        "heading": "Refund Policy (English Summary)",
+        "trial": "<strong>7-day free trial:</strong> No charge during trial period. Cancel anytime via Settings → Billing.",
+        "prorated": "<strong>Pro-rated refund within 7 days of new billing cycle:</strong> Eligible amount calculated as <code>payment × (remaining_days ÷ total_days_in_period)</code>.",
+        "cancel": "<strong>Cancellation:</strong> Access continues until end of current billing period. No refund issued on cancellation itself, but no further charges.",
+        "nonRefundable": "<strong>Non-refundable cases:</strong> Beyond 7-day window; suspended accounts due to ToS violation.",
+        "contactLabel": "<strong>Contact:</strong>"
+      }
+    },
+    "terms": {
+      "metaTitle": "Terms of Service / ข้อกำหนดการใช้บริการ · AdsLab",
+      "metaDescription": "ข้อกำหนดที่ใช้บังคับการใช้บริการ AdsLab",
+      "backHome": "← AdsLab",
+      "title": "Terms of Service / ข้อกำหนดการใช้บริการ",
+      "lastUpdated": "Last updated / อัปเดตล่าสุด: {date}",
+      "thaiHeading": "ภาษาไทย",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. การยอมรับข้อกำหนด",
+          "body": "การสมัครและใช้บริการ AdsLab ถือว่าคุณยอมรับข้อกำหนดฉบับนี้และ <privacyLink>นโยบายความเป็นส่วนตัว</privacyLink> ของเรา หากคุณไม่ยอมรับ กรุณาหยุดใช้บริการ"
+        },
+        "s2": {
+          "title": "2. บริการที่ให้",
+          "body": "AdsLab เป็นเครื่องมือบริหารจัดการแคมเปญโฆษณาดิจิทัล รวมถึง dashboard, AI report, AI optimization เราเป็น <strong>เครื่องมือเสริม</strong> — ไม่ใช่ผู้รับประกันผลลัพธ์ทางการตลาด การตัดสินใจสุดท้ายเป็นของผู้ใช้"
+        },
+        "s3": {
+          "title": "3. บัญชีผู้ใช้",
+          "item1": "คุณต้องมีอายุ 20 ปีบริบูรณ์ขึ้นไป หรือได้รับอนุญาตจากผู้ปกครอง",
+          "item2": "คุณรับผิดชอบการรักษาความปลอดภัยของรหัสผ่าน",
+          "item3": "ห้ามแบ่งปันบัญชีกับผู้อื่น (ใช้ระบบ Team / Workspace แทน)",
+          "item4": "คุณต้องให้ข้อมูลที่ถูกต้องและอัปเดต"
+        },
+        "s4": {
+          "title": "4. การใช้งานที่ยอมรับได้",
+          "intro": "คุณตกลงจะไม่:",
+          "item1": "ใช้ AdsLab ในกิจกรรมที่ผิดกฎหมาย หรือละเมิดนโยบายของ Meta",
+          "item2": "พยายามเข้าถึงข้อมูลของผู้ใช้รายอื่นโดยไม่ได้รับอนุญาต",
+          "item3": "ใช้ scraping, reverse engineering, หรือ rate-limit bypass",
+          "item4": "ส่ง spam, malware, หรือเนื้อหาที่ละเมิดทรัพย์สินทางปัญญา",
+          "item5": "ใช้ AI features เพื่อสร้างข้อมูลที่ทำให้เข้าใจผิดอย่างเป็นระบบ"
+        },
+        "s5": {
+          "title": "5. การชำระเงิน (Phase 2 — ตอนนี้ฟรี)",
+          "intro": "ในช่วง MVP / Beta บริการเป็น free. เมื่อเริ่ม subscription:",
+          "item1": "คุณจะได้ระยะทดลองฟรี 30 วัน",
+          "item2": "ค่าบริการจะเรียกเก็บล่วงหน้ารายเดือน/รายปี",
+          "item3": "ยกเลิกได้ทุกเมื่อ — บริการสิ้นสุดสิ้นรอบบิลปัจจุบัน",
+          "item4": "คืนเงิน: ภายใน 7 วันแรกของรอบบิลใหม่ ในกรณีที่ยังไม่ได้ใช้งานหลัก"
+        },
+        "s6": {
+          "title": "6. ทรัพย์สินทางปัญญา",
+          "body": "AdsLab (รวมถึง code, design, AI prompts, brand) เป็นของเรา ข้อมูลและเนื้อหาที่คุณ upload หรือสร้างผ่าน AdsLab ยังคงเป็นของคุณ — เราเพียงประมวลผลเพื่อให้บริการ"
+        },
+        "s7": {
+          "title": "7. ข้อจำกัดความรับผิด",
+          "item1": "AdsLab ให้บริการ \"as-is\" ไม่รับประกันผลกำไรหรือผลลัพธ์ทางการตลาด",
+          "item2": "เราไม่รับผิดต่อความเสียหายทางอ้อม (เช่น ขาดทุนจากการตัดสินใจตาม AI suggestion)",
+          "item3": "ความรับผิดสูงสุดจำกัดที่ค่าบริการที่คุณจ่ายมา 12 เดือนล่าสุด"
+        },
+        "s8": {
+          "title": "8. การยกเลิก / การระงับบริการ",
+          "body": "เรามีสิทธิ์ระงับ/ยกเลิกบัญชีที่ละเมิดข้อกำหนดนี้ คุณยกเลิกบัญชีของคุณเองได้ที่ Settings ดูการลบข้อมูลที่ <deletionLink>Data Deletion</deletionLink>"
+        },
+        "s9": {
+          "title": "9. กฎหมายที่ใช้บังคับ",
+          "body": "ข้อกำหนดนี้อยู่ภายใต้กฎหมายไทย ข้อพิพาทพิจารณาที่ศาลในประเทศไทย"
+        },
+        "s10": {
+          "title": "10. การเปลี่ยนแปลงข้อกำหนด",
+          "body": "เราอาจปรับปรุงข้อกำหนดเป็นครั้งคราว แจ้งทางอีเมล 14 วันก่อนมีผล"
+        },
+        "s11": {
+          "title": "11. ติดต่อ",
+          "emailLabel": "อีเมล:"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Acceptance of Terms",
+          "body": "By signing up for and using AdsLab, you agree to these Terms and our <privacyLink>Privacy Policy</privacyLink>. If you do not agree, please discontinue use."
+        },
+        "s2": {
+          "title": "2. Service Description",
+          "body": "AdsLab is a digital advertising campaign management platform including dashboards, AI reports, and AI optimization. We are a <strong>tool</strong> — not a guarantor of marketing results. Final decisions remain with the user."
+        },
+        "s3": {
+          "title": "3. User Accounts",
+          "item1": "You must be 20+ years old, or have parental/guardian consent",
+          "item2": "You are responsible for password security",
+          "item3": "Do not share accounts (use Team / Workspace features instead)",
+          "item4": "Provide accurate and up-to-date information"
+        },
+        "s4": {
+          "title": "4. Acceptable Use",
+          "intro": "You agree not to:",
+          "item1": "Use AdsLab for illegal activity or in violation of Meta's policies",
+          "item2": "Attempt to access other users' data without authorization",
+          "item3": "Scrape, reverse-engineer, or bypass rate limits",
+          "item4": "Send spam, malware, or copyright-infringing content",
+          "item5": "Use AI features to systematically generate misleading content"
+        },
+        "s5": {
+          "title": "5. Payment (Phase 2 — currently free)",
+          "intro": "During MVP / Beta the service is free. When subscriptions launch:",
+          "item1": "You will receive a 30-day free trial",
+          "item2": "Fees are charged in advance, monthly or annually",
+          "item3": "Cancel at any time — service ends at the end of the current billing cycle",
+          "item4": "Refunds: within the first 7 days of a new billing cycle if usage was minimal"
+        },
+        "s6": {
+          "title": "6. Intellectual Property",
+          "body": "AdsLab (including code, design, AI prompts, brand) belongs to us. Data and content you upload or generate through AdsLab remains yours — we only process it to provide the service."
+        },
+        "s7": {
+          "title": "7. Limitation of Liability",
+          "item1": "AdsLab is provided \"as-is\" with no guarantee of profit or marketing results",
+          "item2": "We are not liable for indirect damages (e.g. losses from decisions based on AI suggestions)",
+          "item3": "Maximum liability is capped at fees paid by you in the prior 12 months"
+        },
+        "s8": {
+          "title": "8. Termination / Suspension",
+          "body": "We reserve the right to suspend or terminate accounts that violate these Terms. You may cancel your own account at any time in Settings. See <deletionLink>Data Deletion</deletionLink> for data removal."
+        },
+        "s9": {
+          "title": "9. Governing Law",
+          "body": "These Terms are governed by the laws of Thailand. Disputes will be resolved in Thai courts."
+        },
+        "s10": {
+          "title": "10. Changes to These Terms",
+          "body": "We may update these Terms from time to time. We will notify you via email at least 14 days before changes take effect."
+        },
+        "s11": {
+          "title": "11. Contact",
+          "emailLabel": "Email:"
+        }
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "refund": "Refund Policy",
+        "deletion": "Data Deletion",
+        "home": "AdsLab"
+      }
+    },
+    "privacy": {
+      "metaTitle": "Privacy Policy / นโยบายความเป็นส่วนตัว · AdsLab",
+      "metaDescription": "วิธีที่ AdsLab เก็บ ใช้ และคุ้มครองข้อมูลของคุณ",
+      "backHome": "← AdsLab",
+      "title": "Privacy Policy / นโยบายความเป็นส่วนตัว",
+      "lastUpdated": "Last updated / อัปเดตล่าสุด: {date}",
+      "thaiHeading": "ภาษาไทย",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. บทนำ",
+          "body": "AdsLab (\"เรา\") เป็นแพลตฟอร์ม SaaS สำหรับ media buyer และ digital marketing agency นโยบายฉบับนี้อธิบายวิธีที่เราเก็บ ใช้ และคุ้มครองข้อมูลของคุณตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) และมาตรฐานสากล (GDPR)"
+        },
+        "s2": {
+          "title": "2. ข้อมูลที่เราเก็บ",
+          "item1": "<strong>ข้อมูลบัญชี:</strong> อีเมล, ชื่อ, รหัสผ่าน (เก็บแบบ hash)",
+          "item2": "<strong>ข้อมูลองค์กร (Workspace):</strong> ชื่อ Agency, ทีมงาน, role ของแต่ละสมาชิก",
+          "item3": "<strong>ข้อมูลโฆษณา Meta:</strong> เมื่อคุณกด \"Connect Meta\" เราดึงข้อมูล ad accounts, campaigns, insights ผ่าน Meta Marketing API ตามสิทธิ์ที่คุณอนุญาต",
+          "item4": "<strong>ข้อมูลการใช้งาน:</strong> log การล็อกอิน, การเรียก API, error events",
+          "item5": "<strong>Cookies:</strong> session cookie สำหรับการยืนยันตัวตนเท่านั้น ไม่มี tracking cookies"
+        },
+        "s3": {
+          "title": "3. เราใช้ข้อมูลของคุณอย่างไร",
+          "item1": "ให้บริการแพลตฟอร์ม (dashboard, AI report, optimization)",
+          "item2": "ส่งอีเมลที่จำเป็น (verify, password reset, รายงาน)",
+          "item3": "สร้าง AI insights ผ่าน OpenRouter (Claude, Gemini) — ข้อมูล campaign ของคุณถูกส่งไปประมวลผลและไม่ถูกเก็บไว้ที่ผู้ให้บริการ AI",
+          "item4": "ปรับปรุงคุณภาพบริการ (ข้อมูลรวม anonymized)",
+          "doNot": "<strong>เราไม่:</strong> ขาย, แบ่งปันให้ผู้โฆษณา, หรือใช้ข้อมูลคุณเพื่อฝึก AI model"
+        },
+        "s4": {
+          "title": "4. ผู้ให้บริการบุคคลที่สาม",
+          "item1": "<strong>Meta Platforms</strong> — แหล่งข้อมูลโฆษณา (ผ่าน Marketing API)",
+          "item2": "<strong>OpenRouter / Anthropic / Google</strong> — ประมวลผล AI",
+          "item3": "<strong>Resend</strong> — ส่งอีเมล",
+          "item4": "<strong>Vercel</strong> — โฮสติ้ง (เซิร์ฟเวอร์ในประเทศที่อยู่ใกล้ผู้ใช้)",
+          "item5": "<strong>Neon</strong> — ฐานข้อมูล (ภูมิภาค Singapore)",
+          "item6": "<strong>Omise</strong> (Phase 2) — ประมวลผลการชำระเงิน"
+        },
+        "s5": {
+          "title": "5. ระยะเวลาเก็บข้อมูล",
+          "item1": "ข้อมูลบัญชี: ตลอดอายุการใช้งาน + 90 วันหลังลบบัญชี",
+          "item2": "ข้อมูลโฆษณา cache: สูงสุด 90 วันสำหรับการแสดงผลย้อนหลัง",
+          "item3": "Log: 30 วัน",
+          "item4": "หลังหมดเวลา ข้อมูลถูกลบถาวรจาก backup"
+        },
+        "s6": {
+          "title": "6. สิทธิของคุณ (PDPA / GDPR)",
+          "intro": "คุณมีสิทธิที่จะ:",
+          "item1": "เข้าถึงและดาวน์โหลดข้อมูลของคุณ",
+          "item2": "แก้ไขข้อมูลที่ไม่ถูกต้อง",
+          "item3": "ลบบัญชีและข้อมูลทั้งหมด (ดูหน้า <deletionLink>Data Deletion</deletionLink>)",
+          "item4": "ถอนความยินยอม (disconnect Meta ได้ทุกเมื่อ)",
+          "item5": "โอนย้ายข้อมูล (data portability)",
+          "item6": "ร้องเรียนต่อสำนักงานคุ้มครองข้อมูลส่วนบุคคล (PDPC) หากเห็นว่าเราละเมิด",
+          "contactLabel": "ติดต่อ:"
+        },
+        "s7": {
+          "title": "7. ความปลอดภัย",
+          "item1": "การส่งข้อมูลทุกครั้งเข้ารหัสด้วย TLS (HTTPS)",
+          "item2": "รหัสผ่านเก็บแบบ bcrypt hash (ไม่สามารถถอดกลับได้)",
+          "item3": "Meta access token เก็บแบบ AES-256-GCM encrypted ในฐานข้อมูล",
+          "item4": "Session cookie เป็นแบบ httpOnly, secure, sameSite=lax"
+        },
+        "s8": {
+          "title": "8. การเปลี่ยนแปลงนโยบาย",
+          "body": "เราอาจปรับปรุงนโยบายนี้เป็นครั้งคราว การเปลี่ยนแปลงที่สำคัญจะแจ้งทางอีเมล อย่างน้อย 14 วันก่อนมีผล"
+        },
+        "s9": {
+          "title": "9. ติดต่อเรา",
+          "emailLabel": "อีเมล:"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Introduction",
+          "body": "AdsLab (\"we\", \"our\") is a SaaS platform for media buyers and digital marketing agencies. This policy explains how we collect, use, and protect your data in compliance with Thailand's Personal Data Protection Act (PDPA, 2019) and international standards including GDPR."
+        },
+        "s2": {
+          "title": "2. Information We Collect",
+          "item1": "<strong>Account info:</strong> email, name, password (stored as bcrypt hash)",
+          "item2": "<strong>Workspace info:</strong> agency name, team members, roles",
+          "item3": "<strong>Meta advertising data:</strong> when you click \"Connect Meta\" we fetch your ad accounts, campaigns, and insights via Meta Marketing API based on permissions you grant",
+          "item4": "<strong>Usage data:</strong> login logs, API call logs, error events",
+          "item5": "<strong>Cookies:</strong> session cookie only (authentication). No tracking cookies."
+        },
+        "s3": {
+          "title": "3. How We Use Your Information",
+          "item1": "Provide the platform (dashboard, AI report, optimization)",
+          "item2": "Send required emails (verification, password reset, reports)",
+          "item3": "Generate AI insights via OpenRouter (Claude, Gemini) — your campaign data is sent for processing and is NOT retained by the AI providers",
+          "item4": "Improve service quality (aggregated, anonymized data)",
+          "doNot": "<strong>We do NOT:</strong> sell your data, share with advertisers, or use your data to train AI models."
+        },
+        "s4": {
+          "title": "4. Third-Party Service Providers",
+          "item1": "<strong>Meta Platforms</strong> — advertising data source (via Marketing API)",
+          "item2": "<strong>OpenRouter / Anthropic / Google</strong> — AI processing",
+          "item3": "<strong>Resend</strong> — email delivery",
+          "item4": "<strong>Vercel</strong> — hosting (edge network)",
+          "item5": "<strong>Neon</strong> — database (Singapore region)",
+          "item6": "<strong>Omise</strong> (Phase 2) — payment processing"
+        },
+        "s5": {
+          "title": "5. Data Retention",
+          "item1": "Account data: while your account is active + 90 days after deletion",
+          "item2": "Cached advertising data: up to 90 days for historical reporting",
+          "item3": "Logs: 30 days",
+          "item4": "Data is permanently purged from backups after the retention period"
+        },
+        "s6": {
+          "title": "6. Your Rights (PDPA / GDPR)",
+          "intro": "You have the right to:",
+          "item1": "Access and download your data",
+          "item2": "Correct inaccurate information",
+          "item3": "Delete your account and all data (see <deletionLink>Data Deletion</deletionLink>)",
+          "item4": "Withdraw consent (disconnect Meta at any time)",
+          "item5": "Data portability",
+          "item6": "Lodge a complaint with the Personal Data Protection Committee (PDPC) if you believe we have violated your rights",
+          "contactLabel": "Contact:"
+        },
+        "s7": {
+          "title": "7. Security",
+          "item1": "All data in transit is encrypted with TLS (HTTPS)",
+          "item2": "Passwords are stored as bcrypt hashes (irreversible)",
+          "item3": "Meta access tokens are encrypted at rest using AES-256-GCM",
+          "item4": "Session cookies are httpOnly, secure, sameSite=lax"
+        },
+        "s8": {
+          "title": "8. Changes to This Policy",
+          "body": "We may update this policy from time to time. We will notify you via email of material changes at least 14 days before they take effect."
+        },
+        "s9": {
+          "title": "9. Contact Us",
+          "emailLabel": "Email:"
+        }
+      },
+      "footer": {
+        "terms": "Terms of Service",
+        "refund": "Refund Policy",
+        "deletion": "Data Deletion",
+        "home": "AdsLab"
+      }
+    },
+    "dataDeletion": {
+      "metaTitle": "Data Deletion / ลบข้อมูล · AdsLab",
+      "metaDescription": "วิธีขอลบข้อมูลของคุณออกจาก AdsLab",
+      "backHome": "← AdsLab",
+      "title": "Data Deletion / การลบข้อมูล",
+      "intro": "ขออภัยที่คุณจะออกจาก AdsLab — เราเก็บข้อมูลของคุณเท่าที่จำเป็นเสมอและพร้อมลบเมื่อคุณขอ",
+      "thaiHeading": "ภาษาไทย",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. ลบข้อมูลผ่านระบบ (Recommended)",
+          "intro": "วิธีที่เร็วที่สุด:",
+          "step1": "ล็อกอิน AdsLab",
+          "step2": "ไปที่ <strong>Settings → Account</strong>",
+          "step3": "กด <strong>\"ลบบัญชีของฉัน\"</strong>",
+          "step4": "ยืนยันด้วยรหัสผ่าน",
+          "timing": "การลบจะเสร็จสมบูรณ์ภายใน 30 วัน (รวมการลบจาก backup)",
+          "note": "หมายเหตุ: ฟีเจอร์ลบบัญชีใน UI จะเปิดให้ใช้ใน Phase 2 — ขณะนี้กรุณาใช้วิธีที่ 2"
+        },
+        "s2": {
+          "title": "2. ลบข้อมูลผ่านอีเมล",
+          "intro": "ส่งอีเมลถึง <email>อีเมล</email> โดยใส่:",
+          "item1": "อีเมลที่ใช้สมัคร AdsLab",
+          "item2": "ชื่อเต็ม",
+          "item3": "เหตุผล (ระบุหรือไม่ก็ได้)",
+          "ack": "เราจะยืนยันคำขอภายใน 3 วันทำการ และดำเนินการลบให้เสร็จภายใน 30 วัน"
+        },
+        "s3": {
+          "title": "3. การลบข้อมูลผ่าน Facebook",
+          "body": "ถ้าคุณ revoke การอนุญาตจาก Facebook (Settings → Apps and Websites → AdsLab → Remove) Meta จะแจ้งให้เราทราบ และเราจะลบ Meta connection ของคุณภายใน 7 วัน (บัญชี AdsLab จะยังคงอยู่ — ต้องใช้วิธีที่ 1 หรือ 2 หากต้องการลบบัญชีทั้งหมด)"
+        },
+        "s4": {
+          "title": "4. ข้อมูลอะไรบ้างจะถูกลบ",
+          "item1": "บัญชี (อีเมล, ชื่อ, password hash)",
+          "item2": "Workspace / Tenant ทั้งหมดที่คุณเป็น owner ถ้าไม่มีสมาชิกอื่น",
+          "item3": "Meta access token + cached ad accounts",
+          "item4": "Cached campaign insights และ AI reports",
+          "item5": "Log activity ทั้งหมด",
+          "retained": "<strong>ข้อมูลที่อาจเหลือ:</strong> Invoice / receipt ตามกฎหมายภาษีไทย (เก็บ 5 ปี)"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Delete via the App (Recommended)",
+          "intro": "Fastest method:",
+          "step1": "Log in to AdsLab",
+          "step2": "Go to <strong>Settings → Account</strong>",
+          "step3": "Click <strong>\"Delete my account\"</strong>",
+          "step4": "Confirm with your password",
+          "timing": "Deletion completes within 30 days (including from backups)",
+          "note": "Note: in-app account deletion will be available in Phase 2 — for now please use method 2 below."
+        },
+        "s2": {
+          "title": "2. Delete via Email",
+          "intro": "Send an email to <email>email</email> with:",
+          "item1": "The email you used to sign up",
+          "item2": "Your full name",
+          "item3": "Reason (optional)",
+          "ack": "We will acknowledge your request within 3 business days and complete deletion within 30 days."
+        },
+        "s3": {
+          "title": "3. Deletion via Facebook",
+          "body": "If you revoke permission from Facebook (Settings → Apps and Websites → AdsLab → Remove), Meta will notify us and we will delete your Meta connection within 7 days. (Your AdsLab account will remain — use method 1 or 2 if you want to fully delete the account.)"
+        },
+        "s4": {
+          "title": "4. What Data Will Be Deleted",
+          "item1": "Account (email, name, password hash)",
+          "item2": "Workspace / Tenant where you are the sole Owner",
+          "item3": "Meta access token + cached ad accounts",
+          "item4": "Cached campaign insights and AI reports",
+          "item5": "Activity logs",
+          "retained": "<strong>Data that may be retained:</strong> Invoices / receipts as required by Thai tax law (5 years)."
+        }
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "refund": "Refund Policy",
+        "home": "AdsLab"
+      }
+    },
+    "aiCampaignBuilder": {
+      "title": "AI Campaign Builder",
+      "subtitle": "สร้างแคมเปญอัจฉริยะด้วย AI ภายในไม่กี่นาที",
+      "steps": {
+        "setup": "ตั้งค่าแคมเปญ",
+        "aiPlan": "AI สร้างแผน",
+        "reviewPublish": "ตรวจสอบและเผยแพร่"
+      },
+      "objective": {
+        "awareness": "Awareness",
+        "traffic": "Traffic",
+        "engagement": "Engagement",
+        "leads": "Leads",
+        "conversions": "Conversions",
+        "sales": "Sales"
+      },
+      "form": {
+        "section1Title": "บอก AI เกี่ยวกับธุรกิจของคุณ",
+        "section2Title": "ข้อมูลเพิ่มเติม (ไม่บังคับ)",
+        "productLabel": "คุณกำลังขายอะไร?",
+        "productPlaceholder": "เช่น ครีมกันแดดหน้าใส SPF50 PA+++",
+        "websiteLabel": "ลิงก์เว็บไซต์ / สินค้า",
+        "objectiveLabel": "เป้าหมายแคมเปญ",
+        "dailyBudgetLabel": "งบประมาณต่อวัน (THB)",
+        "durationLabel": "ระยะเวลา (วัน)",
+        "primaryAudienceLabel": "กลุ่มเป้าหมายหลัก",
+        "primaryAudiencePlaceholder": "เช่น ผู้หญิง อายุ 18-34 สนใจสกินแคร์ ความงาม ไลฟ์สไตล์",
+        "secondaryAudienceLabel": "กลุ่มเป้าหมายเพิ่มเติม (ไม่บังคับ)",
+        "secondaryAudiencePlaceholder": "เช่น ผู้ชาย อายุ 20-35 ออกกำลังกาย ดูแลผิว",
+        "placementsLabel": "ตำแหน่งการแสดงผล",
+        "languageLabel": "ภาษาที่ใช้",
+        "languageThai": "ภาษาไทย",
+        "languageMixed": "ผสม (Thai + English)",
+        "featuresLabel": "จุดเด่นสินค้า",
+        "featuresPlaceholder": "พิมพ์แล้วกด Enter",
+        "messageLabel": "ข้อความที่ต้องการสื่อ",
+        "messagePlaceholder": "เช่น กันแดดหน้าใส ไม่วอก ไม่มัน กันน้ำ กันเหงื่อ ใช้ได้ทุกวัน"
+      },
+      "button": {
+        "generate": "สร้างแผนแคมเปญด้วย AI",
+        "generating": "AI กำลังสร้างแผน...",
+        "customize": "ปรับแต่งแผน",
+        "save": "บันทึกและสร้างแคมเปญ"
+      },
+      "toast": {
+        "needProduct": "กรอกข้อมูลสินค้าก่อนสร้างแผน",
+        "generateFailed": "AI สร้างแผนไม่สำเร็จ",
+        "generateSuccess": "AI สร้างแผนแคมเปญสำเร็จ",
+        "savedCreating": "บันทึกแล้ว — กำลังสร้างแคมเปญใน Meta..."
+      },
+      "preview": {
+        "analyzing": "AI กำลังวิเคราะห์...",
+        "analyzingDesc": "กำลังสร้างแคมเปญ + ad sets + creative ที่เหมาะกับธุรกิจของคุณ",
+        "waiting": "รอ AI สร้างแผน",
+        "waitingDesc": "กรอกข้อมูลธุรกิจของคุณด้านซ้าย แล้วคลิก “สร้างแผนแคมเปญด้วย AI”",
+        "planTitle": "AI สร้างแผนแคมเปญให้คุณ",
+        "predicted": "คาดการณ์ผลลัพธ์",
+        "salesLabel": "ยอดขาย",
+        "veryGood": "ดีมาก",
+        "adsTotal": "Ads — รวม {count} โฆษณา (แนะนำโดย AI)",
+        "ctrExpected": "CTR คาด {ctr}%",
+        "perDayBudget": "฿{amount}/วัน ({percent}%)"
+      }
+    },
+    "rules": {
+      "header": {
+        "summary": "{count} {unit} · active {active}/{cap}",
+        "subtitle": "กดเปิด/ปิดเพื่อ activate · กดชื่อเพื่อแก้ไข · กด ⋯ เพื่อดู history",
+        "unitOne": "rule",
+        "unitMany": "rules",
+        "askAi": "ขอ AI แนะนำ",
+        "addRule": "เพิ่ม rule",
+        "atCapTooltip": "ถึง limit ของ plan แล้ว"
+      },
+      "empty": {
+        "title": "ยังไม่มี rule",
+        "description": "ตั้ง rule เพื่อให้ AdsLab pause adset หรือแจ้งเตือนคุณอัตโนมัติเมื่อ KPI ไม่ดี"
+      },
+      "row": {
+        "inWindow": "ใน {hours}h ที่ {scope}",
+        "checkEvery": "เช็ค {interval}",
+        "lastFired": "ฟายล่าสุด {date}",
+        "testTooltip": "ทดสอบ rule ตอนนี้",
+        "historyTooltip": "ดู history",
+        "deleteTooltip": "ลบ"
+      },
+      "action": {
+        "pauseAdset": "Pause Ad Set",
+        "pauseCampaign": "Pause Campaign",
+        "notifyEmail": "ส่ง email แจ้ง OWNER",
+        "notifyInApp": "ขึ้น notification ในแอพ"
+      },
+      "interval": {
+        "every1h": "ทุก 1 ชม.",
+        "every6h": "ทุก 6 ชม.",
+        "every12h": "ทุก 12 ชม.",
+        "every24h": "ทุก 24 ชม."
+      },
+      "metric": {
+        "cpv": "CPV (฿/view)",
+        "roas": "ROAS",
+        "spend": "Spend (฿)",
+        "frequency": "Frequency",
+        "ctr": "CTR"
+      },
+      "form": {
+        "createTitle": "สร้าง rule ใหม่",
+        "editTitle": "แก้ไข rule",
+        "nameLabel": "ชื่อ rule",
+        "namePlaceholder": "เช่น pause adset ถ้า CPV เกิน ฿5 ใน 2 ชม.",
+        "scopeLabel": "Scope",
+        "scopeAdset": "Ad Set",
+        "scopeCampaign": "Campaign",
+        "metricLabel": "Metric",
+        "operatorLabel": "Operator",
+        "valueLabel": "Value",
+        "windowLabel": "Window",
+        "actionLabel": "Action",
+        "intervalLabel": "ความถี่ที่เช็ค (min interval)",
+        "targetLabelCampaign": "เลือก campaign เฉพาะ (ไม่เลือก = ทั้งหมด)",
+        "targetLabelAdSet": "เลือก ad set เฉพาะ (ไม่เลือก = ทั้งหมด)",
+        "noTargets": "ไม่มีตัวเลือก",
+        "enableNow": "เปิดใช้งานทันที (นับเข้า tier cap)",
+        "cancel": "ยกเลิก",
+        "save": "บันทึก",
+        "createBtn": "สร้าง rule"
+      },
+      "toast": {
+        "updateFailed": "อัพเดทไม่สำเร็จ: {message}",
+        "confirmDelete": "ลบ rule นี้? RuleRun history จะถูกลบด้วย",
+        "deleteSuccess": "ลบแล้ว",
+        "deleteFailed": "ลบไม่สำเร็จ: {message}",
+        "needName": "ใส่ชื่อ rule",
+        "saveSuccessCreated": "สร้างแล้ว",
+        "saveSuccessEdited": "แก้ไขแล้ว",
+        "saveFailed": "บันทึกไม่สำเร็จ: {message}",
+        "testFailed": "Test ล้มเหลว: {message}"
+      },
+      "history": {
+        "title": "History · {ruleName}",
+        "loading": "กำลังโหลด...",
+        "empty": "ยังไม่มี evaluation — เปิด rule แล้วรอ cron tick หรือกด Test"
+      },
+      "suggest": {
+        "title": "AI แนะนำ Rule",
+        "intro": "ให้ AI ดู pattern การ pause ของคุณช่วง 30 วันที่ผ่านมา แล้วแนะนำ rule ที่อาจเข้าจังหวะ",
+        "askThree": "ขอ AI แนะนำ 3 ตัว",
+        "thinking": "AI กำลังคิด...",
+        "noCandidates": "ไม่มี candidate ที่ AI แนะนำ — อาจจะข้อมูลน้อยเกิน เปิด rule เองได้",
+        "addBtn": "เพิ่ม (disabled)",
+        "addSuccess": "เพิ่มแล้ว: {name} (disabled — เปิดได้ใน list)",
+        "addFailed": "เพิ่มไม่สำเร็จ: {message}",
+        "aiError": "AI ขัดข้อง: {message}",
+        "inWindow": "ใน {hours}h ที่ {scope}"
+      },
+      "upsell": {
+        "title": "Auto-rules อยู่ใน plan แบบจ่ายเงิน",
+        "currentPlan": "Plan ปัจจุบัน:",
+        "trialOrNone": "ทดลองใช้ / ยังไม่ได้เลือก",
+        "upgradeNote": "— upgrade เพื่อปลด rules",
+        "upgradeBtn": "Upgrade plan"
+      },
+      "modal": {
+        "closeAria": "ปิด"
+      },
+      "page": {
+        "title": "กฎอัตโนมัติ",
+        "subtitle": "ตั้ง if-then ให้ AdsLab pause/แจ้งเตือนแคมเปญตามเงื่อนไข",
+        "subtitleWithUsage": "ตั้ง if-then ให้ AdsLab pause/แจ้งเตือนแคมเปญตามเงื่อนไข · ใช้ {used}/{cap} ของ plan",
+        "needMetaConnection": "ต้องเชื่อมต่อ Meta ก่อนใช้กฎอัตโนมัติ",
+        "goToSettings": "ไปที่ Settings"
+      }
+    },
+    "campaignsV1": {
+      "stats": {
+        "totalLabel": "รวม:",
+        "activeLabel": "Active:",
+        "pausedLabel": "Paused:",
+        "otherLabel": "อื่นๆ:"
+      },
+      "filters": {
+        "searchPlaceholder": "ค้นหา campaign หรือ ad account...",
+        "allStatuses": "ทุกสถานะ",
+        "statusOther": "อื่นๆ",
+        "allAccounts": "ทุก account",
+        "showing": "แสดง {filtered} / {total}"
+      },
+      "list": {
+        "empty": "ไม่พบ campaign ที่ตรงเงื่อนไข",
+        "accountCampaignsCount": "· {count} campaigns"
+      },
+      "action": {
+        "verbPause": "หยุด",
+        "verbResume": "เปิด",
+        "confirm": "{verb} campaign \"{name}\"?",
+        "pendingPrefix": "กำลัง{verb}...",
+        "successPrefix": "{verb}แล้ว",
+        "duplicating": "กำลัง duplicate...",
+        "duplicated": "duplicate → \"{name}\"",
+        "duplicateFail": "Duplicate ไม่สำเร็จ",
+        "genericFail": "ไม่สำเร็จ",
+        "savingBudget": "กำลังบันทึก budget...",
+        "savingEndDate": "กำลังบันทึก end date...",
+        "saved": "บันทึกแล้ว"
+      },
+      "row": {
+        "justCreated": "เพิ่งสร้าง",
+        "adsetBudget": "ad-set budget",
+        "pauseTooltip": "Pause",
+        "resumeTooltip": "Resume",
+        "budgetTooltipEditable": "แก้ budget",
+        "budgetTooltipDisabled": "Budget อยู่ที่ระดับ ad set — แก้ใน Meta Ads Manager",
+        "endDateTooltip": "แก้ end date",
+        "duplicateTooltip": "Duplicate campaign"
+      },
+      "budgetModal": {
+        "title": "แก้ Budget",
+        "dailyLabel": "Daily Budget (THB)",
+        "lifetimeLabel": "Lifetime Budget (THB)",
+        "current": "ปัจจุบัน: ฿{thb}",
+        "errors": {
+          "tooLow": "Budget ต่ำกว่าขั้นต่ำ ฿20",
+          "tooHigh": "Budget เกินเพดาน ฿1,000,000 — ตรวจดูตัวเลข"
+        },
+        "cancel": "ยกเลิก",
+        "save": "บันทึก"
+      },
+      "endDateModal": {
+        "title": "แก้ End Date",
+        "label": "End Date / Time",
+        "currentLabel": "ปัจจุบัน:",
+        "notSet": "ไม่ได้ตั้งไว้",
+        "endNow": "End now",
+        "add7Days": "+7 วัน",
+        "add30Days": "+30 วัน",
+        "errors": {
+          "invalid": "วันเวลาไม่ถูกต้อง",
+          "past": "end_time ต้องไม่ใช่อดีต"
+        },
+        "cancel": "ยกเลิก",
+        "save": "บันทึก"
+      },
+      "duplicateModal": {
+        "title": "Duplicate Campaign",
+        "newNameLabel": "ชื่อ campaign ใหม่",
+        "budgetLabelDaily": "Budget (daily) — current ฿{thb}",
+        "budgetLabelLifetime": "Budget (lifetime) — current ฿{thb}",
+        "modes": {
+          "same": "เหมือนเดิม",
+          "multiplier": "×multiplier",
+          "absolute": "ใส่เลขเอง"
+        },
+        "multiplierResult": "จะได้: ฿{thb}",
+        "adsetBudgetNote": "Campaign นี้ใช้ ad-set budget — duplicate จะ copy budget เหมือนเดิมจาก ad sets",
+        "initialStatusLabel": "สถานะตอนสร้าง",
+        "statusPaused": "PAUSED (ปลอดภัย)",
+        "statusActive": "ACTIVE (ยิงเลย)",
+        "errors": {
+          "name": "ใส่ชื่อ campaign ใหม่",
+          "multiplier": "Multiplier ต้องอยู่ระหว่าง 0 ถึง 10",
+          "budgetTooLow": "Budget ต่ำกว่าขั้นต่ำ ฿20",
+          "budgetTooHigh": "Budget เกินเพดาน ฿1,000,000"
+        },
+        "cancel": "ยกเลิก",
+        "duplicateBtn": "Duplicate"
+      }
+    },
+    "naming": {
+      "templates": {
+        "header": {
+          "title": "Naming Standards",
+          "badge": "Templates",
+          "intro": "กำหนดมาตรฐานชื่อ Campaign — Campaign Builder จะแนะนำชื่อตาม template อัตโนมัติ (เช่น <code>Sale_{example}</code> → Sale_0626)"
+        },
+        "placeholderHints": {
+          "MM": "เดือน 2 หลัก",
+          "YY": "ปี 2 หลัก",
+          "YYYY": "ปี 4 หลัก",
+          "DD": "วัน 2 หลัก",
+          "Month": "เดือน (Jan/Feb/..)",
+          "Custom": "ค่ากำหนดเอง"
+        },
+        "previewFallback": "<กรอกเอง>",
+        "templatesCount": "Templates:",
+        "actions": {
+          "aiAnalyze": "AI วิเคราะห์ชื่อ",
+          "addTemplate": "เพิ่ม Template"
+        },
+        "loading": "กำลังโหลด...",
+        "empty": "ยังไม่มี template — กดเพิ่ม template หรือใช้ AI วิเคราะห์ชื่อที่มีอยู่",
+        "deleteTooltip": "ลบ template",
+        "suggestBadge": "Suggest",
+        "previewWord": "Preview",
+        "previewNow": "Preview ตอนนี้:",
+        "patternWord": "Pattern",
+        "toast": {
+          "confirmDelete": "ลบ template นี้?",
+          "deleteFail": "ลบไม่สำเร็จ",
+          "deleted": "ลบแล้ว"
+        },
+        "create": {
+          "title": "เพิ่ม Naming Template",
+          "subtitle": "ใส่ placeholder ตามรายการด้านล่างเพื่อให้ Campaign Builder แทนค่าให้",
+          "nameLabel": "ชื่อ Template",
+          "namePlaceholder": "เช่น Sale Campaign",
+          "patternLabel": "Pattern",
+          "patternPlaceholder": "เช่น Sale_{MM}{YY}",
+          "descriptionLabel": "คำอธิบาย (optional)",
+          "descriptionPlaceholder": "เช่น ใช้สำหรับ campaign ลดราคารายเดือน",
+          "cancel": "ยกเลิก",
+          "createBtn": "สร้าง",
+          "errors": {
+            "nameAndPattern": "ชื่อ + pattern ต้องไม่ว่าง",
+            "createFail": "สร้างไม่สำเร็จ",
+            "generic": "ไม่สำเร็จ"
+          },
+          "success": "เพิ่ม template แล้ว"
+        },
+        "aiModal": {
+          "title": "AI วิเคราะห์ชื่อ Campaign",
+          "subtitle": "อ่านชื่อ campaign ที่มีอยู่ → เสนอ template ที่ใช้บ่อย",
+          "loading": "กำลังให้ AI วิเคราะห์...",
+          "analyzedSummary": "วิเคราะห์ {analyzed} campaign names — ได้ {count} suggestions",
+          "useBtn": "+ ใช้",
+          "noPatterns": "AI ไม่พบ pattern ที่ชัดเจน — ลองสร้าง template เองได้",
+          "closeBtn": "ปิด",
+          "doneBtn": "เสร็จ",
+          "errors": {
+            "aiFail": "AI วิเคราะห์ไม่สำเร็จ",
+            "addFail": "เพิ่มไม่สำเร็จ",
+            "generic": "ไม่สำเร็จ"
+          },
+          "addedToast": "เพิ่ม \"{name}\""
+        }
+      },
+      "rules": {
+        "errors": {
+          "enterPattern": "กรอก pattern ก่อน",
+          "createFail": "เพิ่มไม่สำเร็จ",
+          "deleteFail": "ลบไม่สำเร็จ",
+          "priorityFail": "ปรับลำดับไม่สำเร็จ"
+        },
+        "toasts": {
+          "creating": "กำลังเพิ่มกฎ...",
+          "created": "เพิ่มกฎแล้ว",
+          "deleting": "กำลังลบ...",
+          "deleted": "ลบแล้ว",
+          "confirmDelete": "ลบกฎนี้?"
+        },
+        "form": {
+          "heading": "เพิ่มกฎใหม่",
+          "patternLabel": "Pattern (substring หรือ regex)",
+          "patternPlaceholderText": "awareness",
+          "patternPlaceholderRegex": "^awareness_|^aw_",
+          "objectiveLabel": "Objective",
+          "priorityLabel": "Priority",
+          "useRegex": "ใช้ regex",
+          "addBtn": "เพิ่มกฎ"
+        },
+        "list": {
+          "header": "กฎที่ใช้อยู่ ({count}) — เรียงตาม priority สูงไปต่ำ",
+          "empty": "ยังไม่มีกฎ — เพิ่มกฎแรกข้างบน",
+          "deleteTooltip": "ลบกฎ"
+        },
+        "preview": {
+          "heading": "ตัวอย่างการแมตช์",
+          "promptToType": "พิมพ์ pattern ด้านซ้าย → จะดู campaign ที่แมตช์ที่นี่",
+          "noMatch": "ไม่มี campaign ใดใน 100 ตัวอย่างที่ตรงกับ pattern นี้",
+          "andMore": "... และอีก {n}"
+        }
+      },
+      "page": {
+        "title": "กฎการตั้งชื่อ Campaign",
+        "subtitle": "ใช้คีย์เวิร์ดในชื่อ campaign (เช่น \"awareness\", \"sale\") เพื่อให้ระบบ auto-classify ออกเป็น objective ที่กำหนด — ทำงานก่อน Meta objective แต่หลัง manual override",
+        "backToGoals": "กลับไปหน้า Goals",
+        "needMetaConnection": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน",
+        "goToSettings": "ไปที่ Settings"
+      }
+    },
+    "competitorSpy": {
+      "title": "Competitor Ads Spy",
+      "subtitle": "ติดตามและวิเคราะห์โฆษณาคู่แข่งในอุตสาหกรรมของคุณ",
+      "beta": {
+        "label": "Beta ·",
+        "note": "ตอนนี้ใช้ mock data — เร็ว ๆ นี้จะ pull จาก Meta Ad Library + TikTok Creative Center ของจริง"
+      },
+      "search": {
+        "placeholder": "ค้นหาคู่แข่ง หรือชื่อแบรนด์..."
+      },
+      "platforms": {
+        "all": "ทั้งหมด"
+      },
+      "filter": {
+        "industryLabel": "อุตสาหกรรม",
+        "countryLabel": "ประเทศ",
+        "allOption": "ทั้งหมด",
+        "industries": {
+          "all": "ทั้งหมด",
+          "ecom": "E-commerce",
+          "beauty": "Beauty",
+          "food": "Food",
+          "travel": "Travel"
+        },
+        "countries": {
+          "th": "ไทย",
+          "sg": "สิงคโปร์",
+          "my": "มาเลเซีย",
+          "vn": "เวียดนาม"
+        },
+        "labelAllFormat": "{label}: ทั้งหมด",
+        "labelValueFormat": "{label}: {value}"
+      },
+      "actions": {
+        "export": "ส่งออกข้อมูล",
+        "viewAll": "ดูทั้งหมด",
+        "viewAllInsights": "ดู Insight ทั้งหมด"
+      },
+      "competitors": {
+        "heading": "คู่แข่งที่ติดตาม",
+        "adsUnit": "{count} ads"
+      },
+      "chart": {
+        "xAxisDay": "วันที่ {n}"
+      },
+      "overview": {
+        "heading": "ภาพรวมการใช้งานโฆษณา",
+        "subtitle": "โฆษณาทั้งหมดของคู่แข่งที่ติดตาม",
+        "totalAds": "โฆษณาทั้งหมด",
+        "deltaSuffix7d": "จาก 7 วันที่ผ่านมา",
+        "metaLabel": "Meta",
+        "metaCaption": "ของทั้งหมด",
+        "industryLabel": "E-commerce",
+        "industryCaption": "อุตสาหกรรม",
+        "videoLabel": "Video",
+        "videoCaption": "รูปแบบ"
+      },
+      "trend": {
+        "heading": "แนวโน้มการลงโฆษณา",
+        "subtitle": "30 วันที่ผ่านมา"
+      },
+      "creatives": {
+        "heading": "ครีเอทีฟที่กำลังแรง",
+        "items": {
+          "discount70": "ลดราคาสูงสุด 70% วันนี้เท่านั้น!",
+          "newCream": "ใหม่! ครีมบำรุงสูตรเข้มข้น",
+          "buyOneFreeShip": "ซื้อ 1 แถม 1 ส่งฟรี",
+          "homeMakeover": "เปลี่ยนบ้านให้สวยใน 3 ขั้นตอน"
+        }
+      },
+      "insights": {
+        "heading": "Insight จาก AI",
+        "brandSurge": {
+          "title": "Brand A เพิ่มโฆษณา +35%",
+          "subtitle": "ใน 7 วันที่ผ่านมา"
+        },
+        "shortVideo": {
+          "title": "วิดีโอสั้น (15-30 วินาที)",
+          "subtitle": "กำลังได้รับความนิยมสูงสุด"
+        },
+        "discountStrategy": {
+          "title": "โปรโมชั่นลดราคา",
+          "subtitle": "ยังคงเป็นกลยุทธ์หลักที่ใช้"
+        }
+      }
+    },
+    "setupBilling": {
+      "recommended": "แนะนำ",
+      "month": "เดือน",
+      "year": "ปี",
+      "monthlyToggle": "รายเดือน",
+      "yearlyToggle": "รายปี",
+      "yearlySavings": "−17%",
+      "plans": {
+        "starter": {
+          "description": "เหมาะกับมือใหม่ ad spend < ฿10,000/เดือน",
+          "bullets": {
+            "adAccounts": "1 ad account",
+            "aiMessages": "30 AI message/วัน",
+            "dashboard": "Dashboard + AI Master",
+            "customerJourney": "Customer Journey"
+          }
+        },
+        "growth": {
+          "description": "ad spend ฿10k–฿30k/เดือน",
+          "bullets": {
+            "adAccounts": "3 ad accounts",
+            "aiMessages": "100 AI message/วัน",
+            "allStarter": "ทุกฟีเจอร์ของ Starter",
+            "customConversions": "Custom Conversions"
+          }
+        },
+        "pro": {
+          "description": "ad spend ฿30k–฿100k/เดือน",
+          "bullets": {
+            "adAccounts": "10 ad accounts",
+            "aiMessages": "300 AI message/วัน",
+            "allGrowth": "ทุกฟีเจอร์ของ Growth",
+            "audienceManagement": "Audience Management"
+          }
+        },
+        "scale": {
+          "description": "ad spend ฿100k–฿500k/เดือน",
+          "bullets": {
+            "adAccounts": "25 ad accounts",
+            "aiUnlimited": "AI ไม่จำกัด",
+            "whiteLabel": "White-label Reports ฟรี",
+            "prioritySupport": "Priority Support"
+          }
+        }
+      },
+      "cardForm": {
+        "heading": "ข้อมูลบัตรเครดิต",
+        "cardName": "ชื่อบนบัตร",
+        "cardNumber": "หมายเลขบัตร",
+        "expMonth": "เดือน",
+        "expYear": "ปี (4 หลัก)",
+        "cvv": "CVV"
+      },
+      "errors": {
+        "omiseNotLoaded": "Omise script ยังไม่โหลด",
+        "noPaymentKey": "ระบบยังไม่ตั้งค่าการชำระเงิน — ติดต่อทีมงาน",
+        "mustAcceptTerms": "กรุณายอมรับเงื่อนไขการใช้บริการและนโยบายการคืนเงินก่อนสมัคร",
+        "invalidCard": "บัตรเครดิตไม่ถูกต้อง",
+        "generic": "เกิดข้อผิดพลาด"
+      },
+      "terms": {
+        "iAccept": "ฉันยอมรับ",
+        "tos": "ข้อกำหนดการใช้บริการ",
+        "and": "และ",
+        "refundPolicy": "นโยบายการคืนเงิน",
+        "adsLab": "ของ AdsLab",
+        "bullet1": "• ทดลองใช้ฟรี 7 วัน — ไม่มีการเรียกเก็บเงินระหว่างทดลอง",
+        "bullet2": "• เริ่มเก็บเงินอัตโนมัติในวันที่ 8 หากไม่ได้ยกเลิก",
+        "bullet3": "• ขอคืนเงินภายใน 7 วันแรกของรอบบิล (pro-rated ตามวันที่เหลือ)",
+        "bullet4": "• ยกเลิกการต่ออายุได้ตลอดเวลาที่ Settings → Billing"
+      },
+      "summary": {
+        "totalPerPeriod": "รวมต่อรอบบิล (VAT 7% รวมแล้ว)",
+        "trialNote": "ทดลองใช้ฟรี 7 วัน • เริ่มเก็บเงินหลังครบ"
+      },
+      "submit": {
+        "saving": "กำลังบันทึก",
+        "startTrial": "เริ่มทดลองใช้ฟรี 7 วัน"
+      },
+      "footerNote": "ระบบชำระเงินผ่าน Omise (ปลอดภัย PCI DSS Level 1) · เงินจะถูกเรียกเก็บเป็นสกุล THB",
+      "page": {
+        "heading": "เลือกแพ็กเกจที่เหมาะกับคุณ",
+        "subheading": "ทดลองใช้ฟรี 7 วัน • บัตรเครดิตเรียกเก็บอัตโนมัติเมื่อหมดทดลอง • ยกเลิกได้ตลอดเวลา",
+        "expiredNotice": "บัญชีของคุณหมดอายุ — กรุณาเลือกแพ็กเกจเพื่อใช้งานต่อ",
+        "suspendedNotice": "บัญชีถูกระงับ — กรุณาอัปเดตวิธีชำระเงิน"
+      }
+    },
+    "integrations": {
+      "title": "การตั้งค่า",
+      "subtitle": "ตั้งค่า scope, naming convention, และ integrations ของ tenant",
+      "needMetaForScope": "ต้องเชื่อม Meta ก่อนถึงตั้ง scope ได้ — ไปที่ tab Integrations",
+      "needMetaForNaming": "ต้องเชื่อม Meta ก่อนถึงตั้ง naming standards ได้ — ไปที่ tab Integrations",
+      "metaSubtitle": "เชื่อมต่อ Facebook Business Manager",
+      "googleDesc": "เชื่อม Google Ads — กำลังพัฒนา",
+      "tiktokDesc": "เชื่อม TikTok Ads — กำลังพัฒนา"
+    },
+    "tiktokAds": {
+      "title": "TikTok Ads",
+      "subtitle": "เร็วๆ นี้ — TikTok Ads ใน AdsLab พร้อม dashboard, AI optimization และ custom audiences เหมือนที่ Meta มี",
+      "cardDescription": "ใส่ email เพื่อให้เราแจ้งเมื่อ TikTok Ads เปิดให้ใช้ — ตอนนี้ทำเฟส Meta ให้แน่นก่อน"
+    },
+    "googleAds": {
+      "title": "Google Ads",
+      "subtitle": "เร็วๆ นี้ — Google Ads ใน AdsLab พร้อม dashboard, AI optimization และ custom audiences เหมือนที่ Meta มี",
+      "cardDescription": "ใส่ email เพื่อให้เราแจ้งเมื่อ Google Ads เปิดให้ใช้ — ตอนนี้ทำเฟส Meta ให้แน่นก่อน"
+    },
+    "journey": {
+      "title": "Customer Journey",
+      "subtitle": "แผนที่เส้นทางลูกค้า จาก ad → engagement → conversion"
+    },
+    "settings": {
+      "heading": "การตั้งค่า",
+      "eyebrow": "Settings",
+      "comingSoon": "เร็วๆ นี้"
     }
   },
   "optimizationEngine": {
@@ -249,5 +3145,143 @@
       "reasonLowFrequency": "Frequency ต่ำ — อาจ saturate กลุ่มเป้าหมายเดิม",
       "impact": "Reach เพิ่มขึ้น 35-60%"
     }
+  },
+  "emails": {
+    "shell": {
+      "tagline": "ยิงแอดให้เร็ว แม่น scale ได้",
+      "signoff": "— AdsLab"
+    },
+    "verifyEmail": {
+      "subject": "ยืนยันอีเมลของคุณ - AdsLab",
+      "greeting": "สวัสดี{name}",
+      "body": "ขอบคุณที่สมัครใช้ AdsLab! เพื่อเริ่มใช้งานบัญชี กรุณายืนยันอีเมลของคุณโดยกดปุ่มด้านล่าง",
+      "cta": "ยืนยันอีเมล",
+      "linkHint": "หรือคัดลอกลิงก์นี้ไปวางใน browser:",
+      "expiry": "ลิงก์นี้จะหมดอายุภายใน 24 ชั่วโมง",
+      "ignoreNotice": "หากคุณไม่ได้สมัครสมาชิก AdsLab สามารถละเลยอีเมลนี้ได้",
+      "text": {
+        "greeting": "สวัสดี{name}",
+        "body": "ขอบคุณที่สมัครใช้ AdsLab! เพื่อเริ่มใช้งานบัญชี กรุณายืนยันอีเมลของคุณโดยเข้าลิงก์นี้:"
+      }
+    },
+    "dailyReport": {
+      "header": "Daily Report",
+      "greeting": "สวัสดี{name}",
+      "subtitle": "รายงานสำหรับ <strong>{tenantName}</strong> · {dateLabel}",
+      "cta": "เปิดดูใน AdsLab →",
+      "footerNotice": "รายงานนี้ส่งโดย AdsLab ทุกเช้า 09:00 น. (เวลาประเทศไทย)<br />หากไม่ต้องการรับรายงาน — เข้าไปปิดได้ที่ Settings ใน AdsLab",
+      "text": {
+        "greeting": "สวัสดี {name}",
+        "subtitle": "รายงานประจำวันสำหรับ {tenantName} ({dateLabel})",
+        "readOnWeb": "อ่านในเว็บ: {url}",
+        "signoff": "— AdsLab Daily Report"
+      }
+    },
+    "billing": {
+      "trialReminder2d": {
+        "subject": "เหลือ 2 วันก่อนเริ่มเก็บเงิน — AdsLab",
+        "title": "เหลืออีก 2 วันจะเริ่มเก็บเงิน",
+        "greeting": "สวัสดี{name}",
+        "body": "ทดลองใช้ AdsLab ของคุณจะหมดอายุในอีก <b>2 วัน</b> หลังจากนั้นเราจะเรียกเก็บเงินตามแพ็กเกจ <b>{planName}</b> ({price} บาท/เดือน) จากบัตรที่คุณบันทึกไว้",
+        "manageHint": "หากต้องการเปลี่ยน plan, ยกเลิก, หรือใช้บัตรอื่น สามารถจัดการได้ที่หน้า Settings → Billing",
+        "cta": "ไปที่ Settings",
+        "text": {
+          "greeting": "สวัสดี{name}",
+          "body": "ทดลองใช้ AdsLab ของคุณจะหมดอายุในอีก 2 วัน หลังจากนั้นเราจะเรียกเก็บเงินตามแพ็กเกจ {planName} ({price} บาท/เดือน)",
+          "manageHint": "หากต้องการเปลี่ยน plan หรือยกเลิก ไปที่:"
+        }
+      },
+      "trialReminder1d": {
+        "subject": "พรุ่งนี้จะเริ่มเก็บเงิน — AdsLab",
+        "title": "พรุ่งนี้จะเริ่มเก็บเงิน",
+        "greeting": "สวัสดี{name}",
+        "body": "ทดลองใช้ AdsLab ของคุณจะหมดอายุภายใน <b>24 ชั่วโมง</b> เราจะเรียกเก็บเงิน <b>{price} บาท</b> สำหรับแพ็กเกจ {planName}",
+        "cta": "จัดการบัญชี",
+        "text": {
+          "greeting": "สวัสดี{name}",
+          "body": "ทดลองใช้ AdsLab จะหมดอายุภายใน 24 ชั่วโมง เราจะเรียกเก็บเงิน {price} บาท สำหรับแพ็กเกจ {planName}"
+        }
+      },
+      "invoicePaid": {
+        "subject": "ใบเสร็จ {amount} บาท — AdsLab",
+        "title": "ชำระเงินสำเร็จ",
+        "greeting": "สวัสดี{name},",
+        "body": "ขอบคุณที่ใช้ AdsLab! เราได้รับการชำระเงินของคุณแล้ว",
+        "rowPlan": "แพ็กเกจ",
+        "rowBase": "ราคา (ก่อน VAT)",
+        "rowVat": "VAT 7%",
+        "rowTotal": "รวมทั้งสิ้น",
+        "amountUnit": "{amount} บาท",
+        "cta": "ดูใบเสร็จ",
+        "text": {
+          "greeting": "สวัสดี{name},",
+          "body": "ขอบคุณ! เราได้รับการชำระเงิน {amount} บาท สำหรับแพ็กเกจ {planName} แล้ว"
+        }
+      },
+      "invoiceFailed": {
+        "subject": "ชำระเงินไม่สำเร็จ — กรุณาตรวจสอบบัตร — AdsLab",
+        "title": "ชำระเงินไม่สำเร็จ",
+        "greeting": "สวัสดี{name},",
+        "body": "เราพยายามเรียกเก็บเงิน <b>{amount} บาท</b> แต่ไม่สำเร็จ",
+        "reasonLabel": "เหตุผล: {reason}",
+        "graceNotice": "คุณมีเวลา 3 วันในการอัปเดตวิธีชำระเงิน หลังจากนั้นบัญชีจะถูกระงับ",
+        "cta": "อัปเดตบัตร",
+        "text": {
+          "greeting": "สวัสดี{name},",
+          "body": "เราพยายามเรียกเก็บเงิน {amount} บาท แต่ไม่สำเร็จ",
+          "reasonLabel": "เหตุผล: {reason}",
+          "graceNotice": "คุณมีเวลา 3 วันในการอัปเดตวิธีชำระเงิน"
+        }
+      },
+      "subscriptionCancelled": {
+        "subject": "ยกเลิกการสมัครเรียบร้อย — AdsLab",
+        "title": "ยกเลิกการสมัครเรียบร้อย",
+        "greeting": "สวัสดี{name},",
+        "body": "เราได้ยกเลิกการสมัคร AdsLab ของคุณแล้ว คุณยังสามารถเข้าใช้งานได้จนถึง <b>{accessUntil}</b>",
+        "resubscribeNotice": "หากเปลี่ยนใจ สามารถสมัครใหม่ได้ตลอดเวลา ข้อมูลทั้งหมดของคุณจะยังคงอยู่",
+        "cta": "สมัครอีกครั้ง",
+        "text": {
+          "greeting": "สวัสดี{name},",
+          "body": "เราได้ยกเลิกการสมัคร AdsLab ของคุณแล้ว คุณยังสามารถเข้าใช้งานได้จนถึง {accessUntil}"
+        }
+      }
+    }
+  },
+  "banners": {
+    "unverified": {
+      "message": "กรุณายืนยันอีเมลของคุณ เพื่อใช้งานครบทุกฟีเจอร์",
+      "resend": "ส่งเมลใหม่",
+      "sending": "กำลังส่ง...",
+      "resendSuccess": "ส่งเมลใหม่เรียบร้อย กรุณาตรวจสอบกล่องจดหมาย",
+      "resendFailed": "ส่งใหม่ไม่สำเร็จ",
+      "connectionError": "เชื่อมต่อ server ไม่ได้"
+    },
+    "tierLimit": {
+      "pastDueMessage": "การชำระเงินล่าสุดไม่สำเร็จ — กรุณาอัปเดตบัตรภายใน 3 วัน",
+      "pastDueAction": "อัปเดตบัตร",
+      "trialEndingSoon": "ทดลองใช้ AdsLab เหลือ <b>{days}</b> วัน — เริ่มเก็บเงิน {dateStr} ตามแพ็กเกจ <b>{planName}</b>",
+      "manage": "จัดการ",
+      "trialInProgress": "คุณกำลังทดลองใช้ AdsLab — เหลือ {days} วัน",
+      "viewPlans": "ดูแพ็กเกจ →"
+    },
+    "scopePrompt": {
+      "title": "ตั้งค่า Tenant Scope เพื่อโฟกัสเฉพาะ accounts/campaigns ที่ใช้",
+      "description": "ตอนนี้ดูทุก ad account ของ Business Manager ที่เชื่อมไว้ — ตั้ง scope ได้เพื่อให้ Dashboard, Reports, และ AI Report วิเคราะห์เฉพาะ scope ที่กำหนด",
+      "setupNow": "ตั้งค่าตอนนี้",
+      "hide": "ซ่อน"
+    }
+  },
+  "themeToggle": {
+    "label": "เปลี่ยนธีม"
+  },
+  "mobileNav": {
+    "openMenu": "เปิดเมนู",
+    "closeMenu": "ปิดเมนู"
+  },
+  "tenantSwitcher": {
+    "notFound": "(ไม่พบ workspace)"
+  },
+  "topbar": {
+    "notifications": "การแจ้งเตือน"
   }
 }

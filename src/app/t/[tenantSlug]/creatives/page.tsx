@@ -43,16 +43,16 @@ export default async function CreativesPage({
       <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <KpiCard label="ภาพ" value={String(counts.image)} icon={ImageIcon} tint="brand" />
-          <KpiCard label="วิดีโอ" value={String(counts.video)} icon={Video} tint="emerald" />
+          <KpiCard label={tPages("kpiImage")} value={String(counts.image)} icon={ImageIcon} tint="brand" />
+          <KpiCard label={tPages("kpiVideo")} value={String(counts.video)} icon={Video} tint="emerald" />
           <KpiCard
-            label="สร้างด้วย AI"
+            label={tPages("kpiAi")}
             value={String(counts.aiGen)}
             icon={Sparkles}
             tint="amber"
           />
           <KpiCard
-            label="ทั้งหมด"
+            label={tPages("kpiTotal")}
             value={String(counts.image + counts.video)}
             icon={ImagePlus}
             tint="sky"

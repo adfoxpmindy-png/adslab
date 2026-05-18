@@ -2,23 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Brain, BarChart3, Crosshair, Layers, Megaphone, Zap, Check } from "lucide-react";
+import { getTranslations, getLocale } from "next-intl/server";
 
 import { buttonVariants } from "@/components/ui/button";
 import { SiteFooter } from "@/components/site-footer";
 import { cn } from "@/lib/utils";
 import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { formatNumber } from "@/lib/i18n/format";
 
-export const metadata = {
-  title: "AdsLab · Thai-first SaaS สำหรับมือยิงแอด Meta",
-  description:
-    "เครื่องมือช่วย media buyer และเอเจนซี่ยิงแอด Meta ได้แม่นและเร็วขึ้น ด้วย AI ภาษาไทย — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK ครบในที่เดียว",
-  openGraph: {
-    title: "AdsLab · Thai-first SaaS สำหรับมือยิงแอด Meta",
-    description: "ยิงแอดให้เร็ว แม่น scale ได้ — ทดลองฟรี 7 วัน",
-    images: ["/adslab-logo.png"],
-  },
-};
+export async function generateMetadata() {
+  const t = await getTranslations("pages.landing.meta");
+  return {
+    title: t("title"),
+    description: t("description"),
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      images: ["/adslab-logo.png"],
+    },
+  };
+}
 
 export default async function HomePage() {
   // Logged-in users → straight to their dashboard.
@@ -31,6 +35,13 @@ export default async function HomePage() {
     });
     if (m) redirect(`/t/${m.tenant.slug}/dashboard`);
   }
+
+  const t = await getTranslations("pages.landing");
+  const locale = await getLocale();
+  const starterBullets = (await getTranslations("pages.landing.pricing")).raw("starterBullets") as string[];
+  const growthBullets = (await getTranslations("pages.landing.pricing")).raw("growthBullets") as string[];
+  const proBullets = (await getTranslations("pages.landing.pricing")).raw("proBullets") as string[];
+  const scaleBullets = (await getTranslations("pages.landing.pricing")).raw("scaleBullets") as string[];
 
   return (
     <main className="min-h-screen bg-background">
@@ -47,13 +58,13 @@ export default async function HomePage() {
           />
           <nav className="flex items-center gap-3 text-sm">
             <Link href="#pricing" className="hidden text-muted-foreground hover:text-foreground sm:block">
-              ราคา
+              {t("header.pricing")}
             </Link>
             <Link href="/login" className="text-muted-foreground hover:text-foreground">
-              เข้าสู่ระบบ
+              {t("header.login")}
             </Link>
             <Link href="/signup" className={cn(buttonVariants({ size: "sm" }))}>
-              เริ่มต้นฟรี 7 วัน
+              {t("header.signup")}
             </Link>
           </nav>
         </div>
@@ -63,31 +74,30 @@ export default async function HomePage() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-6xl px-6 py-20 text-center">
           <div className="mx-auto inline-block rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300">
-            Thai-first · SaaS สำหรับมือยิงแอด Meta
+            {t("hero.pill")}
           </div>
           <h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-5xl">
-            ยิงแอดให้เร็ว แม่น scale ได้
+            {t("hero.headline")}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            เครื่องมือ optimize Meta ads ด้วย AI ภาษาไทย — Dashboard, Audience, Custom Conversions,
-            Customer Journey, Event SDK ทำงานครบในที่เดียว
+            {t("hero.subtitle")}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/signup"
               className={cn(buttonVariants({ size: "lg" }), "min-w-[200px]")}
             >
-              เริ่มต้นฟรี 7 วัน
+              {t("hero.ctaPrimary")}
             </Link>
             <Link
               href="#pricing"
               className={cn(buttonVariants({ size: "lg", variant: "outline" }), "min-w-[200px]")}
             >
-              ดูแพ็กเกจ
+              {t("hero.ctaSecondary")}
             </Link>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            ไม่มีค่าสมัคร · ยกเลิกได้ตลอดเวลา · เริ่มเก็บเงินเมื่อหมดทดลอง 7 วัน
+            {t("hero.microcopy")}
           </p>
         </div>
       </section>
@@ -96,41 +106,41 @@ export default async function HomePage() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-6xl px-6 py-20">
           <h2 className="text-center text-3xl font-bold tracking-tight">
-            ครอบคลุมทุกอย่างที่มือยิงแอดต้องการ
+            {t("features.heading")}
           </h2>
           <p className="mt-3 text-center text-muted-foreground">
-            เริ่มจาก dashboard รวมข้อมูล → AI วิเคราะห์ + แนะนำ → ลงมือเพิ่มประสิทธิภาพ
+            {t("features.subheading")}
           </p>
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <FeatureCard
               icon={BarChart3}
-              title="Unified Dashboard"
-              desc="ดู spend / ROAS / CTR / CPM ของทุก ad account ในที่เดียว พร้อม filter ตามช่วงเวลา + ลูกค้า"
+              title={t("features.dashboardTitle")}
+              desc={t("features.dashboardDesc")}
             />
             <FeatureCard
               icon={Brain}
-              title="AI Master — ผู้ช่วยภาษาไทย"
-              desc="สั่งงาน AI ผ่าน chat: ดู insight, pause campaign, ปรับ budget, ค้นข้อมูลจาก knowledge base ของคุณเอง"
+              title={t("features.aiTitle")}
+              desc={t("features.aiDesc")}
             />
             <FeatureCard
               icon={Crosshair}
-              title="Audience + Custom Conversions"
-              desc="สร้าง Custom/Lookalike audiences + Custom Conversions ตรงจากระบบ ส่งเข้า Meta ทันที"
+              title={t("features.audienceTitle")}
+              desc={t("features.audienceDesc")}
             />
             <FeatureCard
               icon={Megaphone}
-              title="Campaign Builder"
-              desc="สร้าง + duplicate campaign แบบมี AI ช่วยตั้งชื่อ + แนะนำ targeting ตามเป้าหมาย"
+              title={t("features.builderTitle")}
+              desc={t("features.builderDesc")}
             />
             <FeatureCard
               icon={Layers}
-              title="Event SDK + CAPI"
-              desc="ติด Pixel + Conversions API ในคลิกเดียว ครบทุก event type — PixelYourSite-style แต่ภาษาไทย"
+              title={t("features.sdkTitle")}
+              desc={t("features.sdkDesc")}
             />
             <FeatureCard
               icon={Zap}
-              title="Customer Journey Map"
-              desc="แผนที่เกาะลอย แสดงเส้นทางลูกค้าจาก ad → page → conversion สวยและเข้าใจง่าย"
+              title={t("features.journeyTitle")}
+              desc={t("features.journeyDesc")}
             />
           </div>
         </div>
@@ -139,95 +149,84 @@ export default async function HomePage() {
       {/* Pricing */}
       <section id="pricing" className="border-b border-border bg-muted/20">
         <div className="mx-auto max-w-6xl px-6 py-20">
-          <h2 className="text-center text-3xl font-bold tracking-tight">ราคาตาม ad spend ของคุณ</h2>
+          <h2 className="text-center text-3xl font-bold tracking-tight">{t("pricing.heading")}</h2>
           <p className="mt-3 text-center text-muted-foreground">
-            จ่ายตามที่คุณใช้จริง · ทุกแพ็กเกจรวม VAT 7% แล้ว · ยกเลิกได้ตลอดเวลา
+            {t("pricing.subheading")}
           </p>
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <PricingCard
               name="Starter"
               priceThb={1490}
-              suitableFor="ad spend < ฿10,000/เดือน"
-              bullets={[
-                "1 ad account",
-                "AI message 30 ข้อความ/วัน",
-                "Dashboard + AI Master",
-                "Customer Journey",
-              ]}
+              priceLabel={formatNumber(1490, locale)}
+              perMonth={t("pricing.perMonth")}
+              suitableFor={t("pricing.starterSuitable")}
+              bullets={starterBullets}
             />
             <PricingCard
               name="Growth"
               priceThb={3890}
-              suitableFor="ad spend ฿10k–฿30k/เดือน"
-              bullets={[
-                "3 ad accounts",
-                "AI 100 ข้อความ/วัน",
-                "ทุกฟีเจอร์ของ Starter",
-                "Custom Conversions",
-              ]}
+              priceLabel={formatNumber(3890, locale)}
+              perMonth={t("pricing.perMonth")}
+              suitableFor={t("pricing.growthSuitable")}
+              bullets={growthBullets}
+              recommendedBadge={t("pricing.recommendedBadge")}
               recommended
             />
             <PricingCard
               name="Pro"
               priceThb={10990}
-              suitableFor="ad spend ฿30k–฿100k/เดือน"
-              bullets={[
-                "10 ad accounts",
-                "AI 300 ข้อความ/วัน",
-                "ทุกฟีเจอร์ของ Growth",
-                "Audience Management",
-              ]}
+              priceLabel={formatNumber(10990, locale)}
+              perMonth={t("pricing.perMonth")}
+              suitableFor={t("pricing.proSuitable")}
+              bullets={proBullets}
             />
             <PricingCard
               name="Scale"
               priceThb={44990}
-              suitableFor="ad spend ฿100k–฿500k/เดือน"
-              bullets={[
-                "25 ad accounts",
-                "AI ไม่จำกัด",
-                "White-label Reports ฟรี",
-                "Priority Support",
-              ]}
+              priceLabel={formatNumber(44990, locale)}
+              perMonth={t("pricing.perMonth")}
+              suitableFor={t("pricing.scaleSuitable")}
+              bullets={scaleBullets}
             />
           </div>
 
           <div className="mt-12 rounded-xl border border-border bg-card p-6">
-            <h3 className="font-semibold">Add-ons (เปิด/ปิดได้ทุก tier)</h3>
+            <h3 className="font-semibold">{t("pricing.addonsHeading")}</h3>
             <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
               <li className="flex items-baseline gap-2">
                 <span className="text-cyan-600">·</span>
-                <span><b>Event SDK + Pixel Tracking</b> — ฿590/เดือน</span>
+                <span><b>{t("pricing.addon1Name")}</b> — {t("pricing.addon1Price")}</span>
               </li>
               <li className="flex items-baseline gap-2">
                 <span className="text-cyan-600">·</span>
-                <span><b>Extra Ad Account</b> — ฿190/account/เดือน</span>
+                <span><b>{t("pricing.addon2Name")}</b> — {t("pricing.addon2Price")}</span>
               </li>
               <li className="flex items-baseline gap-2">
                 <span className="text-cyan-600">·</span>
-                <span><b>White-label Reports</b> — ฿490/เดือน (ฟรีสำหรับ Scale+)</span>
+                <span><b>{t("pricing.addon3Name")}</b> — {t("pricing.addon3Price")}</span>
               </li>
               <li className="flex items-baseline gap-2">
                 <span className="text-cyan-600">·</span>
-                <span><b>Priority AI (Claude Opus)</b> — ฿890/เดือน</span>
+                <span><b>{t("pricing.addon4Name")}</b> — {t("pricing.addon4Price")}</span>
               </li>
             </ul>
             <p className="mt-5 text-xs text-muted-foreground">
-              ad spend &gt; ฿1,000,000/เดือน? <Link href="/contact" className="text-cyan-600 hover:underline">ติดต่อทีมขาย</Link> สำหรับแพ็กเกจ Enterprise
+              {t("pricing.enterpriseQuestion")} <Link href="/contact" className="text-cyan-600 hover:underline">{t("pricing.enterpriseCta")}</Link> {t("pricing.enterpriseSuffix")}
             </p>
           </div>
 
           <div className="mt-12 rounded-xl border border-cyan-200 bg-cyan-50 p-6 text-sm dark:border-cyan-900 dark:bg-cyan-950/30">
-            <h3 className="font-semibold text-cyan-900 dark:text-cyan-100">การชำระเงิน + คืนเงิน</h3>
-            <ul className="mt-3 space-y-1 text-cyan-900 dark:text-cyan-100">
-              <li>✓ ทดลองใช้ฟรี 7 วัน — บันทึกบัตรเครดิตล่วงหน้า, ไม่มีการเรียกเก็บระหว่างทดลอง</li>
-              <li>✓ เริ่มเก็บเงินอัตโนมัติในวันที่ 8 ถ้าไม่ได้ยกเลิก (มีอีเมลเตือนล่วงหน้า 3 ครั้ง)</li>
-              <li>✓ ขอคืนเงินภายใน 7 วันแรกของรอบบิล — คืนตามสัดส่วน (pro-rated)</li>
-              <li>✓ ยกเลิกการต่ออายุได้ตลอดเวลา · ใช้งานต่อได้จนสิ้นรอบบิล</li>
-              <li>✓ ชำระผ่าน Omise (PCI DSS Level 1) · รองรับ Visa, Mastercard, JCB, AMEX</li>
+            <h3 className="font-semibold text-cyan-900 dark:text-cyan-100">{t("pricing.payHeading")}</h3>
+            <ul className="mt-3 space-y-1.5 text-cyan-900 dark:text-cyan-100">
+              <li className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0" /><span>{t("pricing.pay1")}</span></li>
+              <li className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0" /><span>{t("pricing.pay2")}</span></li>
+              <li className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0" /><span>{t("pricing.pay3")}</span></li>
+              <li className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0" /><span>{t("pricing.pay4")}</span></li>
+              <li className="flex items-start gap-1.5"><Check className="mt-0.5 size-3.5 shrink-0" /><span>{t("pricing.pay5")}</span></li>
             </ul>
             <p className="mt-4 text-xs">
-              อ่านรายละเอียดเพิ่มที่ <Link href="/refund-policy" className="font-semibold underline-offset-2 hover:underline">นโยบายการคืนเงิน</Link>
-              {" · "}<Link href="/terms" className="font-semibold underline-offset-2 hover:underline">ข้อกำหนดการใช้บริการ</Link>
+              {t("pricing.payLinkPrefix")} <Link href="/refund-policy" className="font-semibold underline-offset-2 hover:underline">{t("pricing.payRefundLink")}</Link>
+              {" · "}<Link href="/terms" className="font-semibold underline-offset-2 hover:underline">{t("pricing.payTermsLink")}</Link>
             </p>
           </div>
         </div>
@@ -236,15 +235,15 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="border-b border-border">
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">พร้อมยิงแอดให้คม?</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t("cta.heading")}</h2>
           <p className="mt-3 text-muted-foreground">
-            สมัครฟรี 7 วัน · ไม่มีค่าสมัคร · ยกเลิกได้ตลอด
+            {t("cta.subtitle")}
           </p>
           <Link
             href="/signup"
             className={cn(buttonVariants({ size: "lg" }), "mt-8 min-w-[240px]")}
           >
-            เริ่มต้นฟรี 7 วัน
+            {t("cta.button")}
           </Link>
         </div>
       </section>
@@ -268,16 +267,21 @@ function FeatureCard({ icon: Icon, title, desc }: { icon: React.ElementType; tit
 
 function PricingCard({
   name,
-  priceThb,
+  priceLabel,
+  perMonth,
   suitableFor,
   bullets,
   recommended,
+  recommendedBadge,
 }: {
   name: string;
   priceThb: number;
+  priceLabel: string;
+  perMonth: string;
   suitableFor: string;
   bullets: string[];
   recommended?: boolean;
+  recommendedBadge?: string;
 }) {
   return (
     <div
@@ -286,15 +290,15 @@ function PricingCard({
         recommended ? "border-cyan-500 shadow-md" : "border-border",
       )}
     >
-      {recommended && (
+      {recommended && recommendedBadge && (
         <span className="absolute -top-2 left-4 rounded-full bg-cyan-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-          แนะนำ
+          {recommendedBadge}
         </span>
       )}
       <p className="text-lg font-bold">{name}</p>
       <p className="mt-2 text-3xl font-extrabold tracking-tight">
-        ฿{priceThb.toLocaleString("th-TH")}
-        <span className="ml-1 text-sm font-normal text-muted-foreground">/เดือน</span>
+        ฿{priceLabel}
+        <span className="ml-1 text-sm font-normal text-muted-foreground">{perMonth}</span>
       </p>
       <p className="mt-1.5 text-xs text-muted-foreground">{suitableFor}</p>
       <ul className="mt-4 space-y-1.5 text-xs">

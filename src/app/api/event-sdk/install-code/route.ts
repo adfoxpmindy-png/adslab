@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { generateSiteKey } from "@/lib/event-sdk/site-key";
 import { requireFeature, FeatureGateError, gateErrorToResponse } from "@/lib/billing/gate";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 /**
  * GET /api/event-sdk/install-code?tenantSlug=<slug>&metaAccountId=<act>&pixelId=<id>
@@ -26,13 +28,15 @@ export async function GET(request: Request) {
       { status: 400 },
     );
   }
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug);
+  const locale = await resolveUserLocale(session.userId);
 
   // Phase 9: Event SDK is a paid add-on. Block install-code endpoint
   // entirely so users see the upgrade prompt before they paste a snippet
   // that won't fire anything anyway.
   try {
-    await requireFeature(tenant.id, "event-sdk");
+    await requireFeature(tenant.id, "event-sdk", locale);
   } catch (err) {
     if (err instanceof FeatureGateError) return gateErrorToResponse(err);
     throw err;

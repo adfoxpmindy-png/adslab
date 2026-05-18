@@ -30,7 +30,7 @@ export const pauseCampaignTool = defineTool({
     required: ["campaignId"],
     additionalProperties: false,
   },
-  summarize: (input) => `หยุด campaign ${input.campaignId}`,
+  summarize: (input) => `Pause campaign ${input.campaignId}`,
   async handler(input, ctx) {
     const campaign = await prisma.metaCampaign.findFirst({
       where: {
@@ -40,7 +40,7 @@ export const pauseCampaignTool = defineTool({
       select: { id: true, name: true },
     });
     if (!campaign) {
-      return { error: `Campaign ${input.campaignId} ไม่พบใน tenant นี้` };
+      return { error: `Campaign ${input.campaignId} not found in this tenant` };
     }
     const result = await performCampaignAction({
       tenantId: ctx.tenantId,

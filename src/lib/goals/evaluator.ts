@@ -129,7 +129,7 @@ export function formatKpi(kpi: GoalKpi, value: number): string {
       return `฿${value.toLocaleString("th-TH", { maximumFractionDigits: 0 })}`;
     case "CONVERSIONS":
     case "REACH":
-      return value.toLocaleString("th-TH");
+      return value.toLocaleString("en-US");
     case "FREQUENCY":
       return value.toFixed(2);
   }

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
+import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { getPageAccessToken } from "@/lib/meta/pages";
 import { graphFetch } from "@/lib/meta/graph-api";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 type RawPost = {
   id: string;
@@ -29,6 +32,7 @@ export async function GET(
   if (!tenantSlug) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug);
 
   const pageToken = await getPageAccessToken(tenant.id, pageId);
@@ -65,11 +69,10 @@ export async function GET(
     }
   }
 
+  const locale = await resolveUserLocale(session.userId);
+  const t = await getTranslations({ locale, namespace: "api.pagePosts" });
   return NextResponse.json(
-    {
-      error:
-        "Page นี้ยังไม่ได้เปิด ads — เปิดบน Meta Ads Manager ก่อน (Page Settings → Advertising) หรือใช้ Post ID/URL วางด้านล่าง",
-    },
+    { error: t("adsNotEnabled") },
     { status: 502 },
   );
 }

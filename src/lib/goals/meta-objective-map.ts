@@ -78,24 +78,14 @@ export function mapMetaObjective(raw: string | null | undefined): GoalObjective 
 }
 
 /**
- * Human-readable Thai label for a GoalObjective. Used in UI + AI report
- * so the same vocabulary appears everywhere.
+ * Localized label for a GoalObjective. Used in UI + AI report so the
+ * same vocabulary appears everywhere. Caller passes a translator scoped
+ * to `pages.goals.objective` (e.g. `useTranslations("pages.goals.objective")`
+ * or `getTranslations({ locale, namespace: "pages.goals.objective" })`).
  */
-export function objectiveLabelTh(objective: GoalObjective): string {
-  switch (objective) {
-    case "AWARENESS":
-      return "Awareness (สร้างการรับรู้)";
-    case "ENGAGEMENT":
-      return "Engagement (มีส่วนร่วม)";
-    case "TRAFFIC":
-      return "Traffic (เข้าเว็บ/หน้า)";
-    case "LEADS":
-      return "Leads (เก็บ lead/แชท)";
-    case "SALES":
-      return "Sales (ซื้อ/Conversion)";
-    case "APP_PROMOTION":
-      return "App Promotion (ติดตั้งแอป)";
-    case "STORE_VISITS":
-      return "Store Visits (เดินเข้าหน้าร้าน)";
-  }
+export function objectiveLabel(
+  objective: GoalObjective,
+  t: (key: GoalObjective) => string,
+): string {
+  return t(objective);
 }

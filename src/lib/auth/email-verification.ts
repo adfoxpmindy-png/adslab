@@ -1,8 +1,11 @@
 import { randomUUID } from "node:crypto";
+import { getTranslations } from "next-intl/server";
 
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email/send";
 import { verifyEmailTemplate } from "@/lib/email/templates/verify-email";
+import { DEFAULT_LOCALE } from "@/i18n/locales";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 export type VerifyResult =
   | { status: "success"; userId: string }
@@ -53,9 +56,16 @@ export async function sendVerificationEmail(userId: string): Promise<
     where: { id: userId },
     select: { id: true, email: true, name: true, emailVerifiedAt: true },
   });
-  if (!user) return { ok: false, error: "ไม่พบบัญชีผู้ใช้" };
+  // If the user row is missing we can't resolve their locale, so use the
+  // default — only happens when the session is stale anyway.
+  if (!user) {
+    const t = await getTranslations({ locale: DEFAULT_LOCALE, namespace: "api.emailVerification" });
+    return { ok: false, error: t("userNotFound") };
+  }
+  const locale = await resolveUserLocale(user.id);
+  const t = await getTranslations({ locale, namespace: "api.emailVerification" });
   if (user.emailVerifiedAt) {
-    return { ok: false, error: "อีเมลของคุณยืนยันเรียบร้อยแล้ว" };
+    return { ok: false, error: t("alreadyVerified") };
   }
 
   const token = randomUUID();
@@ -67,7 +77,7 @@ export async function sendVerificationEmail(userId: string): Promise<
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const verifyUrl = `${appUrl}/verify-email?token=${token}`;
-  const template = verifyEmailTemplate({ name: user.name, verifyUrl });
+  const template = await verifyEmailTemplate({ name: user.name, verifyUrl, locale });
 
   const result = await sendEmail({
     to: user.email,

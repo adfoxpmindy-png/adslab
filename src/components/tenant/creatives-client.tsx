@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { ImagePlus, Loader2, Search, Trash2, Upload, Video, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ export function CreativesClient({
   initialItems,
   initialNextCursor,
 }: Props) {
+  const t = useTranslations("pages.creatives");
   const [items, setItems] = useState<CreativeListItem[]>(initialItems);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [kindFilter, setKindFilter] = useState<"all" | "image" | "video">("all");
@@ -58,11 +60,11 @@ export function CreativesClient({
       setItems((prev) => [...prev, ...data.items]);
       setNextCursor(data.nextCursor);
     } catch (err) {
-      toast.error(`โหลดเพิ่มไม่สำเร็จ: ${(err as Error).message}`);
+      toast.error(t("loadMoreFailed", { message: (err as Error).message }));
     } finally {
       setLoadingMore(false);
     }
-  }, [nextCursor, loadingMore, tenantSlug]);
+  }, [nextCursor, loadingMore, tenantSlug, t]);
 
   const onUploaded = useCallback((newItem: CreativeListItem) => {
     setItems((prev) => [newItem, ...prev]);
@@ -70,7 +72,7 @@ export function CreativesClient({
 
   const handleDelete = useCallback(
     async (id: string) => {
-      if (!confirm("ลบ creative นี้? Ad ที่ใช้อยู่จะยังคงอยู่ใน Meta")) return;
+      if (!confirm(t("deleteConfirm"))) return;
       try {
         const res = await fetch(
           `/api/creatives/${id}?tenantSlug=${encodeURIComponent(tenantSlug)}`,
@@ -81,12 +83,12 @@ export function CreativesClient({
           throw new Error(body.error ?? `HTTP ${res.status}`);
         }
         setItems((prev) => prev.filter((it) => it.id !== id));
-        toast.success("ลบแล้ว");
+        toast.success(t("deleted"));
       } catch (err) {
-        toast.error(`ลบไม่สำเร็จ: ${(err as Error).message}`);
+        toast.error(t("deleteFailed", { message: (err as Error).message }));
       }
     },
-    [tenantSlug],
+    [tenantSlug, t],
   );
 
   return (
@@ -98,15 +100,15 @@ export function CreativesClient({
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="ค้นหาตามชื่อ..."
+            placeholder={t("searchPlaceholder")}
             className="pl-9"
           />
         </div>
         <div className="inline-flex rounded-xl border border-border bg-card p-1 shadow-card">
           {[
-            { value: "all" as const, label: "ทั้งหมด" },
-            { value: "image" as const, label: "ภาพ" },
-            { value: "video" as const, label: "วิดีโอ" },
+            { value: "all" as const, label: t("filterAll") },
+            { value: "image" as const, label: t("filterImage") },
+            { value: "video" as const, label: t("filterVideo") },
           ].map((opt) => (
             <button
               key={opt.value}
@@ -125,7 +127,7 @@ export function CreativesClient({
         {canEdit && (
           <BrandButton onClick={() => setUploadOpen(true)}>
             <Upload className="size-4" />
-            อัปโหลด
+            {t("upload")}
           </BrandButton>
         )}
       </div>
@@ -134,17 +136,17 @@ export function CreativesClient({
       {filtered.length === 0 ? (
         <EmptyState
           icon={ImagePlus}
-          title={items.length === 0 ? "ยังไม่มี creative ในคลัง" : "ไม่พบ creative ที่ตรงเงื่อนไข"}
+          title={items.length === 0 ? t("emptyAllTitle") : t("emptyFilteredTitle")}
           description={
             items.length === 0
-              ? "อัปโหลดรูป/วิดีโอเพื่อใช้ในแคมเปญ — Campaign Builder จะดึงจากคลังนี้ได้เลย"
-              : "ลองล้างฟิลเตอร์หรืออัปโหลดใหม่"
+              ? t("emptyAllDescription")
+              : t("emptyFilteredDescription")
           }
           action={
             canEdit ? (
               <BrandButton onClick={() => setUploadOpen(true)} size="lg">
                 <Upload className="size-4" />
-                อัปโหลด
+                {t("upload")}
               </BrandButton>
             ) : null
           }
@@ -170,7 +172,7 @@ export function CreativesClient({
                 className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-accent disabled:opacity-50"
               >
                 {loadingMore ? <Loader2 className="size-4 animate-spin" /> : null}
-                โหลดเพิ่ม
+                {t("loadMore")}
               </button>
             </div>
           )}
@@ -197,6 +199,7 @@ function CreativeCard({
   canDelete: boolean;
   onDelete: () => void;
 }) {
+  const t = useTranslations("pages.creatives");
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover">
       <div className="aspect-square w-full bg-muted">
@@ -227,7 +230,7 @@ function CreativeCard({
         <button
           type="button"
           onClick={onDelete}
-          aria-label="ลบ"
+          aria-label={t("delete")}
           className="absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-destructive group-hover:opacity-100"
         >
           <Trash2 className="size-3.5" />
@@ -246,6 +249,7 @@ function UploadModal({
   onClose: () => void;
   onUploaded: (item: CreativeListItem) => void;
 }) {
+  const t = useTranslations("pages.creatives");
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
@@ -285,7 +289,7 @@ function UploadModal({
             createdAt: new Date().toISOString(),
           });
         } catch (err) {
-          toast.error(`อัปโหลด ${file.name} ไม่สำเร็จ: ${(err as Error).message}`);
+          toast.error(t("uploadFileFailed", { name: file.name, message: (err as Error).message }));
         }
         setProgress({ done: i + 1, total: files.length });
       }
@@ -293,9 +297,9 @@ function UploadModal({
       setUploading(false);
       setProgress(null);
       onClose();
-      toast.success(`อัปโหลด ${files.length} ไฟล์เสร็จแล้ว`);
+      toast.success(t("uploadDoneCount", { count: files.length }));
     },
-    [tenantSlug, onUploaded, onClose],
+    [tenantSlug, onUploaded, onClose, t],
   );
 
   return (
@@ -308,16 +312,16 @@ function UploadModal({
       <div className="fixed left-1/2 top-1/2 z-50 w-[92vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-6 shadow-2xl">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-bold">อัปโหลด creative</h2>
+            <h2 className="text-lg font-bold">{t("uploadModalTitle")}</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              รองรับ jpg, png, webp, gif, mp4 (สูงสุด 10MB ต่อไฟล์)
+              {t("uploadModalHint")}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={uploading}
-            aria-label="ปิด"
+            aria-label={t("close")}
             className="-mr-2 -mt-2 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent disabled:opacity-50"
           >
             <X className="size-4" />
@@ -343,15 +347,15 @@ function UploadModal({
             <>
               <Loader2 className="size-8 animate-spin text-violet-600" />
               <p className="text-sm font-medium">
-                กำลังอัปโหลด {progress?.done ?? 0} / {progress?.total ?? 0}
+                {t("uploadingProgress", { done: progress?.done ?? 0, total: progress?.total ?? 0 })}
               </p>
             </>
           ) : (
             <>
               <Upload className="size-8 text-muted-foreground" />
-              <p className="text-sm font-medium">เลือกไฟล์ (เลือกได้หลายไฟล์)</p>
+              <p className="text-sm font-medium">{t("chooseFiles")}</p>
               <p className="text-[11px] text-muted-foreground">
-                หรือลากวางที่นี่ได้
+                {t("orDragHere")}
               </p>
             </>
           )}

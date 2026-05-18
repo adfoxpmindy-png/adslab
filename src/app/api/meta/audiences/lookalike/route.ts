@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { getFreshAccessToken } from "@/lib/meta/client";
 import { graphFetch } from "@/lib/meta/graph-api";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 const bodySchema = z.object({
   metaAccountId: z.string().regex(/^act_/),
@@ -105,9 +107,11 @@ export async function POST(request: Request) {
       where: { tenantId: tenant.id, scope: `audiences:${metaAccountId}` },
     });
 
+    const locale = await resolveUserLocale(session.userId);
+    const t = await getTranslations({ locale, namespace: "api.audiences" });
     return NextResponse.json({
       audience: { id: res.id, name },
-      note: "Meta จะคำนวณ Lookalike ภายใน ~6 ชั่วโมง — size จะเริ่มจาก 0 แล้วเพิ่มขึ้น",
+      note: t("lookalikeNote"),
     });
   } catch (err) {
     const e = err as Error & { userMessage?: string };

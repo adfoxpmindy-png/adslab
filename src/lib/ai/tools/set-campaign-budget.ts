@@ -55,9 +55,9 @@ export const setCampaignBudgetTool = defineTool({
   },
   summarize: (input) => {
     if (input.dailyBudgetThb !== undefined) {
-      return `เปลี่ยน daily budget ของ ${input.campaignId} เป็น ฿${input.dailyBudgetThb.toLocaleString("th-TH")}`;
+      return `Set daily budget of ${input.campaignId} to ฿${input.dailyBudgetThb.toLocaleString("en-US")}`;
     }
-    return `เปลี่ยน lifetime budget ของ ${input.campaignId} เป็น ฿${input.lifetimeBudgetThb?.toLocaleString("th-TH")}`;
+    return `Set lifetime budget of ${input.campaignId} to ฿${input.lifetimeBudgetThb?.toLocaleString("en-US")}`;
   },
   async handler(input, ctx) {
     const campaign = await prisma.metaCampaign.findFirst({
@@ -67,7 +67,7 @@ export const setCampaignBudgetTool = defineTool({
       },
       select: { id: true, name: true },
     });
-    if (!campaign) return { error: `Campaign ${input.campaignId} ไม่พบ` };
+    if (!campaign) return { error: `Campaign ${input.campaignId} not found` };
     const result = await performCampaignAction({
       tenantId: ctx.tenantId,
       userId: ctx.userId,

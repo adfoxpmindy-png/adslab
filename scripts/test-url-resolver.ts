@@ -9,6 +9,7 @@ import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { decrypt } from "../src/lib/crypto/aes";
 import { resolveAllUrls, extractUrls } from "../src/lib/meta/url-resolver";
+import { DEFAULT_LOCALE } from "../src/i18n/locales";
 
 const PROMPT = `บูสต์วีดีโอให้หน่อยครัย เป็น Views โพสละ 1250 บาท ให้จบพรุ่งนี้ 10.00 น.
 
@@ -39,7 +40,7 @@ async function main() {
 
   // Step 2: Resolve each
   console.log("\n→ Resolving via Meta Graph API...\n");
-  const { resolved, errors } = await resolveAllUrls({ urls, accessToken });
+  const { resolved, errors } = await resolveAllUrls({ urls, accessToken, locale: DEFAULT_LOCALE });
 
   for (const r of resolved) {
     console.log(`✓ ${r.originalUrl}`);

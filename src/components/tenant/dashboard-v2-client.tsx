@@ -19,6 +19,8 @@ import {
   YAxis,
 } from "recharts";
 
+import { useLocale } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 import {
   DataTableBody,
@@ -35,14 +37,10 @@ import {
 } from "@/components/ui-system";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatDateTime } from "@/lib/i18n/format";
 import type { DashboardPayload, DateRangeKey, ParsedCampaignInsight, ParsedInsight } from "@/lib/meta/insights";
 
-const PRESETS: Array<{ key: DateRangeKey; label: string }> = [
-  { key: "today", label: "วันนี้" },
-  { key: "yesterday", label: "เมื่อวาน" },
-  { key: "last_7d", label: "7 วันล่าสุด" },
-  { key: "last_30d", label: "30 วันล่าสุด" },
-];
+const PRESET_KEYS: DateRangeKey[] = ["today", "yesterday", "last_7d", "last_30d"];
 
 type Props = {
   tenantSlug: string;
@@ -61,6 +59,8 @@ export function DashboardV2Client({
   initialIsStale,
   canRefresh,
 }: Props) {
+  const tPages = useTranslations("pages.dashboard");
+  const locale = useLocale();
   const [range, setRange] = useState<DateRangeKey>(initialRange);
   const [payload, setPayload] = useState<DashboardPayload | null>(initialPayload);
   const [loading, setLoading] = useState(false);
@@ -75,16 +75,17 @@ export function DashboardV2Client({
         if (!res.ok) throw new Error(data.error ?? "Fetch failed");
         setPayload(data);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "โหลดข้อมูลไม่สำเร็จ");
+        toast.error(err instanceof Error ? err.message : tPages("toast.fetchFailed"));
       } finally {
         setLoading(false);
       }
     },
-    [tenantSlug],
+    [tenantSlug, tPages],
   );
 
   useEffect(() => {
     if (range === initialRange && payload?.range === initialRange) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchForRange triggers async fetch; setState happens after await, not synchronously
     void fetchForRange(range);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [range]);
@@ -100,15 +101,14 @@ export function DashboardV2Client({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Refresh failed");
       setPayload(data);
-      toast.success("ซิงค์ข้อมูลใหม่เรียบร้อย");
+      toast.success(tPages("toast.syncSuccess"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Refresh failed");
+      toast.error(err instanceof Error ? err.message : tPages("toast.refreshFailed"));
     } finally {
       setRefreshing(false);
     }
   }
 
-  const tPages = useTranslations("pages.dashboard");
   const fromCache = !loading && (payload === initialPayload ? initialFromCache : false);
   const isStale = !loading && (payload === initialPayload ? initialIsStale : false);
 
@@ -121,18 +121,18 @@ export function DashboardV2Client({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1.5 rounded-full border border-border bg-card p-1 shadow-card">
             <Calendar className="ml-2 size-3.5 text-muted-foreground" />
-            {PRESETS.map((p) => (
+            {PRESET_KEYS.map((key) => (
               <button
-                key={p.key}
-                onClick={() => setRange(p.key)}
+                key={key}
+                onClick={() => setRange(key)}
                 className={cn(
                   "rounded-full px-3 py-1.5 text-xs font-medium transition-all",
-                  range === p.key
+                  range === key
                     ? "bg-brand-gradient text-white shadow-card"
                     : "text-muted-foreground hover:bg-accent hover:text-foreground",
                 )}
               >
-                {p.label}
+                {tPages(`presets.${key}` as Parameters<typeof tPages>[0])}
               </button>
             ))}
           </div>
@@ -140,9 +140,9 @@ export function DashboardV2Client({
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             {payload?.fetchedAt && (
               <span>
-                ซิงค์ {new Date(payload.fetchedAt).toLocaleString("th-TH")}
-                {isStale && <span className="ml-1 text-amber-600 dark:text-amber-400">(stale)</span>}
-                {fromCache && !isStale && <span className="ml-1">(cached)</span>}
+                {tPages("syncedAt", { when: formatDateTime(payload.fetchedAt, locale) })}
+                {isStale && <span className="ml-1 text-amber-600 dark:text-amber-400">{tPages("stale")}</span>}
+                {fromCache && !isStale && <span className="ml-1">{tPages("cached")}</span>}
               </span>
             )}
             {canRefresh && (
@@ -154,7 +154,7 @@ export function DashboardV2Client({
                 className="gap-1.5"
               >
                 <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
-                ซิงค์
+                {tPages("syncBtn")}
               </Button>
             )}
           </div>
@@ -175,6 +175,8 @@ export function DashboardV2Client({
 // =============================================================================
 
 function DashboardContent({ payload }: { payload: DashboardPayload }) {
+  const tPages = useTranslations("pages.dashboard");
+  const locale = useLocale();
   const { summary, accounts } = payload;
 
   // Flatten campaigns across all accounts for top-performers table + counts.
@@ -207,25 +209,25 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard
-          label="ค่าใช้จ่ายรวม"
-          value={formatThb(summary.spendThb)}
+          label={tPages("kpi.spend")}
+          value={formatThb(summary.spendThb, locale)}
           icon={CircleDollarSign}
           tint="brand"
         />
         <KpiCard
-          label="ยอดขายรวม"
-          value={formatThb(summary.purchaseValueThb)}
+          label={tPages("kpi.sales")}
+          value={formatThb(summary.purchaseValueThb, locale)}
           icon={ShoppingCart}
           tint="emerald"
         />
         <KpiCard
-          label="ROAS (รวม)"
+          label={tPages("kpi.roas")}
           value={summary.roas > 0 ? `${summary.roas.toFixed(2)}x` : "—"}
           icon={TrendingUp}
           tint="sky"
         />
         <KpiCard
-          label="คลิก (ทั้งหมด)"
+          label={tPages("kpi.clicks")}
           value={formatNumber(summary.clicks)}
           icon={MousePointerClick}
           tint="amber"
@@ -235,8 +237,8 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
       {isEmpty ? (
         <EmptyState
           icon={TrendingUp}
-          title="ยังไม่มีข้อมูล campaign ในช่วงที่เลือก"
-          description="ลองเลือกช่วงเวลาอื่น หรือไปสร้าง campaign ใหม่"
+          title={tPages("empty.title")}
+          description={tPages("empty.description")}
         />
       ) : (
         <>
@@ -245,9 +247,9 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-card lg:col-span-2">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-semibold tracking-tight">แนวโน้มประสิทธิภาพ</h3>
+                  <h3 className="text-base font-semibold tracking-tight">{tPages("trend.title")}</h3>
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    {payload.daily ? "ค่าใช้จ่าย, ยอดขาย, ROAS รายวัน" : "เปรียบเทียบตามบัญชี"}
+                    {payload.daily ? tPages("trend.subtitleDaily") : tPages("trend.subtitleAccount")}
                   </p>
                 </div>
               </div>
@@ -259,8 +261,8 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-              <h3 className="text-base font-semibold tracking-tight">ประสิทธิภาพตามแพลตฟอร์ม</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">สัดส่วน spend แต่ละ platform</p>
+              <h3 className="text-base font-semibold tracking-tight">{tPages("platform.title")}</h3>
+              <p className="mt-0.5 text-xs text-muted-foreground">{tPages("platform.subtitle")}</p>
               <PlatformDonut spendThb={summary.spendThb} />
             </div>
           </div>
@@ -268,35 +270,35 @@ function DashboardContent({ payload }: { payload: DashboardPayload }) {
           {/* Activity tiles */}
           <div className="grid gap-4 md:grid-cols-3">
             <ActivityTile
-              label="แคมเปญที่ใช้งานอยู่"
+              label={tPages("tile.campaigns")}
               total={counts.total}
               breakdown={[
-                { label: "กำลังใช้งาน", count: counts.active, color: "bg-success" },
-                { label: "หยุดชั่วคราว", count: counts.paused, color: "bg-warning" },
-                { label: "ปิดการใช้งาน", count: counts.closed, color: "bg-muted-foreground" },
+                { label: tPages("tile.active"), count: counts.active, color: "bg-success" },
+                { label: tPages("tile.paused"), count: counts.paused, color: "bg-warning" },
+                { label: tPages("tile.closed"), count: counts.closed, color: "bg-muted-foreground" },
               ]}
             />
             <ActivityTile
-              label="ad accounts"
+              label={tPages("tile.accounts")}
               total={accounts.length}
               breakdown={[
                 {
-                  label: "active",
+                  label: tPages("tile.accountActive"),
                   count: accounts.filter((a) => a.accountStatus === 1).length,
                   color: "bg-success",
                 },
                 {
-                  label: "อื่นๆ",
+                  label: tPages("tile.accountOther"),
                   count: accounts.filter((a) => a.accountStatus !== 1).length,
                   color: "bg-muted-foreground",
                 },
               ]}
             />
             <ActivityTile
-              label="conversions ทั้งหมด"
+              label={tPages("tile.conversions")}
               total={summary.conversions}
               breakdown={[
-                { label: "purchases", count: Math.round(summary.conversions), color: "bg-info" },
+                { label: tPages("tile.purchases"), count: Math.round(summary.conversions), color: "bg-info" },
               ]}
               hideZero
             />
@@ -319,6 +321,7 @@ function DailyTrendChart({
 }: {
   series: Array<{ date: string; spendThb: number; salesThb: number; roas: number }>;
 }) {
+  const tPages = useTranslations("pages.dashboard");
   const data = series.map((d) => ({
     date: d.date.slice(5), // MM-DD
     spend: Math.round(d.spendThb),
@@ -355,7 +358,7 @@ function DailyTrendChart({
           yAxisId="left"
           type="monotone"
           dataKey="spend"
-          name="ค่าใช้จ่าย"
+          name={tPages("chart.spend")}
           stroke="oklch(0.58 0.20 270)"
           strokeWidth={2.5}
           dot={{ r: 2 }}
@@ -364,7 +367,7 @@ function DailyTrendChart({
           yAxisId="left"
           type="monotone"
           dataKey="sales"
-          name="ยอดขาย"
+          name={tPages("chart.sales")}
           stroke="oklch(0.72 0.16 155)"
           strokeWidth={2.5}
           dot={{ r: 2 }}
@@ -373,7 +376,7 @@ function DailyTrendChart({
           yAxisId="right"
           type="monotone"
           dataKey="roas"
-          name="ROAS"
+          name={tPages("chart.roas")}
           stroke="oklch(0.72 0.18 340)"
           strokeWidth={2}
           strokeDasharray="3 3"
@@ -389,6 +392,7 @@ function DailyTrendChart({
 // =============================================================================
 
 function PerAccountBarChart({ accounts }: { accounts: ParsedInsight[] }) {
+  const tPages = useTranslations("pages.dashboard");
   const data = useMemo(
     () =>
       [...accounts]
@@ -407,7 +411,7 @@ function PerAccountBarChart({ accounts }: { accounts: ParsedInsight[] }) {
   if (data.length === 0) {
     return (
       <div className="flex h-72 items-center justify-center text-sm text-muted-foreground">
-        ไม่มีข้อมูลในช่วงนี้
+        {tPages("chart.noData")}
       </div>
     );
   }
@@ -430,7 +434,7 @@ function PerAccountBarChart({ accounts }: { accounts: ParsedInsight[] }) {
         <Line
           type="monotone"
           dataKey="spend"
-          name="ค่าใช้จ่าย"
+          name={tPages("chart.spend")}
           stroke="oklch(0.58 0.20 270)"
           strokeWidth={2.5}
           dot={{ r: 3 }}
@@ -438,7 +442,7 @@ function PerAccountBarChart({ accounts }: { accounts: ParsedInsight[] }) {
         <Line
           type="monotone"
           dataKey="sales"
-          name="ยอดขาย"
+          name={tPages("chart.sales")}
           stroke="oklch(0.72 0.16 155)"
           strokeWidth={2.5}
           dot={{ r: 3 }}
@@ -453,6 +457,8 @@ function PerAccountBarChart({ accounts }: { accounts: ParsedInsight[] }) {
 // =============================================================================
 
 function PlatformDonut({ spendThb }: { spendThb: number }) {
+  const tPages = useTranslations("pages.dashboard");
+  const locale = useLocale();
   // Currently only Meta is connected. As Google/TikTok come online, fetch
   // breakdown from a server endpoint and feed in here.
   const platforms = [
@@ -467,7 +473,7 @@ function PlatformDonut({ spendThb }: { spendThb: number }) {
   if (total === 0) {
     return (
       <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-        ยังไม่มี spend
+        {tPages("platform.noSpend")}
       </div>
     );
   }
@@ -493,8 +499,8 @@ function PlatformDonut({ spendThb }: { spendThb: number }) {
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">ค่าใช้จ่ายรวม</p>
-          <p className="text-base font-bold tabular-nums">{formatThb(total)}</p>
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{tPages("platform.totalSpend")}</p>
+          <p className="text-base font-bold tabular-nums">{formatThb(total, locale)}</p>
         </div>
       </div>
       <ul className="space-y-2">
@@ -509,7 +515,7 @@ function PlatformDonut({ spendThb }: { spendThb: number }) {
               <span className={cn("flex-1", p.value === 0 && "text-muted-foreground")}>
                 {p.name}
               </span>
-              <span className="tabular-nums text-muted-foreground">{formatThb(p.value)}</span>
+              <span className="tabular-nums text-muted-foreground">{formatThb(p.value, locale)}</span>
               <span className="w-12 text-right tabular-nums">{pct.toFixed(1)}%</span>
             </li>
           );
@@ -563,24 +569,26 @@ function TopCampaignsTable({
 }: {
   campaigns: Array<ParsedCampaignInsight & { accountName: string }>;
 }) {
+  const tPages = useTranslations("pages.dashboard");
+  const locale = useLocale();
   if (campaigns.length === 0) return null;
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold tracking-tight">แคมเปญที่มีประสิทธิภาพสูงสุด</h3>
-        <span className="text-xs text-muted-foreground">5 อันดับแรกตาม spend</span>
+        <h3 className="text-base font-semibold tracking-tight">{tPages("top.title")}</h3>
+        <span className="text-xs text-muted-foreground">{tPages("top.subtitle")}</span>
       </div>
       <DataTableShell>
         <DataTableHead>
           <DataTableHeadRow>
-            <DataTableHeadCell>แคมเปญ</DataTableHeadCell>
-            <DataTableHeadCell className="text-right">ค่าใช้จ่าย</DataTableHeadCell>
-            <DataTableHeadCell className="text-right">ยอดขาย</DataTableHeadCell>
+            <DataTableHeadCell>{tPages("top.campaign")}</DataTableHeadCell>
+            <DataTableHeadCell className="text-right">{tPages("top.spend")}</DataTableHeadCell>
+            <DataTableHeadCell className="text-right">{tPages("top.sales")}</DataTableHeadCell>
             <DataTableHeadCell className="text-right">ROAS</DataTableHeadCell>
-            <DataTableHeadCell className="text-right">คลิก</DataTableHeadCell>
+            <DataTableHeadCell className="text-right">{tPages("top.clicks")}</DataTableHeadCell>
             <DataTableHeadCell className="text-right">CTR</DataTableHeadCell>
             <DataTableHeadCell className="text-right">CPC</DataTableHeadCell>
-            <DataTableHeadCell>สถานะ</DataTableHeadCell>
+            <DataTableHeadCell>{tPages("top.status")}</DataTableHeadCell>
           </DataTableHeadRow>
         </DataTableHead>
         <DataTableBody>
@@ -596,14 +604,14 @@ function TopCampaignsTable({
                   </p>
                 </div>
               </DataTableCell>
-              <DataTableCell numeric>{formatThb(c.spend)}</DataTableCell>
-              <DataTableCell numeric>{formatThb(c.purchaseValue)}</DataTableCell>
+              <DataTableCell numeric>{formatThb(c.spend, locale)}</DataTableCell>
+              <DataTableCell numeric>{formatThb(c.purchaseValue, locale)}</DataTableCell>
               <DataTableCell numeric className="font-semibold">
                 <RoasCell value={c.roas} />
               </DataTableCell>
               <DataTableCell numeric>{formatNumber(c.clicks)}</DataTableCell>
               <DataTableCell numeric>{c.ctr.toFixed(2)}%</DataTableCell>
-              <DataTableCell numeric>{formatThb(c.cpc)}</DataTableCell>
+              <DataTableCell numeric>{formatThb(c.cpc, locale)}</DataTableCell>
               <DataTableCell>
                 <CampaignStatus status={c.effectiveStatus} />
               </DataTableCell>
@@ -622,9 +630,10 @@ function RoasCell({ value }: { value: number }) {
 }
 
 function CampaignStatus({ status }: { status: string }) {
-  if (status === "ACTIVE") return <StatusBadge variant="active">กำลังใช้งาน</StatusBadge>;
-  if (status === "PAUSED") return <StatusBadge variant="paused">หยุดชั่วคราว</StatusBadge>;
-  return <StatusBadge variant="closed">ปิดการใช้งาน</StatusBadge>;
+  const tStatus = useTranslations("status");
+  if (status === "ACTIVE") return <StatusBadge variant="active">{tStatus("activeAlt")}</StatusBadge>;
+  if (status === "PAUSED") return <StatusBadge variant="paused">{tStatus("pausedAlt")}</StatusBadge>;
+  return <StatusBadge variant="closed">{tStatus("closed")}</StatusBadge>;
 }
 
 // =============================================================================
@@ -659,15 +668,10 @@ function DashboardSkeleton() {
 // Formatters
 // =============================================================================
 
-const thbFormatter = new Intl.NumberFormat("th-TH", {
-  style: "currency",
-  currency: "THB",
-  maximumFractionDigits: 0,
-});
 const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
-function formatThb(value: number): string {
-  return thbFormatter.format(Math.round(value));
+function formatThb(value: number, locale: string): string {
+  return formatCurrency(Math.round(value), locale);
 }
 function formatNumber(value: number): string {
   return numberFormatter.format(Math.round(value));

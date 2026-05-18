@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle2, ExternalLink, RefreshCw, Unplug } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MetaIcon } from "@/components/icons/meta";
+import { formatDate, formatDateTime } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 export type MetaConnectionData =
@@ -40,6 +42,7 @@ type Props = {
 };
 
 export function MetaConnectionCard({ tenantSlug, role, data, flash }: Props) {
+  const t = useTranslations("metaConnection");
   const router = useRouter();
   const [pending, setPending] = useState<null | "sync" | "disconnect">(null);
   const isOwner = role === "OWNER";
@@ -50,11 +53,11 @@ export function MetaConnectionCard({ tenantSlug, role, data, flash }: Props) {
     try {
       const res = await fetch(`/api/meta/sync?tenantSlug=${tenantSlug}`, { method: "POST" });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Sync failed");
-      toast.success(`ซิงค์เรียบร้อย — ${body.accountCount} ad accounts`);
+      if (!res.ok) throw new Error(body.error ?? t("syncFailedDefault"));
+      toast.success(t("syncSuccess", { count: body.accountCount }));
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Sync failed");
+      toast.error(err instanceof Error ? err.message : t("syncFailedDefault"));
     } finally {
       setPending(null);
     }
@@ -62,18 +65,18 @@ export function MetaConnectionCard({ tenantSlug, role, data, flash }: Props) {
 
   async function handleDisconnect() {
     if (pending) return;
-    if (!confirm("ต้องการยกเลิกการเชื่อมต่อ Meta หรือไม่? ข้อมูล cached จะถูกลบ")) return;
+    if (!confirm(t("disconnectConfirm"))) return;
     setPending("disconnect");
     try {
       const res = await fetch(`/api/meta/disconnect?tenantSlug=${tenantSlug}`, { method: "POST" });
       if (!res.ok) {
         const body = await res.json();
-        throw new Error(body.error ?? "Disconnect failed");
+        throw new Error(body.error ?? t("disconnectFailedDefault"));
       }
-      toast.success("ยกเลิกการเชื่อมต่อแล้ว");
+      toast.success(t("disconnectSuccess"));
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Disconnect failed");
+      toast.error(err instanceof Error ? err.message : t("disconnectFailedDefault"));
     } finally {
       setPending(null);
     }
@@ -84,13 +87,13 @@ export function MetaConnectionCard({ tenantSlug, role, data, flash }: Props) {
       {flash.success && (
         <Alert>
           <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
-          <AlertDescription>เชื่อมต่อ Meta สำเร็จ</AlertDescription>
+          <AlertDescription>{t("flashSuccess")}</AlertDescription>
         </Alert>
       )}
       {flash.error && (
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
-          <AlertDescription>เชื่อมต่อ Meta ล้มเหลว: {flash.error}</AlertDescription>
+          <AlertDescription>{t("flashError", { error: flash.error })}</AlertDescription>
         </Alert>
       )}
 
@@ -115,15 +118,16 @@ export function MetaConnectionCard({ tenantSlug, role, data, flash }: Props) {
 }
 
 function DisconnectedView({ tenantSlug, isOwner }: { tenantSlug: string; isOwner: boolean }) {
+  const t = useTranslations("metaConnection");
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-8 text-center">
       <div className="flex size-12 items-center justify-center rounded-full bg-[#1877F2]/10">
         <MetaIcon className="size-6 text-[#1877F2]" />
       </div>
       <div>
-        <h3 className="text-base font-semibold">ยังไม่ได้เชื่อมต่อ Meta</h3>
+        <h3 className="text-base font-semibold">{t("notConnectedTitle")}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          เชื่อมต่อเพื่อให้ AdsLab อ่านข้อมูล ad accounts และเริ่ม optimize
+          {t("notConnectedBody")}
         </p>
       </div>
       {isOwner ? (
@@ -132,11 +136,11 @@ function DisconnectedView({ tenantSlug, isOwner }: { tenantSlug: string; isOwner
           className={cn(buttonVariants({ size: "lg" }), "gap-2 bg-[#1877F2] text-white hover:bg-[#166FE5]")}
         >
           <MetaIcon className="size-4" />
-          เชื่อมต่อกับ Meta
+          {t("connectBtn")}
           <ExternalLink className="size-3.5" />
         </a>
       ) : (
-        <p className="text-sm text-muted-foreground">เฉพาะ OWNER เท่านั้นที่เชื่อมต่อได้</p>
+        <p className="text-sm text-muted-foreground">{t("ownerOnly")}</p>
       )}
     </div>
   );
@@ -157,6 +161,8 @@ function ConnectedView({
   onSync: () => void;
   onDisconnect: () => void;
 }) {
+  const t = useTranslations("metaConnection");
+  const locale = useLocale();
   const isExpired = data.connection.status === "EXPIRED" || data.connection.status === "REVOKED";
 
   return (
@@ -173,9 +179,9 @@ function ConnectedView({
             <p className="text-base font-semibold">{data.connection.metaUserName}</p>
             <p className="text-xs text-muted-foreground">
               {data.connection.accountCount} ad accounts ·{" "}
-              เชื่อมต่อ {new Date(data.connection.connectedAt).toLocaleDateString("th-TH")}
+              {t("connectedAt", { when: formatDate(new Date(data.connection.connectedAt), locale) })}
               {data.connection.lastSyncedAt && (
-                <> · ซิงค์ล่าสุด {new Date(data.connection.lastSyncedAt).toLocaleString("th-TH")}</>
+                <> · {t("lastSynced", { when: formatDateTime(data.connection.lastSyncedAt, locale) })}</>
               )}
             </p>
           </div>
@@ -191,7 +197,7 @@ function ConnectedView({
               className="gap-1.5"
             >
               <RefreshCw className={cn("size-3.5", pending === "sync" && "animate-spin")} />
-              {pending === "sync" ? "กำลังซิงค์..." : "ซิงค์"}
+              {pending === "sync" ? t("syncing") : t("syncBtn")}
             </Button>
             <Button
               variant="destructive"
@@ -201,7 +207,7 @@ function ConnectedView({
               className="gap-1.5"
             >
               <Unplug className="size-3.5" />
-              {pending === "disconnect" ? "กำลังยกเลิก..." : "ยกเลิก"}
+              {pending === "disconnect" ? t("disconnecting") : t("disconnectBtn")}
             </Button>
           </div>
         )}
@@ -211,7 +217,7 @@ function ConnectedView({
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertDescription>
-            Token หมดอายุหรือถูกยกเลิก กรุณาเชื่อมต่อใหม่
+            {t("tokenExpired")}
             {isOwner && (
               <>
                 {" "}
@@ -219,7 +225,7 @@ function ConnectedView({
                   href={`/api/meta/oauth/start?tenantSlug=${tenantSlug}`}
                   className="font-medium underline-offset-4 hover:underline"
                 >
-                  เชื่อมต่ออีกครั้ง
+                  {t("reconnect")}
                 </a>
               </>
             )}

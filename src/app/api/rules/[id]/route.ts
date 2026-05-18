@@ -6,10 +6,13 @@
  * a tier-cap slot; toggling false→true re-applies the cap.
  */
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
+import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { maxActiveRulesForPlan } from "@/lib/billing/tier-rules";
 import type { PlanKey } from "@/lib/billing/plans";
 import {
@@ -63,6 +66,7 @@ export async function PATCH(
   const url = new URL(request.url);
   const tenantSlug = url.searchParams.get("tenantSlug");
   if (!tenantSlug) return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
   const existing = await resolveRule(tenant.id, id);
   if (!existing) return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -86,13 +90,15 @@ export async function PATCH(
       where: { tenantId: tenant.id, enabled: true, NOT: { id } },
     });
     if (activeCount >= cap) {
+      const locale = await resolveUserLocale(session.userId);
+      const t = await getTranslations({ locale, namespace: "api.rules" });
       return NextResponse.json(
         {
           error: cap === 0 ? "upgrade_required" : "rule_limit_reached",
           message:
             cap === 0
-              ? "Plan ปัจจุบันไม่อนุญาตให้ activate rules"
-              : `ถึง limit ${cap} rules แล้ว`,
+              ? t("planNoActivate")
+              : t("limitReachedRules", { cap }),
           limit: cap,
           currentTier: planKey,
         },

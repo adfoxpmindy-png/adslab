@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import {
   createCampaignTree,
   type CallToActionType,
@@ -140,15 +142,17 @@ export async function POST(request: Request) {
     data.optimizationGoal === "OFFSITE_CONVERSIONS" ||
     data.optimizationGoal === "VALUE"
   ) {
+    const locale = await resolveUserLocale(session.userId);
+    const t = await getTranslations({ locale, namespace: "api.meta.campaignCreate" });
     if (!data.pixelId) {
       return NextResponse.json(
-        { error: "Conversion goal ต้องเลือก Pixel" },
+        { error: t("conversionGoalNeedsPixel") },
         { status: 400 },
       );
     }
     if (!data.customEventType && !data.customConversionId) {
       return NextResponse.json(
-        { error: "Conversion goal ต้องเลือก event หรือ Custom Conversion" },
+        { error: t("conversionGoalNeedsEvent") },
         { status: 400 },
       );
     }

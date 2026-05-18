@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { prisma } from "@/lib/prisma";
 import { aiChat, getAiModel } from "@/lib/ai/openrouter";
 import { getDashboardData } from "@/lib/meta/dashboard-service";
@@ -54,11 +56,13 @@ function bangkokDateToUtcMidnight(dateStr: string): Date {
   return new Date(`${dateStr}T00:00:00.000Z`);
 }
 
-function thaiDateLabel(dateStr: string): string {
+async function localizedDateLabel(dateStr: string, locale: Locale): Promise<string> {
   // dateStr = "YYYY-MM-DD"
   const [y, m, d] = dateStr.split("-").map(Number);
-  const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-  return `${d} ${months[m - 1]} ${y + 543}`;
+  const t = await getTranslations({ locale, namespace: "common.datePicker" });
+  const months = t.raw("months") as string[];
+  const yearOffset = Number(t("yearOffset")) || 0;
+  return `${d} ${months[m - 1]} ${y + yearOffset}`;
 }
 
 // Rough cost per 1M tokens for Claude Sonnet 4.6 (input / output / cached input)
@@ -190,6 +194,9 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       });
 
   try {
+    const locale = await resolveTenantPrimaryLocale(input.tenantId);
+    const dateLabel = await localizedDateLabel(reportDateStr, locale);
+
     // 4. Pull insights for "yesterday" + day-before (for comparison)
     const today = await getDashboardData(input.tenantId, dateRangeForDate(reportDateStr));
     const prevDateStr = shiftBkkDate(reportDateStr, -1);
@@ -245,7 +252,7 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
     // 5. Build prompt + call Claude
     let userMessage = buildDailyReportUserMessage({
       tenantName: tenant.name,
-      dateLabel: thaiDateLabel(reportDateStr),
+      dateLabel,
       today: todayPayload,
       prevDay: prevDayPayload,
       goalsByCampaignId,
@@ -288,7 +295,6 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       }
     }
 
-    const locale = await resolveTenantPrimaryLocale(input.tenantId);
     const systemPrompt = DAILY_REPORT_SYSTEM_PROMPT.replace(
       "{{LOCALE_DIRECTIVE}}",
       localeDirective(locale),
@@ -394,12 +400,13 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       if (ownerEmail && ownerName) {
         const appUrl = process.env.APP_URL ?? "http://localhost:3000";
         const reportUrl = `${appUrl}/t/${tenant.slug}/reports/${completed.id}`;
-        const template = dailyReportEmailTemplate({
+        const template = await dailyReportEmailTemplate({
           recipientName: ownerName,
           tenantName: tenant.name,
-          dateLabel: thaiDateLabel(reportDateStr),
+          dateLabel,
           contentMd,
           reportUrl,
+          locale,
         });
         const sendResult = await sendEmail({
           to: ownerEmail,

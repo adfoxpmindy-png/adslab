@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ChevronDown, Loader2, Save, Target, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export function TenantScopeCard({
   campaigns: Campaign[];
   initialScope: Scope;
 }) {
+  const t = useTranslations("settings.tenantScope");
   const router = useRouter();
   const [scope, setScope] = useState<Scope>(initialScope);
   const [submitting, setSubmitting] = useState(false);
@@ -93,7 +95,7 @@ export function TenantScopeCard({
 
   async function save() {
     setSubmitting(true);
-    const toastId = toast.loading("กำลังบันทึก...");
+    const toastId = toast.loading(t("saving"));
     try {
       // Filter campaignIds to those within selected accounts so stale ones
       // get dropped on save (avoids confusing "X campaigns no longer in scope")
@@ -114,12 +116,12 @@ export function TenantScopeCard({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ไม่สำเร็จ");
-      toast.success("✓ บันทึก Tenant Scope แล้ว", { id: toastId, duration: 2500 });
+      if (!res.ok) throw new Error(data.error ?? t("saveFailedDefault"));
+      toast.success(t("savedToast"), { id: toastId, duration: 2500 });
       setDirty(false);
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : t("saveFailed"), {
         id: toastId,
         duration: 5000,
       });
@@ -128,7 +130,23 @@ export function TenantScopeCard({
     }
   }
 
-  const summary = describeScope(scope, accounts.length, visibleCampaigns.length);
+  const totalAccounts = accounts.length;
+  const totalCampaigns = visibleCampaigns.length;
+  const accountSummary =
+    scope.accountIds === null
+      ? t("summaryAllAccounts", { total: totalAccounts })
+      : t("summaryAccountsCount", {
+          count: scope.accountIds.length,
+          total: totalAccounts,
+        });
+  const campaignSummary =
+    scope.campaignIds === null
+      ? t("summaryAllCampaigns")
+      : t("summaryCampaignsCount", {
+          count: scope.campaignIds.length,
+          total: totalCampaigns,
+        });
+  const summary = `${accountSummary} · ${campaignSummary}`;
 
   return (
     <section className="space-y-3">
@@ -144,15 +162,14 @@ export function TenantScopeCard({
             </span>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            กำหนดว่า Tenant นี้ &ldquo;ดูแล&rdquo; ad accounts + campaigns ไหน — ทุกหน้าใน tenant
-            จะ filter ตามนี้โดย default (user แต่ละคนยังกรองเพิ่มเองได้)
+            {t("description")}
           </p>
         </div>
       </header>
 
       <Card className="space-y-4 p-5">
         <div className="rounded-md border border-violet-200 bg-violet-50/60 p-3 text-xs text-violet-900 dark:border-violet-900/60 dark:bg-violet-950/30 dark:text-violet-200">
-          <p className="font-medium">ตอนนี้: {summary}</p>
+          <p className="font-medium">{t("currentLabel", { summary })}</p>
         </div>
 
         <AccountSection
@@ -189,7 +206,7 @@ export function TenantScopeCard({
           <div className="flex items-center justify-end gap-2">
             {dirty && (
               <span className="text-[11px] text-muted-foreground">
-                มีการแก้ไขที่ยังไม่บันทึก
+                {t("unsavedChanges")}
               </span>
             )}
             <Button
@@ -203,31 +220,19 @@ export function TenantScopeCard({
               ) : (
                 <Save className="size-3.5" />
               )}
-              บันทึก
+              {t("saveBtn")}
             </Button>
           </div>
         )}
 
         {!canEdit && (
           <p className="text-[11px] text-muted-foreground">
-            เฉพาะ OWNER ถึงแก้ได้
+            {t("ownerOnly")}
           </p>
         )}
       </Card>
     </section>
   );
-}
-
-function describeScope(scope: Scope, totalAccounts: number, totalCampaigns: number): string {
-  const a =
-    scope.accountIds === null
-      ? `ทุก account (${totalAccounts})`
-      : `${scope.accountIds.length}/${totalAccounts} accounts`;
-  const c =
-    scope.campaignIds === null
-      ? `ทุก campaigns ใน scope`
-      : `${scope.campaignIds.length}/${totalCampaigns} campaigns`;
-  return `${a} · ${c}`;
 }
 
 // ---- AccountSection ----------------------------------------------
@@ -249,6 +254,7 @@ function AccountSection({
   onSelectAll: () => void;
   onSelectNone: () => void;
 }) {
+  const t = useTranslations("settings.tenantScope.accountSection");
   const [open, setOpen] = useState(true);
   const [query, setQuery] = useState("");
 
@@ -267,7 +273,11 @@ function AccountSection({
         <span className="text-sm font-medium">
           Ad Accounts{" "}
           <span className="text-muted-foreground">
-            ({isAll ? `ทั้งหมด (${accounts.length})` : `${selectedIds.length}/${accounts.length}`})
+            (
+            {isAll
+              ? t("countAll", { total: accounts.length })
+              : t("countSome", { count: selectedIds.length, total: accounts.length })}
+            )
           </span>
         </span>
         <ChevronDown
@@ -285,17 +295,17 @@ function AccountSection({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ค้นหา ad account..."
+              placeholder={t("searchPlaceholder")}
               disabled={!canEdit}
               className="flex-1"
             />
             {canEdit && (
               <>
                 <Button variant="ghost" size="sm" onClick={onSelectAll}>
-                  เลือกทั้งหมด
+                  {t("selectAll")}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={onSelectNone}>
-                  ล้าง
+                  {t("clear")}
                 </Button>
               </>
             )}
@@ -354,6 +364,7 @@ function CampaignSection({
   onSelectAll: () => void;
   onSelectNone: () => void;
 }) {
+  const t = useTranslations("settings.tenantScope.campaignSection");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -374,8 +385,8 @@ function CampaignSection({
           <span className="text-muted-foreground">
             (
             {isAll
-              ? `ทุก campaign ใน scope (${campaigns.length})`
-              : `${selectedIds.length}/${campaigns.length}`}
+              ? t("countAll", { total: campaigns.length })
+              : t("countSome", { count: selectedIds.length, total: campaigns.length })}
             )
           </span>
         </span>
@@ -394,24 +405,24 @@ function CampaignSection({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ค้นหา campaign..."
+              placeholder={t("searchPlaceholder")}
               disabled={!canEdit}
               className="flex-1"
             />
             {canEdit && (
               <>
                 <Button variant="ghost" size="sm" onClick={onSelectAll}>
-                  ทั้งหมด
+                  {t("selectAll")}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={onSelectNone}>
-                  ล้าง
+                  {t("clear")}
                 </Button>
               </>
             )}
           </div>
           {campaigns.length === 0 ? (
             <p className="rounded-md border border-dashed border-border p-3 text-center text-xs text-muted-foreground">
-              ไม่มี campaigns ใน accounts ที่เลือก
+              {t("emptyNote")}
             </p>
           ) : (
             <ul className="max-h-60 space-y-0.5 overflow-auto rounded-md border border-border bg-background p-1">
@@ -486,6 +497,7 @@ function NamePatternSection({
   canEdit: boolean;
   onChange: (next: CampaignNamePattern[]) => void;
 }) {
+  const t = useTranslations("settings.tenantScope.patternSection");
   const [open, setOpen] = useState(patterns.length > 0);
   const [draftPattern, setDraftPattern] = useState("");
   const [draftKind, setDraftKind] = useState<CampaignNamePattern["kind"]>("contains");
@@ -526,6 +538,9 @@ function NamePatternSection({
     patterns.some((p) => matches(p, c.name)),
   );
 
+  const previewNames = matched.slice(0, 5).map((c) => c.name).join(", ");
+  const previewExtra = matched.length > 5 ? t("previewExtra", { extra: matched.length - 5 }) : "";
+
   return (
     <div>
       <button
@@ -536,9 +551,11 @@ function NamePatternSection({
         <span className="text-sm font-medium">
           Auto-include by name pattern{" "}
           <span className="text-muted-foreground">
-            ({patterns.length === 0
-              ? "ยังไม่ตั้ง"
-              : `${patterns.length} pattern, match ${matched.length} campaigns ตอนนี้`})
+            (
+            {patterns.length === 0
+              ? t("summaryEmpty")
+              : t("summaryActive", { count: patterns.length, matched: matched.length })}
+            )
           </span>
         </span>
         <ChevronDown
@@ -552,9 +569,9 @@ function NamePatternSection({
       {open && (
         <div className="mt-2 space-y-2">
           <p className="text-[11px] text-muted-foreground">
-            Pattern จะ <strong>auto-include campaign ที่ชื่อ match</strong> ทั้งของเก่าและ
-            ที่จะสร้างใหม่ในอนาคต — เช่น &ldquo;contains <code>Sale</code>&rdquo; → Sale0426,
-            Sale0526, Sale0626 (ใหม่เดือนหน้า) เข้า scope อัตโนมัติ
+            {t("explainerBefore")}
+            <strong>{t("explainerHighlight")}</strong>
+            {t("explainerAfter")}
           </p>
 
           {patterns.length > 0 && (
@@ -577,7 +594,7 @@ function NamePatternSection({
                       type="button"
                       onClick={() => remove(idx)}
                       className="text-muted-foreground hover:text-destructive"
-                      title="ลบ"
+                      title={t("delete")}
                     >
                       <X className="size-3.5" />
                     </button>
@@ -603,7 +620,7 @@ function NamePatternSection({
               <Input
                 value={draftPattern}
                 onChange={(e) => setDraftPattern(e.target.value)}
-                placeholder="เช่น Sale หรือ Promo"
+                placeholder={t("patternPlaceholder")}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -618,16 +635,18 @@ function NamePatternSection({
                 onClick={add}
                 disabled={!draftPattern.trim()}
               >
-                + เพิ่ม
+                {t("addBtn")}
               </Button>
             </div>
           )}
 
           {matched.length > 0 && (
-            <div className="rounded-md border border-emerald-200 bg-emerald-50/60 p-2 text-[11px] text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
-              ✓ Preview: match {matched.length} campaigns ตอนนี้ —{" "}
-              {matched.slice(0, 5).map((c) => c.name).join(", ")}
-              {matched.length > 5 && ` +${matched.length - 5} อื่นๆ`}
+            <div className="flex items-start gap-1.5 rounded-md border border-emerald-200 bg-emerald-50/60 p-2 text-[11px] text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
+              <Check className="mt-0.5 size-3 shrink-0" />
+              <span>
+                {t("previewLine", { matched: matched.length, names: previewNames })}
+                {previewExtra}
+              </span>
             </div>
           )}
         </div>

@@ -1,8 +1,10 @@
 "use client";
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { useLocale } from "next-intl";
 import { Crown, Flag, Globe, Image as ImageIcon, Megaphone, Sparkles } from "lucide-react";
 
+import { formatNumber } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import type { JourneyNode } from "@/lib/journey/types";
 
@@ -199,6 +201,7 @@ export function BrandNode({ data }: NodeProps) {
 }
 
 export function CampaignNode({ data }: NodeProps) {
+  const locale = useLocale();
   const { node } = data as unknown as NodeData;
   if (node.kind !== "campaign") return null;
   return (
@@ -215,7 +218,7 @@ export function CampaignNode({ data }: NodeProps) {
             {node.label}
           </p>
           <p className="mt-1 text-[10px] font-semibold tabular-nums text-slate-600 dark:text-slate-400">
-            ฿{Intl.NumberFormat("th-TH").format(node.spend)}
+            ฿{formatNumber(node.spend, locale)}
           </p>
         </div>
       </IslandBase>

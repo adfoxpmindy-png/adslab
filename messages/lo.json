@@ -1,4 +1,185 @@
 {
+  "comingSoon": {
+    "badge": "Coming Soon",
+    "emailRequired": "ໃສ່ email",
+    "submitFailed": "ບໍ່ສຳເລັດ",
+    "registered": "ລົງທະບຽນຄວາມສົນໃຈແລ້ວ — ພວກເຮົາຈະແຈ້ງເມື່ອເປີດໃຫ້ໃຊ້",
+    "registeredInline": "ລົງທະບຽນແລ້ວ",
+    "willNotifyWhenReady": "ພວກເຮົາຈະແຈ້ງເມື່ອ {title} ພ້ອມໃຊ້",
+    "promptLabel": "ຢາກໃຊ້ {title}? — ໃສ່ email ເພື່ອໃຫ້ພວກເຮົາແຈ້ງເມື່ອພ້ອມ",
+    "submit": "ລົງທະບຽນ"
+  },
+  "company": {
+    "legalName": "ນົບພະດົນ ຣັດຕະນະນ້ຳອ້ອມ",
+    "address": "8/26 ຖະໜົນວິພາວະດີຣັງສິດ ຊອຍວິພາວະດີຣັງສິດ 22 ແຂວງຈອມພົນ ເຂດຈະຕຸຈັກ ກຸງເທບ 10900",
+    "entityLabel": {
+      "juristic": "ດຳເນີນການໂດຍ",
+      "individual": "ຜູ້ໃຫ້ບໍລິການ"
+    }
+  },
+  "siteFooter": {
+    "taxIdLabel": {
+      "juristic": "ເລກຜູ້ເສຍພາສີ",
+      "individual": "ເລກບັດປະຈຳຕົວປະຊາຊົນ"
+    },
+    "addressLabel": "ທີ່ຢູ່",
+    "contactHeading": "ຕິດຕໍ່",
+    "emailLabel": "Email",
+    "phoneLabel": "ໂທ",
+    "policyHeading": "ນະໂຍບາຍ",
+    "links": {
+      "privacy": "ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ (Privacy Policy)",
+      "terms": "ຂໍ້ກຳນົດການໃຊ້ບໍລິການ (Terms of Service)",
+      "refund": "ນະໂຍບາຍການຄືນເງິນ (Refund Policy)",
+      "dataDeletion": "ການລຶບຂໍ້ມູນ (Data Deletion)"
+    },
+    "copyright": "© {year} {brand}. ລະບົບຊຳລະເງິນຜ່ານ Omise (PCI DSS Level 1)."
+  },
+  "billing": {
+    "gate": {
+      "aiMsgLimit": "ໂຄຕາ AI ມື້ນີ້ໝົດແລ້ວ ({limit} ຂໍ້ຄວາມ/ມື້) — ອັບເກຣດເພື່ອໃຊ້ຕໍ່",
+      "adAccountLimit": "ເກີນຈຳນວນ ad accounts ທີ່ tier ນີ້ຮອງຮັບ ({limit}) — ອັບເກຣດ ຫຼື ຊື້ Extra Ad Account ເພີ່ມ",
+      "eventSdkAddon": "ຟີເຈີ Event SDK ຕ້ອງເປີດ add-on ກ່ອນ (฿590/ເດືອນ)",
+      "whiteLabelAddon": "White-label ເປີດເປັນ add-on ฿490/ເດືອນ ຫຼື ອັບເກຣດເປັນ Scale (ລວມຟຣີ)",
+      "priorityAiAddon": "Priority AI (Claude Opus) ຕ້ອງເປີດ add-on ກ່ອນ (฿890/ເດືອນ)"
+    }
+  },
+  "api": {
+    "auth": {
+      "signup": {
+        "invalidEmail": "ຮູບແບບອີເມວບໍ່ຖືກຕ້ອງ",
+        "passwordTooShort": "ລະຫັດຜ່ານຕ້ອງມີຢ່າງໜ້ອຍ 8 ຕົວອັກສອນ",
+        "nameTooShort": "ຊື່ຕ້ອງມີຢ່າງໜ້ອຍ 2 ຕົວອັກສອນ",
+        "tenantNameTooShort": "ຊື່ Agency ຕ້ອງມີຢ່າງໜ້ອຍ 2 ຕົວອັກສອນ",
+        "invalidPayload": "ຂໍ້ມູນບໍ່ຖືກຕ້ອງ",
+        "emailTaken": "ອີເມວນີ້ຖືກໃຊ້ແລ້ວ"
+      },
+      "login": {
+        "invalidEmail": "ຮູບແບບອີເມວບໍ່ຖືກຕ້ອງ",
+        "passwordRequired": "ກະລຸນາໃສ່ລະຫັດຜ່ານ",
+        "invalidPayload": "ຂໍ້ມູນບໍ່ຖືກຕ້ອງ",
+        "invalidCredentials": "ອີເມວຫຼືລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ"
+      },
+      "unauthorized": "ກະລຸນາເຂົ້າສູ່ລະບົບ"
+    },
+    "rules": {
+      "upgradeRequired": "Auto-rules ຕ້ອງການ plan ແບບຈ່າຍເງິນຂັ້ນຕ່ຳ Starter",
+      "limitReached": "ເຖິງ limit {limit} rules ຂອງ plan ແລ້ວ — disabled ຫຼືລຶບ rule ເກົ່າ ຫຼື upgrade plan",
+      "planNoActivate": "Plan ປັດຈຸບັນບໍ່ອະນຸຍາດໃຫ້ activate rules",
+      "limitReachedRules": "ເຖິງ limit {cap} rules ແລ້ວ"
+    },
+    "boost": {
+      "plan": {
+        "noFacebookLinks": "ບໍ່ພົບລິ້ງ Facebook ໃນຂໍ້ຄວາມ",
+        "connectionInactive": "Meta connection ບໍ່ active",
+        "resolveFailed": "resolve URL ບໍ່ສຳເລັດ"
+      },
+      "kpi": {
+        "atLeast": "ຂັ້ນຕ່ຳ",
+        "atMost": "ບໍ່ເກີນ"
+      }
+    },
+    "emailVerification": {
+      "userNotFound": "ບໍ່ພົບບັນຊີຜູ້ໃຊ້",
+      "alreadyVerified": "ອີເມວຂອງເຈົ້າຢືນຢັນແລ້ວ"
+    },
+    "pagePosts": {
+      "adsNotEnabled": "Page ນີ້ຍັງບໍ່ໄດ້ເປີດ ads — ເປີດໃນ Meta Ads Manager ກ່ອນ (Page Settings → Advertising) ຫຼືໃຊ້ Post ID/URL ວາງດ້ານລຸ່ມ"
+    },
+    "audiences": {
+      "lookalikeNote": "Meta ຈະຄຳນວນ Lookalike ໃນ ~6 ຊົ່ວໂມງ — size ຈະເລີ່ມຈາກ 0 ແລ້ວເພີ່ມຂຶ້ນ",
+      "minRowsRequired": "ຕ້ອງມີຢ່າງໜ້ອຍ {min} ແຖວ (Meta minimum). ປະຈຸບັນມີ {count}",
+      "connectionNotReady": "Meta connection ບໍ່ພ້ອມໃຊ້ງານ"
+    },
+    "creatives": {
+      "fileTooLarge": "ໄຟລ໌ໃຫຍ່ເກີນໄປ (ເກີນ {maxMb}MB)",
+      "unsupportedType": "ປະເພດໄຟລ໌ບໍ່ຮອງຮັບ: {type}"
+    },
+    "scopes": {
+      "nameTaken": "Scope ຊື່ນີ້ມີຢູ່ແລ້ວ"
+    },
+    "metaImages": {
+      "mustBeJpgPng": "ໄຟລ໌ຕ້ອງເປັນ JPG ຫຼື PNG ເທົ່ານັ້ນ",
+      "tooLarge": "ໄຟລ໌ເກີນ 8MB ({sizeMb}MB)"
+    },
+    "common": {
+      "forbidden": "ບໍ່ມີສິດທິ"
+    },
+    "meta": {
+      "campaignCreate": {
+        "conversionGoalNeedsPixel": "Conversion goal ຕ້ອງເລືອກ Pixel",
+        "conversionGoalNeedsEvent": "Conversion goal ຕ້ອງເລືອກ event ຫຼື Custom Conversion"
+      },
+      "duplicate": {
+        "dailyBudgetEitherOr": "ລະບຸໄດ້ພຽງ dailyBudget ຫຼື dailyBudgetMultiplier",
+        "lifetimeBudgetEitherOr": "ລະບຸໄດ້ພຽງ lifetimeBudget ຫຼື lifetimeBudgetMultiplier"
+      },
+      "oauth": {
+        "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນເຊື່ອມຕໍ່ Meta ໄດ້"
+      },
+      "pageOauth": {
+        "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນເຊື່ອມຕໍ່ Page Management ໄດ້"
+      },
+      "pixels": {
+        "alreadyExists": "Ad account ນີ້ມີ Pixel ຢູ່ແລ້ວ: \"{name}\" (ID {id}) — Meta ຈຳກັດ 1 Pixel ຕໍ່ ad account",
+        "shareNeedsBm": "Target ad account ບໍ່ໄດ້ຢູ່ໃນ Business Manager — Pixel share ໃຊ້ໄດ້ກັບ BM accounts ເທົ່ານັ້ນ"
+      },
+      "campaignActions": {
+        "dailyOrLifetime": "ຕ້ອງລະບຸ daily ຫຼື lifetime"
+      }
+    },
+    "namingRules": {
+      "patternExists": "ມີກົດສຳລັບ pattern ນີ້ແລ້ວ"
+    },
+    "namingTemplates": {
+      "noCampaigns": "ບໍ່ມີ campaign ໃນ tenant ນີ້ສຳລັບວິເຄາະ"
+    }
+  },
+  "rootMetadata": {
+    "description": "ຍິງແອັດໃຫ້ໄວ ແມ່ນ scale ໄດ້ — Thai-first SaaS ສຳລັບ media buyer",
+    "ogDescription": "ຍິງແອັດໃຫ້ໄວ ແມ່ນ scale ໄດ້"
+  },
+  "meta": {
+    "adsetActions": {
+      "adSetNotFound": "Ad set {id} ບໍ່ພົບໃນ tenant ນີ້",
+      "budgetEitherOr": "ຕ້ອງລະບຸຢ່າງໃດຢ່າງໜຶ່ງ: dailyBudget ຫຼື lifetimeBudget",
+      "noOwnBudget": "Ad set ນີ້ບໍ່ມີ budget ຂອງຕົວເອງ — ແກ້ທີ່ campaign ແທນ (CBO)",
+      "useLifetimeInstead": "Ad set ນີ້ໃຊ້ lifetime budget ຢູ່ — ແກ້ແບບ lifetime ແທນ",
+      "useDailyInstead": "Ad set ນີ້ໃຊ້ daily budget ຢູ່ — ແກ້ແບບ daily ແທນ",
+      "budgetBelowMin": "Budget ຕ່ຳກວ່າຂັ້ນຕ່ຳ ฿{min}",
+      "budgetAboveMax": "Budget ເກີນເພດານ ฿{max} — ກວດສອບວ່າໃສ່ຕົວເລກຖືກຫຼືບໍ່"
+    },
+    "campaignActions": {
+      "budgetAtAdSet": "Budget ຢູ່ທີ່ລະດັບ ad set — ແກ້ໃນ Meta Ads Manager",
+      "budgetEitherOr": "ຕ້ອງລະບຸຢ່າງໃດຢ່າງໜຶ່ງ: dailyBudget ຫຼື lifetimeBudget",
+      "useLifetimeInstead": "Campaign ນີ້ໃຊ້ lifetime budget ຢູ່ — ແກ້ແບບ lifetime ແທນ",
+      "useDailyInstead": "Campaign ນີ້ໃຊ້ daily budget ຢູ່ — ແກ້ແບບ daily ແທນ",
+      "budgetBelowMin": "Budget ຕ່ຳກວ່າຂັ້ນຕ່ຳ ฿{min}",
+      "budgetAboveMax": "Budget ເກີນເພດານ ฿{max} — ກວດສອບວ່າໃສ່ຕົວເລກຖືກຫຼືບໍ່",
+      "endTimePast": "end_time ຕ້ອງບໍ່ໃຊ່ອະດີດ"
+    },
+    "urlResolver": {
+      "emptyUrl": "ລິ້ງວ່າງເປົ່າ",
+      "redirectFailed": "ຕາມລິ້ງບໍ່ໄດ້: {message}",
+      "unsupportedUrl": "ຮູບແບບ URL ບໍ່ຮອງຮັບ: {url}",
+      "metaUnknown": "Meta ບໍ່ຮູ້ຈັກ content ນີ້ ({id}): {message}",
+      "noOwnerPage": "ບໍ່ພົບ Page ເຈົ້າຂອງ post ນີ້ — ອາດເປັນ user post ທີ່ boost ບໍ່ໄດ້",
+      "reelPostIdNotFound": "ຫາ post_id ຂອງ reel {videoId} ບໍ່ເຫັນ — ອາດ reel ໃໝ່ເກີນໄປ ຫຼື ທ່ານບໍ່ແມ່ນ admin ຂອງ Page {pageName}"
+    },
+    "campaignCreate": {
+      "budgetNotNumber": "{name} ຕ້ອງເປັນຕົວເລກ",
+      "budgetBelowMin": "{name} ຕ່ຳກວ່າຂັ້ນຕ່ຳ ฿{min}",
+      "budgetAboveMax": "{name} ເກີນເພດານ ฿{max}",
+      "cboBudgetRequired": "CBO ຕ້ອງລະບຸ budget ລະດັບ campaign",
+      "aboBudgetRequired": "ABO ຕ້ອງລະບຸ budget ລະດັບ ad set",
+      "connectionNotFound": "ບໍ່ພົບ Meta connection",
+      "connectionInactive": "Connection {status} — ເຊື່ອມໃໝ່ກ່ອນ",
+      "adAccountNotInTenant": "Ad account ນີ້ບໍ່ຢູ່ໃນ Meta connection ຂອງ tenant",
+      "pfbidResolveFailed": "ແປງ pfbid post id ບໍ່ສຳເລັດ: {message}",
+      "reelThumbnailFailed": "ດຶງ thumbnail ຂອງ reel ບໍ່ສຳເລັດ: {message}",
+      "reelNoThumbnail": "reel ບໍ່ມີ thumbnail"
+    }
+  },
   "sidebar": {
     "nav": {
       "overview": "ພາບລວມ",
@@ -37,6 +218,23 @@
     "en": "English",
     "lo": "ລາວ (beta)"
   },
+  "userMenu": {
+    "ariaLabel": "ເມນູຜູ້ໃຊ້",
+    "profileSoon": "ໂປຣໄຟລ໌ (ໄວ ໆ ນີ້)",
+    "logout": "ອອກຈາກລະບົບ"
+  },
+  "platformBar": {
+    "loading": "ກຳລັງໂຫລດ...",
+    "accountsLabel": "Accounts: {count}",
+    "accountsLabelAll": "Accounts: ທັງໝົດ ({count})",
+    "accountsLabelScope": "Accounts: {count}/{total} (scope)",
+    "accountsLabelPartial": "Accounts: {count}/{total}",
+    "accountsLabelShort": "ທັງໝົດ",
+    "searchPlaceholder": "ຄົ້ນຫາ ad account...",
+    "selectAll": "ເລືອກທັງໝົດ",
+    "clearAll": "ລ້າງທັງໝົດ",
+    "notFound": "ບໍ່ພົບ account"
+  },
   "common": {
     "save": "ບັນທຶກ",
     "cancel": "ຍົກເລີກ",
@@ -55,7 +253,65 @@
     "tryAgain": "ລອງໃໝ່",
     "settingsLink": "ໄປທີ່ Settings",
     "connectMetaFirst": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນຈິ່ງໃຊ້ໄດ້",
-    "all": "ທັງໝົດ"
+    "all": "ທັງໝົດ",
+    "datePicker": {
+      "placeholder": "ເລືອກວັນທີ",
+      "time": "ເວລາ",
+      "timezone": "(UTC+7)",
+      "clear": "ລ້າງ",
+      "today": "ມື້ນີ້",
+      "ok": "ຕົກລົງ",
+      "weekdays": [
+        "ອາ",
+        "ຈ",
+        "ອ",
+        "ພ",
+        "ພຫ",
+        "ສຸ",
+        "ສ"
+      ],
+      "months": [
+        "ມັງກອນ",
+        "ກຸມພາ",
+        "ມີນາ",
+        "ເມສາ",
+        "ພຶດສະພາ",
+        "ມິຖຸນາ",
+        "ກໍລະກົດ",
+        "ສິງຫາ",
+        "ກັນຍາ",
+        "ຕຸລາ",
+        "ພະຈິກ",
+        "ທັນວາ"
+      ],
+      "yearOffset": "0"
+    },
+    "smartNameField": {
+      "matchesTemplate": "ກົງ template \"{name}\"",
+      "noTemplateMatch": "ຍັງບໍ່ກົງ template ໃດຂອງ tenant — ໃຊ້ suggestion ດ້ານລຸ່ມໄດ້",
+      "truncateWarning": "ເກີນ {limit} ຕົວອັກສອນ — Meta UI ຈະຕັດໃຫ້ສັ້ນໃນ list",
+      "nearLimit": "ໃກ້ limit ຂອງ Meta ({limit})",
+      "suggestions": "ແນະນຳ:",
+      "collapse": "ຫຍໍ້",
+      "moreOthers": "+{count} ອື່ນ",
+      "noTemplatesHint": "ຕັ້ງ naming template ໃນ Settings → Naming Standards ເພື່ອໃຫ້ລະບົບສະເໜີຊື່ອັດຕະໂນມັດ"
+    },
+    "journey": {
+      "loadFailed": "ໂຫຼດ journey ບໍ່ສຳເລັດ",
+      "modeOverview": "Overview",
+      "modeDrillIn": "Drill-in",
+      "selectCampaign": "-- ເລືອກ campaign --",
+      "rangeToday": "ມື້ນີ້",
+      "rangeYesterday": "ມື້ວານ",
+      "range7d": "7 ວັນຫຼ້າສຸດ",
+      "range30d": "30 ວັນຫຼ້າສຸດ",
+      "spend": "Spend",
+      "drawing": "ກຳລັງແຕ້ມ journey...",
+      "emptyTitle": "ຍັງບໍ່ມີ data ໃນ range / scope ນີ້",
+      "emptyHint": "ເລືອກ date range ອື່ນ ຫຼື ລອງ sync dashboard ກ່ອນ — journey ໃຊ້ insights cache ດຽວກັບ Dashboard",
+      "try30d": "ລອງເບິ່ງ 30d",
+      "openInCampaigns": "ເປີດໃນ Campaigns"
+    }
   },
   "languageSwitcher": {
     "errorChange": "ປ່ຽນພາສາບໍ່ສຳເລັດ"
@@ -107,6 +363,7 @@
     "cancelBtn": "ຍົກເລີກ",
     "back": "ກັບໄປລາຍຊື່ໂພສ",
     "compose": {
+      "noPagesEmpty": "ຍັງບໍ່ມີເພຈທີ່ຈັດການໄດ້ — sync ໃໝ່ໃນໜ້າ Settings → Page Management",
       "pageLabel": "ເພຈທີ່ຈະໂພສ",
       "mediaLabel": "ຮູບ / ວິດີໂອ",
       "videoOnlyOne": "ວິດີໂອໃຊ້ໄດ້ທີລະ 1 ໄຟລ໌ເທົ່ານັ້ນ (ຫ້າມຜະສົມຮູບ)",
@@ -145,10 +402,133 @@
     "goToPostsCta": "ໄປທີ່ \"ໂພສເພຈ\"",
     "reauthorize": "re-authorize"
   },
+  "metaConnection": {
+    "flashSuccess": "ເຊື່ອມຕໍ່ Meta ສຳເລັດ",
+    "flashError": "ເຊື່ອມຕໍ່ Meta ລົ້ມເຫຼວ: {error}",
+    "syncSuccess": "ຊິງຄ໌ສຳເລັດ — {count} ad accounts",
+    "syncFailedDefault": "Sync failed",
+    "disconnectFailedDefault": "Disconnect failed",
+    "disconnectConfirm": "ຕ້ອງການຍົກເລີກການເຊື່ອມຕໍ່ Meta ບໍ? ຂໍ້ມູນ cached ຈະຖືກລຶບ",
+    "disconnectSuccess": "ຍົກເລີກການເຊື່ອມຕໍ່ແລ້ວ",
+    "notConnectedTitle": "ຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ Meta",
+    "notConnectedBody": "ເຊື່ອມຕໍ່ເພື່ອໃຫ້ AdsLab ອ່ານຂໍ້ມູນ ad accounts ແລະ ເລີ່ມ optimize",
+    "connectBtn": "ເຊື່ອມຕໍ່ກັບ Meta",
+    "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນທີ່ເຊື່ອມຕໍ່ໄດ້",
+    "connectedAt": "ເຊື່ອມຕໍ່ {when}",
+    "lastSynced": "ຊິງຄ໌ຫຼ້າສຸດ {when}",
+    "syncing": "ກຳລັງຊິງຄ໌...",
+    "syncBtn": "ຊິງຄ໌",
+    "disconnecting": "ກຳລັງຍົກເລີກ...",
+    "disconnectBtn": "ຍົກເລີກ",
+    "tokenExpired": "Token ໝົດອາຍຸຫຼືຖືກຍົກເລີກ ກະລຸນາເຊື່ອມຕໍ່ໃໝ່",
+    "reconnect": "ເຊື່ອມຕໍ່ອີກຄັ້ງ"
+  },
   "settings": {
     "pageMgmt": {
       "title": "Page Management",
       "subtitle": "ຂຽນ + ກຳນົດເວລາໂພສ Facebook page (ແຍກຈາກການເຊື່ອມໂຄສະນາ)"
+    },
+    "tenantScope": {
+      "saving": "ກຳລັງບັນທຶກ...",
+      "saveFailedDefault": "ບໍ່ສຳເລັດ",
+      "savedToast": "ບັນທຶກ Tenant Scope ແລ້ວ",
+      "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ",
+      "description": "ກຳນົດວ່າ Tenant ນີ້ \"ດູແລ\" ad accounts + campaigns ໃດ — ທຸກໜ້າໃນ tenant ຈະ filter ຕາມນີ້ໂດຍ default (ຜູ້ໃຊ້ແຕ່ລະຄົນຍັງສາມາດກອງເພີ່ມເອງໄດ້)",
+      "currentLabel": "ຕອນນີ້: {summary}",
+      "summaryAllAccounts": "ທຸກ account ({total})",
+      "summaryAccountsCount": "{count}/{total} accounts",
+      "summaryAllCampaigns": "ທຸກ campaigns ໃນ scope",
+      "summaryCampaignsCount": "{count}/{total} campaigns",
+      "unsavedChanges": "ມີການແກ້ໄຂທີ່ຍັງບໍ່ໄດ້ບັນທຶກ",
+      "saveBtn": "ບັນທຶກ",
+      "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນທີ່ແກ້ໄຂໄດ້",
+      "accountSection": {
+        "countAll": "ທັງໝົດ ({total})",
+        "countSome": "{count}/{total}",
+        "searchPlaceholder": "ຄົ້ນຫາ ad account...",
+        "selectAll": "ເລືອກທັງໝົດ",
+        "clear": "ລ້າງ"
+      },
+      "campaignSection": {
+        "countAll": "ທຸກ campaign ໃນ scope ({total})",
+        "countSome": "{count}/{total}",
+        "searchPlaceholder": "ຄົ້ນຫາ campaign...",
+        "selectAll": "ທັງໝົດ",
+        "clear": "ລ້າງ",
+        "emptyNote": "ບໍ່ມີ campaigns ໃນ accounts ທີ່ເລືອກ"
+      },
+      "patternSection": {
+        "summaryEmpty": "ຍັງບໍ່ໄດ້ຕັ້ງ",
+        "summaryActive": "{count} pattern, match {matched} campaigns ຕອນນີ້",
+        "explainerBefore": "Pattern ຈະ",
+        "explainerHighlight": "auto-include campaign ທີ່ຊື່ match",
+        "explainerAfter": "ທັງຂອງເກົ່າ ແລະທີ່ຈະສ້າງໃໝ່ໃນອະນາຄົດ — ເຊັ່ນ \"contains Sale\" → Sale0426, Sale0526, Sale0626 (ໃໝ່ເດືອນໜ້າ) ເຂົ້າ scope ອັດຕະໂນມັດ",
+        "delete": "ລຶບ",
+        "patternPlaceholder": "ເຊັ່ນ Sale ຫຼື Promo",
+        "addBtn": "+ ເພີ່ມ",
+        "previewLine": "Preview: match {matched} campaigns ຕອນນີ້ — {names}",
+        "previewExtra": "+{extra} ອື່ນໆ"
+      }
+    },
+    "ai": {
+      "persona": {
+        "heading": "AI Persona",
+        "subtitle": "ປັບ tone + ບົດບາດຂອງ AI Master ໃຫ້ເໝາະກັບທີມ ແລະ ທຸລະກິດ",
+        "loading": "ກຳລັງໂຫຼດ...",
+        "roleLabel": "ບົດບາດ (Role)",
+        "rolePlaceholder": "ເຊັ່ນ Thai media buyer expert",
+        "customLabel": "ຄຳສັ່ງເພີ່ມເຕີມ (Custom Instructions)",
+        "customPlaceholder": "ເຊັ່ນ ຕ້ອງຕອບເປັນ bullet points ສັ້ນ, ຢ່າໃຊ້ຄຳວ່າ 'optimize', ລະບຸ ROAS ສະເໝີເມື່ອເວົ້າເຖິງ campaign",
+        "customNote": "ຄຳສັ່ງຈະຖືກ inject ເຂົ້າ system prompt ທຸກ chat — ທັງທີມເຫັນ",
+        "ragLabel": "ໃຫ້ AI ໃຊ້ Knowledge Base (RAG) — ຄົ້ນເອກະສານກ່ອນຕອບ",
+        "saveBtn": "ບັນທຶກ",
+        "savedToast": "ບັນທຶກ AI Persona ແລ້ວ"
+      },
+      "knowledge": {
+        "heading": "AI Knowledge",
+        "subtitle": "Upload ເອກະສານ / paste text / ໃສ່ URL — AI ຈະໃຊ້ເປັນ context ຕອນຕອບຄຳຖາມ domain-specific",
+        "addBtn": "ເພີ່ມເອກະສານ",
+        "loading": "ກຳລັງໂຫຼດ...",
+        "empty": {
+          "title": "ຍັງບໍ່ມີເອກະສານ",
+          "subtitle": "Upload ເອກະສານ — ຕົວຢ່າງເຊັ່ນ brand guidelines, target audience research, past campaign learnings, ad copy templates"
+        },
+        "confirmDelete": "ລຶບເອກະສານນີ້?",
+        "deletedToast": "ລຶບແລ້ວ"
+      },
+      "upload": {
+        "title": "ເພີ່ມເອກະສານ Knowledge",
+        "subtitle": "ເອກະສານທີ່ AI ຈະໃຊ້ຕອບ — ແບ່ງປັນໃນ tenant ທັງທີມ",
+        "modes": {
+          "text": "Paste Text",
+          "pdf": "Upload PDF",
+          "url": "From URL"
+        },
+        "titleLabel": "ຊື່ເອກະສານ",
+        "titleLabelPdfHint": "(ປະວ່າງ = ໃຊ້ຊື່ໄຟລ໌)",
+        "titlePlaceholder": "ເຊັ່ນ Brand voice guidelines",
+        "text": {
+          "label": "ເນື້ອຫາ",
+          "placeholder": "ວາງເນື້ອຫາທີ່ນີ້...",
+          "summary": "{chars} ຕົວອັກສອນ · ປະມານ {chunks} chunks"
+        },
+        "pdf": {
+          "choose": "ເລືອກໄຟລ໌ PDF",
+          "changeHint": "{size} KB — ກົດເພື່ອປ່ຽນ"
+        },
+        "url": {
+          "label": "URL"
+        },
+        "processing": "ກຳລັງປະມວນຜົນ + embed...",
+        "errors": {
+          "selectPdf": "ເລືອກໄຟລ໌ PDF",
+          "enterUrl": "ໃສ່ URL",
+          "titleAndText": "ໃສ່ title + text"
+        },
+        "cancel": "ຍົກເລີກ",
+        "submit": "ອັບໂຫຼດ",
+        "successAdded": "ເພີ່ມເອກະສານ \"{title}\" ({chunks} chunks)"
+      }
     }
   },
   "status": {
@@ -158,20 +538,323 @@
     "published": "ໂພສແລ້ວ",
     "cancelled": "ຍົກເລີກ",
     "failed": "ລົ້ມເຫລວ",
-    "pending": "ລໍຖ້າ"
+    "pending": "ລໍຖ້າ",
+    "closed": "ປິດການໃຊ້ງານ",
+    "activeAlt": "ກຳລັງໃຊ້ງານ",
+    "pausedAlt": "ຢຸດຊົ່ວຄາວ"
   },
   "pages": {
     "dashboard": {
       "title": "ພາບລວມ",
-      "subtitle": "ສະຫຼຸບຜົນການໂຄສະນາທັງໝົດ"
+      "subtitle": "ສະຫຼຸບຜົນການໂຄສະນາທັງໝົດ",
+      "presets": {
+        "today": "ມື້ນີ້",
+        "yesterday": "ມື້ວານ",
+        "last_7d": "7 ວັນລ່າສຸດ",
+        "last_30d": "30 ວັນລ່າສຸດ"
+      },
+      "syncedAt": "ຊິງຄ໌ {when}",
+      "stale": "(stale)",
+      "cached": "(cached)",
+      "syncBtn": "ຊິງຄ໌",
+      "toast": {
+        "fetchFailed": "ໂຫລດຂໍ້ມູນບໍ່ສຳເລັດ",
+        "syncSuccess": "ຊິງຄ໌ຂໍ້ມູນໃໝ່ສຳເລັດ",
+        "refreshFailed": "Refresh ບໍ່ສຳເລັດ"
+      },
+      "kpi": {
+        "spend": "ຄ່າໃຊ້ຈ່າຍລວມ",
+        "sales": "ຍອດຂາຍລວມ",
+        "roas": "ROAS (ລວມ)",
+        "clicks": "ຄລິກ (ທັງໝົດ)"
+      },
+      "empty": {
+        "title": "ຍັງບໍ່ມີຂໍ້ມູນ campaign ໃນຊ່ວງທີ່ເລືອກ",
+        "description": "ລອງເລືອກຊ່ວງເວລາອື່ນ ຫຼື ສ້າງ campaign ໃໝ່"
+      },
+      "trend": {
+        "title": "ແນວໂນ້ມປະສິດທິພາບ",
+        "subtitleDaily": "ຄ່າໃຊ້ຈ່າຍ, ຍອດຂາຍ, ROAS ລາຍວັນ",
+        "subtitleAccount": "ປຽບທຽບຕາມບັນຊີ"
+      },
+      "platform": {
+        "title": "ປະສິດທິພາບຕາມແພລັດຟອມ",
+        "subtitle": "ສັດສ່ວນ spend ແຕ່ລະ platform",
+        "noSpend": "ຍັງບໍ່ມີ spend",
+        "totalSpend": "ຄ່າໃຊ້ຈ່າຍລວມ"
+      },
+      "chart": {
+        "spend": "ຄ່າໃຊ້ຈ່າຍ",
+        "sales": "ຍອດຂາຍ",
+        "roas": "ROAS",
+        "noData": "ບໍ່ມີຂໍ້ມູນໃນຊ່ວງນີ້"
+      },
+      "tile": {
+        "campaigns": "ແຄມເປນທີ່ໃຊ້ງານຢູ່",
+        "accounts": "ບັນຊີໂຄສະນາ",
+        "conversions": "conversions ທັງໝົດ",
+        "active": "ກຳລັງໃຊ້ງານ",
+        "paused": "ຢຸດຊົ່ວຄາວ",
+        "closed": "ປິດການໃຊ້ງານ",
+        "accountActive": "active",
+        "accountOther": "ອື່ນໆ",
+        "purchases": "purchases"
+      },
+      "top": {
+        "title": "ແຄມເປນທີ່ມີປະສິດທິພາບສູງສຸດ",
+        "subtitle": "ອັນດັບ Top 5 ຕາມ spend",
+        "campaign": "ແຄມເປນ",
+        "spend": "ຄ່າໃຊ້ຈ່າຍ",
+        "sales": "ຍອດຂາຍ",
+        "clicks": "ຄລິກ",
+        "status": "ສະຖານະ"
+      },
+      "onboarding": {
+        "headerTitle": "ເລີ່ມຕົ້ນໃຊ້ AdsLab",
+        "headerDone": "{done}/{total} ສຳເລັດແລ້ວ",
+        "subtitle": "ເຮັດຕາມຂັ້ນຕອນລຸ່ມນີ້ເພື່ອເລີ່ມ run ແຄມເປນທຳອິດໄດ້ໃນ ~5 ນາທີ",
+        "collapse": "ຫຍໍ້",
+        "expand": "ຂະຫຍາຍ",
+        "dismiss": "ເຊື່ອງຕະຫຼອດໄປ",
+        "steps": {
+          "meta": {
+            "label": "ເຊື່ອມຕໍ່ Meta Business Manager",
+            "description": "OAuth ກັບ Facebook ເພື່ອໃຫ້ AdsLab ອ່ານຂໍ້ມູນ + ຈັດການ ads",
+            "cta": "ເຊື່ອມເລີຍ"
+          },
+          "scope": {
+            "label": "ເລືອກ ad accounts ທີ່ tenant ນີ້ດູແລ",
+            "description": "ແທນທີ່ຈະເບິ່ງທຸກ account ໃນ BM — ເລືອກສະເພາະທີ່ກ່ຽວຂ້ອງ",
+            "cta": "ຕັ້ງ Scope"
+          },
+          "naming": {
+            "label": "ກຳນົດ Naming Convention",
+            "description": "AdsLab ຈະແນະນຳຊື່ຕາມມາດຕະຖານທີ່ຕັ້ງໄວ້ + auto-pin ເຂົ້າ scope",
+            "cta": "ຕັ້ງ Template"
+          },
+          "campaign": {
+            "label": "ສ້າງ Campaign ທຳອິດ",
+            "description": "ໃຊ້ Campaign Builder — Smart Name Field + AI suggestions",
+            "cta": "ສ້າງ Campaign"
+          }
+        }
+      },
+      "connectMetaCtaTitle": "ເຊື່ອມ Meta ເພື່ອເລີ່ມໃຊ້ງານ",
+      "connectMetaCtaDescription": "ເຊື່ອມຕໍ່ Facebook Business Manager ຂອງທ່ານກັບ AdsLab ເພື່ອໃຫ້ AI ວິເຄາະ ແລະ optimize ແຄມເປນຂອງທ່ານໄດ້ທຸກວັນ"
+    },
+    "dashboardV1": {
+      "presets": {
+        "today": "ມື້ນີ້",
+        "yesterday": "ມື້ວານ",
+        "last_7d": "7 ມື້ຫຼ້າສຸດ",
+        "last_30d": "30 ມື້ຫຼ້າສຸດ"
+      },
+      "custom": "ກຳນົດເອງ",
+      "syncedAt": "ຊິງຄ໌ {when}",
+      "stale": "(stale)",
+      "cached": "(cached)",
+      "sync": "ຊິງຄ໌",
+      "fromDate": "ຕັ້ງແຕ່",
+      "toDate": "ຫາ",
+      "apply": "ນຳມາໃຊ້",
+      "emptyTitle": "ຍັງບໍ່ມີ campaign ທີ່ເຮັດວຽກໃນຊ່ວງທີ່ເລືອກ",
+      "emptyDescription": "ລອງເລືອກຊ່ວງເວລາອື່ນ ຫຼື ໄປສ້າງ campaign ໃນ Meta Ads Manager ກ່ອນ",
+      "cpm": {
+        "good": "ດີ",
+        "warn": "ເຝົ້າລະວັງ",
+        "bad": "ແພງ"
+      },
+      "roas": {
+        "good": "ດີ",
+        "warn": "ເຝົ້າລະວັງ",
+        "bad": "ຕ່ຳ"
+      },
+      "toast": {
+        "fetchFailed": "ໂຫລດຂໍ້ມູນບໍ່ສຳເລັດ",
+        "syncSuccess": "ຊິງຄ໌ຂໍ້ມູນໃໝ່ສຳເລັດ"
+      }
     },
     "boost": {
       "title": "ບູສດ່ວນ",
-      "subtitle": "ສະເພາະ OWNER + MEDIA_BUYER"
+      "subtitle": "ສະເພາະ OWNER + MEDIA_BUYER",
+      "gate": {
+        "needMeta": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນໃຊ້ງານ Quick Boost",
+        "cta": "ໄປທີ່ Settings",
+        "ownerOnly": "ຟີເຈີນີ້ເປີດໃຫ້ OWNER + MEDIA_BUYER"
+      },
+      "input": {
+        "title": "ວາງຂໍ້ຄວາມທີ່ໄດ້ຮັບຈາກລູກຄ້າ",
+        "subtitle": "AI ຈະຕີຄວາມ + ດຶງ URL + ກຽມແຄມເປນໃຫ້ທ່ານກວດກ່ອນເຜີຍແຜ່",
+        "examplePrompt": "ບູສຄລິບໃຫ້ແດ່ ເປັນ Views ໂພສລະ 1250 ບາດ ໃຫ້ຈົບມື້ອື່ນ 10:00 ໂມງ. https://facebook.com/reel/2046794962859921\nhttps://facebook.com/reel/1002568998876934",
+        "useExample": "ໃຊ້ຕົວຢ່າງ",
+        "analyzeBtn": "ວິເຄາະ + ວາງແຜນ",
+        "analyzing": "AI ກຳລັງວິເຄາະ..."
+      },
+      "intent": {
+        "understood": "AI ເຂົ້າໃຈວ່າ:",
+        "urlErrors": "URL ທີ່ resolve ບໍ່ສຳເລັດ:"
+      },
+      "kpiGate": {
+        "title": "KPI + ຈຸດປະສົງ",
+        "subtitle": "AI ຕ້ອງຮູ້ເພື່ອຊ່ວຍປະເມີນຜົນພາຍຫຼັງ — ແລະຈຳເປັນຖ້າຈະເຜີຍແຜ່ທັນທີ",
+        "kpiLabel": "KPI",
+        "kpiPlaceholder": "ເຊັ່ນ: 10,000 views ຂັ້ນຕ່ຳ / CPV ≤ 0.5 ບາດ",
+        "purposeLabel": "ຈຸດປະສົງ",
+        "purposePlaceholder": "ເຊັ່ນ: ທົດສອບ creative / ກ່ອນ launch / promote campaign"
+      },
+      "plan": {
+        "headerTitle": "ແຜນ {count} ແຄມເປນ",
+        "headerSubtitle": "ລວມ ฿{total} — ກວດ + ແກ້ໄຂກ່ອນສ້າງ",
+        "summary": "{count} ແຄມເປນ · ฿{total}",
+        "defaultStatusNote": "ສະຖານະເລີ່ມຕົ້ນ: PAUSED (ປອດໄພ) — ເປີດພາຍຫຼັງທີ່ໜ້າ /campaigns ໄດ້",
+        "saveDraft": "ສ້າງເປັນ Draft (PAUSED)",
+        "publishActive": "ຢືນຢັນໃຊ້ເງິນ ฿{total} + ເຜີຍແຜ່ທັນທີ",
+        "publishActiveTooltip": "ປ້ອນ KPI + ຈຸດປະສົງກ່ອນ"
+      },
+      "results": {
+        "title": "ຜົນລັບ — ສຳເລັດ {success}/{total}",
+        "subtitle": "ກົດຊື່ campaign ເພື່ອໄປໜ້າລາຍລະອຽດ",
+        "newBoost": "ບູສງານໃໝ່",
+        "view": "ເບິ່ງ",
+        "reelNotPromotable": "Meta ບອກວ່າ reel ນີ້ promote ບໍ່ໄດ້ — ມັກເກີດຈາກ: reel ເກົ່າຫຼາຍ / paid partnership / ສິດ video monetization ຍັງບໍ່ຜ່ານ / standalone reel ບໍ່ຜູກກັບ Page post promotable pool. ລອງ reel ໃໝ່ທີ່ໂພສຈາກ Page ໂດຍກົງ"
+      },
+      "brief": {
+        "removeAria": "ລົບອອກຈາກແຜນ",
+        "selectPlaceholder": "— ເລືອກ —",
+        "budgetLabel": "ງົບ (THB lifetime)",
+        "startLabel": "ເລີ່ມ",
+        "endLabel": "ສິ້ນສຸດ",
+        "durationHours": "ແລ່ນ {hours} ຊມ.",
+        "durationDays": "ແລ່ນ ~{days} ມື້"
+      },
+      "toast": {
+        "promptTooShort": "ປ້ອນຂໍ້ຄວາມໃຫ້ຍາວກວ່ານີ້",
+        "planFailed": "ວາງແຜນບໍ່ສຳເລັດ: {message}",
+        "noBriefs": "ບໍ່ມີ campaign ຈະສ້າງ",
+        "needKpiPurpose": "ປ້ອນ KPI + ຈຸດປະສົງກ່ອນຈຶ່ງຈະເຜີຍແຜ່ທັນທີໄດ້",
+        "executeSuccess": "ສ້າງ {success}/{total} campaign ສຳເລັດ",
+        "executeFailed": "ແລ່ນບໍ່ສຳເລັດ: {message}"
+      },
+      "confirm": {
+        "executeActive": "ຢືນຢັນໃຊ້ເງິນຈິງ ฿{total} ກັບ {count} campaigns? KPI: {kpi}\nຈຸດປະສົງ: {purpose} ກົດ OK ເພື່ອເຜີຍແຜ່ທັນທີ"
+      },
+      "kpi": {
+        "atLeast": "ຂັ້ນຕ່ຳ",
+        "atMost": "ບໍ່ເກີນ"
+      },
+      "briefBuilder": {
+        "warningNoAccount": "Page \"{name}\" ({pageId}) ຍັງບໍ່ມີ ad account ທີ່ເຊື່ອມໄວ້ — ເລືອກເອງໄດ້ໃນກາດນີ້",
+        "warningNoEndTime": "ບໍ່ໄດ້ລະບຸເວລາສິ້ນສຸດ — ຕັ້ງໃຫ້ +24 ຊມ ຈາກຕອນເລີ່ມ",
+        "warningNoObjective": "ບໍ່ໄດ້ລະບຸ objective — ໃຊ້ Engagement ເປັນຄ່າ default"
+      }
     },
     "campaigns": {
       "title": "ແຄມເປນ",
-      "subtitle": "ຈັດການ + ວາງແຜນແຄມເປນຂອງທ່ານ"
+      "subtitle": "ຈັດການ + ວາງແຜນແຄມເປນຂອງທ່ານ",
+      "mindmap": {
+        "empty": "ບໍ່ມີແຄມເປນໃນຂະນະນີ້",
+        "campaignLabel": "ແຄມເປນ",
+        "campaignsCountUnit": "ແຄມເປນ",
+        "otherHub": "ອື່ນໆ"
+      },
+      "view": {
+        "structure": "ໂຄງສ້າງ",
+        "table": "ຕາຕະລາງ"
+      },
+      "action": {
+        "columns": "ຄໍລຳ",
+        "export": "ສົ່ງອອກ",
+        "create": "ສ້າງແຄມເປນ"
+      },
+      "search": {
+        "placeholder": "ຄົ້ນຫາແຄມເປນ, Ad Set, Ads..."
+      },
+      "filter": {
+        "status": "ສະຖານະ",
+        "objective": "ຈຸດປະສົງ",
+        "other": "ອື່ນໆ"
+      },
+      "table": {
+        "name": "ຊື່",
+        "status": "ສະຖານະ",
+        "objective": "ຈຸດປະສົງ",
+        "budget": "ງົບປະມານ",
+        "spend": "ຄ່າໃຊ້ຈ່າຍ"
+      },
+      "budget": {
+        "perDay": "/ວັນ"
+      },
+      "diagnose": {
+        "tooltip": "Diagnose ແຄມເປນນີ້ດ້ວຍ AI (ເປີດ AI Chat ພ້ອມຄຳຖາມ)",
+        "prompt": "Diagnose ແຄມເປນ \"{name}\" (id: {id}) — ໃຊ້ getCampaignInsights ດຶງ 7-day metrics, ແລ້ວບອກ 3 levers (creative / landing page / offer) ໂຕໃດໜ້າຈະເປັນບັນຫາ + ແນະນຳ action ທີ່ເຮັດໄດ້ມື້ອື່ນ"
+      },
+      "empty": {
+        "title": "ບໍ່ພົບແຄມເປນທີ່ກົງເງື່ອນໄຂ",
+        "description": "ລອງລ້າງຟິວເຕີ ຫຼື ສ້າງແຄມເປນໃໝ່"
+      },
+      "loading": {
+        "adSets": "ກຳລັງໂຫລດ Ad Sets...",
+        "structure": "ກຳລັງໂຫລດມຸມມອງໂຄງສ້າງ..."
+      },
+      "errorLoad": "ໂຫລດບໍ່ສຳເລັດ: {message}",
+      "adset": {
+        "empty": "ແຄມເປນນີ້ຍັງບໍ່ມີ Ad Set",
+        "noAds": "Ad Set ນີ້ຍັງບໍ່ມີໂຄສະນາ",
+        "adsCount": "{count} ໂຄສະນາ"
+      },
+      "duplicateErrors": {
+        "abo": "Budget ຢູ່ທີ່ລະດັບ ad set (ABO) — ປັບ budget ຕອນ duplicate ບໍ່ໄດ້",
+        "dailyExclusive": "ລະບຸໄດ້ແຕ່ຢ່າງໃດຢ່າງໜຶ່ງ: dailyBudget ຫຼື dailyBudgetMultiplier",
+        "lifetimeExclusive": "ລະບຸໄດ້ແຕ່ຢ່າງໃດຢ່າງໜຶ່ງ: lifetimeBudget ຫຼື lifetimeBudgetMultiplier",
+        "sourceDailyMode": "Source ໃຊ້ daily budget — ໃຊ້ dailyBudget ຫຼື dailyBudgetMultiplier",
+        "sourceLifetimeMode": "Source ໃຊ້ lifetime budget — ໃຊ້ lifetimeBudget ຫຼື lifetimeBudgetMultiplier",
+        "multiplierRange": "Multiplier ຕ້ອງຢູ່ລະຫວ່າງ 0 ຫາ {max}",
+        "budgetBelowMin": "Budget ຕ່ຳກວ່າຂັ້ນຕ່ຳ ฿{min}",
+        "budgetAboveMax": "Budget ເກີນເພດານ ฿{max}",
+        "connectionNotReady": "Meta connection ບໍ່ພ້ອມໃຊ້ງານ",
+        "campaignNotFound": "Campaign {id} ບໍ່ພົບໃນ tenant ນີ້",
+        "activateNow": "ACTIVE ທັນທີ"
+      }
+    },
+    "campaignsNew": {
+      "title": "ສ້າງ Campaign ໃໝ່",
+      "subtitle": "ສ້າງ Campaign → Ad Set → Ad ໃນ Meta ຄັ້ງດຽວຈົບ. ທຸກຕົວຈະເລີ່ມຕົ້ນທີ່ PAUSED ປອດໄພ",
+      "backLink": "ກັບໄປໜ້າ Campaigns",
+      "noPages": {
+        "title": "ບໍ່ພົບ Facebook Page ທີ່ຈັດການ",
+        "body": "ທຸກໂຄສະນາຕ້ອງ publish \"in name of\" Page Facebook. ກວດສອບວ່າ user ທີ່ເຊື່ອມ Meta ເປັນ admin/editor ຂອງ Page ຢ່າງໜ້ອຍ 1 ໜ້າ ແລ້ວ reconnect Meta ໃໝ່",
+        "settingsCta": "ໄປທີ່ Settings"
+      },
+      "noAccounts": "ບໍ່ພົບ ad account ທີ່ active. ກວດສອບ Meta Business Manager"
+    },
+    "campaignsHistory": {
+      "title": "ປະຫວັດ Action",
+      "subtitle": "ທຸກ action ທີ່ເຮັດຜ່ານ AdsLab — ໃຜ / ເມື່ອໃດ / ກັບ campaign ໃດ / before → after",
+      "backLink": "ກັບໄປໜ້າ Campaigns",
+      "filterLabel": "Filter",
+      "action": {
+        "all": "ທຸກ action",
+        "pause": "Pause",
+        "resume": "Resume",
+        "setBudget": "ແກ້ Budget",
+        "setEndDate": "ແກ້ End Date"
+      },
+      "result": {
+        "all": "ທຸກຜົນລັບ",
+        "success": "ສຳເລັດ",
+        "failed": "ລົ້ມເຫຼວ"
+      },
+      "userAll": "ທຸກ user",
+      "filterSubmit": "ກອງ",
+      "filterClear": "ລ້າງ",
+      "totalSuffix": "{count} ລາຍການ",
+      "empty": {
+        "title": "ຍັງບໍ່ມີປະຫວັດ action",
+        "body": "ກົດ Pause/Resume ຫຼື ແກ້ budget ໃນໜ້າ Campaigns ເພື່ອສ້າງ audit log ທຳອິດ"
+      },
+      "pageIndicator": "ໜ້າ {page} / {total}",
+      "prev": "ກ່ອນໜ້າ",
+      "next": "ຖັດໄປ"
     },
     "ads": {
       "title": "ໂຄສະນາ",
@@ -179,41 +862,2254 @@
     },
     "audiences": {
       "title": "ກຸ່ມເປົ້າໝາຍ",
-      "subtitle": "ສ້າງ Custom Audience ຈາກລາຍຊື່ລູກຄ້າ, Pixel, ຫຼື Lookalike — audience ໃໝ່ຈະປະກົດໃນ Campaign Builder ທັນທີ"
+      "subtitle": "ສ້າງ Custom Audience ຈາກລາຍຊື່ລູກຄ້າ, Pixel, ຫຼື Lookalike — audience ໃໝ່ຈະປະກົດໃນ Campaign Builder ທັນທີ",
+      "tabs": {
+        "audiences": "Audiences",
+        "pixels": "Pixels",
+        "conversions": "Custom Conversions",
+        "events": "Events (SDK)",
+        "new": "NEW"
+      },
+      "subtype": {
+        "customer": "ລາຍຊື່ລູກຄ້າ",
+        "pixel": "Pixel (ເວັບໄຊ)",
+        "lookalike": "Lookalike",
+        "engagement": "Engagement",
+        "app": "App activity"
+      },
+      "filter": {
+        "allTypes": "ທຸກ type",
+        "allAccounts": "ທຸກ account",
+        "allBusinesses": "ທຸກ Business",
+        "showing": "ສະແດງ {filtered} / {total}",
+        "totalLabel": "ລວມ:",
+        "audiencesUnit": "audiences",
+        "conversionsUnit": "custom conversions"
+      },
+      "actions": {
+        "create": "ສ້າງ Audience",
+        "createFirst": "ສ້າງ Audience ຕົວທຳອິດ",
+        "createPixel": "ສ້າງ Pixel",
+        "createPixelFirst": "ສ້າງ Pixel ຕົວທຳອິດ",
+        "createConversion": "ສ້າງ Custom Conversion",
+        "createConversionFirst": "ສ້າງ Custom Conversion ຕົວທຳອິດ",
+        "createRule": "ສ້າງ Rule",
+        "createRuleFirst": "ສ້າງ Rule ຕົວທຳອິດ",
+        "create2": "ສ້າງ",
+        "back": "← ກັບຄືນ",
+        "cancel": "ຍົກເລີກ"
+      },
+      "search": {
+        "placeholder": "ຄົ້ນຫາຊື່ audience..."
+      },
+      "list": {
+        "deleteTitle": "ລຶບ audience",
+        "deleteConfirm": "ລຶບ audience \"{name}\"? (ມີຜົນກັບ Meta ຈິງ — ຍົກເລີກບໍ່ໄດ້)",
+        "deleting": "ກຳລັງລຶບ...",
+        "deleted": "ລຶບແລ້ວ",
+        "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+        "emptyTitle": "ຍັງບໍ່ມີ audience",
+        "emptyDescription": "ສ້າງ audience ຈາກລາຍຊື່ລູກຄ້າ (ອີເມວ/ເບີໂທ), Lookalike, ຫຼື Pixel — ໃຊ້ໃນ Campaign Builder ໄດ້ທັນທີ",
+        "emptyFiltered": "ບໍ່ພົບ audience ທີ່ກົງເງື່ອນໄຂ"
+      },
+      "pixels": {
+        "bannerTitle": "ເປັນຫຍັງ Pixel ສ້າງໄດ້ພຽງສອງສາມຕົວ?",
+        "bannerLimit": "Meta ຈຳກັດ <strong>5 Pixels ຕໍ່ Business Manager</strong> (ຖ້າ BM ບໍ່ verify) — ຖ້າ verify BM ແລ້ວຈະໄດ້ສູງສຸດ 100 Pixels",
+        "bannerShare": "ແຕ່ <strong>1 Pixel ໃຊ້ກັບຫຼາຍ ad accounts ໄດ້</strong> ໃນ BM ດຽວກັນ — ກົດປຸ່ມ \"Share\" ເພື່ອຂະຫຍາຍ Pixel ໄປ ad accounts ອື່ນ",
+        "bannerScope": "Pixel ແຕ່ລະຕົວ = 1 ເວັບໄຊ / 1 ລູກຄ້າ ບໍ່ແມ່ນ 1 ad account",
+        "totalLabel": "Pixels ທັງໝົດ:",
+        "noBM": "(ບໍ່ມີ BM)",
+        "loading": "ກຳລັງໂຫຼດ Pixels...",
+        "emptyTitle": "ຍັງບໍ່ມີ Pixel",
+        "emptyDescription": "ສ້າງ Pixel ເພື່ອຕິດ tracking code ໃນເວັບໄຊ — ແລ້ວຈຶ່ງສ້າງ Website Custom Audience ຈາກຄົນທີ່ເຂົ້າເວັບໄດ້",
+        "idPrefix": "ID",
+        "bmPrefix": "BM:",
+        "firedAt": "ຍິງລ່າສຸດ {when}",
+        "usedWith": "ໃຊ້ກັບ {count} ad account{plural}",
+        "andOthers": "+{count} ອື່ນໆ",
+        "unavailable": "unavailable",
+        "openEventsManager": "ເປີດໃນ Events Manager (Facebook)",
+        "eventsManager": "Events Manager",
+        "shareTitle": "ໃຊ້ Pixel ນີ້ກັບ ad account ອື່ນໃນ BM ດຽວກັນ",
+        "share": "Share",
+        "copyCode": "Copy code",
+        "copied": "ສຳເນົາແລ້ວ",
+        "copyFail": "ສຳເນົາບໍ່ສຳເລັດ"
+      },
+      "sharePixel": {
+        "title": "Share Pixel",
+        "subtitle": "ຂະຫຍາຍ <strong>{name}</strong> ໄປ ad account ອື່ນໃນ BM ດຽວກັນ",
+        "subtitleWithBM": "({bm})",
+        "notInBM": "Pixel ນີ້ບໍ່ໄດ້ຢູ່ໃນ Business Manager — share ບໍ່ໄດ້",
+        "allShared": "ບໍ່ມີ ad account ອື່ນໃນ BM ນີ້ທີ່ຍັງບໍ່ໄດ້ຮັບ Pixel ແລ້ວ — Pixel ນີ້ໃຊ້ກັບທຸກ ad account ໃນ BM ແລ້ວ",
+        "targetLabel": "Target Ad Account",
+        "hint": "ສະແດງສະເພາະ ad accounts ທີ່ຢູ່ໃນ BM ດຽວກັນ — Meta ບໍ່ອະນຸຍາດໃຫ້ share ຂ້າມ BM",
+        "pickAccount": "ເລືອກ ad account",
+        "loading": "ກຳລັງ share Pixel...",
+        "successPrefix": "Share Pixel ໄປ",
+        "fail": "Share ບໍ່ສຳເລັດ",
+        "submit": "Share Pixel"
+      },
+      "createPixel": {
+        "title": "ສ້າງ Pixel ໃໝ່",
+        "subtitle": "Pixel ໃຊ້ຕິດ tracking code ໃນເວັບໄຊ",
+        "adAccountLabel": "Ad Account",
+        "storageHint": "Pixel ຈະຖືກຝາກໄວ້ໃນ Business Manager: <strong>{business}</strong> — ເບິ່ງໃນ Events Manager ຫຼັງຈາກສ້າງ",
+        "nameLabel": "ຊື່ Pixel",
+        "namePlaceholder": "ເຊັ່ນ Main Website Pixel",
+        "limitWarning": "Meta ຈຳກັດ <strong>1 Pixel ຕໍ່ ad account</strong> — ຖ້າ account ນີ້ມີ Pixel ແລ້ວ ລະບົບຈະແຈ້ງເຕືອນແທນການສ້າງຊ້ຳ",
+        "nameRequired": "ຕັ້ງຊື່ Pixel",
+        "loading": "ກຳລັງສ້າງ Pixel...",
+        "successPrefix": "ສ້າງ Pixel",
+        "fail": "ສ້າງບໍ່ສຳເລັດ"
+      },
+      "pixelCode": {
+        "title": "Install Code — {name}",
+        "subtitle": "ວາງ code ນີ້ໃນ <head> ຂອງທຸກໜ້າໃນເວັບໄຊ (Pixel ID {id})",
+        "storedIn": "ຝາກໄວ້ໃນ BM:",
+        "openEventsManager": "ເປີດ Events Manager",
+        "empty": "ຍັງບໍ່ມີ install code — ລອງ refresh"
+      },
+      "createAudience": {
+        "title": "ສ້າງ Audience ໃໝ່",
+        "subtitle": "ເລືອກແຫຼ່ງຂໍ້ມູນທີ່ຈະໃຊ້ສ້າງ audience",
+        "customerTitle": "Customer list",
+        "customerDesc": "ອັບໂຫຼດອີເມວ/ເບີໂທລູກຄ້າເດີມ → retarget",
+        "websiteTitle": "Website visitors (Pixel)",
+        "websiteDesc": "ຄົນເຂົ້າເວັບໄຊ ຈັບໂດຍ Pixel — retarget visitors",
+        "lookalikeTitle": "Lookalike",
+        "lookalikeDesc": "ຄົນຄ້າຍກັບ audience ທີ່ມີຢູ່ — expand prospecting",
+        "soon": "soon"
+      },
+      "customerList": {
+        "adAccountLabel": "Ad Account",
+        "nameLabel": "ຊື່ Audience",
+        "namePlaceholder": "ເຊັ່ນ Customers Q1 2026",
+        "descLabel": "ຄຳອະທິບາຍ (optional)",
+        "descPlaceholder": "ເຊັ່ນ Email list ຈາກ Shopify, ຄັ້ງລ່າສຸດ 1 ເມ.ສ. 2026",
+        "uploadLabel": "ອັບໂຫຼດ CSV (ອີເມວ / ເບີໂທ)",
+        "parsing": "ກຳລັງອ່ານໄຟລ໌...",
+        "found": "ພົບ {emails} email + {phones} ເບີໂທ",
+        "changeFile": "ກົດເພື່ອປ່ຽນໄຟລ໌",
+        "dropHint": "ເລືອກ CSV / TXT — column ໃດກໍ່ໄດ້ (email ຫຼື phone)",
+        "minWarning": "Meta ຕ້ອງການຢ່າງໜ້ອຍ {min} ແຖວ — ຕອນນີ້ມີ {total}",
+        "readyHint": "ພ້ອມສົ່ງ — PII ຈະຖືກ hash ດ້ວຍ SHA-256 ໃນບຣາວເຊີ (server ບໍ່ເຫັນ raw data)",
+        "submit": "ສ້າງ Audience",
+        "errNameRequired": "ຕັ້ງຊື່ audience",
+        "errMinRows": "ຕ້ອງມີຢ່າງໜ້ອຍ {min} ແຖວ (Meta minimum) — ຕອນນີ້ມີ {total}",
+        "loadingHash": "ກຳລັງ hash {total} ແຖວ...",
+        "loadingUpload": "ກຳລັງສ້າງ audience + ອັບໂຫຼດ...",
+        "success": "ສ້າງ \"{name}\" ສຳເລັດ — {users} ແຖວ",
+        "fail": "ສ້າງບໍ່ສຳເລັດ",
+        "parseFail": "Parse CSV ບໍ່ສຳເລັດ: {message}"
+      },
+      "lookalike": {
+        "ratioClosest": "ໃກ້ຄຽງທີ່ສຸດ (~ແຄບ)",
+        "ratioClose": "ໃກ້ຄຽງ",
+        "ratioMixed": "ປະສົມ",
+        "ratioWidest": "ກວ້າງທີ່ສຸດ",
+        "adAccountLabel": "Ad Account",
+        "sourceLabel": "Source Audience (audience ຕົ້ນແບບ)",
+        "sourceEmpty": "ບໍ່ມີ source audience ທີ່ໃຊ້ໄດ້ໃນ account ນີ້ — ຕ້ອງມີ Custom/Website audience ຂະໜາດ ≥ 100 ກ່ອນ",
+        "sourcePlaceholder": "-- ເລືອກ source --",
+        "nameLabel": "ຊື່ Lookalike",
+        "namePlaceholder": "ເຊັ່ນ Lookalike Customers TH 1%",
+        "countryLabel": "ປະເທດ (ISO code)",
+        "similarityLabel": "Similarity",
+        "processingHint": "Lookalike ຈະໃຊ້ເວລາ ~6 ຊມ. ໃນການປະມວນຜົນ — ຂະໜາດຈະເລີ່ມທີ່ 0 ແລ້ວເພີ່ມຂຶ້ນ",
+        "submit": "ສ້າງ Lookalike",
+        "errNameRequired": "ຕັ້ງຊື່ Lookalike",
+        "errSourceRequired": "ເລືອກ source audience",
+        "loading": "ກຳລັງສ້າງ Lookalike...",
+        "success": "ສ້າງ Lookalike \"{name}\" ສຳເລັດ — Meta ຄຳນວນພາຍໃນ ~6 ຊມ.",
+        "fail": "ສ້າງບໍ່ສຳເລັດ"
+      },
+      "website": {
+        "adAccountLabel": "Ad Account",
+        "pixelLabel": "Pixel",
+        "loadingSuffix": "(loading...)",
+        "noPixel": "ບໍ່ມີ Pixel ໃນ account ນີ້ — ສ້າງ Pixel ກ່ອນ (Tab \"Pixels\")",
+        "pixelPlaceholder": "-- ເລືອກ Pixel --",
+        "nameLabel": "ຊື່ Audience",
+        "namePlaceholder": "ເຊັ່ນ Website visitors 30d",
+        "ruleLabel": "ເງື່ອນໄຂ",
+        "ruleAll": "ທຸກຄົນທີ່ເຂົ້າເວັບ",
+        "ruleUrlContains": "URL ທີ່ມີຄຳວ່າ...",
+        "ruleEvent": "Pixel event = ...",
+        "ruleUrlPlaceholder": "ເຊັ່ນ /product ຫຼື /thank-you",
+        "ruleEventPlaceholder": "ເຊັ່ນ Purchase, AddToCart, Lead",
+        "retentionLabel": "ເກັບຂໍ້ມູນ (ມື້)",
+        "retentionUnit": "{days} ມື້",
+        "submit": "ສ້າງ Audience",
+        "errNameRequired": "ຕັ້ງຊື່ audience",
+        "errPixelRequired": "ເລືອກ Pixel",
+        "errRuleValueRequired": "ປ້ອນຄ່າເງື່ອນໄຂ",
+        "loading": "ກຳລັງສ້າງ audience...",
+        "success": "ສ້າງ \"{name}\"",
+        "fail": "ສ້າງບໍ່ສຳເລັດ"
+      },
+      "conversions": {
+        "bannerTitle": "Custom Conversion ແມ່ນຫຍັງ?",
+        "bannerItem1": "ກຳນົດ URL pattern → conversion event ໂດຍບໍ່ຕ້ອງຂຽນ code event ໃນເວັບ",
+        "bannerItem2": "ເຊັ່ນ \"URL ທີ່ມີຄຳວ່າ <code>/thank-you</code>\" = Purchase event (Meta ຈະນັບໃຫ້ອັດຕະໂນມັດ)",
+        "bannerItem3": "ເໝາະກັບເວັບທີ່ຕິດ Pixel basic ແລ້ວ ແຕ່ບໍ່ມີ dev ມາ map events",
+        "loading": "ກຳລັງໂຫຼດ...",
+        "emptyTitle": "ຍັງບໍ່ມີ Custom Conversion",
+        "emptyDescription": "ສ້າງ Custom Conversion ເພື່ອ map URL → conversion event ໂດຍບໍ່ຕ້ອງຂຽນ event code ໃນເວັບ",
+        "deleteTitle": "ລຶບ Custom Conversion",
+        "deleteConfirm": "ລຶບ Custom Conversion \"{name}\"? (ມີຜົນກັບ Meta ຈິງ — ຍົກເລີກບໍ່ໄດ້)",
+        "deleting": "ກຳລັງລຶບ...",
+        "deleted": "ລຶບແລ້ວ",
+        "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+        "pixelPrefix": "Pixel:",
+        "categoryPrefix": "Category:",
+        "rulePrefix": "Rule:"
+      },
+      "createConversion": {
+        "title": "ສ້າງ Custom Conversion",
+        "subtitle": "map URL pattern → conversion event ໂດຍບໍ່ຕ້ອງຂຽນ code event ໃນເວັບ",
+        "adAccountLabel": "Ad Account",
+        "pixelLabel": "Pixel",
+        "loadingSuffix": "(loading...)",
+        "noPixel": "ບໍ່ມີ Pixel ໃນ account ນີ້ — ສ້າງ Pixel ກ່ອນ (tab \"Pixels\")",
+        "pixelPlaceholder": "-- ເລືອກ Pixel --",
+        "nameLabel": "ຊື່ Conversion",
+        "namePlaceholder": "ເຊັ່ນ Order Complete, Lead Form Submit",
+        "urlRuleLabel": "ກົດ URL",
+        "urlContains": "URL contains",
+        "urlEquals": "URL equals",
+        "urlNotContains": "URL NOT contains",
+        "valuePlaceholder": "ເຊັ່ນ /thank-you ຫຼື /checkout/complete",
+        "matchHint": "Meta ຈະ match ກັບ URL ຂອງ PageView ທີ່ Pixel ນີ້ຍິງໃນເວັບ",
+        "categoryLabel": "Category (ສຳລັບ Meta optimization)",
+        "categoryHint": "ໃຊ້ບອກ Meta ວ່າ conversion ນີ້ຄ້າຍ event ມາດຕະຖານໃດ — ມີຜົນກັບ optimization",
+        "errNameRequired": "ຕັ້ງຊື່",
+        "errPixelRequired": "ເລືອກ Pixel",
+        "errUrlRequired": "ປ້ອນ URL pattern",
+        "loading": "ກຳລັງສ້າງ Custom Conversion...",
+        "success": "ສ້າງ \"{name}\" ສຳເລັດ",
+        "fail": "ສ້າງບໍ່ສຳເລັດ",
+        "eventPurchase": "Purchase — ຊື້ສຳເລັດ",
+        "eventAddToCart": "Add to Cart — ໃສ່ກະຕ່າ",
+        "eventInitiateCheckout": "Initiate Checkout — ເລີ່ມ checkout",
+        "eventLead": "Lead — ປ້ອນຟອມ",
+        "eventCompleteRegistration": "Complete Registration — ສະໝັກສະມາຊິກ",
+        "eventAddPaymentInfo": "Add Payment Info — ປ້ອນຂໍ້ມູນຈ່າຍ",
+        "eventViewContent": "View Content — ເບິ່ງສິນຄ້າ",
+        "eventSearch": "Search — ຄົ້ນຫາ",
+        "eventSubscribe": "Subscribe — ສະໝັກຮັບຂໍ້ມູນ",
+        "eventContact": "Contact — ຕິດຕໍ່",
+        "eventAddToWishlist": "Add to Wishlist",
+        "eventFindLocation": "Find Location",
+        "eventDonate": "Donate",
+        "eventSchedule": "Schedule",
+        "eventStartTrial": "Start Trial",
+        "eventSubmitApplication": "Submit Application",
+        "eventCustomizeProduct": "Customize Product",
+        "eventOther": "Other — ກຳນົດເອງ"
+      },
+      "events": {
+        "logPageTitle": "SDK Event Log",
+        "logPageSubtitle": "ເບິ່ງ events ທີ່ SDK ຍິງເຂົ້າມາ + ສະຖານະ CAPI relay — ໃຊ້ debug rules ກ່ອນຣັນ campaign ຈິງ",
+        "log": {
+          "allEvents": "ທຸກ event",
+          "allStatuses": "ທຸກ status",
+          "loading": "ກຳລັງໂຫລດ...",
+          "empty": "ຍັງບໍ່ມີ event log — ຕິດ SDK ໃນເວັບແລ້ວ rule ຈະເລີ່ມຍິງ events ເຂົ້າມາທີ່ນີ້"
+        },
+        "bannerTitle": "Events SDK — track event ທັນທີໂດຍບໍ່ຕ້ອງຂຽນ code",
+        "bannerItem1": "ຕິດ <strong>1 script tag</strong> ໃນເວັບ → SDK ຂອງເຮົາ fire Meta Pixel events ຕາມ rule ທີ່ຕັ້ງໄວ້ທີ່ນີ້",
+        "bannerItem2": "Triggers: URL match, click selector, form submit, scroll %, time on page",
+        "bannerItem3": "ສົ່ງທັງ <strong>browser Pixel + server CAPI</strong> (ຕ້ານທານ ad blocker / iOS 14)",
+        "totalLabel": "Rules ທັງໝົດ:",
+        "enabledLabel": "(ເປີດຢູ່ {count})",
+        "viewLog": "ເບິ່ງ Event Log",
+        "sdkInstallCode": "SDK Install Code",
+        "installSdkFirst": "ຕິດ SDK ກ່ອນ",
+        "loading": "ກຳລັງໂຫຼດ...",
+        "emptyTitle": "ຍັງບໍ່ມີ Event Rule",
+        "emptyDescription": "ສ້າງ rule ເພື່ອໃຫ້ SDK ຂອງເຮົາ auto-fire Meta Pixel events ໃນເວັບລູກຄ້າ — ບໍ່ຕ້ອງຂຽນ event code ເອງ",
+        "needPixel": "ຕ້ອງສ້າງ Pixel ກ່ອນໃນ tab Pixels",
+        "rulesUnit": "rule",
+        "rulesUnitPlural": "rules",
+        "installCode": "Install code",
+        "disabled": "disabled",
+        "enableTitle": "ເປີດ rule",
+        "disableTitle": "ປິດ rule",
+        "deleteTitle": "ລຶບ rule",
+        "deleteConfirm": "ລຶບ rule \"{name}\"?",
+        "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+        "deleted": "ລຶບແລ້ວ",
+        "updateFail": "ອັບເດດບໍ່ສຳເລັດ",
+        "firesUnit": "fires",
+        "lastFiredPrefix": "last"
+      },
+      "createRule": {
+        "title": "ສ້າງ Event Rule",
+        "subtitle": "ເມື່ອ trigger match → SDK fire Meta Pixel event + ສົ່ງ CAPI",
+        "pixelLabel": "Pixel",
+        "noPixel": "ບໍ່ມີ Pixel",
+        "nameLabel": "ຊື່ Rule",
+        "namePlaceholder": "ເຊັ່ນ Track Purchase on Thank-You Page",
+        "eventLabel": "Event Name (Meta standard)",
+        "triggerLabel": "Trigger",
+        "trigUrl": "URL match",
+        "trigClick": "Click on selector",
+        "trigForm": "Form submit",
+        "trigScroll": "Scroll percentage",
+        "trigTime": "Time on page",
+        "trigCustom": "Custom window event",
+        "opContains": "contains",
+        "opEquals": "equals",
+        "opNotContains": "not contains",
+        "opStartsWith": "starts with",
+        "opRegex": "regex",
+        "fireOncePerSession": "ຍິງຄັ້ງດຽວຕໍ່ session",
+        "urlPlaceholder": "/thank-you",
+        "clickPlaceholder": ".add-to-cart-button ຫຼື #checkout-btn",
+        "formPlaceholder": "ວ່າງໄວ້ = form ໃດກໍ່ໄດ້ ຫຼື \"form.lead-form\"",
+        "secondsUnit": "ວິນາທີ",
+        "customPlaceholder": "ຊື່ window event ເຊັ່ນ myAppPurchase",
+        "errNameRequired": "ຕັ້ງຊື່ rule",
+        "errPixelRequired": "ເລືອກ Pixel",
+        "errTriggerIncomplete": "ປ້ອນຂໍ້ມູນ trigger ໃຫ້ຄົບ",
+        "loading": "ກຳລັງສ້າງ rule...",
+        "success": "ສ້າງ \"{name}\" ສຳເລັດ",
+        "fail": "ສ້າງບໍ່ສຳເລັດ"
+      },
+      "sdkInstall": {
+        "title": "SDK Install Code",
+        "subtitle": "ສຳລັບ Pixel: <strong>{name}</strong> · ວາງ snippet ນີ້ໃນ <head> ຂອງທຸກໜ້າໃນເວັບໄຊ",
+        "warning": "ໃຊ້ແທນ Meta Pixel basic code ເດີມ — SDK ຂອງເຮົາ inject Pixel ເອງ ຫ້າມຕິດ 2 ບ່ອນໃນໜ້າດຽວກັນ (ຈະນັບ event ຊ້ຳ)",
+        "empty": "ໂຫຼດ install code ບໍ່ສຳເລັດ — ລອງ refresh"
+      },
+      "ruleCondition": {
+        "anyForm": "any form",
+        "urlOp": "URL {op} \"{value}\"",
+        "selector": "selector \"{value}\"",
+        "formSelector": "form \"{value}\""
+      },
+      "time": {
+        "minutesAgo": "{n} ນາທີທີ່ຜ່ານມາ",
+        "hoursAgo": "{n} ຊມ. ທີ່ຜ່ານມາ",
+        "daysAgo": "{n} ມື້ທີ່ຜ່ານມາ",
+        "monthsAgo": "{n} ເດືອນທີ່ຜ່ານມາ"
+      }
     },
     "creatives": {
       "title": "ຄຣີເອທີຟ",
-      "subtitle": "ຄັງຮູບ + ວິດີໂອ ທີ່ໃຊ້ໃນແຄມເປນ"
+      "subtitle": "ຄັງຮູບ + ວິດີໂອ ທີ່ໃຊ້ໃນແຄມເປນ",
+      "searchPlaceholder": "ຄົ້ນຫາຕາມຊື່...",
+      "filterAll": "ທັງໝົດ",
+      "filterImage": "ຮູບ",
+      "filterVideo": "ວິດີໂອ",
+      "upload": "ອັບໂຫລດ",
+      "loadMore": "ໂຫລດເພີ່ມ",
+      "loadMoreFailed": "ໂຫລດເພີ່ມບໍ່ສຳເລັດ: {message}",
+      "deleted": "ລຶບແລ້ວ",
+      "delete": "ລຶບ",
+      "deleteFailed": "ລຶບບໍ່ສຳເລັດ: {message}",
+      "deleteConfirm": "ລຶບ creative ນີ້? Ad ທີ່ກຳລັງໃຊ້ຢູ່ຈະຍັງຄົງຢູ່ໃນ Meta",
+      "emptyAllTitle": "ຍັງບໍ່ມີ creative ໃນຄັງ",
+      "emptyAllDescription": "ອັບໂຫລດຮູບ/ວິດີໂອເພື່ອໃຊ້ໃນແຄມເປນ — Campaign Builder ຈະດຶງຈາກຄັງນີ້ໄດ້ເລີຍ",
+      "emptyFilteredTitle": "ບໍ່ພົບ creative ທີ່ກົງເງື່ອນໄຂ",
+      "emptyFilteredDescription": "ລອງລ້າງຕົວກອງ ຫຼື ອັບໂຫລດໃໝ່",
+      "uploadModalTitle": "ອັບໂຫລດ creative",
+      "uploadModalHint": "ຮອງຮັບ jpg, png, webp, gif, mp4 (ສູງສຸດ 10MB ຕໍ່ໄຟລ໌)",
+      "close": "ປິດ",
+      "uploadingProgress": "ກຳລັງອັບໂຫລດ {done} / {total}",
+      "chooseFiles": "ເລືອກໄຟລ໌ (ເລືອກໄດ້ຫຼາຍໄຟລ໌)",
+      "orDragHere": "ຫຼື ລາກວາງທີ່ນີ້",
+      "uploadFileFailed": "ອັບໂຫລດ {name} ບໍ່ສຳເລັດ: {message}",
+      "uploadDoneCount": "ອັບໂຫລດ {count} ໄຟລ໌ສຳເລັດ",
+      "libraryPicker": {
+        "title": "ເລືອກຈາກຄັງ creative",
+        "subtitle": "ເລືອກ image creative ທີ່ອັບໂຫຼດໄວ້ — ລະບົບຈະສົ່ງໃຫ້ Meta ອັດຕະໂນມັດ",
+        "close": "ປິດ",
+        "loading": "ກຳລັງໂຫຼດ...",
+        "emptyTitle": "ຄັງວ່າງເປົ່າ",
+        "emptyDescription": "ອັບໂຫຼດ creative ກ່ອນທີ່ໜ້າ \"ຄຣີເອທີບ\"",
+        "loadFailed": "ໂຫຼດຄັງບໍ່ສຳເລັດ: {message}",
+        "prepareFailed": "ກຽມຮູບບໍ່ສຳເລັດ: {message}"
+      },
+      "kpiImage": "ຮູບ",
+      "kpiVideo": "ວິດີໂອ",
+      "kpiAi": "ສ້າງດ້ວຍ AI",
+      "kpiTotal": "ທັງໝົດ"
     },
     "posts": {
       "title": "ໂພສເພຈ",
-      "subtitle": "ຂຽນ + ກຳນົດເວລາໂພສ Facebook"
+      "subtitle": "ຂຽນ + ກຳນົດເວລາໂພສ Facebook",
+      "serverErrors": {
+        "unsupportedFileType": "ປະເພດໄຟລ໌ບໍ່ຮອງຮັບ: {type}",
+        "fileTooLarge": "ໄຟລ໌ໃຫຍ່ເກີນ {maxMb}MB",
+        "captionEmpty": "Caption ຫ້າມວ່າງ",
+        "captionTooLong": "Caption ຍາວເກີນ {max} ຕົວອັກສອນ",
+        "mediaRequired": "ຕ້ອງມີຮູບ/ວິດີໂອຢ່າງໜ້ອຍ 1 ອັນ",
+        "scheduleTooSoon": "ເວລາທີ່ຕັ້ງຕ້ອງຫ່າງຈາກນີ້ຢ່າງໜ້ອຍ 10 ນາທີ",
+        "scheduleTooFar": "ເວລາທີ່ຕັ້ງຕ້ອງບໍ່ເກີນ 6 ເດືອນຂ້າງໜ້າ",
+        "pageNotConnected": "Page {pageId} ບໍ່ໄດ້ເຊື່ອມຕໍ່ກັບ tenant ນີ້ (ເຊື່ອມ Page Management ກ່ອນ)",
+        "cannotCancelStatus": "ບໍ່ສາມາດຍົກເລີກໂພສສະຖານະ {status}",
+        "missingMetaPostId": "ບໍ່ມີ Meta post id",
+        "invalidScheduledAt": "scheduledAt ບໍ່ແມ່ນ ISO datetime ທີ່ຖືກຕ້ອງ"
+      }
     },
     "postsNew": {
       "title": "ຂຽນໂພສໃໝ່"
     },
     "reports": {
-      "title": "ລາຍງານ"
+      "title": "ລາຍງານ",
+      "generate": {
+        "progress": {
+          "fetching": "ກຳລັງດຶງຂໍ້ມູນຈາກ Meta...",
+          "analyzingAccounts": "ວິເຄາະ ad accounts...",
+          "thinking": "Claude ກຳລັງຄິດ...",
+          "writing": "ກຳລັງຂຽນລາຍງານ...",
+          "almostDone": "ເກືອບແລ້ວ..."
+        },
+        "button": "ສ້າງລາຍງານດຽວນີ້",
+        "skipped": "ມີລາຍງານຂອງມື້ນີ້ຢູ່ແລ້ວ — ກຳລັງພາໄປເບິ່ງ",
+        "success": "ສ້າງລາຍງານສຳເລັດ",
+        "failed": "ສ້າງລາຍງານບໍ່ສຳເລັດ"
+      },
+      "progress": {
+        "fetching": "ກຳລັງດຶງຂໍ້ມູນຈາກ Meta...",
+        "analyzing": "ວິເຄາະ campaigns...",
+        "thinking": "Claude ກຳລັງຄິດ...",
+        "writing": "ກຳລັງຂຽນລາຍງານ...",
+        "almostDone": "ເກືອບແລ້ວ..."
+      },
+      "toolbar": {
+        "scope": "Scope",
+        "allDefault": "ທັງໝົດ (default)",
+        "createNew": "ສ້າງໃໝ່",
+        "editTooltip": "ແກ້ໄຂ scope ນີ້",
+        "edit": "ແກ້ໄຂ",
+        "deleteTooltip": "ລຶບ scope ນີ້",
+        "generateScope": "ສ້າງລາຍງານ scope ນີ້",
+        "generateNow": "ສ້າງລາຍງານດຽວນີ້"
+      },
+      "toast": {
+        "generateFail": "ສ້າງລາຍງານບໍ່ສຳເລັດ",
+        "alreadyExistsToday": "ມີລາຍງານຂອງມື້ນີ້ຢູ່ແລ້ວ — ກຳລັງພາໄປເບິ່ງ",
+        "generateSuccess": "ສ້າງລາຍງານສຳເລັດ",
+        "confirmDelete": "ລຶບ scope \"{name}\"? (ລາຍງານເກົ່າຈະຍັງຢູ່)",
+        "deleted": "ລຶບ scope ແລ້ວ",
+        "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+        "nameScope": "ຕັ້ງຊື່ scope ກ່ອນ",
+        "saving": "ກຳລັງບັນທຶກ...",
+        "saveFail": "ບັນທຶກບໍ່ສຳເລັດ",
+        "saved": "ບັນທຶກ scope ແລ້ວ"
+      },
+      "list": {
+        "emptyForScope": "ຍັງບໍ່ມີລາຍງານສຳລັບ scope ນີ້",
+        "empty": "ຍັງບໍ່ມີລາຍງານ",
+        "emptyHint": "ກົດ \"ສ້າງລາຍງານ\" ເພື່ອໃຫ້ AI ສະຫຼຸບຂໍ້ມູນຂອງມື້ວານໃຫ້ທ່ານ",
+        "emailSent": "ສົ່ງອີເມວແລ້ວ"
+      },
+      "modal": {
+        "editTitle": "ແກ້ໄຂ Scope",
+        "createTitle": "ສ້າງ Scope ໃໝ່",
+        "hint": "ເລືອກຊຸດ ad accounts / campaigns ທີ່ຕ້ອງການໃຫ້ AI ວິເຄາະສະເພາະກຸ່ມ — ປະວ່າງທັງສອງສ່ວນ = ທັງ workspace",
+        "accountsHeading": "Ad Accounts",
+        "allAccounts": "ທຸກ account (ບໍ່ filter)",
+        "accountsSelected": "ເລືອກ {selected} / {total}",
+        "campaignsHeading": "Campaigns",
+        "allCampaignsInAccounts": "ທຸກ campaign ໃນ accounts ທີ່ເລືອກ",
+        "campaignsSelected": "ເລືອກ {selected}",
+        "campaignSearchPlaceholder": "ຄົ້ນຫາຊື່ campaign...",
+        "campaignsEmpty": "ບໍ່ມີ campaign — ລອງລ້າງ filter ຫຼື ເລືອກ accounts ນ້ອຍລົງ",
+        "scopeNameLabel": "ຊື່ scope",
+        "scopeNamePlaceholder": "ເຊັ່ນ FROST, Asahi Q2, New Launches...",
+        "cancel": "ຍົກເລີກ",
+        "saveEdit": "ບັນທຶກການແກ້ໄຂ",
+        "createBtn": "ສ້າງ scope"
+      },
+      "page": {
+        "title": "ລາຍງານປະຈຳວັນ",
+        "subtitle": "ສະບັບ \"ທັງໝົດ\" ສ້າງອັດຕະໂນມັດທຸກເຊົ້າ 9 ໂມງ — ລາຍງານ scope ກົດເອງຕາມຕ້ອງການ",
+        "needMetaConnection": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນໃຊ້ງານ AI Reports",
+        "goToSettings": "ໄປທີ່ Settings",
+        "statusCompleted": "ສຳເລັດແລ້ວ",
+        "statusGenerating": "ກຳລັງສ້າງ...",
+        "statusFailed": "ລົ້ມເຫຼວ"
+      },
+      "actionsPanel": {
+        "title": "AI ແນະນຳໃຫ້ເຮັດ",
+        "stats": "{pending} ລໍຖ້າ · {applied} ເຮັດແລ້ວ · {dismissed} ຂ້າມ",
+        "applied": "ເຮັດແລ້ວ",
+        "dismissed": "ຂ້າມ",
+        "dismiss": "ຂ້າມ",
+        "doing": "ກຳລັງເຮັດ...",
+        "skipping": "ກຳລັງຂ້າມ...",
+        "done": "ເຮັດແລ້ວ",
+        "skipped": "ຂ້າມແລ້ວ",
+        "failed": "ບໍ່ສຳເລັດ",
+        "confirmAction": "{action} campaign \"{name}\"?",
+        "actionPause": "ຢຸດ",
+        "actionResume": "ເປີດ",
+        "actionSetBudget": "ປັບ budget",
+        "actionSetEndDate": "ຕັ້ງ end date",
+        "actionDuplicate": "Duplicate",
+        "paramSetBudgetDaily": "ເປັນ ₭{amount}/day",
+        "paramSetBudgetLifetime": "ເປັນ ₭{amount} lifetime",
+        "paramSetEndDate": "ເປັນ {when}",
+        "paramDailyBudgetMultiplier": "×{value} budget",
+        "paramLifetimeBudgetMultiplier": "×{value} lifetime budget",
+        "paramActiveImmediately": "ACTIVE ທັນທີ"
+      },
+      "viewer": {
+        "backToList": "ກັບໄປລາຍການລາຍງານ",
+        "statusLabel": "ສະຖານະ: {status}",
+        "statusCompleted": "ສຳເລັດແລ້ວ",
+        "statusGenerating": "ກຳລັງສ້າງ...",
+        "statusFailed": "ລົ້ມເຫຼວ",
+        "emailedAt": "ສົ່ງອີເມວເມື່ອ {when}",
+        "generationFailed": "ການສ້າງລາຍງານລົ້ມເຫຼວ",
+        "generatingMessage": "AI ກຳລັງວິເຄາະຂໍ້ມູນຂອງທ່ານ..."
+      },
+      "badges": {
+        "pending": "ລໍຖ້າຜົນ",
+        "ignored": "ບໍ່ໄດ້ເຮັດ",
+        "targetDeleted": "ເປົ້າໝາຍຖືກລຶບ",
+        "noData": "ບໍ່ມີຂໍ້ມູນ",
+        "followed": "ເຮັດຕາມ",
+        "confidenceTooltip": "30 ວັນ: ເຮັດຕາມ {successful}/{total} ຄັ້ງ ສຳເລັດ {percent}%",
+        "confidenceLabel": "ເຄີຍແນະນຳ {total} ຄັ້ງ · ສຳເລັດ {percent}%"
+      }
     },
     "aiOptimize": {
       "title": "AI Optimization Center",
-      "subtitle": "AI ວິເຄາະ + ແນະນຳວິທີປັບປຸງປະສິດທິພາບແບບເຣຍລ໌ໄທມ໌"
+      "subtitle": "AI ວິເຄາະ + ແນະນຳວິທີປັບປຸງປະສິດທິພາບແບບເຣຍລ໌ໄທມ໌",
+      "gate": {
+        "title": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນໃຊ້ງານ",
+        "description": "AI Optimization Center ຕ້ອງການຂໍ້ມູນຈິງຈາກ Meta ເພື່ອວິເຄາະ + ແນະນຳການປັບປຸງ",
+        "cta": "ໄປທີ່ Settings"
+      },
+      "kpi": {
+        "opportunities": "ໂອກາດໃນການປັບປຸງ",
+        "roasUplift": "ຄາດການ ROAS ເພີ່ມຂຶ້ນ",
+        "savings": "ປະຫຍັດງົບປະມານໄດ້",
+        "affectedCampaigns": "ແຄມເປນທີ່ໄດ້ຮັບຜົນກະທົບ"
+      },
+      "empty": {
+        "title": "ແຄມເປນຂອງທ່ານເຮັດງານໄດ້ດີຢູ່ແລ້ວ",
+        "description": "ປັດຈຸບັນ AI ຍັງບໍ່ພົບຈຸດທີ່ຕ້ອງປັບປຸງ — ລອງມາເຊັກໃໝ່ໃນ 24 ຊົ່ວໂມງ ຫຼື ເພີ່ມງົບໃຫ້ແຄມເປນທີ່ເຮັດໄດ້ດີເພື່ອ scale"
+      },
+      "tab": {
+        "all": "ທັງໝົດ",
+        "high": "ຄວາມສຳຄັນສູງ",
+        "medium": "ຄວາມສຳຄັນກາງ",
+        "low": "ຄວາມສຳຄັນຕ່ຳ"
+      },
+      "refreshData": "ຣີເຟຣສຂໍ້ມູນ",
+      "emptyTab": {
+        "title": "ບໍ່ມີຄຳແນະນຳໃນລະດັບນີ້",
+        "description": "ລອງເບິ່ງທີ່ tab ອື່ນ ຫຼື ກົດຣີເຟຣສເພື່ອໃຫ້ AI ວິເຄາະໃໝ່"
+      },
+      "table": {
+        "action": "ຄຳແນະນຳ",
+        "target": "ແຄມເປນ/ຊຸດໂຄສະນາ",
+        "reason": "ເຫດຜົນ",
+        "predicted": "ຜົນລັບທີ່ຄາດວ່າຈະໄດ້",
+        "severity": "ຄວາມສຳຄັນ",
+        "actions": "ການດຳເນີນການ"
+      },
+      "applyBtn": "ໃຊ້ຄຳແນະນຳ",
+      "applySuccess": "ໃຊ້ຄຳແນະນຳແລ້ວ (demo — ຍັງບໍ່ໄດ້ apply ຈິງ)",
+      "applySuccessShort": "ໃຊ້ຄຳແນະນຳແລ້ວ (demo)",
+      "panel": {
+        "aiLabel": "ຄຳແນະນຳສຳລັບທ່ານ",
+        "context": "ໃນ {subtitle} ຂອງແຄມເປນ",
+        "reasons": "ເຫດຜົນ",
+        "current": "ປະສິດທິພາບປັດຈຸບັນ",
+        "predicted": "ຜົນລັບທີ່ຄາດວ່າຈະໄດ້",
+        "applyBtn": "ໃຊ້ຄຳແນະນຳນີ້",
+        "selectHint": "ເລືອກຄຳແນະນຳໃນຕາຕະລາງເພື່ອເບິ່ງລາຍລະອຽດ"
+      },
+      "severity": {
+        "high": "ສູງ",
+        "medium": "ກາງ",
+        "low": "ຕ່ຳ"
+      }
     },
     "memory": {
       "title": "ຄວາມຈຳ AI",
-      "subtitle": "ສິ່ງທີ່ AI ໄດ້ຮຽນຮູ້ຈາກບັນຊີຂອງທ່ານ"
+      "subtitle": "ສິ່ງທີ່ AI ໄດ້ຮຽນຮູ້ຈາກບັນຊີຂອງທ່ານ",
+      "emptyTitle": "AI ກຳລັງເກັບຂໍ້ມູນ",
+      "emptyBody": "ຈະເລີ່ມເຫັນຜົນພາຍໃນ 7 ວັນຫຼັງຄຳແນະນຳທຳອິດ — AI ຈະຄິດໄລ່ວ່າຄຳແນະນຳແຕ່ລະອັນໄດ້ຜົນຈິງຫຼືບໍ່ ແລະຮຽນຮູ້ເພື່ອແນະນຳໃຫ້ດີຂຶ້ນໃນຄັ້ງຕໍ່ໄປ",
+      "emptyTracking": "ຕອນນີ້ກຳລັງຕິດຕາມ {pending} ຄຳແນະນຳ",
+      "successRateHeading": "ອັດຕາຄວາມສຳເລັດ 4 ອາທິດຫຼ້າສຸດ",
+      "weekPrefix": "ອາທິດ {week}",
+      "pendingNote": "+ ອີກ {pending} ຄຳແນະນຳກຳລັງລໍຜົນ (ຄົບ 7 ວັນເມື່ອໃດ AI ຈະຄິດໄລ່ໃຫ້)",
+      "breakdownHeading": "ແຍກຕາມປະເພດຄຳແນະນຳ",
+      "noBreakdownYet": "ຍັງບໍ່ມີຂໍ້ມູນພໍທີ່ຈະແບ່ງກຸ່ມ",
+      "tableTypeCol": "ປະເພດ",
+      "tableTotalCol": "ທັງໝົດ",
+      "tableSuccessCol": "ສຳເລັດ",
+      "recentHeading": "ຜົນລັບຫຼ້າສຸດ (20 ລາຍການ)",
+      "noOutcomesYet": "ຍັງບໍ່ມີຜົນລັບທີ່ຄິດໄລ່ແລ້ວ",
+      "showingNote": "ສະແດງ 20 ຫຼ້າສຸດຈາກທັງໝົດ {totalOutcomes} ຜົນລັບ",
+      "actionType": {
+        "pause": "ຢຸດແຄມເປນ",
+        "resume": "ເປີດແຄມເປນ",
+        "scaleBudget": "ເພີ່ມ / duplicate budget",
+        "changeBudget": "ປັບ budget",
+        "refreshCreative": "ປ່ຽນ creative",
+        "changeTargeting": "ປັບກຸ່ມເປົ້າໝາຍ",
+        "diagnose": "ວິເຄາະປັນຫາ",
+        "other": "ອື່ນໆ"
+      }
+    },
+    "login": {
+      "tagline": "ຍິງແອດໃຫ້ໄວ ແມ່ນ scale ໄດ້",
+      "title": "ເຂົ້າສູ່ລະບົບ",
+      "subtitle": "ໃຊ້ບັນຊີຂອງເຈົ້າເພື່ອຈັດການແຄມເປນ",
+      "emailLabel": "ອີເມວ",
+      "passwordLabel": "ລະຫັດຜ່ານ",
+      "submit": "ເຂົ້າສູ່ລະບົບ",
+      "submitting": "ກຳລັງເຂົ້າສູ່ລະບົບ...",
+      "noAccount": "ຍັງບໍ່ມີບັນຊີ?",
+      "signup": "ສະໝັກສະມາຊິກ",
+      "errors": {
+        "generic": "ເກີດຂໍ້ຜິດພາດ",
+        "serverUnreachable": "ເຊື່ອມຕໍ່ server ບໍ່ໄດ້ ລອງອີກຄັ້ງ"
+      }
+    },
+    "signup": {
+      "tagline": "ຍິງແອດໃຫ້ໄວ ແມ່ນ scale ໄດ້",
+      "title": "ສະໝັກສະມາຊິກ",
+      "subtitle": "ເລີ່ມໃຊ້ງານຟຣີ 30 ມື້",
+      "nameLabel": "ຊື່ຂອງເຈົ້າ",
+      "namePlaceholder": "ເຊັ່ນ ອິນດີ້",
+      "tenantLabel": "ຊື່ Agency / Workspace",
+      "tenantPlaceholder": "ເຊັ່ນ My Agency",
+      "emailLabel": "ອີເມວ",
+      "passwordLabel": "ລະຫັດຜ່ານ",
+      "passwordPlaceholder": "ຢ່າງໜ້ອຍ 8 ຕົວອັກສອນ",
+      "submit": "ສະໝັກສະມາຊິກ",
+      "submitting": "ກຳລັງສະໝັກ...",
+      "haveAccount": "ມີບັນຊີຢູ່ແລ້ວ?",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "errors": {
+        "generic": "ເກີດຂໍ້ຜິດພາດ",
+        "serverUnreachable": "ເຊື່ອມຕໍ່ server ບໍ່ໄດ້ ລອງອີກຄັ້ງ"
+      }
     },
     "tools": {
       "title": "ເຄື່ອງມື",
-      "subtitle": "ເຄື່ອງມື AI + ເຄື່ອງມືຂັ້ນສູງທັງໝົດ"
+      "subtitle": "ເຄື່ອງມື AI + ເຄື່ອງມືຂັ້ນສູງທັງໝົດ",
+      "sectionTitle": "ເຄື່ອງມືທັງໝົດ",
+      "toolCount": "{count} tools",
+      "items": {
+        "aiMaster": {
+          "label": "AI Master",
+          "description": "ຜູ້ຊ່ວຍ AI ສົນທະນາເລື່ອງ campaign + ສັ່ງ pause/scale ໄດ້"
+        },
+        "journey": {
+          "label": "Customer Journey",
+          "description": "ແຜນທີ່ເກາະລອຍສະແດງເສັ້ນທາງລູກຄ້າ ຈາກ ad → page → conversion"
+        },
+        "competitors": {
+          "label": "Competitor Spy",
+          "description": "ຕິດຕາມແລະວິເຄາະໂຄສະນາຄູ່ແຂ່ງໃນອຸດສາຫະກຳຂອງເຈົ້າ"
+        },
+        "events": {
+          "label": "Event Tracking SDK",
+          "description": "Pixel + CAPI events tracking — ຕິດຕັ້ງເທິງເວັບລູກຄ້າໄດ້ເລີຍ"
+        },
+        "customConversions": {
+          "label": "Custom Conversions",
+          "description": "ສ້າງ custom event + conversion rules ໃນ Meta ໂດຍກົງ"
+        },
+        "namingTemplates": {
+          "label": "Naming Templates",
+          "description": "Template ສຳລັບ campaign/ad set name + AI auto-suggest"
+        },
+        "goals": {
+          "label": "Goals",
+          "description": "ຕັ້ງເປົ້າໝາຍ KPI ຂອງແຕ່ລະ campaign + AI ປະເມີນຜົນ"
+        },
+        "aiOptimize": {
+          "label": "AI Optimize",
+          "description": "AI ວິເຄາະ + ແນະນຳການປັບປຸງແຄມເປນແບບ realtime"
+        }
+      }
+    },
+    "verifyEmail": {
+      "titleSuccess": "ຢືນຢັນອີເມວສຳເລັດ",
+      "titleUsed": "ອີເມວຖືກຢືນຢັນແລ້ວ",
+      "titleExpired": "ລິ້ງໝົດອາຍຸ",
+      "titleInvalid": "ລິ້ງບໍ່ຖືກຕ້ອງ",
+      "descSuccess": "ຂອບໃຈທີ່ຢືນຢັນອີເມວ — ບັນຊີຂອງທ່ານພ້ອມໃຊ້ງານແລ້ວ",
+      "descUsed": "ລິ້ງຢືນຢັນນີ້ຖືກໃຊ້ໄປແລ້ວ",
+      "descExpired": "ລິ້ງຢືນຢັນມີອາຍຸ 24 ຊົ່ວໂມງ — ກະລຸນາຂໍອີເມວໃໝ່",
+      "descInvalid": "ບໍ່ພົບລິ້ງຢືນຢັນທີ່ກົງກັນ ຫຼື ລິ້ງອາດເສຍຫາຍ",
+      "goToDashboard": "ໄປທີ່ແດສບອດ",
+      "loginPrompt": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອຂໍອີເມວຢືນຢັນໃໝ່",
+      "loginBtn": "ເຂົ້າສູ່ລະບົບ",
+      "usedPrefix": "ທ່ານສາມາດ",
+      "usedLink": "ເຂົ້າສູ່ແດສບອດ",
+      "usedSuffix": "ໄດ້ເລີຍ",
+      "resend": {
+        "send": "ສົ່ງອີເມວຢືນຢັນໃໝ່",
+        "sending": "ກຳລັງສົ່ງ...",
+        "successMsg": "ສົ່ງອີເມວໃໝ່ສຳເລັດ ກະລຸນາກວດກ່ອງຈົດໝາຍ",
+        "failedMsg": "ສົ່ງອີເມວໃໝ່ບໍ່ສຳເລັດ",
+        "connectionError": "ເຊື່ອມຕໍ່ server ບໍ່ໄດ້"
+      }
+    },
+    "settingsBilling": {
+      "title": "ການເກັບເງິນ",
+      "subtitle": "ເບິ່ງແຜນປັດຈຸບັນ + ປະຫວັດການຊຳລະ + ຈັດການ subscription",
+      "noSubscription": "ບໍ່ພົບຂໍ້ມູນການສະໝັກ",
+      "currentPlan": "ແພັກເກັດປັດຈຸບັນ",
+      "pricePeriod": "฿{price} / {periodLabel} (ລວມ VAT ແລ້ວ)",
+      "periodMonth": "ເດືອນ",
+      "periodYear": "ປີ",
+      "aiMsgPerDay": "AI message/ມື້",
+      "unlimited": "ບໍ່ຈຳກັດ",
+      "trialUntil": "ທົດລອງໃຊ້ຈົນເຖິງ",
+      "nextBilling": "ຮອບບິນຕໍ່ໄປ",
+      "willCancelToday": "ຈະຍົກເລີກໃນມື້ນີ້",
+      "perMonth": "฿{price}/ເດືອນ",
+      "includedInPlan": "ລວມໃນແຜນ",
+      "addOnOn": "ເປີດຢູ່",
+      "addOnOff": "ປິດຢູ່",
+      "invoicesHeading": "ປະຫວັດການຊຳລະ",
+      "noInvoices": "ຍັງບໍ່ມີລາຍການ",
+      "tableDate": "ວັນທີ",
+      "tableAmount": "ຈຳນວນເງິນ",
+      "tableStatus": "ສະຖານະ",
+      "tableVat": "VAT",
+      "vatSplit": "฿{base} + ฿{vat} VAT",
+      "status": {
+        "trialing": "ກຳລັງທົດລອງໃຊ້",
+        "active": "ກຳລັງໃຊ້ງານ",
+        "pastDue": "ຄ້າງຊຳລະ",
+        "suspended": "ຖືກລະງັບ",
+        "cancelled": "ຍົກເລີກແລ້ວ"
+      },
+      "invoiceStatus": {
+        "pending": "ລໍຊຳລະ",
+        "paid": "ຊຳລະແລ້ວ",
+        "failed": "ບໍ່ສຳເລັດ",
+        "refunded": "ຄືນເງິນແລ້ວ"
+      },
+      "actions": {
+        "actionFailed": "ດຳເນີນການບໍ່ສຳເລັດ",
+        "addonEnabled": "ເປີດ add-on ແລ້ວ",
+        "addonDisabled": "ປິດ add-on ແລ້ວ",
+        "cancelConfirm": "ຢືນຢັນຍົກເລີກການສະໝັກ? ທ່ານຍັງໃຊ້ງານໄດ້ຈົນເຖິງສິ້ນຮອບບິນປັດຈຸບັນ",
+        "cancelFailed": "ຍົກເລີກບໍ່ສຳເລັດ",
+        "cancelSuccess": "ຍົກເລີກການສະໝັກຮຽບຮ້ອຍ",
+        "cancel": "ຍົກເລີກການສະໝັກ",
+        "addonOn": "ເປີດ {label}",
+        "addonOff": "ປິດ {label}"
+      }
     },
     "goals": {
       "title": "ເປົ້າໝາຍ Campaign",
-      "subtitle": "ຕັ້ງເປົ້າໝາຍຂອງແຕ່ລະ campaign ເພື່ອໃຫ້ AI ປະເມີນດ້ວຍເກນທີ່ຖືກຕ້ອງ (Awareness → CPM, Sales → ROAS ແລະອື່ນໆ)"
+      "subtitle": "ຕັ້ງເປົ້າໝາຍຂອງແຕ່ລະ campaign ເພື່ອໃຫ້ AI ປະເມີນດ້ວຍເກນທີ່ຖືກຕ້ອງ (Awareness → CPM, Sales → ROAS ແລະອື່ນໆ)",
+      "gate": {
+        "needMeta": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນໃຊ້ງານ Goals",
+        "cta": "ໄປທີ່ Settings"
+      },
+      "namingRulesLink": "ກົດຕາມຊື່ Campaign",
+      "objective": {
+        "AWARENESS": "Awareness (ສ້າງການຮັບຮູ້)",
+        "ENGAGEMENT": "Engagement (ມີສ່ວນຮ່ວມ)",
+        "TRAFFIC": "Traffic (ເຂົ້າເວັບ/ໜ້າ)",
+        "LEADS": "Leads (ເກັບ lead/ແຊັດ)",
+        "SALES": "Sales (ຊື້/Conversion)",
+        "APP_PROMOTION": "App Promotion (ຕິດຕັ້ງແອັບ)",
+        "STORE_VISITS": "Store Visits (ເຂົ້າໜ້າຮ້ານ)"
+      },
+      "source": {
+        "userManual": "ຕັ້ງເອງ",
+        "autoName": "ຈາກຊື່",
+        "autoMeta": "ຈາກ Meta",
+        "tenantDefault": "ຄ່າ default",
+        "unresolved": "ຍັງບໍ່ຕັ້ງ"
+      },
+      "stats": {
+        "totalLabel": "ລວມ:",
+        "campaignsUnit": "campaigns",
+        "unresolvedLabel": "ຍັງບໍ່ຕັ້ງ:"
+      },
+      "search": {
+        "placeholder": "ຄົ້ນຫາ campaign ຫຼື ad account..."
+      },
+      "filter": {
+        "allSources": "ທຸກ source",
+        "allAccounts": "ທຸກ account"
+      },
+      "bulk": {
+        "selected": "ເລືອກ {count} campaigns —",
+        "setObjective": "ຕັ້ງ objective:",
+        "saveAll": "ບັນທຶກທັງໝົດ",
+        "clear": "ລ້າງ"
+      },
+      "toast": {
+        "notSelected": "ຍັງບໍ່ໄດ້ເລືອກ campaign",
+        "settingFor": "ກຳລັງຕັ້ງ goal ໃຫ້ {count} campaigns...",
+        "saveFail": "ບັນທຶກບໍ່ສຳເລັດ",
+        "savedCount": "ບັນທຶກ {count} campaigns",
+        "saving": "ກຳລັງບັນທຶກ...",
+        "saved": "ບັນທຶກແລ້ວ",
+        "savingTarget": "ກຳລັງບັນທຶກ target...",
+        "targetSaved": "ບັນທຶກ target ແລ້ວ",
+        "clearingOverride": "ກຳລັງລຶບ override...",
+        "revertedToAuto": "ກັບໄປໃຊ້ຄ່າ auto",
+        "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+        "invalidNumber": "ປ້ອນຕົວເລກໃຫ້ຖືກຕ້ອງ"
+      },
+      "empty": {
+        "title": "ບໍ່ພົບ campaign ທີ່ຕົງກັບເງື່ອນໄຂ",
+        "subtitle": "ລອງລ້າງ filter ຫຼື ລອງຄົ້ນຫາຄຳອື່ນ"
+      },
+      "list": {
+        "selectAllToggle": "ເລືອກ/ຍົກເລີກທັງໝົດໃນມຸມມອງນີ້ ({count})",
+        "selectionSummary": "{filtered} / {total} campaigns",
+        "accountCampaignsCount": "· {count} campaigns"
+      },
+      "row": {
+        "setObjectivePlaceholder": "ຕັ້ງ objective...",
+        "setTargetTooltip": "ຕັ້ງ target",
+        "clearOverrideTooltip": "ລ້າງ override",
+        "checkboxAria": "ເລືອກ {name}",
+        "evalTargetTooltip": "ເປົ້າ {target}",
+        "evalCustomSuffix": "(custom)"
+      },
+      "modal": {
+        "title": "ຕັ້ງ target ສຳລັບ campaign ນີ້",
+        "primaryKpi": "Primary KPI",
+        "targetLabel": "Target value (ປະວ່າງ = ໃຊ້ default)",
+        "targetPlaceholder": "ເຊັ່ນ 2.5 ສຳລັບ ROAS, 50 ສຳລັບ CPM",
+        "cancel": "ຍົກເລີກ",
+        "save": "ບັນທຶກ"
+      }
     },
     "ai": {
       "title": "AI Master",
-      "subtitle": "ຜູ້ຊ່ວຍ AI ສຳລັບວິເຄາະ + ຈັດການແຄມເປນ"
+      "subtitle": "ຜູ້ຊ່ວຍ AI ສຳລັບວິເຄາະ + ຈັດການແຄມເປນ",
+      "newConversation": "New conversation",
+      "newDefaultTitle": "New conversation",
+      "untitled": "Untitled",
+      "messagesCount": "{count} messages",
+      "noConversations": "ຍັງບໍ່ມີ conversation",
+      "loadingThread": "ກຳລັງໂຫລດ...",
+      "thinking": "AI ກຳລັງຄິດ...",
+      "inputPlaceholder": "ພິມຄຳຖາມຫຼືສັ່ງງານ — ເຊັ່ນ 'ROAS ຂອງ campaign ໃດຕ່ຳສຸດໃນອາທິດນີ້'",
+      "toolsHint": "AI ໃຊ້ tools (listCampaigns, getCampaignInsights, searchKnowledge, pause/resume/setBudget) ຄົ້ນຂໍ້ມູນຈິງແລະສັ່ງງານ",
+      "empty": {
+        "headline": "AI Master ພ້ອມຮັບຄຳສັ່ງ",
+        "subtitle": "ຄຸຍພາສາຄົນໄດ້ — ສັ່ງຢຸດ/ເປີດ/ແກ້ budget ຫຼືຖາມຂໍ້ມູນຈາກ campaign ຈິງ",
+        "tryAsking": "ລອງຖາມ"
+      },
+      "toast": {
+        "createFailed": "ສ້າງ conversation ໃໝ່ບໍ່ໄດ້",
+        "sendFailed": "ສົ່ງບໍ່ສຳເລັດ"
+      },
+      "relative": {
+        "justNow": "ຫາກໍ່ໃຊ້",
+        "minutes": "{value}m ກ່ອນ",
+        "hours": "{value}h ກ່ອນ",
+        "days": "{value}d ກ່ອນ",
+        "unknown": "—"
+      },
+      "chat": {
+        "fabLabel": "ຖາມ AI",
+        "expertSubtitle": "ຜູ້ຊ່ຽວຊານ Meta Ads",
+        "openFullPage": "ເປີດແບບເຕັມໜ້າ",
+        "emptyHint": "ເລີ່ມຕົ້ນດ້ວຍຄຳຖາມ ເຊັ່ນ:",
+        "thinking": "AI ກຳລັງຄິດ...",
+        "inputPlaceholder": "ພິມຄຳຖາມຫຼືສັ່ງງານ...",
+        "toolsHint": "AI ໃຊ້ tools (listCampaigns, getCampaignInsights) ຄົ້ນຂໍ້ມູນຈິງ",
+        "startFailed": "ເລີ່ມ AI chat ບໍ່ສຳເລັດ",
+        "sendFailed": "ສົ່ງບໍ່ສຳເລັດ",
+        "decisionFailed": "Decision failed",
+        "samplePrompts": {
+          "listActive": "list campaigns ທີ່ active",
+          "worstBudget": "campaign ໃດເສຍ budget ຫຼາຍສຸດໃນອາທິດນີ້",
+          "digittribeRoas": "ROAS ຂອງ Digittribe ເປັນແນວໃດ"
+        },
+        "confirm": {
+          "title": "AI ຂໍຢືນຢັນກ່ອນເຮັດ action",
+          "cancel": "ຍົກເລີກ",
+          "confirm": "ຢືນຢັນ"
+        },
+        "approved": "ເຮັດແລ້ວ:",
+        "cancelled": "ຍົກເລີກ:",
+        "resultLabel": "ຜົນລັບ:"
+      }
+    },
+    "landing": {
+      "meta": {
+        "title": "AdsLab · Thai-first SaaS ສຳລັບມືຍິງແອດ Meta",
+        "description": "ເຄື່ອງມືຊ່ວຍ media buyer ແລະ ເອເຈນຊີຍິງແອດ Meta ໄດ້ແມ່ນແລະໄວຂຶ້ນ ດ້ວຍ AI ພາສາໄທ — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK ຄົບໃນທີ່ດຽວ",
+        "ogTitle": "AdsLab · Thai-first SaaS ສຳລັບມືຍິງແອດ Meta",
+        "ogDescription": "ຍິງແອດໃຫ້ໄວ ແມ່ນ scale ໄດ້ — ທົດລອງຟຣີ 7 ວັນ"
+      },
+      "header": {
+        "pricing": "ລາຄາ",
+        "login": "ເຂົ້າສູ່ລະບົບ",
+        "signup": "ເລີ່ມຕົ້ນຟຣີ 7 ວັນ"
+      },
+      "hero": {
+        "pill": "Thai-first · SaaS ສຳລັບມືຍິງແອດ Meta",
+        "headline": "ຍິງແອດໃຫ້ໄວ ແມ່ນ scale ໄດ້",
+        "subtitle": "ເຄື່ອງມື optimize Meta ads ດ້ວຍ AI ພາສາໄທ — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK ຄົບໃນທີ່ດຽວ",
+        "ctaPrimary": "ເລີ່ມຕົ້ນຟຣີ 7 ວັນ",
+        "ctaSecondary": "ເບິ່ງແພັກເກດ",
+        "microcopy": "ບໍ່ມີຄ່າສະໝັກ · ຍົກເລີກໄດ້ຕະຫຼອດເວລາ · ເລີ່ມເກັບເງິນເມື່ອໝົດທົດລອງ 7 ວັນ"
+      },
+      "features": {
+        "heading": "ຄອບຄຸມທຸກຢ່າງທີ່ມືຍິງແອດຕ້ອງການ",
+        "subheading": "ເລີ່ມຈາກ dashboard ລວມຂໍ້ມູນ → AI ວິເຄາະ + ແນະນຳ → ລົງມືເພີ່ມປະສິດທິພາບ",
+        "dashboardTitle": "Unified Dashboard",
+        "dashboardDesc": "ເບິ່ງ spend / ROAS / CTR / CPM ຂອງທຸກ ad account ໃນທີ່ດຽວ ພ້ອມ filter ຕາມຊ່ວງເວລາ + ລູກຄ້າ",
+        "aiTitle": "AI Master — ຜູ້ຊ່ວຍພາສາລາວ",
+        "aiDesc": "ສັ່ງງານ AI ຜ່ານ chat: ເບິ່ງ insight, pause campaign, ປັບ budget, ຄົ້ນຂໍ້ມູນຈາກ knowledge base ຂອງທ່ານເອງ",
+        "audienceTitle": "Audience + Custom Conversions",
+        "audienceDesc": "ສ້າງ Custom/Lookalike audiences + Custom Conversions ຕົງຈາກລະບົບ ສົ່ງເຂົ້າ Meta ທັນທີ",
+        "builderTitle": "Campaign Builder",
+        "builderDesc": "ສ້າງ + duplicate campaign ແບບມີ AI ຊ່ວຍຕັ້ງຊື່ + ແນະນຳ targeting ຕາມເປົ້າໝາຍ",
+        "sdkTitle": "Event SDK + CAPI",
+        "sdkDesc": "ຕິດ Pixel + Conversions API ໃນຄລິກດຽວ ຄົບທຸກ event type — PixelYourSite-style ແບບລາວ",
+        "journeyTitle": "Customer Journey Map",
+        "journeyDesc": "ແຜນທີ່ເກາະລອຍ ສະແດງເສັ້ນທາງລູກຄ້າຈາກ ad → page → conversion ສວຍແລະເຂົ້າໃຈງ່າຍ"
+      },
+      "pricing": {
+        "heading": "ລາຄາຕາມ ad spend ຂອງທ່ານ",
+        "subheading": "ຈ່າຍຕາມທີ່ໃຊ້ຈິງ · ທຸກແພັກເກດລວມ VAT 7% ແລ້ວ · ຍົກເລີກໄດ້ຕະຫຼອດເວລາ",
+        "perMonth": "/ເດືອນ",
+        "recommendedBadge": "ແນະນຳ",
+        "starterSuitable": "ad spend < ฿10,000/ເດືອນ",
+        "starterBullets": [
+          "1 ad account",
+          "AI message 30 ຂໍ້ຄວາມ/ວັນ",
+          "Dashboard + AI Master",
+          "Customer Journey"
+        ],
+        "growthSuitable": "ad spend ฿10k–฿30k/ເດືອນ",
+        "growthBullets": [
+          "3 ad accounts",
+          "AI 100 ຂໍ້ຄວາມ/ວັນ",
+          "ທຸກຟີເຈີຂອງ Starter",
+          "Custom Conversions"
+        ],
+        "proSuitable": "ad spend ฿30k–฿100k/ເດືອນ",
+        "proBullets": [
+          "10 ad accounts",
+          "AI 300 ຂໍ້ຄວາມ/ວັນ",
+          "ທຸກຟີເຈີຂອງ Growth",
+          "Audience Management"
+        ],
+        "scaleSuitable": "ad spend ฿100k–฿500k/ເດືອນ",
+        "scaleBullets": [
+          "25 ad accounts",
+          "AI ບໍ່ຈຳກັດ",
+          "White-label Reports ຟຣີ",
+          "Priority Support"
+        ],
+        "addonsHeading": "Add-ons (ເປີດ/ປິດໄດ້ທຸກ tier)",
+        "addon1Name": "Event SDK + Pixel Tracking",
+        "addon1Price": "฿590/ເດືອນ",
+        "addon2Name": "Extra Ad Account",
+        "addon2Price": "฿190/account/ເດືອນ",
+        "addon3Name": "White-label Reports",
+        "addon3Price": "฿490/ເດືອນ (ຟຣີສຳລັບ Scale+)",
+        "addon4Name": "Priority AI (Claude Opus)",
+        "addon4Price": "฿890/ເດືອນ",
+        "enterpriseQuestion": "ad spend > ฿1,000,000/ເດືອນ?",
+        "enterpriseCta": "ຕິດຕໍ່ທີມຂາຍ",
+        "enterpriseSuffix": "ສຳລັບແພັກເກດ Enterprise",
+        "payHeading": "ການຊຳລະເງິນ + ຄືນເງິນ",
+        "pay1": "ທົດລອງໃຊ້ຟຣີ 7 ວັນ — ບັນທຶກບັດເຄຣດິດລ່ວງໜ້າ, ບໍ່ມີການເກັບເງິນລະຫວ່າງທົດລອງ",
+        "pay2": "ເລີ່ມເກັບເງິນອັດຕະໂນມັດໃນວັນທີ 8 ຖ້າບໍ່ໄດ້ຍົກເລີກ (ມີອີເມລ໌ເຕືອນລ່ວງໜ້າ 3 ຄັ້ງ)",
+        "pay3": "ຂໍຄືນເງິນພາຍໃນ 7 ວັນທຳອິດຂອງຮອບບິລ — ຄືນຕາມສັດສ່ວນ (pro-rated)",
+        "pay4": "ຍົກເລີກການຕໍ່ອາຍຸໄດ້ຕະຫຼອດເວລາ · ໃຊ້ງານຕໍ່ໄດ້ຈົນສິ້ນຮອບບິລ",
+        "pay5": "ຊຳລະຜ່ານ Omise (PCI DSS Level 1) · ຮອງຮັບ Visa, Mastercard, JCB, AMEX",
+        "payLinkPrefix": "ອ່ານລາຍລະອຽດເພີ່ມທີ່",
+        "payRefundLink": "ນະໂຍບາຍການຄືນເງິນ",
+        "payTermsLink": "ຂໍ້ກຳນົດການໃຊ້ບໍລິການ"
+      },
+      "cta": {
+        "heading": "ພ້ອມຍິງແອດໃຫ້ຄົມ?",
+        "subtitle": "ສະໝັກຟຣີ 7 ວັນ · ບໍ່ມີຄ່າສະໝັກ · ຍົກເລີກໄດ້ຕະຫຼອດ",
+        "button": "ເລີ່ມຕົ້ນຟຣີ 7 ວັນ"
+      }
+    },
+    "events": {
+      "logPageTitle": "SDK Event Log",
+      "logPageSubtitle": "ເບິ່ງ events ທີ່ SDK ຍິງເຂົ້າມາ + ສະຖານະ CAPI relay — ໃຊ້ debug rules ກ່ອນຣັນ campaign ຈິງ",
+      "log": {
+        "allEvents": "ທຸກ event",
+        "allStatuses": "ທຸກ status",
+        "loading": "ກຳລັງໂຫລດ...",
+        "empty": "ຍັງບໍ່ມີ event log — ຕິດ SDK ເທິງເວັບແລ້ວ rule ຈະເລີ່ມຍິງ events ເຂົ້າມາທີ່ນີ້"
+      }
+    },
+    "campaignBuilder": {
+      "objective": {
+        "OUTCOME_SALES": {
+          "label": "Sales",
+          "sublabel": "ຂາຍຂອງ / Conversion"
+        },
+        "OUTCOME_LEADS": {
+          "label": "Leads",
+          "sublabel": "ເກັບ Lead / Inbox"
+        },
+        "OUTCOME_ENGAGEMENT": {
+          "label": "Engagement",
+          "sublabel": "ມີສ່ວນຮ່ວມ (video / chat)"
+        },
+        "OUTCOME_TRAFFIC": {
+          "label": "Traffic",
+          "sublabel": "ເຂົ້າເວັບ / Link Clicks"
+        },
+        "OUTCOME_AWARENESS": {
+          "label": "Awareness",
+          "sublabel": "ສ້າງການຮັບຮູ້"
+        },
+        "OUTCOME_APP_PROMOTION": {
+          "label": "App Promotion",
+          "sublabel": "ຕິດຕັ້ງແອັບ"
+        }
+      },
+      "optimizationGoal": {
+        "LINK_CLICKS": {
+          "label": "Link Clicks",
+          "descSales": "ສົ່ງຄົນໄປເວັບ (post ຕ້ອງມີ link)",
+          "descTraffic": "ເນັ້ນຈຳນວນຄລິກ"
+        },
+        "CONVERSATIONS": {
+          "label": "Messages",
+          "descSales": "ຂາຍຜ່ານແຊັດ Page",
+          "descLeads": "ສົ່ງຄົນມາແຊັດ Page",
+          "descEngagement": "ສົ່ງຄົນມາແຊັດ Page"
+        },
+        "OFFSITE_CONVERSIONS": {
+          "label": "Conversions (Pixel)",
+          "desc": "Optimize ຕາມ event ໃນເວັບ — ຕ້ອງຕັ້ງ Pixel ກ່ອນ"
+        },
+        "VALUE": {
+          "label": "Value (Pixel)",
+          "desc": "Optimize ຕາມມູນຄ່າຊື້ (ຕ້ອງ Pixel + value events)"
+        },
+        "THRUPLAY": {
+          "label": "Video Views",
+          "labelAwareness": "Video Views (Thruplay)",
+          "descEngagement": "ເບິ່ງວິດີໂອຈົບ ≥15s (post ຕ້ອງເປັນ video)",
+          "descAwareness": "ເບິ່ງວິດີໂອຈົບ ≥15s"
+        },
+        "LANDING_PAGE_VIEWS": {
+          "label": "Landing Page Views",
+          "desc": "ຄລິກ + ເປີດໜ້າ web ຈິງ"
+        },
+        "REACH": {
+          "label": "Reach",
+          "descAwareness": "ຄົນເຫັນໂຄສະນາຫຼາຍທີ່ສຸດ",
+          "descAppPromotion": "App-specific optimization ຕ້ອງຕັ້ງຄ່າ app ກ່ອນ — ໃຊ້ Reach ແທນ"
+        },
+        "IMPRESSIONS": {
+          "label": "Impressions",
+          "desc": "ຈຳນວນຄັ້ງທີ່ໂຄສະນາສະແດງ"
+        }
+      },
+      "pixelEvent": {
+        "PURCHASE": "Purchase — ຊື້ສຳເລັດ",
+        "ADD_TO_CART": "Add to Cart — ໃສ່ກະຕ່າ",
+        "INITIATE_CHECKOUT": "Initiate Checkout — ເລີ່ມ checkout",
+        "LEAD": "Lead — ກອກຟອມ",
+        "COMPLETE_REGISTRATION": "Complete Registration — ສະໝັກສະມາຊິກ",
+        "ADD_PAYMENT_INFO": "Add Payment Info — ກອກຂໍ້ມູນຈ່າຍ",
+        "VIEW_CONTENT": "View Content — ເບິ່ງສິນຄ້າ",
+        "SEARCH": "Search — ຄົ້ນຫາ",
+        "SUBSCRIBE": "Subscribe — ສະໝັກຮັບຂໍ້ມູນ",
+        "CONTACT": "Contact — ຕິດຕໍ່"
+      },
+      "field": {
+        "campaignName": "ຊື່ Campaign",
+        "objective": "ເປົ້າໝາຍ",
+        "optimization": "ວິທີເພີ່ມປະສິດທິພາບ",
+        "pixelConversion": "Pixel + Conversion",
+        "budget": "Budget",
+        "facebookPage": "Facebook Page",
+        "creativeSource": "ແຫຼ່ງທີ່ມາຂອງໂຄສະນາ",
+        "imageFromLibrary": "ຮູບຈາກຄັງ",
+        "adText": "ຂໍ້ຄວາມໂຄສະນາ ({count}/125)",
+        "linkDestination": "ລິ້ງປາຍທາງ",
+        "image": "ຮູບພາບ",
+        "selectPostCount": "ເລືອກໂພສ ({count} ໂພສ)",
+        "selectPostLoading": "ເລືອກໂພສ (loading...)",
+        "location": "ສະຖານທີ່ຕັ້ງ",
+        "gender": "ເພດ",
+        "ageMin": "ອາຍຸຕ່ຳສຸດ",
+        "ageMax": "ອາຍຸສູງສຸດ",
+        "interests": "ຄວາມສົນໃຈ (Interests)",
+        "customAudienceLoading": "Custom Audience (loading...)",
+        "customAudienceCount": "Custom Audience ({count} ຕົວໃນ account)",
+        "budgetMode": "Budget mode",
+        "specialAdCategory": "Special Ad Category",
+        "headline": "Headline ({count}/40)",
+        "description": "Description ({count}/30)",
+        "callToAction": "Call To Action",
+        "adSetName": "ຊື່ Ad Set (ປ່ອຍວ່າງ=auto)",
+        "adName": "ຊື່ Ad (ປ່ອຍວ່າງ=auto)",
+        "scheduleStart": "ເລີ່ມ",
+        "scheduleEnd": "ສິ້ນສຸດ",
+        "scheduleHint": "ກຳນົດທັງວັນແລະເວລາ — ເວລາໄທ (UTC+7)"
+      },
+      "placeholder": {
+        "campaignName": "ເຊັ່ນ Summer Sale 2026",
+        "primaryText": "ຂໍ້ຄວາມຫຼັກທີ່ຈະສະແດງເໜືອຮູບພາບ",
+        "linkUrl": "https://example.com/landing",
+        "headline": "ຫົວຂໍ້ສັ້ນ",
+        "description": "ຄຳອະທິບາຍ",
+        "scheduleStart": "ເລືອກວັນ + ເວລາເລີ່ມ",
+        "scheduleEnd": "ເລືອກວັນ + ເວລາສິ້ນສຸດ",
+        "manualPostId": "ວາງ URL ຫຼື Post ID (ຮອງຮັບ pfbid... ແລະ <pageid>_<postid>)",
+        "searchInterest": "ຄົ້ນຫາຄວາມສົນໃຈ (ເຊັ່ນ 'fashion', 'cooking', 'gaming', 'travel')",
+        "searchGeo": "ຄົ້ນຫາ ປະເທດ / ແຂວງ / ເມືອງ (ເຊັ່ນ 'Bangkok', 'Chiang Mai', 'Asia')",
+        "searchPage": "ຄົ້ນຫາ Page (ມີ {count} Pages)...",
+        "pixelSelect": "-- ເລືອກ Pixel --",
+        "customConversionSelect": "-- ເລືອກ Custom Conversion --",
+        "currency": "฿"
+      },
+      "creative": {
+        "newImage": "ອັບໂຫລດຮູບໃໝ່",
+        "fromLibrary": "ເລືອກຈາກຄັງ",
+        "existingPost": "ໃຊ້ໂພສທີ່ມີ",
+        "selectedClickToChange": "ເລືອກແລ້ວ — ກົດເພື່ອປ່ຽນ",
+        "clickToPickLibrary": "ກົດເພື່ອເລືອກຈາກຄັງ creatives",
+        "uploaded": "ອັບໂຫລດແລ້ວ — ກົດເພື່ອປ່ຽນ",
+        "uploadFile": "ເລືອກໄຟລ JPG/PNG (≤ 8MB)",
+        "uploading": "ກຳລັງອັບໂຫລດ...",
+        "uploadSuccess": "ອັບໂຫລດ image ແລ້ວ",
+        "title": "ໂຄສະນາ + ຮູບ/ໂພສ",
+        "linkUrlHint": "URL ທີ່ user ຈະໄປເມື່ອກົດໂຄສະນາ (ຈຳເປັນສຳລັບ image ad ທີ່ມີ Call to Action) — ຖ້າບໍ່ຕ້ອງການ CTA ໃຫ້ໃຊ້ &ldquo;ໃຊ້ໂພສທີ່ມີ&rdquo; ໂດຍເລືອກ post ທີ່ບໍ່ມີ link"
+      },
+      "post": {
+        "loading": "ກຳລັງໂຫລດ...",
+        "fetchFail": "ດຶງໂພສບໍ່ສຳເລັດ",
+        "noPromotable": "ບໍ່ມີ promotable post ໃນ Page ນີ້",
+        "noPromotableDescription": "Meta ຄືນ 0 ໂພສ — ອາດເປັນເພາະ Page ຍັງບໍ່ໄດ້ໂພສຫຍັງ ຫຼື ໂພສເກົ່າຫຼາຍ (Meta ຈຳກັດ ~3 ເດືອນຫຼ້າສຸດ) ລອງໃສ່ post ID ດ້ານລຸ່ມ",
+        "noText": "(no text)",
+        "manualHint": "ຫຼືໃສ່ Post ID / URL ຂອງ Facebook ໂພສໂດຍກົງ",
+        "willUse": "ຈະໃຊ້:",
+        "willUseResolveHint": "(server ຈະ resolve ເປັນ canonical ID ຕອນສ້າງ)",
+        "formatError": "ຈັບ format ບໍ່ໄດ້ — ລອງ paste URL ເຕັມໆ ຫຼືເລກລ້ວນ"
+      },
+      "page": {
+        "notFound": "ບໍ່ພົບ Page — ກົດປຸ່ມ &ldquo;ດຶງ Pages ໃໝ່&rdquo; ດ້ານລຸ່ມ",
+        "noResults": "ບໍ່ພົບ &ldquo;{query}&rdquo;",
+        "change": "ປ່ຽນ",
+        "cancel": "ຍົກເລີກ",
+        "refresh": "↻ ດຶງ Pages ໃໝ່ຈາກ Meta (ຖ້າບໍ່ເຫັນ Page ທີ່ຕ້ອງການ)",
+        "refreshing": "ກຳລັງ sync Pages...",
+        "syncSuccess": "Sync Pages ແລ້ວ — refresh ໜ້າເພື່ອເຫັນ list ໃໝ່",
+        "syncFail": "Sync Pages ບໍ່ສຳເລັດ"
+      },
+      "pixel": {
+        "loading": "ກຳລັງໂຫລດ Pixels...",
+        "loadingConversions": "ກຳລັງໂຫລດ Custom Conversions...",
+        "noPixelWarn": "ບໍ່ມີ Pixel ໃນ Ad Account ນີ້ — ໄປທີ່",
+        "audiencesPixelsTab": "Audiences → tab Pixels",
+        "toCreate": "ເພື່ອສ້າງກ່ອນ",
+        "noCustomConversionWarn": "ບໍ່ມີ Custom Conversion — ສ້າງທີ່",
+        "audiencesConversionsTab": "Audiences → tab Custom Conversions",
+        "eventStandard": "Standard event",
+        "eventCustom": "Custom Conversion (URL rule)",
+        "hintCustom": "Custom Conversion = map URL pattern → event ໂດຍບໍ່ຕ້ອງຂຽນ event code ໃນເວັບ",
+        "hintStandard": "Meta ຈະ optimize ສົ່ງໂຄສະນາໃຫ້ຄົນທີ່ມີໂອກາດ trigger event ນີ້ສູງ — Pixel ຕ້ອງຍິງ event ~50/ອາທິດຈຶ່ງ optimize ດີ"
+      },
+      "budget": {
+        "daily": "ຕໍ່ວັນ",
+        "lifetime": "ຕະຫຼອດອາຍຸ campaign",
+        "perDaySuffix": "/ວັນ",
+        "lifetimeSuffix": "ຕະຫຼອດ lifetime"
+      },
+      "audience": {
+        "loading": "ກຳລັງໂຫລດ...",
+        "empty": "ບໍ່ມີ — ສ້າງໃນ Meta Ads Manager ຫຼື ລໍ Stage 4 (audience builder)"
+      },
+      "gender": {
+        "all": "ທຸກເພດ",
+        "male": "ຊາຍ",
+        "female": "ຍິງ"
+      },
+      "advanced": {
+        "toggle": "ຕົວເລືອກຂັ້ນສູງ",
+        "toggleHint": "(targeting / audience / headline / CTA / etc.)",
+        "ageWarning1": "Meta ບັງຄັບ",
+        "ageWarning2": "ສຳລັບໂຄສະນາທີ່ target ໄທ — ນ້ອຍກວ່ານັ້ນ Meta ຈະປະຕິເສດ",
+        "specialAdNone": "ບໍ່ໃຊ່"
+      },
+      "interest": {
+        "searching": "ກຳລັງຄົ້ນຫາ...",
+        "relatedTitle": "ຄວາມສົນໃຈທີ່ກ່ຽວຂ້ອງ",
+        "noSuggestions": "Meta ບໍ່ມີຄຳແນະນຳສຳລັບຊຸດທີ່ເລືອກ — ລອງເພີ່ມ interest ອື່ນເປັນ seed",
+        "broadHint": "ບໍ່ໃສ່ກໍ່ໄດ້ — Meta ຈະໃຊ້ broad targeting (ທຸກຄົນທີ່ກົງ location + age + gender)"
+      },
+      "geo": {
+        "searching": "ກຳລັງຄົ້ນຫາ...",
+        "include": "+ ລວມ",
+        "exclude": "− ບໍ່ລວມ"
+      },
+      "submit": {
+        "clearDraft": "ລ້າງ draft",
+        "clearDraftConfirm": "ລ້າງ draft ແລະເລີ່ມໃໝ່?",
+        "creating": "ກຳລັງສ້າງ...",
+        "previewBtn": "ເບິ່ງຕົວຢ່າງກ່ອນສ້າງ →"
+      },
+      "preview": {
+        "title": "ເບິ່ງຕົວຢ່າງກ່ອນສ້າງ Campaign",
+        "subtitle": "ກວດໃຫ້ແນ່ໃຈກ່ອນກົດເຜີຍແຜ່ — Meta ຈະເລີ່ມຄິດເງິນທັນທີຖ້າເລືອກ ACTIVE",
+        "adPreviewLabel": "ຕົວຢ່າງໂຄສະນາ",
+        "postNoImage": "(post ນີ້ບໍ່ມີຮູບພາບ)",
+        "imageFallback": "(image)",
+        "back": "← ກັບໄປແກ້",
+        "saveDraft": "ບັນທຶກ draft (PAUSED)",
+        "publishNow": "ເຜີຍແຜ່ທັນທີ (ACTIVE)",
+        "publishConfirm": "ເຜີຍແຜ່ທັນທີ = Meta ຈະເລີ່ມຄິດເງິນ + ເລີ່ມ run ໂຄສະນາທັນທີ — ຢືນຢັນ?",
+        "summaryInclude": "ລວມ:",
+        "summaryExclude": "ບໍ່ລວມ:",
+        "summaryAge": "ອາຍຸ:",
+        "summaryGender": "ເພດ:",
+        "summaryInterests": "ຄວາມສົນໃຈ:",
+        "summaryWorldwide": "ທັງໂລກ (ບໍ່ filter)",
+        "summaryBudget": "฿{amount}{suffix}",
+        "creativeExistingPost": "Existing post",
+        "creativeFromLibraryWithLink": "Image (ຈາກຄັງ) + link",
+        "creativeFromLibraryNoLink": "Image (ຈາກຄັງ) + no link",
+        "creativeNewImageWithLink": "Image (ອັບໂຫລດໃໝ່) + link",
+        "creativeNewImageNoLink": "Image (ອັບໂຫລດໃໝ່) + no link",
+        "noPage": "(no page)"
+      },
+      "toast": {
+        "publishing": "ກຳລັງເຜີຍແຜ່ campaign...",
+        "savingDraft": "ກຳລັງບັນທຶກ draft (PAUSED)...",
+        "verbPublished": "ເຜີຍແຜ່",
+        "verbSavedDraft": "ບັນທຶກ draft",
+        "publishSuccess": "{verb} \"{name}\" ສຳເລັດ",
+        "publishFail": "ສ້າງບໍ່ສຳເລັດ"
+      },
+      "validate": {
+        "campaignName": "ກອກຊື່ campaign",
+        "page": "ເລືອກ Facebook Page",
+        "budgetMinDaily": "Budget ຕໍ່ວັນຂັ້ນຕ່ຳ ฿20",
+        "budgetMinLifetime": "Lifetime budget ຂັ້ນຕ່ຳ ฿20",
+        "lifetimeNeedsDates": "Lifetime budget ຕ້ອງກຳນົດ start + end",
+        "needImage": "ກຽມຮູບກ່ອນ",
+        "needPost": "ເລືອກ post",
+        "needLink": "ກອກ URL",
+        "needPrimaryText": "ກອກຂໍ້ຄວາມ",
+        "needPixel": "ເລືອກ Pixel ສຳລັບ Conversion goal",
+        "needEvent": "ເລືອກ event ທີ່ຈະ optimize",
+        "needCustomConversion": "ເລືອກ Custom Conversion"
+      }
+    },
+    "refundPolicy": {
+      "metaTitle": "ນະໂຍບາຍການຄືນເງິນ · AdsLab",
+      "metaDescription": "ເງື່ອນໄຂການຄືນເງິນສຳລັບການສະໝັກສະມາຊິກ AdsLab",
+      "backHome": "← ກັບໜ້າຫຼັກ",
+      "title": "ນະໂຍບາຍການຄືນເງິນ",
+      "lastUpdated": "Refund Policy · ປັບປຸງລ່າສຸດ: 13 ພຶດສະພາ 2026",
+      "trial": {
+        "heading": "1. ທົດລອງໃຊ້ຟຣີ 7 ວັນ",
+        "body1": "ຜູ້ສະໝັກສະມາຊິກ AdsLab ໃໝ່ທຸກບັນຊີຈະໄດ້ສິດທິ໌ທົດລອງໃຊ້ງານຟຣີເປັນເວລາ <strong>7 ວັນ</strong> ນັບແຕ່ມື້ບັນທຶກຂໍ້ມູນບັດເຄຣດິດສຳເລັດ. ໃນຊ່ວງທົດລອງໃຊ້ ທ່ານສາມາດໃຊ້ງານຄຸນສົມບັດທັງໝົດຂອງແພັກເກັດທີ່ເລືອກໄດ້ ແລະ <strong>ຍົກເລີກໄດ້ຕະຫຼອດເວລາໂດຍບໍ່ມີການເກັບເງິນ</strong>",
+        "body2": "ຫາກທ່ານບໍ່ຍົກເລີກກ່ອນສິ້ນສຸດຊ່ວງທົດລອງໃຊ້ ລະບົບຈະເລີ່ມເກັບເງິນຕາມແພັກເກັດທີ່ເລືອກໃນວັນຖັດໄປໂດຍອັດຕະໂນມັດ. ພວກເຮົາຈະສົ່ງອີເມວແຈ້ງເຕືອນລ່ວງໜ້າ 2 ວັນ, 1 ວັນ ແລະໃນວັນທີ່ຄົບກຳນົດ ເພື່ອໃຫ້ທ່ານຕັດສິນໃຈ"
+      },
+      "prorated": {
+        "heading": "2. ການຄືນເງິນສຳລັບຮອບບິນໃໝ່ (Pro-rated refund)",
+        "body": "ຫຼັງຈາກເກັບເງິນຮອບໃໝ່ (ຫຼັງໝົດຊ່ວງທົດລອງ ຫຼື ຕໍ່ອາຍຸປະຈຳເດືອນ/ປີ) ທ່ານມີສິດທິ໌ຂໍຄືນເງິນ <strong>ພາຍໃນ 7 ວັນທຳອິດຂອງຮອບບິນ</strong> ໂດຍຈຳນວນເງິນທີ່ຄືນຈະຄຳນວນຕາມສັດສ່ວນວັນທີ່ເຫຼືອຂອງຮອບບິນ (pro-rated)",
+        "formulaLabel": "ສູດການຄຳນວນ:",
+        "formula": "ເງິນຄືນ = ຈຳນວນເງິນທີ່ຈ່າຍ × (ວັນທີ່ເຫຼືອໃນຮອບບິນ ÷ ຈຳນວນວັນທັງໝົດໃນຮອບບິນ)",
+        "exampleLabel": "ຕົວຢ່າງ:",
+        "exampleBody": "ສະໝັກແພັກເກັດ Starter ฿1,490/ເດືອນ ໃຊ້ງານໄປ 3 ວັນ ຂໍຄືນເງິນ",
+        "exampleCalc": "ເງິນຄືນ = ฿1,490 × (27 ÷ 30) = ฿1,341"
+      },
+      "cancel": {
+        "heading": "3. ການຍົກເລີກການສະໝັກ",
+        "body": "ທ່ານສາມາດຍົກເລີກການສະໝັກໄດ້ຕະຫຼອດເວລາຈາກໜ້າ <code>Settings → Billing → ຍົກເລີກການສະໝັກ</code>. ເມື່ອຍົກເລີກ:",
+        "item1": "ທ່ານຍັງສາມາດໃຊ້ງານໄດ້ຈົນຮອດສິ້ນສຸດຮອບບິນປັດຈຸບັນ (ບໍ່ມີການຄືນເງິນອັດຕະໂນມັດ)",
+        "item2": "ບໍ່ມີການຕໍ່ອາຍຸອັດຕະໂນມັດໃນຮອບຖັດໄປ",
+        "item3": "ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນລະບົບ 90 ວັນ. ຫາກກັບມາສະໝັກໃໝ່ພາຍໃນເວລານີ້ ຂໍ້ມູນທັງໝົດຈະຖືກກູ້ຄືນ"
+      },
+      "nonRefundable": {
+        "heading": "4. ກໍລະນີທີ່ຂໍຄືນເງິນບໍ່ໄດ້",
+        "body": "ໃນກໍລະນີຕໍ່ໄປນີ້ ພວກເຮົາບໍ່ສາມາດຄືນເງິນໃຫ້ໄດ້:",
+        "item1": "ເກີນກຳນົດ 7 ວັນທຳອິດຂອງຮອບບິນ (ທ່ານຍັງສາມາດຍົກເລີກບໍ່ໃຫ້ຕໍ່ອາຍຸໄດ້)",
+        "item2": "ບັນຊີຂອງທ່ານຖືກລະງັບເນື່ອງຈາກລະເມີດຂໍ້ກຳນົດການໃຊ້ບໍລິການ",
+        "item3": "ການຊຳລະເງິນຜ່ານຊ່ອງທາງອື່ນທີ່ບໍ່ແມ່ນ Omise (ເຊັ່ນ ໂອນກົງ — ບໍ່ຮອງຮັບໃນ Phase ປັດຈຸບັນ)"
+      },
+      "process": {
+        "heading": "5. ຂັ້ນຕອນການຂໍຄືນເງິນ",
+        "step1": "ໄປທີ່ <code>Settings → Billing</code> ໃນແດສບອດຂອງທ່ານ",
+        "step2": "ໃນລາຍການ Invoice ທີ່ຕ້ອງການ ກົດ <code>ຂໍຄືນເງິນ</code>",
+        "step3": "ລະບົບຈະປະມວນຜົນ ແລະຄືນເງິນກັບໄປຍັງບັດເຄຣດິດເດີມຜ່ານ Omise ພາຍໃນ 5-10 ວັນທຳການ",
+        "step4": "ທ່ານຈະໄດ້ຮັບອີເມວຢືນຢັນເມື່ອການຄືນເງິນສຳເລັດ",
+        "specialContact": "ຫາກພົບບັນຫາ ຫຼື ຕ້ອງການຄືນເງິນດ້ວຍເຫດຜົນພິເສດ ຕິດຕໍ່ພວກເຮົາທີ່"
+      },
+      "planChange": {
+        "heading": "6. ການປ່ຽນແພັກເກັດ",
+        "body": "ຫາກທ່ານອັບເກຣດແພັກເກັດ (ເຊັ່ນ Starter → Pro) ໃນລະຫວ່າງຮອບບິນ ລະບົບຈະເກັບສ່ວນຕ່າງ pro-rated ຂອງວັນທີ່ເຫຼືອ. ຫາກທ່ານດາວນ໌ເກຣດ ແພັກເກັດໃໝ່ຈະເລີ່ມໃນຮອບບິນຖັດໄປ (ບໍ່ມີການຄືນສ່ວນຕ່າງ)"
+      },
+      "contact": {
+        "heading": "7. ຕິດຕໍ່ສອບຖາມ",
+        "emailLabel": "ອີເມວ:",
+        "phoneLabel": "ໂທລະສັບ:",
+        "addressLabel": "ທີ່ຢູ່:"
+      },
+      "english": {
+        "heading": "ນະໂຍບາຍການຄືນເງິນ (ສະຫຼຸບ)",
+        "trial": "<strong>ທົດລອງຟຣີ 7 ວັນ:</strong> ບໍ່ມີຄ່າໃຊ້ຈ່າຍໃນຊ່ວງທົດລອງ. ຍົກເລີກໄດ້ທຸກເວລາຜ່ານ Settings → Billing.",
+        "prorated": "<strong>ຄືນເງິນ pro-rated ພາຍໃນ 7 ວັນຂອງຮອບບິນໃໝ່:</strong> ຈຳນວນທີ່ຄືນຄຳນວນເປັນ <code>payment × (remaining_days ÷ total_days_in_period)</code>",
+        "cancel": "<strong>ການຍົກເລີກ:</strong> ສິດການເຂົ້າໃຊ້ສືບຕໍ່ຈົນສິ້ນສຸດຮອບບິນປັດຈຸບັນ. ບໍ່ມີການຄືນເງິນຈາກການຍົກເລີກເອງ ແຕ່ບໍ່ມີການເກັບເງິນເພີ່ມ.",
+        "nonRefundable": "<strong>ກໍລະນີຄືນເງິນບໍ່ໄດ້:</strong> ເກີນຊ່ວງ 7 ວັນ; ບັນຊີຖືກລະງັບເນື່ອງຈາກລະເມີດ ToS.",
+        "contactLabel": "<strong>ຕິດຕໍ່:</strong>"
+      }
+    },
+    "terms": {
+      "metaTitle": "Terms of Service / ຂໍ້ກຳນົດການໃຊ້ບໍລິການ · AdsLab",
+      "metaDescription": "ຂໍ້ກຳນົດທີ່ໃຊ້ບັງຄັບການໃຊ້ບໍລິການ AdsLab",
+      "backHome": "← AdsLab",
+      "title": "Terms of Service / ຂໍ້ກຳນົດການໃຊ້ບໍລິການ",
+      "lastUpdated": "Last updated / ປັບປຸງລ່າສຸດ: {date}",
+      "thaiHeading": "ພາສາລາວ",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. ການຍອມຮັບຂໍ້ກຳນົດ",
+          "body": "ການສະໝັກ ແລະໃຊ້ບໍລິການ AdsLab ຖືວ່າທ່ານຍອມຮັບຂໍ້ກຳນົດສະບັບນີ້ ແລະ <privacyLink>ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</privacyLink> ຂອງພວກເຮົາ. ຫາກທ່ານບໍ່ຍອມຮັບ ກະລຸນາຢຸດໃຊ້ບໍລິການ"
+        },
+        "s2": {
+          "title": "2. ບໍລິການທີ່ໃຫ້",
+          "body": "AdsLab ເປັນເຄື່ອງມືບໍລິຫານຈັດການແຄມເປນໂຄສະນາດິຈິຕອນ ລວມເຖິງ dashboard, AI report, AI optimization. ພວກເຮົາເປັນ <strong>ເຄື່ອງມືເສີມ</strong> — ບໍ່ແມ່ນຜູ້ຮັບປະກັນຜົນລັບການຕະຫຼາດ. ການຕັດສິນໃຈສຸດທ້າຍເປັນຂອງຜູ້ໃຊ້"
+        },
+        "s3": {
+          "title": "3. ບັນຊີຜູ້ໃຊ້",
+          "item1": "ທ່ານຕ້ອງມີອາຍຸ 20 ປີຂຶ້ນໄປ ຫຼື ໄດ້ຮັບອະນຸຍາດຈາກຜູ້ປົກຄອງ",
+          "item2": "ທ່ານຮັບຜິດຊອບການຮັກສາຄວາມປອດໄພຂອງລະຫັດຜ່ານ",
+          "item3": "ຫ້າມແບ່ງປັນບັນຊີກັບຜູ້ອື່ນ (ໃຊ້ລະບົບ Team / Workspace ແທນ)",
+          "item4": "ທ່ານຕ້ອງໃຫ້ຂໍ້ມູນທີ່ຖືກຕ້ອງ ແລະອັບເດດ"
+        },
+        "s4": {
+          "title": "4. ການໃຊ້ງານທີ່ຍອມຮັບໄດ້",
+          "intro": "ທ່ານຕົກລົງຈະບໍ່:",
+          "item1": "ໃຊ້ AdsLab ໃນກິດຈະກຳທີ່ຜິດກົດໝາຍ ຫຼື ລະເມີດນະໂຍບາຍຂອງ Meta",
+          "item2": "ພະຍາຍາມເຂົ້າເຖິງຂໍ້ມູນຂອງຜູ້ໃຊ້ຄົນອື່ນໂດຍບໍ່ໄດ້ຮັບອະນຸຍາດ",
+          "item3": "ໃຊ້ scraping, reverse engineering ຫຼື rate-limit bypass",
+          "item4": "ສົ່ງ spam, malware ຫຼື ເນື້ອຫາທີ່ລະເມີດຊັບສິນທາງປັນຍາ",
+          "item5": "ໃຊ້ AI features ເພື່ອສ້າງຂໍ້ມູນທີ່ເຮັດໃຫ້ເຂົ້າໃຈຜິດຢ່າງເປັນລະບົບ"
+        },
+        "s5": {
+          "title": "5. ການຊຳລະເງິນ (Phase 2 — ຕອນນີ້ຟຣີ)",
+          "intro": "ໃນຊ່ວງ MVP / Beta ບໍລິການແມ່ນຟຣີ. ເມື່ອເລີ່ມ subscription:",
+          "item1": "ທ່ານຈະໄດ້ຊ່ວງທົດລອງຟຣີ 30 ວັນ",
+          "item2": "ຄ່າບໍລິການຈະເກັບລ່ວງໜ້າເປັນເດືອນ/ປີ",
+          "item3": "ຍົກເລີກໄດ້ທຸກເວລາ — ບໍລິການສິ້ນສຸດທີ່ສິ້ນສຸດຮອບບິນປັດຈຸບັນ",
+          "item4": "ຄືນເງິນ: ພາຍໃນ 7 ວັນທຳອິດຂອງຮອບບິນໃໝ່ ໃນກໍລະນີທີ່ຍັງບໍ່ໄດ້ໃຊ້ງານຫຼັກ"
+        },
+        "s6": {
+          "title": "6. ຊັບສິນທາງປັນຍາ",
+          "body": "AdsLab (ລວມເຖິງ code, design, AI prompts, brand) ເປັນຂອງພວກເຮົາ. ຂໍ້ມູນ ແລະເນື້ອຫາທີ່ທ່ານ upload ຫຼື ສ້າງຜ່ານ AdsLab ຍັງເປັນຂອງທ່ານ — ພວກເຮົາພຽງປະມວນຜົນເພື່ອໃຫ້ບໍລິການ"
+        },
+        "s7": {
+          "title": "7. ຂໍ້ຈຳກັດຄວາມຮັບຜິດ",
+          "item1": "AdsLab ໃຫ້ບໍລິການ \"as-is\" ບໍ່ຮັບປະກັນຜົນກຳໄລ ຫຼື ຜົນລັບການຕະຫຼາດ",
+          "item2": "ພວກເຮົາບໍ່ຮັບຜິດຕໍ່ຄວາມເສຍຫາຍທາງອ້ອມ (ເຊັ່ນ ຂາດທຶນຈາກການຕັດສິນໃຈຕາມ AI suggestion)",
+          "item3": "ຄວາມຮັບຜິດສູງສຸດຈຳກັດທີ່ຄ່າບໍລິການທີ່ທ່ານຈ່າຍມາ 12 ເດືອນລ່າສຸດ"
+        },
+        "s8": {
+          "title": "8. ການຍົກເລີກ / ການລະງັບບໍລິການ",
+          "body": "ພວກເຮົາມີສິດທິ໌ລະງັບ/ຍົກເລີກບັນຊີທີ່ລະເມີດຂໍ້ກຳນົດນີ້. ທ່ານຍົກເລີກບັນຊີຂອງທ່ານເອງໄດ້ທີ່ Settings. ເບິ່ງການລົບຂໍ້ມູນທີ່ <deletionLink>Data Deletion</deletionLink>"
+        },
+        "s9": {
+          "title": "9. ກົດໝາຍທີ່ໃຊ້ບັງຄັບ",
+          "body": "ຂໍ້ກຳນົດນີ້ຢູ່ພາຍໃຕ້ກົດໝາຍໄທ. ຂໍ້ຂັດແຍ່ງພິຈາລະນາທີ່ສານໃນປະເທດໄທ"
+        },
+        "s10": {
+          "title": "10. ການປ່ຽນແປງຂໍ້ກຳນົດ",
+          "body": "ພວກເຮົາອາດປັບປຸງຂໍ້ກຳນົດເປັນຄັ້ງຄາວ. ແຈ້ງທາງອີເມວ 14 ວັນກ່ອນມີຜົນ"
+        },
+        "s11": {
+          "title": "11. ຕິດຕໍ່",
+          "emailLabel": "ອີເມວ:"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Acceptance of Terms",
+          "body": "By signing up for and using AdsLab, you agree to these Terms and our <privacyLink>Privacy Policy</privacyLink>. If you do not agree, please discontinue use."
+        },
+        "s2": {
+          "title": "2. Service Description",
+          "body": "AdsLab is a digital advertising campaign management platform including dashboards, AI reports, and AI optimization. We are a <strong>tool</strong> — not a guarantor of marketing results. Final decisions remain with the user."
+        },
+        "s3": {
+          "title": "3. User Accounts",
+          "item1": "You must be 20+ years old, or have parental/guardian consent",
+          "item2": "You are responsible for password security",
+          "item3": "Do not share accounts (use Team / Workspace features instead)",
+          "item4": "Provide accurate and up-to-date information"
+        },
+        "s4": {
+          "title": "4. Acceptable Use",
+          "intro": "You agree not to:",
+          "item1": "Use AdsLab for illegal activity or in violation of Meta's policies",
+          "item2": "Attempt to access other users' data without authorization",
+          "item3": "Scrape, reverse-engineer, or bypass rate limits",
+          "item4": "Send spam, malware, or copyright-infringing content",
+          "item5": "Use AI features to systematically generate misleading content"
+        },
+        "s5": {
+          "title": "5. Payment (Phase 2 — currently free)",
+          "intro": "During MVP / Beta the service is free. When subscriptions launch:",
+          "item1": "You will receive a 30-day free trial",
+          "item2": "Fees are charged in advance, monthly or annually",
+          "item3": "Cancel at any time — service ends at the end of the current billing cycle",
+          "item4": "Refunds: within the first 7 days of a new billing cycle if usage was minimal"
+        },
+        "s6": {
+          "title": "6. Intellectual Property",
+          "body": "AdsLab (including code, design, AI prompts, brand) belongs to us. Data and content you upload or generate through AdsLab remains yours — we only process it to provide the service."
+        },
+        "s7": {
+          "title": "7. Limitation of Liability",
+          "item1": "AdsLab is provided \"as-is\" with no guarantee of profit or marketing results",
+          "item2": "We are not liable for indirect damages (e.g. losses from decisions based on AI suggestions)",
+          "item3": "Maximum liability is capped at fees paid by you in the prior 12 months"
+        },
+        "s8": {
+          "title": "8. Termination / Suspension",
+          "body": "We reserve the right to suspend or terminate accounts that violate these Terms. You may cancel your own account at any time in Settings. See <deletionLink>Data Deletion</deletionLink> for data removal."
+        },
+        "s9": {
+          "title": "9. Governing Law",
+          "body": "These Terms are governed by the laws of Thailand. Disputes will be resolved in Thai courts."
+        },
+        "s10": {
+          "title": "10. Changes to These Terms",
+          "body": "We may update these Terms from time to time. We will notify you via email at least 14 days before changes take effect."
+        },
+        "s11": {
+          "title": "11. Contact",
+          "emailLabel": "Email:"
+        }
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "refund": "Refund Policy",
+        "deletion": "Data Deletion",
+        "home": "AdsLab"
+      }
+    },
+    "privacy": {
+      "metaTitle": "Privacy Policy / ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ · AdsLab",
+      "metaDescription": "ວິທີທີ່ AdsLab ເກັບ ໃຊ້ ແລະຄຸ້ມຄອງຂໍ້ມູນຂອງທ່ານ",
+      "backHome": "← AdsLab",
+      "title": "Privacy Policy / ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ",
+      "lastUpdated": "Last updated / ປັບປຸງລ່າສຸດ: {date}",
+      "thaiHeading": "ພາສາລາວ",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. ບົດນຳ",
+          "body": "AdsLab (\"ພວກເຮົາ\") ເປັນແພລດຟອມ SaaS ສຳລັບ media buyer ແລະ digital marketing agency. ນະໂຍບາຍສະບັບນີ້ອະທິບາຍວິທີທີ່ພວກເຮົາເກັບ ໃຊ້ ແລະຄຸ້ມຄອງຂໍ້ມູນຂອງທ່ານຕາມ ພະຣາຊບັນຍັດຄຸ້ມຄອງຂໍ້ມູນສ່ວນບຸກຄົນ ພ.ສ. 2562 (PDPA) ແລະມາດຕະຖານສາກົນ (GDPR)"
+        },
+        "s2": {
+          "title": "2. ຂໍ້ມູນທີ່ພວກເຮົາເກັບ",
+          "item1": "<strong>ຂໍ້ມູນບັນຊີ:</strong> ອີເມວ, ຊື່, ລະຫັດຜ່ານ (ເກັບແບບ hash)",
+          "item2": "<strong>ຂໍ້ມູນອົງກອນ (Workspace):</strong> ຊື່ Agency, ທີມງານ, role ຂອງແຕ່ລະສະມາຊິກ",
+          "item3": "<strong>ຂໍ້ມູນໂຄສະນາ Meta:</strong> ເມື່ອທ່ານກົດ \"Connect Meta\" ພວກເຮົາດຶງຂໍ້ມູນ ad accounts, campaigns, insights ຜ່ານ Meta Marketing API ຕາມສິດທີ່ທ່ານອະນຸຍາດ",
+          "item4": "<strong>ຂໍ້ມູນການໃຊ້ງານ:</strong> log ການເຂົ້າໃຊ້, ການເອີ້ນ API, error events",
+          "item5": "<strong>Cookies:</strong> session cookie ສຳລັບການຢືນຢັນຕົວຕົນເທົ່ານັ້ນ. ບໍ່ມີ tracking cookies"
+        },
+        "s3": {
+          "title": "3. ພວກເຮົາໃຊ້ຂໍ້ມູນຂອງທ່ານແນວໃດ",
+          "item1": "ໃຫ້ບໍລິການແພລດຟອມ (dashboard, AI report, optimization)",
+          "item2": "ສົ່ງອີເມວທີ່ຈຳເປັນ (verify, password reset, ລາຍງານ)",
+          "item3": "ສ້າງ AI insights ຜ່ານ OpenRouter (Claude, Gemini) — ຂໍ້ມູນ campaign ຂອງທ່ານຖືກສົ່ງໄປປະມວນຜົນ ແລະບໍ່ຖືກເກັບໄວ້ທີ່ຜູ້ໃຫ້ບໍລິການ AI",
+          "item4": "ປັບປຸງຄຸນນະພາບການບໍລິການ (ຂໍ້ມູນລວມ anonymized)",
+          "doNot": "<strong>ພວກເຮົາບໍ່:</strong> ຂາຍ, ແບ່ງປັນໃຫ້ຜູ້ໂຄສະນາ ຫຼື ໃຊ້ຂໍ້ມູນທ່ານເພື່ອຝຶກ AI model"
+        },
+        "s4": {
+          "title": "4. ຜູ້ໃຫ້ບໍລິການບຸກຄົນທີສາມ",
+          "item1": "<strong>Meta Platforms</strong> — ແຫຼ່ງຂໍ້ມູນໂຄສະນາ (ຜ່ານ Marketing API)",
+          "item2": "<strong>OpenRouter / Anthropic / Google</strong> — ປະມວນຜົນ AI",
+          "item3": "<strong>Resend</strong> — ສົ່ງອີເມວ",
+          "item4": "<strong>Vercel</strong> — ໂຮສຕິ້ງ (ເຊີບເວີໃນປະເທດທີ່ຢູ່ໃກ້ຜູ້ໃຊ້)",
+          "item5": "<strong>Neon</strong> — ຖານຂໍ້ມູນ (ພາກພື້ນ Singapore)",
+          "item6": "<strong>Omise</strong> (Phase 2) — ປະມວນຜົນການຊຳລະເງິນ"
+        },
+        "s5": {
+          "title": "5. ໄລຍະເວລາເກັບຂໍ້ມູນ",
+          "item1": "ຂໍ້ມູນບັນຊີ: ຕະຫຼອດອາຍຸການໃຊ້ງານ + 90 ວັນຫຼັງລົບບັນຊີ",
+          "item2": "ຂໍ້ມູນໂຄສະນາ cache: ສູງສຸດ 90 ວັນສຳລັບການສະແດງຜົນຍ້ອນຫຼັງ",
+          "item3": "Log: 30 ວັນ",
+          "item4": "ຫຼັງໝົດເວລາ ຂໍ້ມູນຖືກລົບຖາວອນຈາກ backup"
+        },
+        "s6": {
+          "title": "6. ສິດຂອງທ່ານ (PDPA / GDPR)",
+          "intro": "ທ່ານມີສິດທີ່ຈະ:",
+          "item1": "ເຂົ້າເຖິງ ແລະດາວນ໌ໂຫຼດຂໍ້ມູນຂອງທ່ານ",
+          "item2": "ແກ້ໄຂຂໍ້ມູນທີ່ບໍ່ຖືກຕ້ອງ",
+          "item3": "ລົບບັນຊີ ແລະຂໍ້ມູນທັງໝົດ (ເບິ່ງໜ້າ <deletionLink>Data Deletion</deletionLink>)",
+          "item4": "ຖອນຄວາມຍິນຍອມ (disconnect Meta ໄດ້ທຸກເວລາ)",
+          "item5": "ໂອນຍ້າຍຂໍ້ມູນ (data portability)",
+          "item6": "ຮ້ອງຮຽນຕໍ່ສຳນັກງານຄຸ້ມຄອງຂໍ້ມູນສ່ວນບຸກຄົນ (PDPC) ຫາກເຫັນວ່າພວກເຮົາລະເມີດ",
+          "contactLabel": "ຕິດຕໍ່:"
+        },
+        "s7": {
+          "title": "7. ຄວາມປອດໄພ",
+          "item1": "ການສົ່ງຂໍ້ມູນທຸກຄັ້ງເຂົ້າລະຫັດດ້ວຍ TLS (HTTPS)",
+          "item2": "ລະຫັດຜ່ານເກັບແບບ bcrypt hash (ບໍ່ສາມາດຖອດກັບໄດ້)",
+          "item3": "Meta access token ເກັບແບບ AES-256-GCM encrypted ໃນຖານຂໍ້ມູນ",
+          "item4": "Session cookie ເປັນແບບ httpOnly, secure, sameSite=lax"
+        },
+        "s8": {
+          "title": "8. ການປ່ຽນແປງນະໂຍບາຍ",
+          "body": "ພວກເຮົາອາດປັບປຸງນະໂຍບາຍນີ້ເປັນຄັ້ງຄາວ. ການປ່ຽນແປງທີ່ສຳຄັນຈະແຈ້ງທາງອີເມວ ຢ່າງໜ້ອຍ 14 ວັນກ່ອນມີຜົນ"
+        },
+        "s9": {
+          "title": "9. ຕິດຕໍ່ພວກເຮົາ",
+          "emailLabel": "ອີເມວ:"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Introduction",
+          "body": "AdsLab (\"we\", \"our\") is a SaaS platform for media buyers and digital marketing agencies. This policy explains how we collect, use, and protect your data in compliance with Thailand's Personal Data Protection Act (PDPA, 2019) and international standards including GDPR."
+        },
+        "s2": {
+          "title": "2. Information We Collect",
+          "item1": "<strong>Account info:</strong> email, name, password (stored as bcrypt hash)",
+          "item2": "<strong>Workspace info:</strong> agency name, team members, roles",
+          "item3": "<strong>Meta advertising data:</strong> when you click \"Connect Meta\" we fetch your ad accounts, campaigns, and insights via Meta Marketing API based on permissions you grant",
+          "item4": "<strong>Usage data:</strong> login logs, API call logs, error events",
+          "item5": "<strong>Cookies:</strong> session cookie only (authentication). No tracking cookies."
+        },
+        "s3": {
+          "title": "3. How We Use Your Information",
+          "item1": "Provide the platform (dashboard, AI report, optimization)",
+          "item2": "Send required emails (verification, password reset, reports)",
+          "item3": "Generate AI insights via OpenRouter (Claude, Gemini) — your campaign data is sent for processing and is NOT retained by the AI providers",
+          "item4": "Improve service quality (aggregated, anonymized data)",
+          "doNot": "<strong>We do NOT:</strong> sell your data, share with advertisers, or use your data to train AI models."
+        },
+        "s4": {
+          "title": "4. Third-Party Service Providers",
+          "item1": "<strong>Meta Platforms</strong> — advertising data source (via Marketing API)",
+          "item2": "<strong>OpenRouter / Anthropic / Google</strong> — AI processing",
+          "item3": "<strong>Resend</strong> — email delivery",
+          "item4": "<strong>Vercel</strong> — hosting (edge network)",
+          "item5": "<strong>Neon</strong> — database (Singapore region)",
+          "item6": "<strong>Omise</strong> (Phase 2) — payment processing"
+        },
+        "s5": {
+          "title": "5. Data Retention",
+          "item1": "Account data: while your account is active + 90 days after deletion",
+          "item2": "Cached advertising data: up to 90 days for historical reporting",
+          "item3": "Logs: 30 days",
+          "item4": "Data is permanently purged from backups after the retention period"
+        },
+        "s6": {
+          "title": "6. Your Rights (PDPA / GDPR)",
+          "intro": "You have the right to:",
+          "item1": "Access and download your data",
+          "item2": "Correct inaccurate information",
+          "item3": "Delete your account and all data (see <deletionLink>Data Deletion</deletionLink>)",
+          "item4": "Withdraw consent (disconnect Meta at any time)",
+          "item5": "Data portability",
+          "item6": "Lodge a complaint with the Personal Data Protection Committee (PDPC) if you believe we have violated your rights",
+          "contactLabel": "Contact:"
+        },
+        "s7": {
+          "title": "7. Security",
+          "item1": "All data in transit is encrypted with TLS (HTTPS)",
+          "item2": "Passwords are stored as bcrypt hashes (irreversible)",
+          "item3": "Meta access tokens are encrypted at rest using AES-256-GCM",
+          "item4": "Session cookies are httpOnly, secure, sameSite=lax"
+        },
+        "s8": {
+          "title": "8. Changes to This Policy",
+          "body": "We may update this policy from time to time. We will notify you via email of material changes at least 14 days before they take effect."
+        },
+        "s9": {
+          "title": "9. Contact Us",
+          "emailLabel": "Email:"
+        }
+      },
+      "footer": {
+        "terms": "Terms of Service",
+        "refund": "Refund Policy",
+        "deletion": "Data Deletion",
+        "home": "AdsLab"
+      }
+    },
+    "dataDeletion": {
+      "metaTitle": "Data Deletion / ລົບຂໍ້ມູນ · AdsLab",
+      "metaDescription": "ວິທີຂໍລົບຂໍ້ມູນຂອງທ່ານອອກຈາກ AdsLab",
+      "backHome": "← AdsLab",
+      "title": "Data Deletion / ການລົບຂໍ້ມູນ",
+      "intro": "ຂໍອະໄພທີ່ທ່ານຈະອອກຈາກ AdsLab — ພວກເຮົາເກັບຂໍ້ມູນຂອງທ່ານເທົ່າທີ່ຈຳເປັນສະເໝີ ແລະພ້ອມລົບເມື່ອທ່ານຂໍ",
+      "thaiHeading": "ພາສາລາວ",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. ລົບຂໍ້ມູນຜ່ານລະບົບ (Recommended)",
+          "intro": "ວິທີທີ່ໄວທີ່ສຸດ:",
+          "step1": "ເຂົ້າສູ່ລະບົບ AdsLab",
+          "step2": "ໄປທີ່ <strong>Settings → Account</strong>",
+          "step3": "ກົດ <strong>\"ລົບບັນຊີຂອງຂ້ອຍ\"</strong>",
+          "step4": "ຢືນຢັນດ້ວຍລະຫັດຜ່ານ",
+          "timing": "ການລົບຈະສຳເລັດສົມບູນພາຍໃນ 30 ວັນ (ລວມການລົບຈາກ backup)",
+          "note": "ໝາຍເຫດ: ຄຸນສົມບັດລົບບັນຊີໃນ UI ຈະເປີດໃຫ້ໃຊ້ໃນ Phase 2 — ປັດຈຸບັນກະລຸນາໃຊ້ວິທີທີ 2"
+        },
+        "s2": {
+          "title": "2. ລົບຂໍ້ມູນຜ່ານອີເມວ",
+          "intro": "ສົ່ງອີເມວເຖິງ <email>ອີເມວ</email> ໂດຍໃສ່:",
+          "item1": "ອີເມວທີ່ໃຊ້ສະໝັກ AdsLab",
+          "item2": "ຊື່ເຕັມ",
+          "item3": "ເຫດຜົນ (ຣະບຸ ຫຼື ບໍ່ກໍໄດ້)",
+          "ack": "ພວກເຮົາຈະຢືນຢັນຄຳຮ້ອງພາຍໃນ 3 ວັນທຳການ ແລະດຳເນີນການລົບໃຫ້ສຳເລັດພາຍໃນ 30 ວັນ"
+        },
+        "s3": {
+          "title": "3. ການລົບຂໍ້ມູນຜ່ານ Facebook",
+          "body": "ຖ້າທ່ານ revoke ການອະນຸຍາດຈາກ Facebook (Settings → Apps and Websites → AdsLab → Remove) Meta ຈະແຈ້ງໃຫ້ພວກເຮົາຮັບຮູ້ ແລະພວກເຮົາຈະລົບ Meta connection ຂອງທ່ານພາຍໃນ 7 ວັນ (ບັນຊີ AdsLab ຈະຍັງຄົງຢູ່ — ຕ້ອງໃຊ້ວິທີທີ 1 ຫຼື 2 ຫາກຕ້ອງການລົບບັນຊີທັງໝົດ)"
+        },
+        "s4": {
+          "title": "4. ຂໍ້ມູນຫຍັງແດ່ຈະຖືກລົບ",
+          "item1": "ບັນຊີ (ອີເມວ, ຊື່, password hash)",
+          "item2": "Workspace / Tenant ທັງໝົດທີ່ທ່ານເປັນ owner ຖ້າບໍ່ມີສະມາຊິກອື່ນ",
+          "item3": "Meta access token + cached ad accounts",
+          "item4": "Cached campaign insights ແລະ AI reports",
+          "item5": "Log activity ທັງໝົດ",
+          "retained": "<strong>ຂໍ້ມູນທີ່ອາດເຫຼືອ:</strong> Invoice / receipt ຕາມກົດໝາຍພາສີໄທ (ເກັບ 5 ປີ)"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Delete via the App (Recommended)",
+          "intro": "Fastest method:",
+          "step1": "Log in to AdsLab",
+          "step2": "Go to <strong>Settings → Account</strong>",
+          "step3": "Click <strong>\"Delete my account\"</strong>",
+          "step4": "Confirm with your password",
+          "timing": "Deletion completes within 30 days (including from backups)",
+          "note": "Note: in-app account deletion will be available in Phase 2 — for now please use method 2 below."
+        },
+        "s2": {
+          "title": "2. Delete via Email",
+          "intro": "Send an email to <email>email</email> with:",
+          "item1": "The email you used to sign up",
+          "item2": "Your full name",
+          "item3": "Reason (optional)",
+          "ack": "We will acknowledge your request within 3 business days and complete deletion within 30 days."
+        },
+        "s3": {
+          "title": "3. Deletion via Facebook",
+          "body": "If you revoke permission from Facebook (Settings → Apps and Websites → AdsLab → Remove), Meta will notify us and we will delete your Meta connection within 7 days. (Your AdsLab account will remain — use method 1 or 2 if you want to fully delete the account.)"
+        },
+        "s4": {
+          "title": "4. What Data Will Be Deleted",
+          "item1": "Account (email, name, password hash)",
+          "item2": "Workspace / Tenant where you are the sole Owner",
+          "item3": "Meta access token + cached ad accounts",
+          "item4": "Cached campaign insights and AI reports",
+          "item5": "Activity logs",
+          "retained": "<strong>Data that may be retained:</strong> Invoices / receipts as required by Thai tax law (5 years)."
+        }
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "refund": "Refund Policy",
+        "home": "AdsLab"
+      }
+    },
+    "aiCampaignBuilder": {
+      "title": "AI Campaign Builder",
+      "subtitle": "ສ້າງແຄມເປນອັດສະລິຍະດ້ວຍ AI ໃນບໍ່ກີ່ນາທີ",
+      "steps": {
+        "setup": "ຕັ້ງຄ່າແຄມເປນ",
+        "aiPlan": "AI ສ້າງແຜນ",
+        "reviewPublish": "ກວດສອບ + ເຜີຍແຜ່"
+      },
+      "objective": {
+        "awareness": "Awareness",
+        "traffic": "Traffic",
+        "engagement": "Engagement",
+        "leads": "Leads",
+        "conversions": "Conversions",
+        "sales": "Sales"
+      },
+      "form": {
+        "section1Title": "ບອກ AI ກ່ຽວກັບທຸລະກິດຂອງທ່ານ",
+        "section2Title": "ຂໍ້ມູນເພີ່ມເຕີມ (ບໍ່ບັງຄັບ)",
+        "productLabel": "ທ່ານກຳລັງຂາຍຫຍັງ?",
+        "productPlaceholder": "ເຊັ່ນ: ຄຣີມກັນແດດໜ້າໃສ SPF50 PA+++",
+        "websiteLabel": "ລິ້ງເວັບໄຊ / ສິນຄ້າ",
+        "objectiveLabel": "ເປົ້າໝາຍແຄມເປນ",
+        "dailyBudgetLabel": "ງົບປະມານຕໍ່ມື້ (THB)",
+        "durationLabel": "ໄລຍະເວລາ (ມື້)",
+        "primaryAudienceLabel": "ກຸ່ມເປົ້າໝາຍຫຼັກ",
+        "primaryAudiencePlaceholder": "ເຊັ່ນ: ຜູ້ຍິງ ອາຍຸ 18-34 ສົນໃຈສະກິນແຄຣ໌ ຄວາມງາມ ໄລຟ໌ສະໄຕລ໌",
+        "secondaryAudienceLabel": "ກຸ່ມເປົ້າໝາຍເພີ່ມເຕີມ (ບໍ່ບັງຄັບ)",
+        "secondaryAudiencePlaceholder": "ເຊັ່ນ: ຜູ້ຊາຍ ອາຍຸ 20-35 ອອກກຳລັງກາຍ ດູແລຜິວ",
+        "placementsLabel": "ຕຳແໜ່ງການສະແດງຜົນ",
+        "languageLabel": "ພາສາ",
+        "languageThai": "ພາສາໄທ",
+        "languageMixed": "ປະສົມ (ໄທ + ອັງກິດ)",
+        "featuresLabel": "ຈຸດເດັ່ນສິນຄ້າ",
+        "featuresPlaceholder": "ພິມແລ້ວກົດ Enter",
+        "messageLabel": "ຂໍ້ຄວາມທີ່ຕ້ອງການສື່",
+        "messagePlaceholder": "ເຊັ່ນ: ກັນແດດໜ້າໃສ ບໍ່ມັນ ກັນເຫື່ອ ກັນນ້ຳ ໃຊ້ໄດ້ທຸກວັນ"
+      },
+      "button": {
+        "generate": "ສ້າງແຜນແຄມເປນດ້ວຍ AI",
+        "generating": "AI ກຳລັງສ້າງແຜນ...",
+        "customize": "ປັບແຕ່ງແຜນ",
+        "save": "ບັນທຶກແລະສ້າງແຄມເປນ"
+      },
+      "toast": {
+        "needProduct": "ປ້ອນຂໍ້ມູນສິນຄ້າກ່ອນສ້າງແຜນ",
+        "generateFailed": "AI ສ້າງແຜນບໍ່ສຳເລັດ",
+        "generateSuccess": "AI ສ້າງແຜນແຄມເປນສຳເລັດ",
+        "savedCreating": "ບັນທຶກແລ້ວ — ກຳລັງສ້າງແຄມເປນໃນ Meta..."
+      },
+      "preview": {
+        "analyzing": "AI ກຳລັງວິເຄາະ...",
+        "analyzingDesc": "ກຳລັງສ້າງແຄມເປນ + ad sets + creative ທີ່ເໝາະກັບທຸລະກິດຂອງທ່ານ",
+        "waiting": "ລໍຖ້າ AI ສ້າງແຜນ",
+        "waitingDesc": "ປ້ອນຂໍ້ມູນທຸລະກິດທາງຊ້າຍ ແລ້ວກົດ “ສ້າງແຜນແຄມເປນດ້ວຍ AI”",
+        "planTitle": "AI ໄດ້ສ້າງແຜນແຄມເປນໃຫ້ທ່ານແລ້ວ",
+        "predicted": "ຄາດການຜົນ",
+        "salesLabel": "ຍອດຂາຍ",
+        "veryGood": "ດີຫຼາຍ",
+        "adsTotal": "Ads — ລວມ {count} ໂຄສະນາ (ແນະນຳໂດຍ AI)",
+        "ctrExpected": "CTR ຄາດ {ctr}%",
+        "perDayBudget": "฿{amount}/ມື້ ({percent}%)"
+      }
+    },
+    "rules": {
+      "header": {
+        "summary": "{count} {unit} · active {active}/{cap}",
+        "subtitle": "ກົດເປີດ/ປິດເພື່ອ activate · ກົດຊື່ເພື່ອແກ້ໄຂ · ກົດ ⋯ ເພື່ອເບິ່ງ history",
+        "unitOne": "rule",
+        "unitMany": "rules",
+        "askAi": "ຂໍ AI ແນະນຳ",
+        "addRule": "ເພີ່ມ rule",
+        "atCapTooltip": "ຮອດ limit ຂອງ plan ແລ້ວ"
+      },
+      "empty": {
+        "title": "ຍັງບໍ່ມີ rule",
+        "description": "ຕັ້ງ rule ເພື່ອໃຫ້ AdsLab pause adset ຫຼື ແຈ້ງເຕືອນທ່ານອັດຕະໂນມັດເມື່ອ KPI ບໍ່ດີ"
+      },
+      "row": {
+        "inWindow": "ໃນ {hours}h ທີ່ {scope}",
+        "checkEvery": "ກວດ {interval}",
+        "lastFired": "ຍິງຫຼ້າສຸດ {date}",
+        "testTooltip": "ທົດສອບ rule ດຽວນີ້",
+        "historyTooltip": "ເບິ່ງ history",
+        "deleteTooltip": "ລົບ"
+      },
+      "action": {
+        "pauseAdset": "Pause Ad Set",
+        "pauseCampaign": "Pause Campaign",
+        "notifyEmail": "ສົ່ງ email ແຈ້ງ OWNER",
+        "notifyInApp": "ສະແດງ notification ໃນແອັບ"
+      },
+      "interval": {
+        "every1h": "ທຸກ 1 ຊມ.",
+        "every6h": "ທຸກ 6 ຊມ.",
+        "every12h": "ທຸກ 12 ຊມ.",
+        "every24h": "ທຸກ 24 ຊມ."
+      },
+      "metric": {
+        "cpv": "CPV (฿/view)",
+        "roas": "ROAS",
+        "spend": "Spend (฿)",
+        "frequency": "Frequency",
+        "ctr": "CTR"
+      },
+      "form": {
+        "createTitle": "ສ້າງ rule ໃໝ່",
+        "editTitle": "ແກ້ໄຂ rule",
+        "nameLabel": "ຊື່ rule",
+        "namePlaceholder": "ເຊັ່ນ: pause adset ຖ້າ CPV ເກີນ ฿5 ໃນ 2 ຊມ.",
+        "scopeLabel": "Scope",
+        "scopeAdset": "Ad Set",
+        "scopeCampaign": "Campaign",
+        "metricLabel": "Metric",
+        "operatorLabel": "Operator",
+        "valueLabel": "Value",
+        "windowLabel": "Window",
+        "actionLabel": "Action",
+        "intervalLabel": "ຄວາມຖີ່ທີ່ກວດ (min interval)",
+        "targetLabelCampaign": "ເລືອກ campaign ສະເພາະ (ບໍ່ເລືອກ = ທັງໝົດ)",
+        "targetLabelAdSet": "ເລືອກ ad set ສະເພາະ (ບໍ່ເລືອກ = ທັງໝົດ)",
+        "noTargets": "ບໍ່ມີຕົວເລືອກ",
+        "enableNow": "ເປີດໃຊ້ງານທັນທີ (ນັບເຂົ້າ tier cap)",
+        "cancel": "ຍົກເລີກ",
+        "save": "ບັນທຶກ",
+        "createBtn": "ສ້າງ rule"
+      },
+      "toast": {
+        "updateFailed": "ອັບເດດບໍ່ສຳເລັດ: {message}",
+        "confirmDelete": "ລົບ rule ນີ້? RuleRun history ຈະຖືກລົບນຳ",
+        "deleteSuccess": "ລົບແລ້ວ",
+        "deleteFailed": "ລົບບໍ່ສຳເລັດ: {message}",
+        "needName": "ປ້ອນຊື່ rule",
+        "saveSuccessCreated": "ສ້າງແລ້ວ",
+        "saveSuccessEdited": "ແກ້ໄຂແລ້ວ",
+        "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ: {message}",
+        "testFailed": "Test ລົ້ມເຫຼວ: {message}"
+      },
+      "history": {
+        "title": "History · {ruleName}",
+        "loading": "ກຳລັງໂຫຼດ...",
+        "empty": "ຍັງບໍ່ມີ evaluation — ເປີດ rule ແລ້ວລໍຖ້າ cron tick ຫຼື ກົດ Test"
+      },
+      "suggest": {
+        "title": "AI ແນະນຳ Rule",
+        "intro": "ໃຫ້ AI ເບິ່ງ pattern ການ pause ຂອງທ່ານໃນ 30 ມື້ທີ່ຜ່ານມາ ແລ້ວແນະນຳ rule ທີ່ອາດຈະເໝາະ",
+        "askThree": "ຂໍ AI ແນະນຳ 3 ຕົວ",
+        "thinking": "AI ກຳລັງຄິດ...",
+        "noCandidates": "ບໍ່ມີ candidate ທີ່ AI ແນະນຳ — ອາດຂໍ້ມູນໜ້ອຍເກີນ, ສ້າງ rule ເອງໄດ້",
+        "addBtn": "ເພີ່ມ (disabled)",
+        "addSuccess": "ເພີ່ມແລ້ວ: {name} (disabled — ເປີດໄດ້ໃນ list)",
+        "addFailed": "ເພີ່ມບໍ່ສຳເລັດ: {message}",
+        "aiError": "AI ຂັດຂ້ອງ: {message}",
+        "inWindow": "ໃນ {hours}h ທີ່ {scope}"
+      },
+      "upsell": {
+        "title": "Auto-rules ຢູ່ໃນ plan ແບບຈ່າຍເງິນ",
+        "currentPlan": "Plan ປັດຈຸບັນ:",
+        "trialOrNone": "ທົດລອງ / ຍັງບໍ່ໄດ້ເລືອກ",
+        "upgradeNote": "— upgrade ເພື່ອປົດລັອກ rules",
+        "upgradeBtn": "Upgrade plan"
+      },
+      "modal": {
+        "closeAria": "ປິດ"
+      },
+      "page": {
+        "title": "ກົດອັດຕະໂນມັດ",
+        "subtitle": "ຕັ້ງ if-then ໃຫ້ AdsLab pause/ແຈ້ງເຕືອນແຄມເປນຕາມເງື່ອນໄຂ",
+        "subtitleWithUsage": "ຕັ້ງ if-then ໃຫ້ AdsLab pause/ແຈ້ງເຕືອນແຄມເປນຕາມເງື່ອນໄຂ · ໃຊ້ {used}/{cap} ຂອງ plan",
+        "needMetaConnection": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນໃຊ້ກົດອັດຕະໂນມັດ",
+        "goToSettings": "ໄປທີ່ Settings"
+      }
+    },
+    "campaignsV1": {
+      "stats": {
+        "totalLabel": "ລວມ:",
+        "activeLabel": "Active:",
+        "pausedLabel": "Paused:",
+        "otherLabel": "ອື່ນໆ:"
+      },
+      "filters": {
+        "searchPlaceholder": "ຄົ້ນຫາ campaign ຫຼື ad account...",
+        "allStatuses": "ທຸກສະຖານະ",
+        "statusOther": "ອື່ນໆ",
+        "allAccounts": "ທຸກ account",
+        "showing": "ສະແດງ {filtered} / {total}"
+      },
+      "list": {
+        "empty": "ບໍ່ພົບ campaign ທີ່ຕົງເງື່ອນໄຂ",
+        "accountCampaignsCount": "· {count} campaigns"
+      },
+      "action": {
+        "verbPause": "ຢຸດ",
+        "verbResume": "ເປີດ",
+        "confirm": "{verb} campaign \"{name}\"?",
+        "pendingPrefix": "ກຳລັງ{verb}...",
+        "successPrefix": "{verb}ແລ້ວ",
+        "duplicating": "ກຳລັງ duplicate...",
+        "duplicated": "duplicate → \"{name}\"",
+        "duplicateFail": "Duplicate ບໍ່ສຳເລັດ",
+        "genericFail": "ບໍ່ສຳເລັດ",
+        "savingBudget": "ກຳລັງບັນທຶກ budget...",
+        "savingEndDate": "ກຳລັງບັນທຶກ end date...",
+        "saved": "ບັນທຶກແລ້ວ"
+      },
+      "row": {
+        "justCreated": "ສ້າງໃໝ່",
+        "adsetBudget": "ad-set budget",
+        "pauseTooltip": "Pause",
+        "resumeTooltip": "Resume",
+        "budgetTooltipEditable": "ແກ້ budget",
+        "budgetTooltipDisabled": "Budget ຢູ່ທີ່ລະດັບ ad set — ແກ້ໃນ Meta Ads Manager",
+        "endDateTooltip": "ແກ້ end date",
+        "duplicateTooltip": "Duplicate campaign"
+      },
+      "budgetModal": {
+        "title": "ແກ້ Budget",
+        "dailyLabel": "Daily Budget (THB)",
+        "lifetimeLabel": "Lifetime Budget (THB)",
+        "current": "ປະຈຸບັນ: ฿{thb}",
+        "errors": {
+          "tooLow": "Budget ຕ່ຳກວ່າຂັ້ນຕ່ຳ ฿20",
+          "tooHigh": "Budget ເກີນເພດານ ฿1,000,000 — ກວດເບິ່ງຕົວເລກ"
+        },
+        "cancel": "ຍົກເລີກ",
+        "save": "ບັນທຶກ"
+      },
+      "endDateModal": {
+        "title": "ແກ້ End Date",
+        "label": "End Date / Time",
+        "currentLabel": "ປະຈຸບັນ:",
+        "notSet": "ບໍ່ໄດ້ຕັ້ງໄວ້",
+        "endNow": "End now",
+        "add7Days": "+7 ມື້",
+        "add30Days": "+30 ມື້",
+        "errors": {
+          "invalid": "ວັນເວລາບໍ່ຖືກຕ້ອງ",
+          "past": "end_time ຕ້ອງບໍ່ແມ່ນອະດີດ"
+        },
+        "cancel": "ຍົກເລີກ",
+        "save": "ບັນທຶກ"
+      },
+      "duplicateModal": {
+        "title": "Duplicate Campaign",
+        "newNameLabel": "ຊື່ campaign ໃໝ່",
+        "budgetLabelDaily": "Budget (daily) — current ฿{thb}",
+        "budgetLabelLifetime": "Budget (lifetime) — current ฿{thb}",
+        "modes": {
+          "same": "ເໝືອນເດີມ",
+          "multiplier": "×multiplier",
+          "absolute": "ໃສ່ເລກເອງ"
+        },
+        "multiplierResult": "ຈະໄດ້: ฿{thb}",
+        "adsetBudgetNote": "Campaign ນີ້ໃຊ້ ad-set budget — duplicate ຈະ copy budget ເໝືອນເດີມຈາກ ad sets",
+        "initialStatusLabel": "ສະຖານະຕອນສ້າງ",
+        "statusPaused": "PAUSED (ປອດໄພ)",
+        "statusActive": "ACTIVE (ຍິງເລີຍ)",
+        "errors": {
+          "name": "ໃສ່ຊື່ campaign ໃໝ່",
+          "multiplier": "Multiplier ຕ້ອງຢູ່ລະຫວ່າງ 0 ຫາ 10",
+          "budgetTooLow": "Budget ຕ່ຳກວ່າຂັ້ນຕ່ຳ ฿20",
+          "budgetTooHigh": "Budget ເກີນເພດານ ฿1,000,000"
+        },
+        "cancel": "ຍົກເລີກ",
+        "duplicateBtn": "Duplicate"
+      }
+    },
+    "naming": {
+      "templates": {
+        "header": {
+          "title": "Naming Standards",
+          "badge": "Templates",
+          "intro": "ກຳນົດມາດຕະຖານຊື່ Campaign — Campaign Builder ຈະແນະນຳຊື່ຕາມ template ອັດຕະໂນມັດ (ເຊັ່ນ <code>Sale_{example}</code> → Sale_0626)"
+        },
+        "placeholderHints": {
+          "MM": "ເດືອນ 2 ຫຼັກ",
+          "YY": "ປີ 2 ຫຼັກ",
+          "YYYY": "ປີ 4 ຫຼັກ",
+          "DD": "ມື້ 2 ຫຼັກ",
+          "Month": "ເດືອນ (Jan/Feb/..)",
+          "Custom": "ຄ່າກຳນົດເອງ"
+        },
+        "previewFallback": "<ຕື່ມເອງ>",
+        "templatesCount": "Templates:",
+        "actions": {
+          "aiAnalyze": "AI ວິເຄາະຊື່",
+          "addTemplate": "ເພີ່ມ Template"
+        },
+        "loading": "ກຳລັງໂຫຼດ...",
+        "empty": "ຍັງບໍ່ມີ template — ກົດເພີ່ມ template ຫຼື ໃຊ້ AI ວິເຄາະຊື່ທີ່ມີຢູ່",
+        "deleteTooltip": "ລຶບ template",
+        "suggestBadge": "Suggest",
+        "previewWord": "Preview",
+        "previewNow": "Preview ດຽວນີ້:",
+        "patternWord": "Pattern",
+        "toast": {
+          "confirmDelete": "ລຶບ template ນີ້?",
+          "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+          "deleted": "ລຶບແລ້ວ"
+        },
+        "create": {
+          "title": "ເພີ່ມ Naming Template",
+          "subtitle": "ໃສ່ placeholder ຕາມລາຍການລຸ່ມເພື່ອໃຫ້ Campaign Builder ແທນຄ່າໃຫ້",
+          "nameLabel": "ຊື່ Template",
+          "namePlaceholder": "ເຊັ່ນ Sale Campaign",
+          "patternLabel": "Pattern",
+          "patternPlaceholder": "ເຊັ່ນ Sale_{MM}{YY}",
+          "descriptionLabel": "ຄຳອະທິບາຍ (optional)",
+          "descriptionPlaceholder": "ເຊັ່ນ ໃຊ້ສຳລັບ campaign ລົດລາຄາລາຍເດືອນ",
+          "cancel": "ຍົກເລີກ",
+          "createBtn": "ສ້າງ",
+          "errors": {
+            "nameAndPattern": "ຊື່ + pattern ຕ້ອງບໍ່ວ່າງ",
+            "createFail": "ສ້າງບໍ່ສຳເລັດ",
+            "generic": "ບໍ່ສຳເລັດ"
+          },
+          "success": "ເພີ່ມ template ແລ້ວ"
+        },
+        "aiModal": {
+          "title": "AI ວິເຄາະຊື່ Campaign",
+          "subtitle": "ອ່ານຊື່ campaign ທີ່ມີຢູ່ → ສະເໜີ template ທີ່ໃຊ້ບໍ່ຍຂ",
+          "loading": "ກຳລັງໃຫ້ AI ວິເຄາະ...",
+          "analyzedSummary": "ວິເຄາະ {analyzed} campaign names — ໄດ້ {count} suggestions",
+          "useBtn": "+ ໃຊ້",
+          "noPatterns": "AI ບໍ່ພົບ pattern ທີ່ຊັດເຈນ — ລອງສ້າງ template ເອງໄດ້",
+          "closeBtn": "ປິດ",
+          "doneBtn": "ສຳເລັດ",
+          "errors": {
+            "aiFail": "AI ວິເຄາະບໍ່ສຳເລັດ",
+            "addFail": "ເພີ່ມບໍ່ສຳເລັດ",
+            "generic": "ບໍ່ສຳເລັດ"
+          },
+          "addedToast": "ເພີ່ມ \"{name}\""
+        }
+      },
+      "rules": {
+        "errors": {
+          "enterPattern": "ໃສ່ pattern ກ່ອນ",
+          "createFail": "ເພີ່ມບໍ່ສຳເລັດ",
+          "deleteFail": "ລຶບບໍ່ສຳເລັດ",
+          "priorityFail": "ປັບລຳດັບບໍ່ສຳເລັດ"
+        },
+        "toasts": {
+          "creating": "ກຳລັງເພີ່ມກົດ...",
+          "created": "ເພີ່ມກົດແລ້ວ",
+          "deleting": "ກຳລັງລຶບ...",
+          "deleted": "ລຶບແລ້ວ",
+          "confirmDelete": "ລຶບກົດນີ້?"
+        },
+        "form": {
+          "heading": "ເພີ່ມກົດໃໝ່",
+          "patternLabel": "Pattern (substring ຫຼື regex)",
+          "patternPlaceholderText": "awareness",
+          "patternPlaceholderRegex": "^awareness_|^aw_",
+          "objectiveLabel": "Objective",
+          "priorityLabel": "Priority",
+          "useRegex": "ໃຊ້ regex",
+          "addBtn": "ເພີ່ມກົດ"
+        },
+        "list": {
+          "header": "ກົດທີ່ໃຊ້ຢູ່ ({count}) — ຮຽງຕາມ priority ສູງໄປຕ່ຳ",
+          "empty": "ຍັງບໍ່ມີກົດ — ເພີ່ມກົດທຳອິດທາງເທິງ",
+          "deleteTooltip": "ລຶບກົດ"
+        },
+        "preview": {
+          "heading": "ຕົວຢ່າງການແມັດ",
+          "promptToType": "ພິມ pattern ດ້ານຊ້າຍ → ຈະເຫັນ campaign ທີ່ແມັດທີ່ນີ້",
+          "noMatch": "ບໍ່ມີ campaign ໃດໃນ 100 ຕົວຢ່າງທີ່ກົງກັບ pattern ນີ້",
+          "andMore": "... ແລະ ອີກ {n}"
+        }
+      },
+      "page": {
+        "title": "ກົດການຕັ້ງຊື່ Campaign",
+        "subtitle": "ໃຊ້ຄຳສຳຄັນໃນຊື່ campaign (ເຊັ່ນ \"awareness\", \"sale\") ເພື່ອໃຫ້ລະບົບ auto-classify ອອກເປັນ objective ທີ່ກຳນົດ — ເຮັດວຽກກ່ອນ Meta objective ແຕ່ຫຼັງ manual override",
+        "backToGoals": "ກັບໄປໜ້າ Goals",
+        "needMetaConnection": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນໃຊ້ງານ",
+        "goToSettings": "ໄປທີ່ Settings"
+      }
+    },
+    "competitorSpy": {
+      "title": "Competitor Ads Spy",
+      "subtitle": "ຕິດຕາມ + ວິເຄາະໂຄສະນາຄູ່ແຂ່ງໃນອຸດສາຫະກຳຂອງເຈົ້າ",
+      "beta": {
+        "label": "Beta ·",
+        "note": "ຕອນນີ້ໃຊ້ mock data — ໄວ ໆ ນີ້ຈະ pull ຈາກ Meta Ad Library + TikTok Creative Center ຂອງຈິງ"
+      },
+      "search": {
+        "placeholder": "ຄົ້ນຫາຄູ່ແຂ່ງ ຫຼື ຊື່ແບຣນ..."
+      },
+      "platforms": {
+        "all": "ທັງໝົດ"
+      },
+      "filter": {
+        "industryLabel": "ອຸດສາຫະກຳ",
+        "countryLabel": "ປະເທດ",
+        "allOption": "ທັງໝົດ",
+        "industries": {
+          "all": "ທັງໝົດ",
+          "ecom": "E-commerce",
+          "beauty": "Beauty",
+          "food": "Food",
+          "travel": "Travel"
+        },
+        "countries": {
+          "th": "ໄທ",
+          "sg": "ສິງກະໂປ",
+          "my": "ມາເລເຊຍ",
+          "vn": "ຫວຽດນາມ"
+        },
+        "labelAllFormat": "{label}: ທັງໝົດ",
+        "labelValueFormat": "{label}: {value}"
+      },
+      "actions": {
+        "export": "ສົ່ງອອກຂໍ້ມູນ",
+        "viewAll": "ເບິ່ງທັງໝົດ",
+        "viewAllInsights": "ເບິ່ງ Insight ທັງໝົດ"
+      },
+      "competitors": {
+        "heading": "ຄູ່ແຂ່ງທີ່ຕິດຕາມ",
+        "adsUnit": "{count} ads"
+      },
+      "chart": {
+        "xAxisDay": "ມື້ທີ {n}"
+      },
+      "overview": {
+        "heading": "ພາບລວມການໃຊ້ໂຄສະນາ",
+        "subtitle": "ໂຄສະນາທັງໝົດຂອງຄູ່ແຂ່ງທີ່ຕິດຕາມ",
+        "totalAds": "ໂຄສະນາທັງໝົດ",
+        "deltaSuffix7d": "ຈາກ 7 ມື້ທີ່ຜ່ານມາ",
+        "metaLabel": "Meta",
+        "metaCaption": "ຂອງທັງໝົດ",
+        "industryLabel": "E-commerce",
+        "industryCaption": "ອຸດສາຫະກຳ",
+        "videoLabel": "Video",
+        "videoCaption": "ຮູບແບບ"
+      },
+      "trend": {
+        "heading": "ແນວໂນ້ມການລົງໂຄສະນາ",
+        "subtitle": "30 ມື້ທີ່ຜ່ານມາ"
+      },
+      "creatives": {
+        "heading": "ຄຣີເອທີບທີ່ກຳລັງມາແຮງ",
+        "items": {
+          "discount70": "ລົດສູງສຸດ 70% ມື້ນີ້ເທົ່ານັ້ນ!",
+          "newCream": "ໃໝ່! ຄຣີມບຳລຸງສູດເຂັ້ມຂຸ້ນ",
+          "buyOneFreeShip": "ຊື້ 1 ແຖມ 1 ສົ່ງຟຣີ",
+          "homeMakeover": "ປ່ຽນເຮືອນໃຫ້ສວຍໃນ 3 ຂັ້ນຕອນ"
+        }
+      },
+      "insights": {
+        "heading": "Insight ຈາກ AI",
+        "brandSurge": {
+          "title": "Brand A ເພີ່ມໂຄສະນາ +35%",
+          "subtitle": "ໃນ 7 ມື້ທີ່ຜ່ານມາ"
+        },
+        "shortVideo": {
+          "title": "ວິດີໂອສັ້ນ (15-30 ວິນາທີ)",
+          "subtitle": "ກຳລັງໄດ້ຮັບຄວາມນິຍົມສູງສຸດ"
+        },
+        "discountStrategy": {
+          "title": "ໂປຣໂມຊັນລົດລາຄາ",
+          "subtitle": "ຍັງເປັນກົນລະຍຸດຫຼັກທີ່ໃຊ້"
+        }
+      }
+    },
+    "setupBilling": {
+      "recommended": "ແນະນຳ",
+      "month": "ເດືອນ",
+      "year": "ປີ",
+      "monthlyToggle": "ລາຍເດືອນ",
+      "yearlyToggle": "ລາຍປີ",
+      "yearlySavings": "−17%",
+      "plans": {
+        "starter": {
+          "description": "ເໝາະສຳລັບມືໃໝ່ ad spend < ฿10,000/ເດືອນ",
+          "bullets": {
+            "adAccounts": "1 ad account",
+            "aiMessages": "30 AI message/ມື້",
+            "dashboard": "Dashboard + AI Master",
+            "customerJourney": "Customer Journey"
+          }
+        },
+        "growth": {
+          "description": "ad spend ฿10k–฿30k/ເດືອນ",
+          "bullets": {
+            "adAccounts": "3 ad accounts",
+            "aiMessages": "100 AI message/ມື້",
+            "allStarter": "ທຸກຟີເຈີຂອງ Starter",
+            "customConversions": "Custom Conversions"
+          }
+        },
+        "pro": {
+          "description": "ad spend ฿30k–฿100k/ເດືອນ",
+          "bullets": {
+            "adAccounts": "10 ad accounts",
+            "aiMessages": "300 AI message/ມື້",
+            "allGrowth": "ທຸກຟີເຈີຂອງ Growth",
+            "audienceManagement": "Audience Management"
+          }
+        },
+        "scale": {
+          "description": "ad spend ฿100k–฿500k/ເດືອນ",
+          "bullets": {
+            "adAccounts": "25 ad accounts",
+            "aiUnlimited": "AI ບໍ່ຈຳກັດ",
+            "whiteLabel": "White-label Reports ຟຣີ",
+            "prioritySupport": "Priority Support"
+          }
+        }
+      },
+      "cardForm": {
+        "heading": "ຂໍ້ມູນບັດເຄຣດິດ",
+        "cardName": "ຊື່ໃນບັດ",
+        "cardNumber": "ໝາຍເລກບັດ",
+        "expMonth": "ເດືອນ",
+        "expYear": "ປີ (4 ຫຼັກ)",
+        "cvv": "CVV"
+      },
+      "errors": {
+        "omiseNotLoaded": "Omise script ຍັງບໍ່ໂຫຼດ",
+        "noPaymentKey": "ລະບົບຍັງບໍ່ໄດ້ຕັ້ງຄ່າການຊຳລະເງິນ — ຕິດຕໍ່ທີມງານ",
+        "mustAcceptTerms": "ກະລຸນາຍອມຮັບເງື່ອນໄຂການໃຊ້ບໍລິການ ແລະ ນະໂຍບາຍການຄືນເງິນກ່ອນສະໝັກ",
+        "invalidCard": "ບັດເຄຣດິດບໍ່ຖືກຕ້ອງ",
+        "generic": "ເກີດຂໍ້ຜິດພາດ"
+      },
+      "terms": {
+        "iAccept": "ຂ້ອຍຍອມຮັບ",
+        "tos": "ຂໍ້ກຳນົດການໃຊ້ບໍລິການ",
+        "and": "ແລະ",
+        "refundPolicy": "ນະໂຍບາຍການຄືນເງິນ",
+        "adsLab": "ຂອງ AdsLab",
+        "bullet1": "• ທົດລອງໃຊ້ຟຣີ 7 ມື້ — ບໍ່ມີການເກັບເງິນລະຫວ່າງທົດລອງ",
+        "bullet2": "• ເລີ່ມເກັບເງິນອັດຕະໂນມັດໃນວັນທີ 8 ຫາກບໍ່ໄດ້ຍົກເລີກ",
+        "bullet3": "• ຂໍຄືນເງິນພາຍໃນ 7 ມື້ທຳອິດຂອງຮອບບິນ (pro-rated ຕາມມື້ທີ່ເຫຼືອ)",
+        "bullet4": "• ຍົກເລີກການຕໍ່ອາຍຸໄດ້ຕະຫຼອດເວລາທີ່ Settings → Billing"
+      },
+      "summary": {
+        "totalPerPeriod": "ລວມຕໍ່ຮອບບິນ (VAT 7% ລວມແລ້ວ)",
+        "trialNote": "ທົດລອງໃຊ້ຟຣີ 7 ມື້ • ເລີ່ມເກັບເງິນຫຼັງຄົບ"
+      },
+      "submit": {
+        "saving": "ກຳລັງບັນທຶກ",
+        "startTrial": "ເລີ່ມທົດລອງໃຊ້ຟຣີ 7 ມື້"
+      },
+      "footerNote": "ລະບົບຊຳລະເງິນຜ່ານ Omise (ປອດໄພ PCI DSS Level 1) · ເງິນຈະຖືກເກັບເປັນສະກຸນ THB",
+      "page": {
+        "heading": "ເລືອກແພັກເກດທີ່ເໝາະກັບທ່ານ",
+        "subheading": "ທົດລອງໃຊ້ຟຣີ 7 ມື້ • ບັດເຄຣດິດເກັບເງິນອັດຕະໂນມັດເມື່ອໝົດທົດລອງ • ຍົກເລີກໄດ້ທຸກເວລາ",
+        "expiredNotice": "ບັນຊີຂອງທ່ານໝົດອາຍຸ — ກະລຸນາເລືອກແພັກເກດເພື່ອໃຊ້ງານຕໍ່",
+        "suspendedNotice": "ບັນຊີຖືກລະງັບ — ກະລຸນາອັບເດດວິທີຊຳລະເງິນ"
+      }
+    },
+    "integrations": {
+      "title": "ການຕັ້ງຄ່າ",
+      "subtitle": "ຕັ້ງຄ່າ scope, naming convention, ແລະ integrations ຂອງ tenant",
+      "needMetaForScope": "ຕ້ອງເຊື່ອມ Meta ກ່ອນຈຶ່ງຕັ້ງ scope ໄດ້ — ໄປທີ່ tab Integrations",
+      "needMetaForNaming": "ຕ້ອງເຊື່ອມ Meta ກ່ອນຈຶ່ງຕັ້ງ naming standards ໄດ້ — ໄປທີ່ tab Integrations",
+      "metaSubtitle": "ເຊື່ອມຕໍ່ Facebook Business Manager",
+      "googleDesc": "ເຊື່ອມ Google Ads — ກຳລັງພັດທະນາ",
+      "tiktokDesc": "ເຊື່ອມ TikTok Ads — ກຳລັງພັດທະນາ"
+    },
+    "tiktokAds": {
+      "title": "TikTok Ads",
+      "subtitle": "ໄວໆ ນີ້ — TikTok Ads ໃນ AdsLab ພ້ອມ dashboard, AI optimization ແລະ custom audiences ຄືກັນກັບທີ່ Meta ມີ",
+      "cardDescription": "ໃສ່ email ເພື່ອໃຫ້ພວກເຮົາແຈ້ງເມື່ອ TikTok Ads ເປີດໃຫ້ໃຊ້ — ຕອນນີ້ເຮັດເຟສ Meta ໃຫ້ແໜ້ນກ່ອນ"
+    },
+    "googleAds": {
+      "title": "Google Ads",
+      "subtitle": "ໄວໆ ນີ້ — Google Ads ໃນ AdsLab ພ້ອມ dashboard, AI optimization ແລະ custom audiences ຄືກັນກັບທີ່ Meta ມີ",
+      "cardDescription": "ໃສ່ email ເພື່ອໃຫ້ພວກເຮົາແຈ້ງເມື່ອ Google Ads ເປີດໃຫ້ໃຊ້ — ຕອນນີ້ເຮັດເຟສ Meta ໃຫ້ແໜ້ນກ່ອນ"
+    },
+    "journey": {
+      "title": "Customer Journey",
+      "subtitle": "ແຜນທີ່ເສັ້ນທາງລູກຄ້າ ຈາກ ad → engagement → conversion"
+    },
+    "settings": {
+      "heading": "ການຕັ້ງຄ່າ",
+      "eyebrow": "Settings",
+      "comingSoon": "ໄວໆ ນີ້"
     }
   },
   "optimizationEngine": {
@@ -249,5 +3145,143 @@
       "reasonLowFrequency": "Frequency ຕ່ຳ — ອາດ saturate ກຸ່ມເປົ້າໝາຍເດີມ",
       "impact": "Reach ເພີ່ມຂຶ້ນ 35-60%"
     }
+  },
+  "emails": {
+    "shell": {
+      "tagline": "ຍິງແອດໃຫ້ໄວ ແມ່ນ scale ໄດ້",
+      "signoff": "— AdsLab"
+    },
+    "verifyEmail": {
+      "subject": "ຢືນຢັນອີເມວຂອງທ່ານ - AdsLab",
+      "greeting": "ສະບາຍດີ{name}",
+      "body": "ຂອບໃຈທີ່ສະໝັກໃຊ້ AdsLab! ເພື່ອເລີ່ມໃຊ້ບັນຊີ ກະລຸນາຢືນຢັນອີເມວຂອງທ່ານໂດຍກົດປຸ່ມດ້ານລຸ່ມ",
+      "cta": "ຢືນຢັນອີເມວ",
+      "linkHint": "ຫຼື copy link ນີ້ໄປວາງໃນ browser:",
+      "expiry": "ລິ້ງນີ້ຈະໝົດອາຍຸພາຍໃນ 24 ຊົ່ວໂມງ",
+      "ignoreNotice": "ຖ້າທ່ານບໍ່ໄດ້ສະໝັກສະມາຊິກ AdsLab ສາມາດລະເລີຍອີເມວນີ້ໄດ້",
+      "text": {
+        "greeting": "ສະບາຍດີ{name}",
+        "body": "ຂອບໃຈທີ່ສະໝັກໃຊ້ AdsLab! ເພື່ອເລີ່ມໃຊ້ບັນຊີ ກະລຸນາຢືນຢັນອີເມວຂອງທ່ານໂດຍເຂົ້າລິ້ງນີ້:"
+      }
+    },
+    "dailyReport": {
+      "header": "Daily Report",
+      "greeting": "ສະບາຍດີ{name}",
+      "subtitle": "ລາຍງານສຳລັບ <strong>{tenantName}</strong> · {dateLabel}",
+      "cta": "ເປີດເບິ່ງໃນ AdsLab →",
+      "footerNotice": "ລາຍງານນີ້ສົ່ງໂດຍ AdsLab ທຸກເຊົ້າ 09:00 ນ. (ເວລາປະເທດໄທ)<br />ຫາກບໍ່ຕ້ອງການຮັບລາຍງານ — ເຂົ້າໄປປິດໄດ້ທີ່ Settings ໃນ AdsLab",
+      "text": {
+        "greeting": "ສະບາຍດີ {name}",
+        "subtitle": "ລາຍງານປະຈຳວັນສຳລັບ {tenantName} ({dateLabel})",
+        "readOnWeb": "ອ່ານໃນເວັບ: {url}",
+        "signoff": "— AdsLab Daily Report"
+      }
+    },
+    "billing": {
+      "trialReminder2d": {
+        "subject": "ເຫຼືອ 2 ວັນກ່ອນເລີ່ມເກັບເງິນ — AdsLab",
+        "title": "ເຫຼືອອີກ 2 ວັນຈະເລີ່ມເກັບເງິນ",
+        "greeting": "ສະບາຍດີ{name}",
+        "body": "ການທົດລອງໃຊ້ AdsLab ຂອງທ່ານຈະໝົດອາຍຸໃນອີກ <b>2 ວັນ</b> ຫຼັງຈາກນັ້ນເຮົາຈະຮຽກເກັບເງິນຕາມແພັກເກດ <b>{planName}</b> ({price} ບາດ/ເດືອນ) ຈາກບັດທີ່ທ່ານບັນທຶກໄວ້",
+        "manageHint": "ຖ້າຕ້ອງການປ່ຽນ plan, ຍົກເລີກ, ຫຼືໃຊ້ບັດອື່ນ ສາມາດຈັດການໄດ້ທີ່ໜ້າ Settings → Billing",
+        "cta": "ໄປທີ່ Settings",
+        "text": {
+          "greeting": "ສະບາຍດີ{name}",
+          "body": "ການທົດລອງໃຊ້ AdsLab ຈະໝົດອາຍຸໃນອີກ 2 ວັນ ຫຼັງຈາກນັ້ນເຮົາຈະຮຽກເກັບເງິນຕາມແພັກເກດ {planName} ({price} ບາດ/ເດືອນ)",
+          "manageHint": "ຖ້າຕ້ອງການປ່ຽນ plan ຫຼືຍົກເລີກ ໄປທີ່:"
+        }
+      },
+      "trialReminder1d": {
+        "subject": "ມື້ອື່ນຈະເລີ່ມເກັບເງິນ — AdsLab",
+        "title": "ມື້ອື່ນຈະເລີ່ມເກັບເງິນ",
+        "greeting": "ສະບາຍດີ{name}",
+        "body": "ການທົດລອງໃຊ້ AdsLab ຂອງທ່ານຈະໝົດອາຍຸພາຍໃນ <b>24 ຊົ່ວໂມງ</b> ເຮົາຈະຮຽກເກັບເງິນ <b>{price} ບາດ</b> ສຳລັບແພັກເກດ {planName}",
+        "cta": "ຈັດການບັນຊີ",
+        "text": {
+          "greeting": "ສະບາຍດີ{name}",
+          "body": "ການທົດລອງໃຊ້ AdsLab ຈະໝົດອາຍຸພາຍໃນ 24 ຊົ່ວໂມງ ເຮົາຈະຮຽກເກັບເງິນ {price} ບາດ ສຳລັບແພັກເກດ {planName}"
+        }
+      },
+      "invoicePaid": {
+        "subject": "ໃບຮັບເງິນ {amount} ບາດ — AdsLab",
+        "title": "ຊຳລະເງິນສຳເລັດ",
+        "greeting": "ສະບາຍດີ{name},",
+        "body": "ຂອບໃຈທີ່ໃຊ້ AdsLab! ເຮົາໄດ້ຮັບການຊຳລະເງິນຂອງທ່ານແລ້ວ",
+        "rowPlan": "ແພັກເກດ",
+        "rowBase": "ລາຄາ (ກ່ອນ VAT)",
+        "rowVat": "VAT 7%",
+        "rowTotal": "ລວມທັງໝົດ",
+        "amountUnit": "{amount} ບາດ",
+        "cta": "ເບິ່ງໃບຮັບເງິນ",
+        "text": {
+          "greeting": "ສະບາຍດີ{name},",
+          "body": "ຂອບໃຈ! ເຮົາໄດ້ຮັບການຊຳລະເງິນ {amount} ບາດ ສຳລັບແພັກເກດ {planName} ແລ້ວ"
+        }
+      },
+      "invoiceFailed": {
+        "subject": "ຊຳລະເງິນບໍ່ສຳເລັດ — ກະລຸນາກວດສອບບັດ — AdsLab",
+        "title": "ຊຳລະເງິນບໍ່ສຳເລັດ",
+        "greeting": "ສະບາຍດີ{name},",
+        "body": "ເຮົາພະຍາຍາມຮຽກເກັບເງິນ <b>{amount} ບາດ</b> ແຕ່ບໍ່ສຳເລັດ",
+        "reasonLabel": "ເຫດຜົນ: {reason}",
+        "graceNotice": "ທ່ານມີເວລາ 3 ວັນໃນການອັບເດດວິທີຊຳລະເງິນ ຫຼັງຈາກນັ້ນບັນຊີຈະຖືກລະງັບ",
+        "cta": "ອັບເດດບັດ",
+        "text": {
+          "greeting": "ສະບາຍດີ{name},",
+          "body": "ເຮົາພະຍາຍາມຮຽກເກັບເງິນ {amount} ບາດ ແຕ່ບໍ່ສຳເລັດ",
+          "reasonLabel": "ເຫດຜົນ: {reason}",
+          "graceNotice": "ທ່ານມີເວລາ 3 ວັນໃນການອັບເດດວິທີຊຳລະເງິນ"
+        }
+      },
+      "subscriptionCancelled": {
+        "subject": "ຍົກເລີກການສະໝັກຮຽບຮ້ອຍ — AdsLab",
+        "title": "ຍົກເລີກການສະໝັກຮຽບຮ້ອຍ",
+        "greeting": "ສະບາຍດີ{name},",
+        "body": "ເຮົາໄດ້ຍົກເລີກການສະໝັກ AdsLab ຂອງທ່ານແລ້ວ ທ່ານຍັງສາມາດເຂົ້າໃຊ້ງານໄດ້ຈົນຮອດ <b>{accessUntil}</b>",
+        "resubscribeNotice": "ຖ້າປ່ຽນໃຈ ສາມາດສະໝັກໃໝ່ໄດ້ຕະຫຼອດເວລາ ຂໍ້ມູນທັງໝົດຂອງທ່ານຈະຍັງຄົງຢູ່",
+        "cta": "ສະໝັກອີກຄັ້ງ",
+        "text": {
+          "greeting": "ສະບາຍດີ{name},",
+          "body": "ເຮົາໄດ້ຍົກເລີກການສະໝັກ AdsLab ຂອງທ່ານແລ້ວ ທ່ານຍັງສາມາດເຂົ້າໃຊ້ງານໄດ້ຈົນຮອດ {accessUntil}"
+        }
+      }
+    }
+  },
+  "banners": {
+    "unverified": {
+      "message": "ກະລຸນາຢືນຢັນອີເມວຂອງທ່ານ ເພື່ອໃຊ້ງານທຸກຟີເຈີ",
+      "resend": "ສົ່ງອີເມວໃໝ່",
+      "sending": "ກຳລັງສົ່ງ...",
+      "resendSuccess": "ສົ່ງອີເມວໃໝ່ສຳເລັດ ກະລຸນາກວດກ່ອງຈົດໝາຍ",
+      "resendFailed": "ສົ່ງໃໝ່ບໍ່ສຳເລັດ",
+      "connectionError": "ເຊື່ອມຕໍ່ server ບໍ່ໄດ້"
+    },
+    "tierLimit": {
+      "pastDueMessage": "ການຊຳລະເງິນຫຼ້າສຸດບໍ່ສຳເລັດ — ກະລຸນາອັບເດດບັດພາຍໃນ 3 ວັນ",
+      "pastDueAction": "ອັບເດດບັດ",
+      "trialEndingSoon": "ທົດລອງໃຊ້ AdsLab ເຫຼືອ <b>{days}</b> ວັນ — ເລີ່ມເກັບເງິນ {dateStr} ຕາມແພັກເກດ <b>{planName}</b>",
+      "manage": "ຈັດການ",
+      "trialInProgress": "ທ່ານກຳລັງທົດລອງໃຊ້ AdsLab — ເຫຼືອ {days} ວັນ",
+      "viewPlans": "ເບິ່ງແພັກເກດ →"
+    },
+    "scopePrompt": {
+      "title": "ຕັ້ງຄ່າ Tenant Scope ເພື່ອໂຟກັສສະເພາະ accounts/campaigns ທີ່ໃຊ້",
+      "description": "ຕອນນີ້ເຫັນທຸກ ad account ຂອງ Business Manager ທີ່ເຊື່ອມໄວ້ — ຕັ້ງ scope ໄດ້ເພື່ອໃຫ້ Dashboard, Reports, ແລະ AI Report ວິເຄາະສະເພາະ scope ທີ່ກຳນົດ",
+      "setupNow": "ຕັ້ງຄ່າຕອນນີ້",
+      "hide": "ເຊື່ອງ"
+    }
+  },
+  "themeToggle": {
+    "label": "ປ່ຽນທີມ"
+  },
+  "mobileNav": {
+    "openMenu": "ເປີດເມນູ",
+    "closeMenu": "ປິດເມນູ"
+  },
+  "tenantSwitcher": {
+    "notFound": "(ບໍ່ພົບ workspace)"
+  },
+  "topbar": {
+    "notifications": "ການແຈ້ງເຕືອນ"
   }
 }

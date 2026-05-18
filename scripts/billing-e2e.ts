@@ -42,6 +42,7 @@ import {
 import { startTrial } from "../src/lib/billing/checkout";
 import { runBillingTick } from "../src/lib/billing/tick";
 import { requireFeature, FeatureGateError } from "../src/lib/billing/gate";
+import { DEFAULT_LOCALE } from "../src/i18n/locales";
 import { recordAiUsage } from "../src/lib/billing/usage";
 
 const cs = process.env.DATABASE_URL;
@@ -351,7 +352,7 @@ async function run() {
 
   // 5.1 — Allow AI chat when status=ACTIVE
   try {
-    await requireFeature(tenant.id, "ai-chat");
+    await requireFeature(tenant.id, "ai-chat", DEFAULT_LOCALE);
     pass("5.1 ai-chat allowed when ACTIVE");
   } catch (e) {
     fail("5.1 ai-chat gate", (e as Error).message);
@@ -369,7 +370,7 @@ async function run() {
     });
     let threwAsExpected = false;
     try {
-      await requireFeature(tenant.id, "ai-chat-msg");
+      await requireFeature(tenant.id, "ai-chat-msg", DEFAULT_LOCALE);
     } catch (err) {
       if (err instanceof FeatureGateError && err.reason === "TIER_LIMIT") threwAsExpected = true;
     }
@@ -389,7 +390,7 @@ async function run() {
   try {
     let blocked = false;
     try {
-      await requireFeature(tenant.id, "event-sdk");
+      await requireFeature(tenant.id, "event-sdk", DEFAULT_LOCALE);
     } catch (err) {
       if (err instanceof FeatureGateError && err.reason === "ADDON_REQUIRED") blocked = true;
     }
@@ -407,7 +408,7 @@ async function run() {
       data: { addOnKeys: ["event-sdk"] },
     });
     // Need to invalidate React cache — direct call doesn't have it, so this just hits DB fresh
-    await requireFeature(tenant.id, "event-sdk");
+    await requireFeature(tenant.id, "event-sdk", DEFAULT_LOCALE);
     pass("5.4 event-sdk allowed when add-on enabled");
   } catch (e) {
     fail("5.4 event-sdk allow", (e as Error).message);

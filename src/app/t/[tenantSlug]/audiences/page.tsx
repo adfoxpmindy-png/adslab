@@ -30,6 +30,7 @@ export default async function AudiencesPage({
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
   const tPages = await getTranslations("pages.audiences");
+  const tCommon = await getTranslations("common");
   const canEdit = role === "OWNER" || role === "MEDIA_BUYER";
 
   if (!isConnected) {
@@ -38,12 +39,12 @@ export default async function AudiencesPage({
         <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
+            <p className="text-sm font-medium">{tCommon("connectMetaFirst")}</p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "gap-2")}
             >
-              ไปที่ Settings
+              {tCommon("settingsLink")}
             </Link>
           </Card>
         </div>

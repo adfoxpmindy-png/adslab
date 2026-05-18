@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   CartesianGrid,
   Legend,
@@ -54,22 +55,31 @@ type Props = {
 };
 
 const PLATFORMS = [
-  { id: "all", label: "ทั้งหมด" },
-  { id: "meta", label: "Meta" },
-  { id: "tiktok", label: "TikTok" },
-  { id: "youtube", label: "YouTube" },
-  { id: "google", label: "Google" },
+  { id: "all", labelKey: "platforms.all" },
+  { id: "meta", labelKey: null },
+  { id: "tiktok", labelKey: null },
+  { id: "youtube", labelKey: null },
+  { id: "google", labelKey: null },
 ] as const;
 
+// Display names for non-translated platform IDs (used verbatim).
+const PLATFORM_LITERAL: Record<string, string> = {
+  meta: "Meta",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  google: "Google",
+};
+
 const TOP_CREATIVES = [
-  { id: "1", brand: "Brand A", title: "ลดราคาสูงสุด 70% วันนี้เท่านั้น!", reach: "1.2M", engagement: "45K", type: "image" as const, platform: "Meta" },
-  { id: "2", brand: "Brand B", title: "ใหม่! ครีมบำรุงสูตรเข้มข้น", reach: "876K", engagement: "32K", type: "video" as const, platform: "TikTok" },
-  { id: "3", brand: "Brand C", title: "ซื้อ 1 แถม 1 ส่งฟรี", reach: "654K", engagement: "28K", type: "image" as const, platform: "Meta" },
-  { id: "4", brand: "Brand D", title: "เปลี่ยนบ้านให้สวยใน 3 ขั้นตอน", reach: "543K", engagement: "21K", type: "video" as const, platform: "YouTube" },
+  { id: "1", brand: "Brand A", titleKey: "discount70", reach: "1.2M", engagement: "45K", type: "image" as const, platform: "Meta" },
+  { id: "2", brand: "Brand B", titleKey: "newCream", reach: "876K", engagement: "32K", type: "video" as const, platform: "TikTok" },
+  { id: "3", brand: "Brand C", titleKey: "buyOneFreeShip", reach: "654K", engagement: "28K", type: "image" as const, platform: "Meta" },
+  { id: "4", brand: "Brand D", titleKey: "homeMakeover", reach: "543K", engagement: "21K", type: "video" as const, platform: "YouTube" },
 ];
 
 export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Props) {
   void tenantSlug;
+  const t = useTranslations("pages.competitorSpy");
   const [platform, setPlatform] = useState<(typeof PLATFORMS)[number]["id"]>("all");
   const [search, setSearch] = useState("");
 
@@ -81,7 +91,7 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
   const chartData = (() => {
     const days = trendData[0]?.values.length ?? 0;
     return Array.from({ length: days }, (_, d) => {
-      const point: Record<string, string | number> = { day: `วันที่ ${d + 1}` };
+      const point: Record<string, string | number> = { day: t("chart.xAxisDay", { n: d + 1 }) };
       for (const s of trendData) {
         point[s.brand] = s.values[d]?.value ?? 0;
       }
@@ -95,9 +105,9 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
     <div className="mx-auto w-full max-w-screen-2xl space-y-5 px-6 py-6">
       {/* Beta banner */}
       <div className="rounded-2xl border border-violet-200 bg-gradient-to-r from-violet-50 via-indigo-50 to-pink-50 px-5 py-3 text-sm dark:border-violet-900 dark:from-violet-950/30 dark:via-indigo-950/30 dark:to-pink-950/30">
-        <span className="font-semibold text-violet-700 dark:text-violet-300">Beta · </span>
+        <span className="font-semibold text-violet-700 dark:text-violet-300">{t("beta.label")}</span>
         <span className="text-violet-900 dark:text-violet-200">
-          ตอนนี้ใช้ mock data — เร็ว ๆ นี้จะ pull จาก Meta Ad Library + TikTok Creative Center ของจริง
+          {t("beta.note")}
         </span>
       </div>
 
@@ -106,36 +116,56 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="ค้นหาคู่แข่ง หรือชื่อแบรนด์..."
+          placeholder={t("search.placeholder")}
           className="max-w-xs"
         />
 
         <div className="inline-flex rounded-xl border border-border bg-card p-1 shadow-card">
-          {PLATFORMS.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setPlatform(p.id)}
-              className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
-                platform === p.id
-                  ? "bg-brand-gradient text-white shadow-card"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {p.label}
-            </button>
-          ))}
+          {PLATFORMS.map((p) => {
+            const label = p.labelKey ? t(p.labelKey) : PLATFORM_LITERAL[p.id] ?? p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setPlatform(p.id)}
+                className={cn(
+                  "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                  platform === p.id
+                    ? "bg-brand-gradient text-white shadow-card"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
-          <FilterDropdown label="อุตสาหกรรม" options={["ทั้งหมด", "E-commerce", "Beauty", "Food", "Travel"]} />
-          <FilterDropdown label="ประเทศ" options={["ไทย", "สิงคโปร์", "มาเลเซีย", "เวียดนาม"]} />
+          <FilterDropdown
+            label={t("filter.industryLabel")}
+            options={[
+              t("filter.industries.all"),
+              t("filter.industries.ecom"),
+              t("filter.industries.beauty"),
+              t("filter.industries.food"),
+              t("filter.industries.travel"),
+            ]}
+          />
+          <FilterDropdown
+            label={t("filter.countryLabel")}
+            options={[
+              t("filter.countries.th"),
+              t("filter.countries.sg"),
+              t("filter.countries.my"),
+              t("filter.countries.vn"),
+            ]}
+          />
           <button
             type="button"
             className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent"
           >
             <Download className="size-3.5" />
-            ส่งออกข้อมูล
+            {t("actions.export")}
           </button>
         </div>
       </div>
@@ -145,7 +175,7 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
         <aside className="space-y-4">
           <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">คู่แข่งที่ติดตาม</h3>
+              <h3 className="text-sm font-semibold">{t("competitors.heading")}</h3>
               <button className="flex size-7 items-center justify-center rounded-lg bg-violet-50 text-violet-600 transition-colors hover:bg-violet-100 dark:bg-violet-950/40 dark:text-violet-300">
                 <Plus className="size-3.5" />
               </button>
@@ -164,7 +194,7 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{c.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{c.adCount} ads</p>
+                    <p className="text-[11px] text-muted-foreground">{t("competitors.adsUnit", { count: c.adCount })}</p>
                   </div>
                   <span
                     className={cn(
@@ -179,7 +209,7 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
               ))}
             </ul>
             <button className="mt-3 w-full rounded-lg border border-dashed border-border py-2 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
-              ดูทั้งหมด
+              {t("actions.viewAll")}
             </button>
           </div>
         </aside>
@@ -188,14 +218,14 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
         <div className="space-y-4">
           {/* Overview cards */}
           <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-            <h3 className="text-base font-semibold tracking-tight">ภาพรวมการใช้งานโฆษณา</h3>
-            <p className="mt-0.5 text-xs text-muted-foreground">โฆษณาทั้งหมดของคู่แข่งที่ติดตาม</p>
+            <h3 className="text-base font-semibold tracking-tight">{t("overview.heading")}</h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t("overview.subtitle")}</p>
 
             <div className="mt-4 grid grid-cols-4 gap-3">
-              <OverviewStat label="โฆษณาทั้งหมด" value={totalAds.toString()} delta={avgTrend} />
-              <OverviewStat label="Meta" value="68%" caption="ของทั้งหมด" />
-              <OverviewStat label="E-commerce" value="42%" caption="อุตสาหกรรม" />
-              <OverviewStat label="Video" value="56%" caption="รูปแบบ" />
+              <OverviewStat label={t("overview.totalAds")} value={totalAds.toString()} delta={avgTrend} />
+              <OverviewStat label={t("overview.metaLabel")} value="68%" caption={t("overview.metaCaption")} />
+              <OverviewStat label={t("overview.industryLabel")} value="42%" caption={t("overview.industryCaption")} />
+              <OverviewStat label={t("overview.videoLabel")} value="56%" caption={t("overview.videoCaption")} />
             </div>
           </div>
 
@@ -203,8 +233,8 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
           <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-semibold tracking-tight">แนวโน้มการลงโฆษณา</h3>
-                <p className="mt-0.5 text-xs text-muted-foreground">30 วันที่ผ่านมา</p>
+                <h3 className="text-base font-semibold tracking-tight">{t("trend.heading")}</h3>
+                <p className="mt-0.5 text-xs text-muted-foreground">{t("trend.subtitle")}</p>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={280}>
@@ -245,12 +275,13 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
           {/* Top creatives */}
           <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">ครีเอทีฟที่กำลังแรง</h3>
-              <button className="text-[11px] font-medium text-violet-600 hover:underline">ดูทั้งหมด</button>
+              <h3 className="text-sm font-semibold">{t("creatives.heading")}</h3>
+              <button className="text-[11px] font-medium text-violet-600 hover:underline">{t("actions.viewAll")}</button>
             </div>
             <ul className="space-y-3">
               {TOP_CREATIVES.map((c) => {
                 const Icon = c.type === "video" ? Video : ImageIcon;
+                const title = t(`creatives.items.${c.titleKey}` as Parameters<typeof t>[0]);
                 return (
                   <li
                     key={c.id}
@@ -260,8 +291,8 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
                       <Icon className="size-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-xs font-medium leading-snug" title={c.title}>
-                        {c.title}
+                      <p className="line-clamp-2 text-xs font-medium leading-snug" title={title}>
+                        {title}
                       </p>
                       <p className="mt-1 text-[10px] text-muted-foreground">{c.brand}</p>
                       <div className="mt-1 flex items-center gap-3 text-[10px] text-muted-foreground">
@@ -284,7 +315,7 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
           {/* AI insights */}
           <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 via-indigo-50 to-pink-50 p-4 shadow-card dark:border-violet-900 dark:from-violet-950/40 dark:via-indigo-950/40 dark:to-pink-950/40">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Insight จาก AI</h3>
+              <h3 className="text-sm font-semibold">{t("insights.heading")}</h3>
               <span className="inline-flex items-center gap-1 rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-semibold text-white">
                 <Sparkles className="size-2.5" />
                 AI
@@ -293,25 +324,25 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
             <ul className="space-y-3 text-xs">
               <InsightItem
                 icon={TrendingUp}
-                title="Brand A เพิ่มโฆษณา +35%"
-                subtitle="ใน 7 วันที่ผ่านมา"
+                title={t("insights.brandSurge.title")}
+                subtitle={t("insights.brandSurge.subtitle")}
                 color="emerald"
               />
               <InsightItem
                 icon={Video}
-                title="วิดีโอสั้น (15-30 วินาที)"
-                subtitle="กำลังได้รับความนิยมสูงสุด"
+                title={t("insights.shortVideo.title")}
+                subtitle={t("insights.shortVideo.subtitle")}
                 color="violet"
               />
               <InsightItem
                 icon={Lightbulb}
-                title="โปรโมชั่นลดราคา"
-                subtitle="ยังคงเป็นกลยุทธ์หลักที่ใช้"
+                title={t("insights.discountStrategy.title")}
+                subtitle={t("insights.discountStrategy.subtitle")}
                 color="amber"
               />
             </ul>
             <button className={cn(brandButton({ size: "sm" }), "mt-4 w-full")}>
-              ดู Insight ทั้งหมด
+              {t("actions.viewAllInsights")}
             </button>
           </div>
         </aside>
@@ -331,6 +362,7 @@ function OverviewStat({
   delta?: number;
   caption?: string;
 }) {
+  const t = useTranslations("pages.competitorSpy");
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-3">
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -343,7 +375,7 @@ function OverviewStat({
           )}
         >
           {delta > 0 ? "+" : ""}
-          {delta.toFixed(1)}% จาก 7 วันที่ผ่านมา
+          {delta.toFixed(1)}% {t("overview.deltaSuffix7d")}
         </p>
       )}
       {caption && <p className="mt-0.5 text-[10px] text-muted-foreground">{caption}</p>}
@@ -381,12 +413,13 @@ function InsightItem({
 }
 
 function FilterDropdown({ label, options }: { label: string; options: string[] }) {
+  const t = useTranslations("pages.competitorSpy");
   return (
     <select className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-foreground focus:outline-none">
-      <option value="">{label}: ทั้งหมด</option>
+      <option value="">{t("filter.labelAllFormat", { label })}</option>
       {options.map((o) => (
         <option key={o} value={o}>
-          {label}: {o}
+          {t("filter.labelValueFormat", { label, value: o })}
         </option>
       ))}
     </select>

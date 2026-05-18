@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ChevronDown,
   ChevronUp,
   Eye,
+  Globe,
   Heart,
   Image as ImageIcon,
   Loader2,
@@ -25,6 +27,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { LibraryPicker } from "@/components/tenant/library-picker";
 import { SmartNameField } from "@/components/tenant/smart-name-field";
+import { formatNumber } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 type AdAccount = { id: string; name: string; currency: string; business: string | null };
@@ -70,37 +73,33 @@ type Objective =
 
 // Meta ODAX hierarchy. Main objective + sub-options (= optimization_goal).
 // Sub-options ordered by popularity per Thai agency workflow.
+// `labelKey` / `sublabelKey` / `descriptionKey` point at translation keys
+// under `pages.campaignBuilder.objective.*` and `pages.campaignBuilder.optimizationGoal.*`.
 type LucideIcon = React.ComponentType<{ className?: string }>;
-type SubOption = { value: string; label: string; description?: string };
+type SubOption = { value: string; labelKey: string; descriptionKey?: string };
 
 const OBJECTIVE_TREE: Record<
   Objective,
-  { label: string; sublabel: string; icon: LucideIcon; subs: SubOption[] }
+  { icon: LucideIcon; subs: SubOption[] }
 > = {
   OUTCOME_SALES: {
-    label: "Sales",
-    sublabel: "ขายของ / Conversion",
     icon: ShoppingBag,
     subs: [
-      { value: "LINK_CLICKS", label: "Link Clicks", description: "ส่งคนไปเว็บ (post ต้องมี link)" },
-      { value: "CONVERSATIONS", label: "Messages", description: "ขายผ่านแชท Page" },
-      { value: "OFFSITE_CONVERSIONS", label: "Conversions (Pixel)", description: "Optimize ตาม event บนเว็บ — ต้องตั้ง Pixel ก่อน" },
-      { value: "VALUE", label: "Value (Pixel)", description: "Optimize ตามมูลค่าซื้อ (ต้อง Pixel + value events)" },
+      { value: "LINK_CLICKS", labelKey: "LINK_CLICKS.label", descriptionKey: "LINK_CLICKS.descSales" },
+      { value: "CONVERSATIONS", labelKey: "CONVERSATIONS.label", descriptionKey: "CONVERSATIONS.descSales" },
+      { value: "OFFSITE_CONVERSIONS", labelKey: "OFFSITE_CONVERSIONS.label", descriptionKey: "OFFSITE_CONVERSIONS.desc" },
+      { value: "VALUE", labelKey: "VALUE.label", descriptionKey: "VALUE.desc" },
     ],
   },
   OUTCOME_LEADS: {
-    label: "Leads",
-    sublabel: "เก็บ Lead / Inbox",
     icon: Target,
     subs: [
       // LEAD_GENERATION / QUALITY_LEAD need Lead Forms — defer to Stage 4
       // when we add form management UI.
-      { value: "CONVERSATIONS", label: "Messages", description: "ส่งคนมาแชท Page" },
+      { value: "CONVERSATIONS", labelKey: "CONVERSATIONS.label", descriptionKey: "CONVERSATIONS.descLeads" },
     ],
   },
   OUTCOME_ENGAGEMENT: {
-    label: "Engagement",
-    sublabel: "มีส่วนร่วม (video / chat)",
     icon: Heart,
     subs: [
       // OUTCOME_ENGAGEMENT in v23 ODAX has strict account-level allowed
@@ -108,37 +107,31 @@ const OBJECTIVE_TREE: Record<
       //   - THRUPLAY for video posts
       //   - CONVERSATIONS for messaging Page
       // POST_ENGAGEMENT / PAGE_LIKES are deprecated in many accounts.
-      { value: "THRUPLAY", label: "Video Views", description: "ดูวิดีโอจบ ≥15s (post ต้องเป็น video)" },
-      { value: "CONVERSATIONS", label: "Messages", description: "ส่งคนมาแชท Page" },
+      { value: "THRUPLAY", labelKey: "THRUPLAY.label", descriptionKey: "THRUPLAY.descEngagement" },
+      { value: "CONVERSATIONS", labelKey: "CONVERSATIONS.label", descriptionKey: "CONVERSATIONS.descEngagement" },
     ],
   },
   OUTCOME_TRAFFIC: {
-    label: "Traffic",
-    sublabel: "เข้าเว็บ / Link Clicks",
     icon: MousePointerClick,
     subs: [
-      { value: "LINK_CLICKS", label: "Link Clicks", description: "เน้นจำนวนคลิก" },
-      { value: "LANDING_PAGE_VIEWS", label: "Landing Page Views", description: "คลิก + เปิดหน้า web จริง" },
+      { value: "LINK_CLICKS", labelKey: "LINK_CLICKS.label", descriptionKey: "LINK_CLICKS.descTraffic" },
+      { value: "LANDING_PAGE_VIEWS", labelKey: "LANDING_PAGE_VIEWS.label", descriptionKey: "LANDING_PAGE_VIEWS.desc" },
     ],
   },
   OUTCOME_AWARENESS: {
-    label: "Awareness",
-    sublabel: "สร้างการรับรู้",
     icon: Eye,
     subs: [
-      { value: "REACH", label: "Reach", description: "คนเห็นโฆษณามากที่สุด" },
-      { value: "IMPRESSIONS", label: "Impressions", description: "ครั้งที่โฆษณาแสดง" },
-      { value: "THRUPLAY", label: "Video Views (Thruplay)", description: "ดูวิดีโอจบ ≥15s" },
+      { value: "REACH", labelKey: "REACH.label", descriptionKey: "REACH.descAwareness" },
+      { value: "IMPRESSIONS", labelKey: "IMPRESSIONS.label", descriptionKey: "IMPRESSIONS.desc" },
+      { value: "THRUPLAY", labelKey: "THRUPLAY.labelAwareness", descriptionKey: "THRUPLAY.descAwareness" },
     ],
   },
   OUTCOME_APP_PROMOTION: {
-    label: "App Promotion",
-    sublabel: "ติดตั้งแอป",
     icon: Smartphone,
     subs: [
       // App promotion needs application_id + store URL setup — defer.
       // For now redirect users to Meta Ads Manager via warning text.
-      { value: "REACH", label: "Reach", description: "⚠ App-specific optimization ต้องตั้งค่า app ก่อน — ใช้ Reach แทน" },
+      { value: "REACH", labelKey: "REACH.label", descriptionKey: "REACH.descAppPromotion" },
     ],
   },
 };
@@ -176,22 +169,24 @@ const CTA_OPTIONS = [
 // Pixel standard events Meta accepts for OFFSITE_CONVERSIONS / VALUE.
 // Ordered by Thai e-commerce usage. Custom events (CUSTOM_<NAME>) need
 // the pixel to have actually fired them — leave that for advanced users.
+// `labelKey` points at `pages.campaignBuilder.pixelEvent.*`.
 const PIXEL_EVENTS = [
-  { value: "PURCHASE", label: "Purchase — ซื้อสำเร็จ" },
-  { value: "ADD_TO_CART", label: "Add to Cart — ใส่ตะกร้า" },
-  { value: "INITIATE_CHECKOUT", label: "Initiate Checkout — เริ่ม checkout" },
-  { value: "LEAD", label: "Lead — กรอกฟอร์ม" },
-  { value: "COMPLETE_REGISTRATION", label: "Complete Registration — สมัครสมาชิก" },
-  { value: "ADD_PAYMENT_INFO", label: "Add Payment Info — กรอกข้อมูลจ่าย" },
-  { value: "VIEW_CONTENT", label: "View Content — ดูสินค้า" },
-  { value: "SEARCH", label: "Search — ค้นหา" },
-  { value: "SUBSCRIBE", label: "Subscribe — สมัครรับข้อมูล" },
-  { value: "CONTACT", label: "Contact — ติดต่อ" },
+  { value: "PURCHASE", labelKey: "PURCHASE" },
+  { value: "ADD_TO_CART", labelKey: "ADD_TO_CART" },
+  { value: "INITIATE_CHECKOUT", labelKey: "INITIATE_CHECKOUT" },
+  { value: "LEAD", labelKey: "LEAD" },
+  { value: "COMPLETE_REGISTRATION", labelKey: "COMPLETE_REGISTRATION" },
+  { value: "ADD_PAYMENT_INFO", labelKey: "ADD_PAYMENT_INFO" },
+  { value: "VIEW_CONTENT", labelKey: "VIEW_CONTENT" },
+  { value: "SEARCH", labelKey: "SEARCH" },
+  { value: "SUBSCRIBE", labelKey: "SUBSCRIBE" },
+  { value: "CONTACT", labelKey: "CONTACT" },
 ];
 
 const DRAFT_KEY_PREFIX = "adslab:campaign-draft:";
 
 export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: Props) {
+  const tPages = useTranslations("pages.campaignBuilder");
   const router = useRouter();
   const [, startTransition] = useTransition();
   const draftKey = `${DRAFT_KEY_PREFIX}${tenantSlug}`;
@@ -274,6 +269,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
   // first one in that group (= the most common per the ordering above)
   // and update the CTA recommendation.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync dependent form fields when objective changes
     setCallToAction(SUGGESTED_CTA[objective]);
     setOptimizationGoal(OBJECTIVE_TREE[objective].subs[0].value);
   }, [objective]);
@@ -285,6 +281,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
     if (!raw) return;
     try {
       const d = JSON.parse(raw);
+      /* eslint-disable react-hooks/set-state-in-effect -- restore draft from localStorage on mount */
       if (d.metaAccountId) setMetaAccountId(d.metaAccountId);
       if (d.campaignName) setCampaignName(d.campaignName);
       if (d.objective) setObjective(d.objective);
@@ -292,6 +289,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
       if (d.primaryText) setPrimaryText(d.primaryText);
       if (d.linkUrl) setLinkUrl(d.linkUrl);
       if (d.headline) setHeadline(d.headline);
+      /* eslint-enable react-hooks/set-state-in-effect */
     } catch {}
   }, [draftKey]);
 
@@ -317,10 +315,12 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
   useEffect(() => {
     if (!isConversionGoal || !metaAccountId) return;
     let cancelled = false;
+    /* eslint-disable react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag */
     setLoadingPixels(true);
     setLoadingConversions(true);
     setPixelId("");
     setCustomConversionId("");
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     fetch(`/api/meta/pixels?tenantSlug=${tenantSlug}&metaAccountId=${metaAccountId}`)
       .then((r) => r.json())
@@ -357,6 +357,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
   useEffect(() => {
     if (!showAdvanced || !metaAccountId) return;
     if (audienceLibrary.length > 0) return; // already loaded
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern
     setLoadingAudiences(true);
     fetch(`/api/meta/audiences?tenantSlug=${tenantSlug}&metaAccountId=${metaAccountId}`)
       .then((r) => r.json())
@@ -368,6 +369,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
   // === Page posts fetch — re-runs whenever pageId or mode changes ===
   useEffect(() => {
     if (creativeKind !== "existing_post" || !pageId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset posts when prerequisites missing or fetch-then-setState below
       setPagePosts([]);
       setPostsError(null);
       return;
@@ -406,7 +408,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
       setImageHash(data.hash);
-      toast.success("✓ อัพโหลด image แล้ว", { duration: 2500 });
+      toast.success(tPages("creative.uploadSuccess"), { duration: 2500 });
     } catch (err) {
       setImageHash(null);
       setImagePreviewUrl(null);
@@ -422,10 +424,10 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
     try {
       const res = await fetch(`/api/meta/pages?tenantSlug=${tenantSlug}&refresh=true`);
       if (!res.ok) throw new Error("Refresh failed");
-      toast.success("✓ Sync Pages แล้ว — refresh หน้าเพื่อเห็น list ใหม่", { duration: 4000 });
+      toast.success(tPages("page.syncSuccess"), { duration: 4000 });
       router.refresh();
     } catch {
-      toast.error("Sync Pages ไม่สำเร็จ");
+      toast.error(tPages("page.syncFail"));
     } finally {
       setRefreshingPages(false);
     }
@@ -478,29 +480,31 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
 
   // === Step 1: validate → open preview (no API call yet) ===
   function openPreview() {
-    if (!campaignName.trim()) return toast.error("กรอกชื่อ campaign");
-    if (!pageId) return toast.error("เลือก Facebook Page");
+    if (!campaignName.trim()) return toast.error(tPages("validate.campaignName"));
+    if (!pageId) return toast.error(tPages("validate.page"));
     const budgetRaw = budgetType === "daily" ? dailyBudgetThb : lifetimeBudgetThb;
     const budget = Number(budgetRaw);
     if (!Number.isFinite(budget) || budget < 20) {
       return toast.error(
-        budgetType === "daily" ? "Budget ต่อวันขั้นต่ำ ฿20" : "Lifetime budget ขั้นต่ำ ฿20",
+        budgetType === "daily"
+          ? tPages("validate.budgetMinDaily")
+          : tPages("validate.budgetMinLifetime"),
       );
     }
     if (budgetType === "lifetime" && (!scheduleStart || !scheduleEnd)) {
-      return toast.error("Lifetime budget ต้องระบุ start + end");
+      return toast.error(tPages("validate.lifetimeNeedsDates"));
     }
     const needsImage = creativeKind === "new_image" || creativeKind === "from_library";
-    if (needsImage && !imageHash) return toast.error("เตรียมรูปก่อน");
-    if (creativeKind === "existing_post" && !postId) return toast.error("เลือก post");
-    if (needsImage && !linkUrl.trim()) return toast.error("กรอก URL");
-    if (needsImage && !primaryText.trim()) return toast.error("กรอกข้อความ");
-    if (isConversionGoal && !pixelId) return toast.error("เลือก Pixel สำหรับ Conversion goal");
+    if (needsImage && !imageHash) return toast.error(tPages("validate.needImage"));
+    if (creativeKind === "existing_post" && !postId) return toast.error(tPages("validate.needPost"));
+    if (needsImage && !linkUrl.trim()) return toast.error(tPages("validate.needLink"));
+    if (needsImage && !primaryText.trim()) return toast.error(tPages("validate.needPrimaryText"));
+    if (isConversionGoal && !pixelId) return toast.error(tPages("validate.needPixel"));
     if (isConversionGoal && eventSource === "standard" && !customEventType) {
-      return toast.error("เลือก event ที่จะ optimize");
+      return toast.error(tPages("validate.needEvent"));
     }
     if (isConversionGoal && eventSource === "custom" && !customConversionId) {
-      return toast.error("เลือก Custom Conversion");
+      return toast.error(tPages("validate.needCustomConversion"));
     }
     setPreviewOpen(true);
   }
@@ -513,8 +517,8 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
     setPreviewOpen(false);
     const toastId = toast.loading(
       initialStatus === "ACTIVE"
-        ? "กำลังเผยแพร่ campaign..."
-        : "กำลังบันทึก draft (PAUSED)...",
+        ? tPages("toast.publishing")
+        : tPages("toast.savingDraft"),
     );
 
     const adSetName = customAdSetName.trim() || `${campaignName} - Ad Set`;
@@ -573,11 +577,14 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
         const where = data.failedAt ? ` (${data.failedAt})` : "";
         throw new Error(`${data.error}${where}`);
       }
-      const verb = initialStatus === "ACTIVE" ? "เผยแพร่" : "บันทึก draft";
-      toast.success(`✓ ${verb} "${data.campaign.name}" สำเร็จ`, {
-        id: toastId,
-        duration: 4000,
-      });
+      const verb =
+        initialStatus === "ACTIVE"
+          ? tPages("toast.verbPublished")
+          : tPages("toast.verbSavedDraft");
+      toast.success(
+        tPages("toast.publishSuccess", { verb, name: data.campaign.name }),
+        { id: toastId, duration: 4000 },
+      );
       localStorage.removeItem(draftKey);
       // Redirect with highlight so the new campaign is easy to find
       // among hundreds. The /campaigns page reads ?highlight=<id> and
@@ -587,7 +594,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
       );
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("toast.publishFail"), {
         id: toastId,
         duration: 8000,
       });
@@ -600,16 +607,16 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
     <div className="space-y-4">
       {/* === SIMPLE MODE === */}
       <Card className="space-y-3 p-5">
-        <Field label="ชื่อ Campaign" required>
+        <Field label={tPages("field.campaignName")} required>
           <SmartNameField
             tenantSlug={tenantSlug}
             value={campaignName}
             onChange={setCampaignName}
-            placeholder="เช่น Summer Sale 2026"
+            placeholder={tPages("placeholder.campaignName")}
           />
         </Field>
 
-        <Field label="วัตถุประสงค์" required>
+        <Field label={tPages("field.objective")} required>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {OBJECTIVE_ORDER.map((key) => {
               const o = OBJECTIVE_TREE[key];
@@ -628,15 +635,15 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                   )}
                 >
                   <Icon className={cn("size-4", selected ? "text-primary" : "text-muted-foreground")} />
-                  <span className="text-sm font-medium">{o.label}</span>
-                  <span className="text-[10px] text-muted-foreground">{o.sublabel}</span>
+                  <span className="text-sm font-medium">{tPages(`objective.${key}.label`)}</span>
+                  <span className="text-[10px] text-muted-foreground">{tPages(`objective.${key}.sublabel`)}</span>
                 </button>
               );
             })}
           </div>
         </Field>
 
-        <Field label="วิธีเพิ่มประสิทธิภาพ" required>
+        <Field label={tPages("field.optimization")} required>
           <div className="grid gap-1.5 sm:grid-cols-2">
             {OBJECTIVE_TREE[objective].subs.map((s) => {
               const selected = optimizationGoal === s.value;
@@ -652,9 +659,9 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                       : "border-border bg-background hover:bg-muted",
                   )}
                 >
-                  <span className="text-xs font-medium">{s.label}</span>
-                  {s.description && (
-                    <span className="text-[10px] text-muted-foreground">{s.description}</span>
+                  <span className="text-xs font-medium">{tPages(`optimizationGoal.${s.labelKey}` as Parameters<typeof tPages>[0])}</span>
+                  {s.descriptionKey && (
+                    <span className="text-[10px] text-muted-foreground">{tPages(`optimizationGoal.${s.descriptionKey}` as Parameters<typeof tPages>[0])}</span>
                   )}
                 </button>
               );
@@ -663,24 +670,24 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
         </Field>
 
         {isConversionGoal && (
-          <Field label="Pixel + Conversion" required>
+          <Field label={tPages("field.pixelConversion")} required>
             {loadingPixels ? (
               <div className="flex h-9 items-center gap-1.5 rounded-md border border-border bg-muted/20 px-2 text-xs text-muted-foreground">
                 <Loader2 className="size-3 animate-spin" />
-                กำลังโหลด Pixels...
+                {tPages("pixel.loading")}
               </div>
             ) : pixelOptions.length === 0 ? (
               <div className="rounded-md border border-dashed border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
-                ⚠ ไม่มี Pixel ใน Ad Account นี้ — ไปที่{" "}
+                {tPages("pixel.noPixelWarn")}{" "}
                 <a
                   href={`/t/${tenantSlug}/audiences`}
                   target="_blank"
                   rel="noopener"
                   className="font-medium underline"
                 >
-                  Audiences → tab Pixels
+                  {tPages("pixel.audiencesPixelsTab")}
                 </a>{" "}
-                เพื่อสร้างก่อน
+                {tPages("pixel.toCreate")}
               </div>
             ) : (
               <div className="space-y-2">
@@ -689,7 +696,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                   onChange={(e) => setPixelId(e.target.value)}
                   className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
                 >
-                  <option value="">-- เลือก Pixel --</option>
+                  <option value="">{tPages("placeholder.pixelSelect")}</option>
                   {pixelOptions.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name}
@@ -701,12 +708,12 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                   <RadioPill
                     checked={eventSource === "standard"}
                     onClick={() => setEventSource("standard")}
-                    label="Standard event"
+                    label={tPages("pixel.eventStandard")}
                   />
                   <RadioPill
                     checked={eventSource === "custom"}
                     onClick={() => setEventSource("custom")}
-                    label="Custom Conversion (URL rule)"
+                    label={tPages("pixel.eventCustom")}
                   />
                 </div>
 
@@ -718,25 +725,25 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                   >
                     {PIXEL_EVENTS.map((ev) => (
                       <option key={ev.value} value={ev.value}>
-                        {ev.label}
+                        {tPages(`pixelEvent.${ev.labelKey}` as Parameters<typeof tPages>[0])}
                       </option>
                     ))}
                   </select>
                 ) : loadingConversions ? (
                   <div className="flex h-9 items-center gap-1.5 rounded-md border border-border bg-muted/20 px-2 text-xs text-muted-foreground">
                     <Loader2 className="size-3 animate-spin" />
-                    กำลังโหลด Custom Conversions...
+                    {tPages("pixel.loadingConversions")}
                   </div>
                 ) : conversionOptions.length === 0 ? (
                   <div className="rounded-md border border-dashed border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
-                    ⚠ ไม่มี Custom Conversion — สร้างที่{" "}
+                    {tPages("pixel.noCustomConversionWarn")}{" "}
                     <a
                       href={`/t/${tenantSlug}/audiences`}
                       target="_blank"
                       rel="noopener"
                       className="font-medium underline"
                     >
-                      Audiences → tab Custom Conversions
+                      {tPages("pixel.audiencesConversionsTab")}
                     </a>
                   </div>
                 ) : (
@@ -745,7 +752,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                     onChange={(e) => setCustomConversionId(e.target.value)}
                     className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
                   >
-                    <option value="">-- เลือก Custom Conversion --</option>
+                    <option value="">{tPages("placeholder.customConversionSelect")}</option>
                     {conversionOptions
                       // Filter to those tied to the selected Pixel (or no pixel filter if pixel not picked yet)
                       .filter((c) => !pixelId || !c.pixelId || c.pixelId === pixelId)
@@ -761,23 +768,23 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
             )}
             <p className="mt-1 text-[11px] text-muted-foreground">
               {eventSource === "custom"
-                ? "Custom Conversion = map URL pattern → event โดยไม่ต้องเขียน event code บนเว็บ"
-                : "Meta จะ optimize ส่งโฆษณาให้คนที่มีโอกาส trigger event นี้สูง — Pixel ต้องยิง event ~50/สัปดาห์ถึงจะ optimize ดี"}
+                ? tPages("pixel.hintCustom")
+                : tPages("pixel.hintStandard")}
             </p>
           </Field>
         )}
 
-        <Field label="Budget" required>
+        <Field label={tPages("field.budget")} required>
           <div className="mb-2 flex gap-2">
             <RadioPill
               checked={budgetType === "daily"}
               onClick={() => setBudgetType("daily")}
-              label="ต่อวัน"
+              label={tPages("budget.daily")}
             />
             <RadioPill
               checked={budgetType === "lifetime"}
               onClick={() => setBudgetType("lifetime")}
-              label="ตลอดอายุ campaign"
+              label={tPages("budget.lifetime")}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -790,7 +797,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                   ? setDailyBudgetThb(e.target.value)
                   : setLifetimeBudgetThb(e.target.value)
               }
-              placeholder="฿"
+              placeholder={tPages("placeholder.currency")}
             />
             {adAccounts.length === 1 ? (
               <div className="flex h-9 items-center rounded-md border border-border bg-muted/30 px-2 text-xs text-muted-foreground">
@@ -813,33 +820,33 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
           {budgetType === "lifetime" && (
             <div className="mt-2 grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-[11px] text-muted-foreground">เริ่ม</label>
+                <label className="mb-1 block text-[11px] text-muted-foreground">{tPages("field.scheduleStart")}</label>
                 <DatePicker
                   value={scheduleStart}
                   onChange={setScheduleStart}
-                  placeholder="เลือกวัน + เวลาเริ่ม"
+                  placeholder={tPages("placeholder.scheduleStart")}
                   min={new Date().toISOString().slice(0, 10)}
                   showTime
                 />
               </div>
               <div>
-                <label className="mb-1 block text-[11px] text-muted-foreground">สิ้นสุด</label>
+                <label className="mb-1 block text-[11px] text-muted-foreground">{tPages("field.scheduleEnd")}</label>
                 <DatePicker
                   value={scheduleEnd}
                   onChange={setScheduleEnd}
-                  placeholder="เลือกวัน + เวลาสิ้นสุด"
+                  placeholder={tPages("placeholder.scheduleEnd")}
                   min={scheduleStart ? scheduleStart.slice(0, 10) : new Date().toISOString().slice(0, 10)}
                   showTime
                 />
               </div>
               <p className="col-span-2 text-[11px] text-muted-foreground">
-                ระบุวันและเวลาทั้ง 2 ช่อง — เวลาประเทศไทย (UTC+7)
+                {tPages("field.scheduleHint")}
               </p>
             </div>
           )}
         </Field>
 
-        <Field label="Facebook Page" required>
+        <Field label={tPages("field.facebookPage")} required>
           <div className="space-y-2">
             <PagePicker pages={pages} selectedId={pageId} onSelect={setPageId} />
             <button
@@ -851,10 +858,10 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
               {refreshingPages ? (
                 <>
                   <Loader2 className="size-3 animate-spin" />
-                  กำลัง sync Pages...
+                  {tPages("page.refreshing")}
                 </>
               ) : (
-                <>↻ ดึง Pages ใหม่จาก Meta (ถ้าไม่เจอ Page ที่ต้องการ)</>
+                <>{tPages("page.refresh")}</>
               )}
             </button>
           </div>
@@ -863,31 +870,31 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
 
       {/* === CREATIVE === */}
       <Card className="space-y-3 p-5">
-        <h3 className="border-b border-border pb-2 text-sm font-semibold">โฆษณา + รูป/โพสต์</h3>
+        <h3 className="border-b border-border pb-2 text-sm font-semibold">{tPages("creative.title")}</h3>
 
-        <Field label="แหล่งที่มาของโฆษณา">
+        <Field label={tPages("field.creativeSource")}>
           <div className="flex flex-wrap gap-2">
             <RadioPill
               checked={creativeKind === "new_image"}
               onClick={() => setCreativeKind("new_image")}
-              label="📷 อัพโหลดรูปใหม่"
+              label={tPages("creative.newImage")}
             />
             <RadioPill
               checked={creativeKind === "from_library"}
               onClick={() => setCreativeKind("from_library")}
-              label="🖼️ เลือกจากคลัง"
+              label={tPages("creative.fromLibrary")}
             />
             <RadioPill
               checked={creativeKind === "existing_post"}
               onClick={() => setCreativeKind("existing_post")}
-              label="📝 ใช้โพสต์ที่มี"
+              label={tPages("creative.existingPost")}
             />
           </div>
         </Field>
 
         {creativeKind === "from_library" ? (
           <>
-            <Field label="รูปจากคลัง" required>
+            <Field label={tPages("field.imageFromLibrary")} required>
               <button
                 type="button"
                 onClick={() => setLibraryPickerOpen(true)}
@@ -900,31 +907,31 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                   <ImageIcon className="size-8 text-muted-foreground" />
                 )}
                 <span className="text-xs text-muted-foreground">
-                  {imageHash ? "✓ เลือกแล้ว — กดเพื่อเปลี่ยน" : "กดเพื่อเลือกจากคลัง creatives"}
+                  {imageHash ? tPages("creative.selectedClickToChange") : tPages("creative.clickToPickLibrary")}
                 </span>
               </button>
             </Field>
-            <Field label={`ข้อความโฆษณา (${primaryText.length}/125)`} required>
+            <Field label={tPages("field.adText", { count: primaryText.length })} required>
               <textarea
                 value={primaryText}
                 onChange={(e) => setPrimaryText(e.target.value.slice(0, 125))}
                 className="w-full rounded-md border border-border bg-background p-2 text-sm"
                 rows={3}
-                placeholder="ข้อความหลักที่จะแสดงเหนือรูปภาพ"
+                placeholder={tPages("placeholder.primaryText")}
               />
             </Field>
-            <Field label="ลิงก์ปลายทาง" required>
+            <Field label={tPages("field.linkDestination")} required>
               <Input
                 type="url"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="https://example.com/landing"
+                placeholder={tPages("placeholder.linkUrl")}
               />
             </Field>
           </>
         ) : creativeKind === "new_image" ? (
           <>
-            <Field label="รูปภาพ" required>
+            <Field label={tPages("field.image")} required>
               <label className="flex cursor-pointer flex-col items-center gap-2 rounded-md border-2 border-dashed border-border p-5 hover:bg-muted/20">
                 {imagePreviewUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -935,13 +942,13 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   {uploadingImage ? (
                     <>
-                      <Loader2 className="size-3 animate-spin" /> กำลังอัพโหลด...
+                      <Loader2 className="size-3 animate-spin" /> {tPages("creative.uploading")}
                     </>
                   ) : imageHash ? (
-                    <>✓ อัพโหลดแล้ว — กดเพื่อเปลี่ยน</>
+                    <>{tPages("creative.uploaded")}</>
                   ) : (
                     <>
-                      <Upload className="size-3" /> เลือกไฟล์ JPG/PNG (≤ 8MB)
+                      <Upload className="size-3" /> {tPages("creative.uploadFile")}
                     </>
                   )}
                 </span>
@@ -956,47 +963,53 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                 />
               </label>
             </Field>
-            <Field label={`ข้อความโฆษณา (${primaryText.length}/125)`} required>
+            <Field label={tPages("field.adText", { count: primaryText.length })} required>
               <textarea
                 value={primaryText}
                 onChange={(e) => setPrimaryText(e.target.value.slice(0, 125))}
                 className="w-full rounded-md border border-border bg-background p-2 text-sm"
                 rows={3}
-                placeholder="ข้อความหลักที่จะแสดงเหนือรูปภาพ"
+                placeholder={tPages("placeholder.primaryText")}
               />
             </Field>
-            <Field label="ลิงก์ปลายทาง" required>
+            <Field label={tPages("field.linkDestination")} required>
               <Input
                 type="url"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="https://example.com/landing"
+                placeholder={tPages("placeholder.linkUrl")}
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                URL ที่ user จะไปเมื่อกดบนโฆษณา (จำเป็นสำหรับ image ad ที่มี Call to Action)
-                — ถ้าไม่ต้องการ CTA ให้ใช้ &ldquo;ใช้โพสต์ที่มี&rdquo; โดยเลือก post ที่ไม่มี link
-              </p>
+              <p
+                className="mt-1 text-[11px] text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: tPages("creative.linkUrlHint") }}
+              />
             </Field>
           </>
         ) : (
-          <Field label={`เลือกโพสต์ ${loadingPosts ? "(loading...)" : `(${pagePosts.length} โพสต์)`}`} required>
+          <Field
+            label={
+              loadingPosts
+                ? tPages("field.selectPostLoading")
+                : tPages("field.selectPostCount", { count: pagePosts.length })
+            }
+            required
+          >
             <div className="space-y-2">
               <div className="max-h-72 overflow-y-auto rounded-md border border-border">
                 {loadingPosts ? (
-                  <p className="p-3 text-xs text-muted-foreground">กำลังโหลด...</p>
+                  <p className="p-3 text-xs text-muted-foreground">{tPages("post.loading")}</p>
                 ) : postsError ? (
                   <div className="space-y-1 p-3 text-xs">
                     <p className="font-medium text-rose-600 dark:text-rose-300">
-                      ⚠ ดึงโพสต์ไม่สำเร็จ
+                      {tPages("post.fetchFail")}
                     </p>
                     <p className="text-muted-foreground">{postsError}</p>
                   </div>
                 ) : pagePosts.length === 0 ? (
                   <div className="space-y-1 p-3 text-xs">
-                    <p className="font-medium">ไม่มี promotable post ใน Page นี้</p>
+                    <p className="font-medium">{tPages("post.noPromotable")}</p>
                     <p className="text-muted-foreground">
-                      Meta คืน 0 โพสต์ — อาจเพราะ Page ยังไม่ได้โพสต์อะไร หรือ
-                      โพสต์เก่ามาก (Meta จำกัด ~3 เดือนล่าสุด) ลองใส่ post ID ด้านล่าง
+                      {tPages("post.noPromotableDescription")}
                     </p>
                   </div>
                 ) : (
@@ -1024,7 +1037,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={p.thumbnailUrl} alt="" className="size-12 shrink-0 rounded object-cover" />
                         )}
-                        <span className="line-clamp-2">{p.message || "(no text)"}</span>
+                        <span className="line-clamp-2">{p.message || tPages("post.noText")}</span>
                       </label>
                     );
                   })
@@ -1032,7 +1045,7 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
               </div>
               <div className="rounded-md border border-dashed border-border p-2">
                 <label className="mb-1 block text-[11px] font-medium text-muted-foreground">
-                  หรือใส่ Post ID / URL ของ Facebook โพสต์โดยตรง
+                  {tPages("post.manualHint")}
                 </label>
                 <Input
                   value={manualPostId}
@@ -1069,20 +1082,20 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                     }
                     setPostId("");
                   }}
-                  placeholder="วาง URL หรือ Post ID (รองรับ pfbid... และ <pageid>_<postid>)"
+                  placeholder={tPages("placeholder.manualPostId")}
                   className="h-8 text-xs"
                 />
                 {manualPostId && postId && (
                   <p className="mt-1 text-[10px] text-emerald-600 dark:text-emerald-300">
-                    ✓ จะใช้: <code className="break-all">{postId}</code>
+                    {tPages("post.willUse")} <code className="break-all">{postId}</code>
                     {postId.startsWith("pfbid") && (
-                      <span className="ml-1 text-muted-foreground">(server จะ resolve เป็น canonical ID ตอนสร้าง)</span>
+                      <span className="ml-1 text-muted-foreground">{tPages("post.willUseResolveHint")}</span>
                     )}
                   </p>
                 )}
                 {manualPostId && !postId && (
                   <p className="mt-1 text-[10px] text-rose-600 dark:text-rose-300">
-                    ⚠ จับ format ไม่ได้ — ลอง paste URL เต็มๆ หรือเลขล้วน
+                    {tPages("post.formatError")}
                   </p>
                 )}
               </div>
@@ -1099,9 +1112,9 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
           className="flex w-full items-center justify-between px-5 py-3 text-sm font-medium hover:bg-muted/30"
         >
           <span>
-            ⚙️ ตัวเลือกขั้นสูง{" "}
+            {tPages("advanced.toggle")}{" "}
             <span className="font-normal text-muted-foreground">
-              (targeting / audience / headline / CTA / etc.)
+              {tPages("advanced.toggleHint")}
             </span>
           </span>
           {showAdvanced ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
@@ -1109,34 +1122,34 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
 
         {showAdvanced && (
           <div className="space-y-4 border-t border-border p-5">
-            <Field label="ตำแหน่งที่ตั้ง">
+            <Field label={tPages("field.location")}>
               <GeoPicker
                 tenantSlug={tenantSlug}
                 targets={geoTargets}
                 onChange={setGeoTargets}
               />
             </Field>
-            <Field label="เพศ">
+            <Field label={tPages("field.gender")}>
               <div className="flex gap-1.5">
-                <RadioPill checked={gender === "all"} onClick={() => setGender("all")} label="ทุกเพศ" />
-                <RadioPill checked={gender === "male"} onClick={() => setGender("male")} label="ชาย" />
-                <RadioPill checked={gender === "female"} onClick={() => setGender("female")} label="หญิง" />
+                <RadioPill checked={gender === "all"} onClick={() => setGender("all")} label={tPages("gender.all")} />
+                <RadioPill checked={gender === "male"} onClick={() => setGender("male")} label={tPages("gender.male")} />
+                <RadioPill checked={gender === "female"} onClick={() => setGender("female")} label={tPages("gender.female")} />
               </div>
             </Field>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="อายุต่ำสุด">
+              <Field label={tPages("field.ageMin")}>
                 <Input type="number" min="20" max="65" value={ageMin} onChange={(e) => setAgeMin(Number(e.target.value))} />
               </Field>
-              <Field label="อายุสูงสุด">
+              <Field label={tPages("field.ageMax")}>
                 <Input type="number" min="20" max="65" value={ageMax} onChange={(e) => setAgeMax(Number(e.target.value))} />
               </Field>
             </div>
             <p className="-mt-2 text-[11px] text-muted-foreground">
-              ⚠ Meta บังคับ <strong>age ≥ 20</strong> สำหรับโฆษณาที่ target ไทย — น้อยกว่านั้น Meta จะปฏิเสธ
+              {tPages("advanced.ageWarning1")} <strong>age ≥ 20</strong> {tPages("advanced.ageWarning2")}
             </p>
 
-            <Field label="ความสนใจ (Interests)">
+            <Field label={tPages("field.interests")}>
               <InterestPicker
                 tenantSlug={tenantSlug}
                 selected={selectedInterests}
@@ -1145,14 +1158,18 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
             </Field>
 
             <Field
-              label={`Custom Audience (${loadingAudiences ? "loading..." : `${audienceLibrary.length} ตัวใน account`})`}
+              label={
+                loadingAudiences
+                  ? tPages("field.customAudienceLoading")
+                  : tPages("field.customAudienceCount", { count: audienceLibrary.length })
+              }
             >
               <div className="max-h-32 overflow-y-auto rounded-md border border-border">
                 {loadingAudiences ? (
-                  <p className="p-3 text-xs text-muted-foreground">กำลังโหลด...</p>
+                  <p className="p-3 text-xs text-muted-foreground">{tPages("audience.loading")}</p>
                 ) : audienceLibrary.length === 0 ? (
                   <p className="p-3 text-xs text-muted-foreground">
-                    ไม่มี — สร้างใน Meta Ads Manager หรือรอ Stage 4 (audience builder)
+                    {tPages("audience.empty")}
                   </p>
                 ) : (
                   audienceLibrary.map((a) => {
@@ -1187,19 +1204,19 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
             </Field>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Budget mode">
+              <Field label={tPages("field.budgetMode")}>
                 <div className="flex gap-2">
                   <RadioPill checked={budgetMode === "CBO"} onClick={() => setBudgetMode("CBO")} label="CBO" />
                   <RadioPill checked={budgetMode === "ABO"} onClick={() => setBudgetMode("ABO")} label="ABO" />
                 </div>
               </Field>
-              <Field label="Special Ad Category">
+              <Field label={tPages("field.specialAdCategory")}>
                 <select
                   value={specialAdCategory}
                   onChange={(e) => setSpecialAdCategory(e.target.value)}
                   className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
                 >
-                  <option value="NONE">ไม่ใช่</option>
+                  <option value="NONE">{tPages("advanced.specialAdNone")}</option>
                   <option value="HOUSING">Housing</option>
                   <option value="EMPLOYMENT">Employment</option>
                   <option value="CREDIT">Credit</option>
@@ -1211,14 +1228,14 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
             {(creativeKind === "new_image" || creativeKind === "from_library") && (
               <>
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label={`Headline (${headline.length}/40)`}>
-                    <Input value={headline} onChange={(e) => setHeadline(e.target.value.slice(0, 40))} placeholder="หัวข้อสั้น" />
+                  <Field label={tPages("field.headline", { count: headline.length })}>
+                    <Input value={headline} onChange={(e) => setHeadline(e.target.value.slice(0, 40))} placeholder={tPages("placeholder.headline")} />
                   </Field>
-                  <Field label={`Description (${description.length}/30)`}>
-                    <Input value={description} onChange={(e) => setDescription(e.target.value.slice(0, 30))} placeholder="คำอธิบาย" />
+                  <Field label={tPages("field.description", { count: description.length })}>
+                    <Input value={description} onChange={(e) => setDescription(e.target.value.slice(0, 30))} placeholder={tPages("placeholder.description")} />
                   </Field>
                 </div>
-                <Field label="Call To Action">
+                <Field label={tPages("field.callToAction")}>
                   <select
                     value={callToAction}
                     onChange={(e) => setCallToAction(e.target.value)}
@@ -1235,14 +1252,14 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="ชื่อ Ad Set (เว้นว่าง=auto)">
+              <Field label={tPages("field.adSetName")}>
                 <NameInputWithCounter
                   value={customAdSetName}
                   onChange={setCustomAdSetName}
                   placeholder={`${campaignName || "Campaign"} - Ad Set`}
                 />
               </Field>
-              <Field label="ชื่อ Ad (เว้นว่าง=auto)">
+              <Field label={tPages("field.adName")}>
                 <NameInputWithCounter
                   value={customAdName}
                   onChange={setCustomAdName}
@@ -1261,13 +1278,13 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
           variant="ghost"
           size="sm"
           onClick={() => {
-            if (confirm("ล้าง draft และเริ่มใหม่?")) {
+            if (confirm(tPages("submit.clearDraftConfirm"))) {
               localStorage.removeItem(draftKey);
               window.location.reload();
             }
           }}
         >
-          ล้าง draft
+          {tPages("submit.clearDraft")}
         </Button>
         <Button
           onClick={openPreview}
@@ -1278,10 +1295,10 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
           {submitting ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              กำลังสร้าง...
+              {tPages("submit.creating")}
             </>
           ) : (
-            <>ดูตัวอย่างก่อนสร้าง →</>
+            <>{tPages("submit.previewBtn")}</>
           )}
         </Button>
       </div>
@@ -1291,11 +1308,11 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
         <PreviewModal
           page={pages.find((p) => p.id === pageId) ?? null}
           campaignName={campaignName}
-          objectiveLabel={OBJECTIVE_TREE[objective].label}
-          subOptimizationLabel={
-            OBJECTIVE_TREE[objective].subs.find((s) => s.value === optimizationGoal)?.label ??
-            optimizationGoal
-          }
+          objectiveLabel={tPages(`objective.${objective}.label`)}
+          subOptimizationLabel={(() => {
+            const sub = OBJECTIVE_TREE[objective].subs.find((s) => s.value === optimizationGoal);
+            return sub ? tPages(`optimizationGoal.${sub.labelKey}` as Parameters<typeof tPages>[0]) : optimizationGoal;
+          })()}
           budgetType={budgetType}
           budgetThb={Number(budgetType === "daily" ? dailyBudgetThb : lifetimeBudgetThb)}
           geoTargets={geoTargets}
@@ -1386,6 +1403,8 @@ function PreviewModal({
   onPublishDraft: () => void;
   onPublishActive: () => void;
 }) {
+  const tPages = useTranslations("pages.campaignBuilder");
+  const locale = useLocale();
   const includedGeos = geoTargets.filter((g) => g.included);
   const excludedGeos = geoTargets.filter((g) => !g.included);
   const ctaLabel =
@@ -1403,9 +1422,9 @@ function PreviewModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-5 py-3">
           <div>
-            <h2 className="text-sm font-semibold">ดูตัวอย่างก่อนสร้าง Campaign</h2>
+            <h2 className="text-sm font-semibold">{tPages("preview.title")}</h2>
             <p className="text-[11px] text-muted-foreground">
-              ตรวจให้แน่ใจก่อนกดเผยแพร่ — Meta จะเริ่มคิดเงินทันทีถ้าเลือก ACTIVE
+              {tPages("preview.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -1418,7 +1437,7 @@ function PreviewModal({
           {/* Left: ad preview */}
           <div className="overflow-y-auto border-r border-border bg-muted/20 p-5">
             <p className="mb-2 text-[10px] uppercase tracking-wide text-muted-foreground">
-              ตัวอย่างโฆษณา
+              {tPages("preview.adPreviewLabel")}
             </p>
             <div className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
               {/* Page header */}
@@ -1432,8 +1451,11 @@ function PreviewModal({
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold">{page?.name ?? "(no page)"}</p>
-                  <p className="text-[10px] text-muted-foreground">Sponsored · 🌐</p>
+                  <p className="truncate text-xs font-semibold">{page?.name ?? tPages("preview.noPage")}</p>
+                  <p className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <span>Sponsored ·</span>
+                    <Globe className="size-2.5" />
+                  </p>
                 </div>
               </div>
               {/* Primary text — for new image OR existing post body */}
@@ -1456,7 +1478,7 @@ function PreviewModal({
                 <img src={existingPost.thumbnailUrl} alt="" className="aspect-square w-full bg-muted object-cover" />
               ) : (
                 <div className="flex aspect-square w-full items-center justify-center bg-muted text-xs text-muted-foreground">
-                  {creativeKind === "existing_post" ? "(post นี้ไม่มีรูปภาพ)" : "(image)"}
+                  {creativeKind === "existing_post" ? tPages("preview.postNoImage") : tPages("preview.imageFallback")}
                 </div>
               )}
               {/* Footer CTA bar (only for new_image with link) */}
@@ -1482,32 +1504,39 @@ function PreviewModal({
             <SummaryRow label="Objective" value={`${objectiveLabel} → ${subOptimizationLabel}`} />
             <SummaryRow
               label="Budget"
-              value={`฿${budgetThb.toLocaleString("th-TH")}${budgetType === "daily" ? "/วัน" : " ตลอด lifetime"}`}
+              value={tPages("preview.summaryBudget", {
+                amount: formatNumber(budgetThb, locale),
+                suffix: budgetType === "daily" ? tPages("budget.perDaySuffix") : tPages("budget.lifetimeSuffix"),
+              })}
             />
             <SummaryRow
               label="Targeting"
               value={
                 <div className="space-y-1 text-xs">
                   <div>
-                    <span className="text-muted-foreground">รวม:</span>{" "}
+                    <span className="text-muted-foreground">{tPages("preview.summaryInclude")}</span>{" "}
                     {includedGeos.length > 0
                       ? includedGeos.map((g) => g.name).join(", ")
-                      : "ทั้งโลก (ไม่ filter)"}
+                      : tPages("preview.summaryWorldwide")}
                   </div>
                   {excludedGeos.length > 0 && (
                     <div>
-                      <span className="text-muted-foreground">ไม่รวม:</span>{" "}
+                      <span className="text-muted-foreground">{tPages("preview.summaryExclude")}</span>{" "}
                       {excludedGeos.map((g) => g.name).join(", ")}
                     </div>
                   )}
                   <div>
-                    <span className="text-muted-foreground">อายุ:</span> {ageMin}-{ageMax} ·{" "}
-                    <span className="text-muted-foreground">เพศ:</span>{" "}
-                    {gender === "all" ? "ทุกเพศ" : gender === "male" ? "ชาย" : "หญิง"}
+                    <span className="text-muted-foreground">{tPages("preview.summaryAge")}</span> {ageMin}-{ageMax} ·{" "}
+                    <span className="text-muted-foreground">{tPages("preview.summaryGender")}</span>{" "}
+                    {gender === "all"
+                      ? tPages("gender.all")
+                      : gender === "male"
+                        ? tPages("gender.male")
+                        : tPages("gender.female")}
                   </div>
                   {interests.length > 0 && (
                     <div>
-                      <span className="text-muted-foreground">ความสนใจ:</span>{" "}
+                      <span className="text-muted-foreground">{tPages("preview.summaryInterests")}</span>{" "}
                       {interests.map((i) => i.name).join(", ")}
                     </div>
                   )}
@@ -1518,10 +1547,14 @@ function PreviewModal({
               label="Creative"
               value={
                 creativeKind === "existing_post"
-                  ? "Existing post"
+                  ? tPages("preview.creativeExistingPost")
                   : creativeKind === "from_library"
-                    ? `Image (จากคลัง) + ${linkUrl ? "link" : "no link"}`
-                    : `Image (อัปโหลดใหม่) + ${linkUrl ? "link" : "no link"}`
+                    ? linkUrl
+                      ? tPages("preview.creativeFromLibraryWithLink")
+                      : tPages("preview.creativeFromLibraryNoLink")
+                    : linkUrl
+                      ? tPages("preview.creativeNewImageWithLink")
+                      : tPages("preview.creativeNewImageNoLink")
               }
             />
             <SummaryRow
@@ -1534,7 +1567,7 @@ function PreviewModal({
         {/* Footer actions */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-muted/20 px-5 py-3">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            ← กลับไปแก้
+            {tPages("preview.back")}
           </Button>
           <div className="flex gap-2">
             <Button
@@ -1545,16 +1578,12 @@ function PreviewModal({
               className="gap-1.5"
             >
               {submitting ? <Loader2 className="size-3.5 animate-spin" /> : null}
-              บันทึก draft (PAUSED)
+              {tPages("preview.saveDraft")}
             </Button>
             <Button
               size="sm"
               onClick={() => {
-                if (
-                  confirm(
-                    "เผยแพร่ทันที = Meta จะเริ่มคิดเงิน + เริ่ม run โฆษณาทันที — ยืนยัน?",
-                  )
-                ) {
+                if (confirm(tPages("preview.publishConfirm"))) {
                   onPublishActive();
                 }
               }}
@@ -1562,7 +1591,7 @@ function PreviewModal({
               className="gap-1.5"
             >
               {submitting ? <Loader2 className="size-3.5 animate-spin" /> : null}
-              🚀 เผยแพร่ทันที (ACTIVE)
+              {tPages("preview.publishNow")}
             </Button>
           </div>
         </div>
@@ -1601,14 +1630,16 @@ function PagePicker({
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
+  const tPages = useTranslations("pages.campaignBuilder");
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
 
   if (pages.length === 0) {
     return (
-      <p className="text-xs text-muted-foreground">
-        ไม่พบ Page — กดปุ่ม &ldquo;ดึง Pages ใหม่&rdquo; ด้านล่าง
-      </p>
+      <p
+        className="text-xs text-muted-foreground"
+        dangerouslySetInnerHTML={{ __html: tPages("page.notFound") }}
+      />
     );
   }
 
@@ -1648,7 +1679,7 @@ function PagePicker({
           onClick={() => setExpanded(true)}
           className="ml-2 shrink-0 text-[11px] text-primary hover:underline"
         >
-          เปลี่ยน
+          {tPages("page.change")}
         </button>
       </div>
     );
@@ -1662,7 +1693,7 @@ function PagePicker({
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={`ค้นหา Page (มี ${pages.length} Pages)...`}
+          placeholder={tPages("placeholder.searchPage", { count: pages.length })}
           className="h-8 pl-7 text-xs"
           autoFocus
         />
@@ -1671,7 +1702,7 @@ function PagePicker({
             type="button"
             onClick={() => setExpanded(false)}
             className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            title="ยกเลิก"
+            title={tPages("page.cancel")}
           >
             <X className="size-3.5" />
           </button>
@@ -1679,9 +1710,10 @@ function PagePicker({
       </div>
       <div className="max-h-72 overflow-y-auto rounded-md border border-border">
         {filtered.length === 0 ? (
-          <p className="p-3 text-center text-xs text-muted-foreground">
-            ไม่พบ &ldquo;{query}&rdquo;
-          </p>
+          <p
+            className="p-3 text-center text-xs text-muted-foreground"
+            dangerouslySetInnerHTML={{ __html: tPages("page.noResults", { query }) }}
+          />
         ) : (
           <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2">
             {filtered.map((p) => {
@@ -1729,6 +1761,7 @@ function InterestPicker({
   selected: Interest[];
   onChange: (next: Interest[]) => void;
 }) {
+  const tPages = useTranslations("pages.campaignBuilder");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Interest[]>([]);
   const [loading, setLoading] = useState(false);
@@ -1740,6 +1773,7 @@ function InterestPicker({
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clear results when query becomes too short
       setResults([]);
       return;
     }
@@ -1760,6 +1794,7 @@ function InterestPicker({
   // caches by sorted seed names so equivalent sets share results.
   useEffect(() => {
     if (selected.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clear suggestions when no seeds, or fetch-then-setState pattern below
       setSuggestions([]);
       return;
     }
@@ -1816,11 +1851,11 @@ function InterestPicker({
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="ค้นหาความสนใจ (เช่น 'fashion', 'cooking', 'gaming', 'travel')"
+          placeholder={tPages("placeholder.searchInterest")}
           className="h-8 pl-7 text-xs"
         />
       </div>
-      {loading && <p className="text-[11px] text-muted-foreground">กำลังค้นหา...</p>}
+      {loading && <p className="text-[11px] text-muted-foreground">{tPages("interest.searching")}</p>}
       {results.length > 0 && (
         <div className="max-h-48 overflow-y-auto rounded-md border border-border">
           {results
@@ -1853,12 +1888,12 @@ function InterestPicker({
       {selected.length > 0 && (
         <div className="rounded-md border border-dashed border-primary/30 bg-primary/5 p-2">
           <p className="mb-1.5 flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
-            💡 ความสนใจที่เกี่ยวข้อง
+            {tPages("interest.relatedTitle")}
             {loadingSuggestions && <Loader2 className="size-2.5 animate-spin" />}
           </p>
           {suggestions.length === 0 && !loadingSuggestions ? (
             <p className="text-[10px] text-muted-foreground">
-              Meta ไม่มีคำแนะนำสำหรับชุดที่เลือก — ลองเพิ่ม interest อื่นเป็น seed
+              {tPages("interest.noSuggestions")}
             </p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
@@ -1888,7 +1923,7 @@ function InterestPicker({
 
       {selected.length === 0 && query.length < 2 && (
         <p className="text-[10px] text-muted-foreground">
-          ไม่ใส่ก็ได้ — Meta จะใช้ broad targeting (ทุกคนที่ตรง location + age + gender)
+          {tPages("interest.broadHint")}
         </p>
       )}
     </div>
@@ -1904,6 +1939,7 @@ function GeoPicker({
   targets: GeoTarget[];
   onChange: (next: GeoTarget[]) => void;
 }) {
+  const tPages = useTranslations("pages.campaignBuilder");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<
     { key: string; name: string; type: string; countryName?: string }[]
@@ -1914,6 +1950,7 @@ function GeoPicker({
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clear results when query becomes too short
       setResults([]);
       return;
     }
@@ -1976,12 +2013,12 @@ function GeoPicker({
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="ค้นหา ประเทศ / จังหวัด / เมือง (เช่น 'Bangkok', 'เชียงใหม่', 'Asia')"
+          placeholder={tPages("placeholder.searchGeo")}
           className="h-8 pl-7 text-xs"
         />
       </div>
       {/* Results */}
-      {loading && <p className="text-[11px] text-muted-foreground">กำลังค้นหา...</p>}
+      {loading && <p className="text-[11px] text-muted-foreground">{tPages("geo.searching")}</p>}
       {results.length > 0 && (
         <div className="max-h-48 overflow-y-auto rounded-md border border-border">
           {results.map((r) => (
@@ -2003,14 +2040,14 @@ function GeoPicker({
                 onClick={() => addTarget(r, true)}
                 className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300"
               >
-                + รวม
+                {tPages("geo.include")}
               </button>
               <button
                 type="button"
                 onClick={() => addTarget(r, false)}
                 className="rounded-md bg-rose-50 px-1.5 py-0.5 text-[10px] font-medium text-rose-700 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300"
               >
-                − ไม่รวม
+                {tPages("geo.exclude")}
               </button>
             </div>
           ))}

@@ -29,7 +29,7 @@ export async function getSelectedAccountIds(
   const stringIds = ids.filter((x): x is string => typeof x === "string");
   // Treat empty array as "no override" (= follow tenant default). Legacy
   // rows from before Phase 6c persisted [] when the user clicked
-  // "ล้างทั้งหมด"; that produced the dead-end "0 effective accounts"
+  // "clear all"; that produced the dead-end "0 effective accounts"
   // state. New writes set null instead, but normalize on read so
   // existing rows behave consistently with the new picker semantics.
   if (stringIds.length === 0) return null;

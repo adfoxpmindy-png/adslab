@@ -29,6 +29,7 @@ type Props = {
 export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
   const pathname = usePathname();
   const tNav = useTranslations("sidebar.nav");
+  const tMobile = useTranslations("mobileNav");
 
   // Auto-close on route change.
   useEffect(() => {
@@ -96,7 +97,7 @@ export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            aria-label="ปิดเมนู"
+            aria-label={tMobile("closeMenu")}
             className="flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <X className="size-5" />
@@ -109,7 +110,7 @@ export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
             const Icon = item.icon;
             const href = item.href(tenantSlug);
             const active = isPathActive(pathname, href);
-            const label = tNav(item.labelKey);
+            const label = tNav(item.labelKey as Parameters<typeof tNav>[0]);
             return (
               <Link
                 key={item.labelKey}

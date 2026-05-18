@@ -21,7 +21,7 @@ const actionSchema = z.discriminatedUnion("action", [
     action: z.literal("SET_BUDGET"),
     // Caller must include exactly one of these. The service layer also
     // enforces this — we keep Zod permissive so the service error message
-    // is the one users see ("ต้องระบุ daily หรือ lifetime").
+    // is the one users see ("Must specify daily or lifetime").
     dailyBudget: z.number().finite().min(0).optional(),
     lifetimeBudget: z.number().finite().min(0).optional(),
   }),

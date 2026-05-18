@@ -3,20 +3,23 @@
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Check, CreditCard, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatNumber } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
+type PlanKey = "starter" | "growth" | "pro" | "scale";
+
 type PlanOption = {
-  key: "starter" | "growth" | "pro" | "scale";
+  key: PlanKey;
   name: string;
   priceMonthly: number;
   priceYearly: number;
-  description: string;
-  bullets: string[];
+  bulletKeys: readonly string[];
   recommended?: boolean;
 };
 
@@ -26,16 +29,14 @@ const PLANS: PlanOption[] = [
     name: "Starter",
     priceMonthly: 1490,
     priceYearly: 14990,
-    description: "เหมาะกับมือใหม่ ad spend < ฿10,000/เดือน",
-    bullets: ["1 ad account", "30 AI message/วัน", "Dashboard + AI Master", "Customer Journey"],
+    bulletKeys: ["adAccounts", "aiMessages", "dashboard", "customerJourney"],
   },
   {
     key: "growth",
     name: "Growth",
     priceMonthly: 3890,
     priceYearly: 38990,
-    description: "ad spend ฿10k–฿30k/เดือน",
-    bullets: ["3 ad accounts", "100 AI message/วัน", "ทุกฟีเจอร์ของ Starter", "Custom Conversions"],
+    bulletKeys: ["adAccounts", "aiMessages", "allStarter", "customConversions"],
     recommended: true,
   },
   {
@@ -43,16 +44,14 @@ const PLANS: PlanOption[] = [
     name: "Pro",
     priceMonthly: 10_990,
     priceYearly: 109_990,
-    description: "ad spend ฿30k–฿100k/เดือน",
-    bullets: ["10 ad accounts", "300 AI message/วัน", "ทุกฟีเจอร์ของ Growth", "Audience Management"],
+    bulletKeys: ["adAccounts", "aiMessages", "allGrowth", "audienceManagement"],
   },
   {
     key: "scale",
     name: "Scale",
     priceMonthly: 44_990,
     priceYearly: 449_990,
-    description: "ad spend ฿100k–฿500k/เดือน",
-    bullets: ["25 ad accounts", "AI ไม่จำกัด", "White-label Reports ฟรี", "Priority Support"],
+    bulletKeys: ["adAccounts", "aiUnlimited", "whiteLabel", "prioritySupport"],
   },
 ];
 
@@ -84,8 +83,10 @@ export function SetupBillingClient({
   tenantName: string;
   publicKey: string;
 }) {
+  const t = useTranslations("pages.setupBilling");
+  const locale = useLocale();
   const router = useRouter();
-  const [planKey, setPlanKey] = useState<PlanOption["key"]>("growth");
+  const [planKey, setPlanKey] = useState<PlanKey>("growth");
   const [interval, setInterval] = useState<"MONTHLY" | "YEARLY">("MONTHLY");
   const [cardName, setCardName] = useState(tenantName);
   const [cardNumber, setCardNumber] = useState("");
@@ -99,21 +100,22 @@ export function SetupBillingClient({
 
   const selected = PLANS.find((p) => p.key === planKey)!;
   const price = interval === "MONTHLY" ? selected.priceMonthly : selected.priceYearly;
+  const periodLabel = interval === "MONTHLY" ? t("month") : t("year");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (pending) return;
     setError(null);
     if (!window.Omise) {
-      setError("Omise script ยังไม่โหลด");
+      setError(t("errors.omiseNotLoaded"));
       return;
     }
     if (!publicKey) {
-      setError("ระบบยังไม่ตั้งค่าการชำระเงิน — ติดต่อทีมงาน");
+      setError(t("errors.noPaymentKey"));
       return;
     }
     if (!acceptedTerms) {
-      setError("กรุณายอมรับเงื่อนไขการใช้บริการและนโยบายการคืนเงินก่อนสมัคร");
+      setError(t("errors.mustAcceptTerms"));
       return;
     }
     setPending(true);
@@ -130,7 +132,7 @@ export function SetupBillingClient({
       },
       async (status, response) => {
         if (status !== 200 || !response.id) {
-          setError(response.message ?? "บัตรเครดิตไม่ถูกต้อง");
+          setError(response.message ?? t("errors.invalidCard"));
           setPending(false);
           return;
         }
@@ -149,7 +151,7 @@ export function SetupBillingClient({
           });
           const data = await res.json();
           if (!res.ok) {
-            setError(data.message ?? data.error ?? "เกิดข้อผิดพลาด");
+            setError(data.message ?? data.error ?? t("errors.generic"));
             setPending(false);
             return;
           }
@@ -188,22 +190,22 @@ export function SetupBillingClient({
             >
               {p.recommended && (
                 <span className="absolute -top-2 left-3 rounded-full bg-cyan-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-                  แนะนำ
+                  {t("recommended")}
                 </span>
               )}
               <div className="text-lg font-bold">{p.name}</div>
               <div className="mt-1 text-2xl font-extrabold tracking-tight">
-                ฿{(interval === "MONTHLY" ? p.priceMonthly : p.priceYearly).toLocaleString("th-TH")}
+                ฿{formatNumber(interval === "MONTHLY" ? p.priceMonthly : p.priceYearly, locale)}
                 <span className="text-xs font-normal text-muted-foreground">
-                  /{interval === "MONTHLY" ? "เดือน" : "ปี"}
+                  /{interval === "MONTHLY" ? t("month") : t("year")}
                 </span>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{p.description}</p>
+              <p className="mt-2 text-xs text-muted-foreground">{t(`plans.${p.key}.description`)}</p>
               <ul className="mt-3 space-y-1.5">
-                {p.bullets.map((b) => (
-                  <li key={b} className="flex items-start gap-1.5 text-xs">
+                {p.bulletKeys.map((bk) => (
+                  <li key={bk} className="flex items-start gap-1.5 text-xs">
                     <Check className="size-3 shrink-0 text-cyan-600" />
-                    <span>{b}</span>
+                    <span>{t(`plans.${p.key}.bullets.${bk}` as Parameters<typeof t>[0])}</span>
                   </li>
                 ))}
               </ul>
@@ -224,7 +226,7 @@ export function SetupBillingClient({
               : "text-muted-foreground",
           )}
         >
-          รายเดือน
+          {t("monthlyToggle")}
         </button>
         <button
           type="button"
@@ -236,7 +238,7 @@ export function SetupBillingClient({
               : "text-muted-foreground",
           )}
         >
-          รายปี <span className="ml-1 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">−17%</span>
+          {t("yearlyToggle")} <span className="ml-1 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">{t("yearlySavings")}</span>
         </button>
       </div>
 
@@ -244,11 +246,11 @@ export function SetupBillingClient({
       <form onSubmit={handleSubmit} className="mt-10 rounded-xl border border-border bg-card p-6">
         <div className="mb-5 flex items-center gap-2">
           <CreditCard className="size-5 text-cyan-600" />
-          <h2 className="text-lg font-semibold">ข้อมูลบัตรเครดิต</h2>
+          <h2 className="text-lg font-semibold">{t("cardForm.heading")}</h2>
         </div>
         <div className="grid gap-4">
           <div>
-            <Label htmlFor="cardName">ชื่อบนบัตร</Label>
+            <Label htmlFor="cardName">{t("cardForm.cardName")}</Label>
             <Input
               id="cardName"
               value={cardName}
@@ -258,7 +260,7 @@ export function SetupBillingClient({
             />
           </div>
           <div>
-            <Label htmlFor="cardNumber">หมายเลขบัตร</Label>
+            <Label htmlFor="cardNumber">{t("cardForm.cardNumber")}</Label>
             <Input
               id="cardNumber"
               value={cardNumber}
@@ -272,7 +274,7 @@ export function SetupBillingClient({
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label htmlFor="expMonth">เดือน</Label>
+              <Label htmlFor="expMonth">{t("cardForm.expMonth")}</Label>
               <Input
                 id="expMonth"
                 value={expMonth}
@@ -285,7 +287,7 @@ export function SetupBillingClient({
               />
             </div>
             <div>
-              <Label htmlFor="expYear">ปี (4 หลัก)</Label>
+              <Label htmlFor="expYear">{t("cardForm.expYear")}</Label>
               <Input
                 id="expYear"
                 value={expYear}
@@ -298,7 +300,7 @@ export function SetupBillingClient({
               />
             </div>
             <div>
-              <Label htmlFor="cvv">CVV</Label>
+              <Label htmlFor="cvv">{t("cardForm.cvv")}</Label>
               <Input
                 id="cvv"
                 value={cvv}
@@ -330,21 +332,21 @@ export function SetupBillingClient({
               className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border-input text-cyan-600 focus:ring-cyan-500"
             />
             <span className="text-xs leading-relaxed text-foreground">
-              ฉันยอมรับ{" "}
+              {t("terms.iAccept")}{" "}
               <a href="/terms" target="_blank" className="font-medium text-cyan-600 underline-offset-2 hover:underline">
-                ข้อกำหนดการใช้บริการ
+                {t("terms.tos")}
               </a>{" "}
-              และ{" "}
+              {t("terms.and")}{" "}
               <a href="/refund-policy" target="_blank" className="font-medium text-cyan-600 underline-offset-2 hover:underline">
-                นโยบายการคืนเงิน
+                {t("terms.refundPolicy")}
               </a>{" "}
-              ของ AdsLab
+              {t("terms.adsLab")}
               <br />
               <span className="mt-1 block text-[11px] text-muted-foreground">
-                • ทดลองใช้ฟรี 7 วัน — ไม่มีการเรียกเก็บเงินระหว่างทดลอง<br />
-                • เริ่มเก็บเงินอัตโนมัติในวันที่ 8 หากไม่ได้ยกเลิก<br />
-                • ขอคืนเงินภายใน 7 วันแรกของรอบบิล (pro-rated ตามวันที่เหลือ)<br />
-                • ยกเลิกการต่ออายุได้ตลอดเวลาที่ Settings → Billing
+                {t("terms.bullet1")}<br />
+                {t("terms.bullet2")}<br />
+                {t("terms.bullet3")}<br />
+                {t("terms.bullet4")}
               </span>
             </span>
           </label>
@@ -352,29 +354,29 @@ export function SetupBillingClient({
 
         <div className="mt-5 flex items-center justify-between border-t border-border pt-5">
           <div>
-            <p className="text-xs text-muted-foreground">รวมต่อรอบบิล (VAT 7% รวมแล้ว)</p>
+            <p className="text-xs text-muted-foreground">{t("summary.totalPerPeriod")}</p>
             <p className="text-xl font-bold">
-              ฿{price.toLocaleString("th-TH")}
+              ฿{formatNumber(price, locale)}
               <span className="ml-1 text-sm font-normal text-muted-foreground">
-                /{interval === "MONTHLY" ? "เดือน" : "ปี"}
+                /{periodLabel}
               </span>
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              ทดลองใช้ฟรี 7 วัน • เริ่มเก็บเงินหลังครบ
+              {t("summary.trialNote")}
             </p>
           </div>
           <Button type="submit" size="lg" disabled={pending || !scriptReady || !acceptedTerms}>
             {pending ? (
               <>
-                <Loader2 className="size-4 animate-spin" /> กำลังบันทึก
+                <Loader2 className="size-4 animate-spin" /> {t("submit.saving")}
               </>
             ) : (
-              "เริ่มทดลองใช้ฟรี 7 วัน"
+              t("submit.startTrial")
             )}
           </Button>
         </div>
         <p className="mt-3 text-center text-[11px] text-muted-foreground">
-          ระบบชำระเงินผ่าน Omise (ปลอดภัย PCI DSS Level 1) · เงินจะถูกเรียกเก็บเป็นสกุล THB
+          {t("footerNote")}
         </p>
       </form>
     </>

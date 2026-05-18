@@ -7,7 +7,10 @@
  * confirmation UI can edit fields directly before execution without
  * needing a separate "edit" schema.
  */
+import { getTranslations } from "next-intl/server";
+
 import type { BoostIntent } from "@/lib/ai/boost-parser";
+import type { Locale } from "@/i18n/locales";
 import type { ResolvedFbUrl } from "@/lib/meta/url-resolver";
 import type { CreateInput, MetaObjective } from "@/lib/meta/campaign-create";
 
@@ -127,13 +130,15 @@ function makeCampaignName(args: {
   return `AdsLab Boost · ${date} · ${pagePart} · ${postPart}`;
 }
 
-export function buildBriefs(args: {
+export async function buildBriefs(args: {
   intent: BoostIntent;
   resolvedUrls: ResolvedFbUrl[];
   /** Mapped account-per-page. If a pageId has no entry, brief gets a warning. */
   accountByPageId: Map<string, { metaAccountId: string; name: string }>;
-}): BoostBrief[] {
-  const { intent, resolvedUrls, accountByPageId } = args;
+  locale: Locale;
+}): Promise<BoostBrief[]> {
+  const { intent, resolvedUrls, accountByPageId, locale } = args;
+  const t = await getTranslations({ locale, namespace: "pages.boost.briefBuilder" });
   const { start, end } = defaultSchedule(intent);
   const budget = perBriefBudget(intent, resolvedUrls.length);
 
@@ -145,15 +150,13 @@ export function buildBriefs(args: {
     });
     const warnings: string[] = [];
     if (!acct) {
-      warnings.push(
-        `Page "${r.pageName}" (${r.pageId}) ยังไม่มี ad account ที่เชื่อมไว้ — เลือกเองได้ในการ์ดนี้`,
-      );
+      warnings.push(t("warningNoAccount", { name: r.pageName, pageId: r.pageId }));
     }
     if (intent.scheduleEndIso === null) {
-      warnings.push("ไม่ได้ระบุเวลาสิ้นสุด — ตั้งให้ +24 ชม จากตอนเริ่ม");
+      warnings.push(t("warningNoEndTime"));
     }
     if (intent.objectiveHint === "unknown") {
-      warnings.push("ไม่ได้ระบุ objective — ใช้ Engagement เป็นค่า default");
+      warnings.push(t("warningNoObjective"));
     }
     return {
       briefId: `brief_${idx}_${r.postId}`,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Bot,
   FileText,
@@ -65,6 +66,7 @@ function PersonaCard({
   tenantSlug: string;
   canEdit: boolean;
 }) {
+  const t = useTranslations("settings.ai.persona");
   const [persona, setPersona] = useState<Persona | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -89,7 +91,7 @@ function PersonaCard({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Save failed");
-      toast.success("บันทึก AI Persona แล้ว", { duration: 2000 });
+      toast.success(t("savedToast"), { duration: 2000 });
       setDirty(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Save failed");
@@ -111,9 +113,9 @@ function PersonaCard({
           <Bot className="size-5 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">AI Persona</h2>
+          <h2 className="text-xl font-semibold tracking-tight">{t("heading")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            ปรับ tone + บทบาทของ AI Master ให้เหมาะกับทีมและธุรกิจ
+            {t("subtitle")}
           </p>
         </div>
       </header>
@@ -122,25 +124,25 @@ function PersonaCard({
         {loading || !persona ? (
           <div className="flex items-center justify-center gap-2 py-4">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+            <span className="text-sm text-muted-foreground">{t("loading")}</span>
           </div>
         ) : (
           <>
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                บทบาท (Role)
+                {t("roleLabel")}
               </label>
               <Input
                 value={persona.role}
                 onChange={(e) => update("role", e.target.value)}
                 disabled={!canEdit}
-                placeholder="เช่น Thai media buyer expert"
+                placeholder={t("rolePlaceholder")}
               />
             </div>
 
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                คำสั่งเพิ่มเติม (Custom Instructions)
+                {t("customLabel")}
               </label>
               <textarea
                 value={persona.customInstructions}
@@ -148,10 +150,10 @@ function PersonaCard({
                 disabled={!canEdit}
                 rows={5}
                 className="w-full rounded-md border border-border bg-background p-2 text-sm"
-                placeholder="เช่น ต้องตอบเป็น bullet points สั้นๆ, อย่าใช้คำว่า 'optimize', ระบุ ROAS เสมอเมื่อพูดถึง campaign"
+                placeholder={t("customPlaceholder")}
               />
               <p className="mt-1 text-[11px] text-muted-foreground">
-                คำสั่งจะถูก inject เข้า system prompt ทุก chat — ทั้งทีมเห็น
+                {t("customNote")}
               </p>
             </div>
 
@@ -164,7 +166,7 @@ function PersonaCard({
                 disabled={!canEdit}
               />
               <label htmlFor="rag-enabled" className="text-sm">
-                ให้ AI ใช้ Knowledge Base (RAG) — ค้นเอกสารก่อนตอบ
+                {t("ragLabel")}
               </label>
             </div>
 
@@ -172,7 +174,7 @@ function PersonaCard({
               <div className="flex justify-end">
                 <Button size="sm" onClick={save} disabled={!dirty || saving}>
                   {saving && <Loader2 className="mr-1.5 size-3.5 animate-spin" />}
-                  บันทึก
+                  {t("saveBtn")}
                 </Button>
               </div>
             )}
@@ -192,6 +194,7 @@ function KnowledgeCard({
   tenantSlug: string;
   canEdit: boolean;
 }) {
+  const t = useTranslations("settings.ai.knowledge");
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -199,6 +202,7 @@ function KnowledgeCard({
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     fetch(`/api/ai/knowledge-documents?tenantSlug=${tenantSlug}`)
       .then((r) => r.json())
@@ -217,7 +221,7 @@ function KnowledgeCard({
   }, [tenantSlug, refreshKey]);
 
   async function deleteDoc(id: string) {
-    if (!confirm("ลบเอกสารนี้?")) return;
+    if (!confirm(t("confirmDelete"))) return;
     try {
       const res = await fetch(
         `/api/ai/knowledge-documents/${id}?tenantSlug=${tenantSlug}`,
@@ -225,7 +229,7 @@ function KnowledgeCard({
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Delete failed");
-      toast.success("ลบแล้ว", { duration: 1500 });
+      toast.success(t("deletedToast"), { duration: 1500 });
       setRefreshKey((k) => k + 1);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Delete failed");
@@ -239,16 +243,15 @@ function KnowledgeCard({
           <Sparkles className="size-5 text-violet-600" />
         </div>
         <div className="flex-1">
-          <h2 className="text-xl font-semibold tracking-tight">AI Knowledge</h2>
+          <h2 className="text-xl font-semibold tracking-tight">{t("heading")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Upload เอกสาร / paste text / ใส่ URL — AI จะใช้เป็น context
-            ตอนตอบคำถาม domain-specific
+            {t("subtitle")}
           </p>
         </div>
         {canEdit && (
           <Button size="sm" onClick={() => setUploadOpen(true)} className="gap-1.5">
             <Upload className="size-3.5" />
-            เพิ่มเอกสาร
+            {t("addBtn")}
           </Button>
         )}
       </header>
@@ -257,15 +260,14 @@ function KnowledgeCard({
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+            <span className="text-sm text-muted-foreground">{t("loading")}</span>
           </div>
         ) : docs.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
             <FileText className="size-6 text-muted-foreground" />
-            <p className="text-sm font-medium">ยังไม่มีเอกสาร</p>
+            <p className="text-sm font-medium">{t("empty.title")}</p>
             <p className="max-w-md text-xs text-muted-foreground">
-              Upload เอกสาร — ตัวอย่างเช่น brand guidelines, target audience research,
-              past campaign learnings, ad copy templates
+              {t("empty.subtitle")}
             </p>
           </div>
         ) : (
@@ -339,6 +341,7 @@ function UploadModal({
   onClose: () => void;
   onUploaded: () => void;
 }) {
+  const t = useTranslations("settings.ai.upload");
   const [mode, setMode] = useState<"text" | "pdf" | "url">("text");
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
@@ -348,12 +351,12 @@ function UploadModal({
 
   async function submit() {
     setSubmitting(true);
-    const toastId = toast.loading("กำลังประมวลผล + embed...");
+    const toastId = toast.loading(t("processing"));
     try {
       let res: Response;
       if (mode === "pdf") {
         if (!file) {
-          toast.error("เลือกไฟล์ PDF", { id: toastId });
+          toast.error(t("errors.selectPdf"), { id: toastId });
           setSubmitting(false);
           return;
         }
@@ -366,7 +369,7 @@ function UploadModal({
         });
       } else if (mode === "url") {
         if (!url.trim()) {
-          toast.error("ใส่ URL", { id: toastId });
+          toast.error(t("errors.enterUrl"), { id: toastId });
           setSubmitting(false);
           return;
         }
@@ -381,7 +384,7 @@ function UploadModal({
         });
       } else {
         if (!title.trim() || !text.trim()) {
-          toast.error("ใส่ title + text", { id: toastId });
+          toast.error(t("errors.titleAndText"), { id: toastId });
           setSubmitting(false);
           return;
         }
@@ -393,7 +396,7 @@ function UploadModal({
       }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      toast.success(`✓ เพิ่มเอกสาร "${data.document.title}" (${data.document.chunkCount} chunks)`, {
+      toast.success(t("successAdded", { title: data.document.title, chunks: data.document.chunkCount }), {
         id: toastId,
         duration: 3000,
       });
@@ -419,9 +422,9 @@ function UploadModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">เพิ่มเอกสาร Knowledge</h3>
+            <h3 className="text-base font-semibold">{t("title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              เอกสารที่ AI จะใช้ตอบ — แชร์ใน tenant ทั้งทีม
+              {t("subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -442,36 +445,36 @@ function UploadModal({
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {m === "text" ? "Paste Text" : m === "pdf" ? "Upload PDF" : "From URL"}
+              {t(`modes.${m}`)}
             </button>
           ))}
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ชื่อเอกสาร {mode === "pdf" && "(เว้นว่าง = ใช้ชื่อไฟล์)"}
+            {t("titleLabel")} {mode === "pdf" && t("titleLabelPdfHint")}
           </label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="เช่น Brand voice guidelines"
+            placeholder={t("titlePlaceholder")}
           />
         </div>
 
         {mode === "text" && (
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">
-              เนื้อหา
+              {t("text.label")}
             </label>
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={10}
               className="w-full rounded-md border border-border bg-background p-2 text-sm"
-              placeholder="วางเนื้อหาที่นี่..."
+              placeholder={t("text.placeholder")}
             />
             <p className="mt-1 text-[11px] text-muted-foreground">
-              {text.length.toLocaleString()} ตัวอักษร · ประมาณ {Math.ceil(text.length / 1000)} chunks
+              {t("text.summary", { chars: text.length.toLocaleString(), chunks: Math.ceil(text.length / 1000) })}
             </p>
           </div>
         )}
@@ -484,13 +487,13 @@ function UploadModal({
                   <FileText className="size-6 text-rose-600" />
                   <span className="text-sm font-medium">{file.name}</span>
                   <span className="text-[11px] text-muted-foreground">
-                    {(file.size / 1024).toFixed(1)} KB — กดเพื่อเปลี่ยน
+                    {t("pdf.changeHint", { size: (file.size / 1024).toFixed(1) })}
                   </span>
                 </>
               ) : (
                 <>
                   <Upload className="size-5 text-muted-foreground" />
-                  <span className="text-sm">เลือกไฟล์ PDF</span>
+                  <span className="text-sm">{t("pdf.choose")}</span>
                 </>
               )}
               <input
@@ -509,7 +512,7 @@ function UploadModal({
         {mode === "url" && (
           <div>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">
-              URL
+              {t("url.label")}
             </label>
             <Input
               type="url"
@@ -522,11 +525,11 @@ function UploadModal({
 
         <div className="flex justify-between gap-2 pt-1">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            ยกเลิก
+            {t("cancel")}
           </Button>
           <Button size="sm" onClick={submit} disabled={submitting}>
             {submitting && <Loader2 className="mr-1.5 size-3.5 animate-spin" />}
-            อัพโหลด
+            {t("submit")}
           </Button>
         </div>
       </div>

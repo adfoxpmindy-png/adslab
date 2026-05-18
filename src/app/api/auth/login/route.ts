@@ -1,18 +1,29 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/auth/password";
 import { getSession } from "@/lib/auth/session";
 import { DEFAULT_LOCALE, isLocale } from "@/i18n/locales";
 import { COOKIE_NAME as LOCALE_COOKIE } from "@/i18n/request";
-
-const loginSchema = z.object({
-  email: z.email("รูปแบบอีเมลไม่ถูกต้อง"),
-  password: z.string().min(1, "กรุณากรอกรหัสผ่าน"),
-});
+import { resolveActiveLocale } from "@/lib/i18n/server";
 
 export async function POST(request: NextRequest) {
+  // Pre-resolve translations using the active locale cookie so validation
+  // errors come back in the visitor's chosen language (login happens
+  // before the session is established, so resolveUserLocale isn't usable).
+  const activeLocale = await resolveActiveLocale();
+  const t = await getTranslations({
+    locale: activeLocale,
+    namespace: "api.auth.login",
+  });
+
+  const loginSchema = z.object({
+    email: z.email(t("invalidEmail")),
+    password: z.string().min(1, t("passwordRequired")),
+  });
+
   let body: unknown;
   try {
     body = await request.json();
@@ -28,7 +39,7 @@ export async function POST(request: NextRequest) {
       if (!fieldErrors[key]) fieldErrors[key] = issue.message;
     }
     return NextResponse.json(
-      { error: "ข้อมูลไม่ถูกต้อง", fieldErrors },
+      { error: t("invalidPayload"), fieldErrors },
       { status: 400 },
     );
   }
@@ -53,7 +64,7 @@ export async function POST(request: NextRequest) {
   });
 
   const genericError = NextResponse.json(
-    { error: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" },
+    { error: t("invalidCredentials") },
     { status: 401 },
   );
 

@@ -2,19 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowRight, Check, ChevronDown, X, Zap } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+type StepId = "meta" | "scope" | "naming" | "campaign";
+
 type Step = {
-  id: string;
-  label: string;
-  description: string;
+  id: StepId;
   done: boolean;
   href: string;
-  ctaLabel: string;
 };
 
 const DISMISS_KEY_PREFIX = "adslab:onboarding-dismissed:";
@@ -40,6 +39,7 @@ export function OnboardingChecklist({
   hasNamingTemplate: boolean;
   hasCampaign: boolean;
 }) {
+  const t = useTranslations("pages.dashboard.onboarding");
   const dismissKey = `${DISMISS_KEY_PREFIX}${tenantSlug}`;
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -50,35 +50,23 @@ export function OnboardingChecklist({
   const steps: Step[] = [
     {
       id: "meta",
-      label: "เชื่อมต่อ Meta Business Manager",
-      description: "OAuth กับ Facebook เพื่อให้ AdsLab อ่านข้อมูล + จัดการ ads",
       done: metaConnected,
       href: `/t/${tenantSlug}/settings/integrations?tab=integrations`,
-      ctaLabel: "เชื่อมเลย",
     },
     {
       id: "scope",
-      label: "เลือก ad accounts ที่ tenant นี้ดูแล",
-      description: "แทนที่จะดูทุก account ใน BM — เลือกเฉพาะที่เกี่ยวข้อง",
       done: scopeSet,
       href: `/t/${tenantSlug}/settings/integrations?tab=scope`,
-      ctaLabel: "ตั้ง Scope",
     },
     {
       id: "naming",
-      label: "กำหนด Naming Convention",
-      description: "AdsLab จะแนะนำชื่อตามมาตรฐานที่ตั้งไว้ + auto-pin เข้า scope",
       done: hasNamingTemplate,
       href: `/t/${tenantSlug}/settings/integrations?tab=naming`,
-      ctaLabel: "ตั้ง Template",
     },
     {
       id: "campaign",
-      label: "สร้าง Campaign แรก",
-      description: "ใช้ Campaign Builder — Smart Name Field + AI suggestions",
       done: hasCampaign,
       href: `/t/${tenantSlug}/campaigns/new`,
-      ctaLabel: "สร้าง Campaign",
     },
   ];
 
@@ -104,18 +92,17 @@ export function OnboardingChecklist({
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-medium">
-              เริ่มต้นใช้งาน AdsLab —{" "}
+              {t("headerTitle")} —{" "}
               <span className="tabular-nums text-primary">
-                {doneCount}/{total}
-              </span>{" "}
-              เสร็จแล้ว
+                {t("headerDone", { done: doneCount, total })}
+              </span>
             </p>
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setExpanded((v) => !v)}
                 className="rounded p-1 text-muted-foreground hover:bg-background hover:text-foreground"
-                title={expanded ? "ย่อ" : "ขยาย"}
+                title={expanded ? t("collapse") : t("expand")}
               >
                 <ChevronDown
                   className={cn(
@@ -128,14 +115,14 @@ export function OnboardingChecklist({
                 type="button"
                 onClick={dismiss}
                 className="rounded p-1 text-muted-foreground hover:bg-background hover:text-foreground"
-                title="ซ่อนตลอดไป"
+                title={t("dismiss")}
               >
                 <X className="size-4" />
               </button>
             </div>
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            ทำตามขั้นตอนข้างล่างเพื่อเริ่ม run แคมเปญแรกได้ใน ~5 นาที
+            {t("subtitle")}
           </p>
         </div>
       </div>
@@ -143,51 +130,60 @@ export function OnboardingChecklist({
       {expanded && (
         <ul className="space-y-1.5">
           {steps.map((step, idx) => (
-            <li
-              key={step.id}
-              className={cn(
-                "flex items-center gap-3 rounded-md border bg-background px-3 py-2",
-                step.done ? "border-emerald-200 dark:border-emerald-900/50" : "border-border",
-              )}
-            >
-              <div
-                className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-medium tabular-nums",
-                  step.done
-                    ? "bg-emerald-500 text-white"
-                    : "bg-muted text-muted-foreground",
-                )}
-              >
-                {step.done ? <Check className="size-3.5" strokeWidth={3} /> : idx + 1}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p
-                  className={cn(
-                    "truncate text-sm font-medium",
-                    step.done && "text-muted-foreground line-through",
-                  )}
-                >
-                  {step.label}
-                </p>
-                {!step.done && (
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {step.description}
-                  </p>
-                )}
-              </div>
-              {!step.done && (
-                <Link
-                  href={step.href}
-                  className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md bg-primary px-2.5 text-[11px] font-medium text-primary-foreground hover:bg-primary/90"
-                >
-                  {step.ctaLabel}
-                  <ArrowRight className="size-3" />
-                </Link>
-              )}
-            </li>
+            <StepRow key={step.id} step={step} idx={idx} />
           ))}
         </ul>
       )}
     </Card>
+  );
+}
+
+function StepRow({ step, idx }: { step: Step; idx: number }) {
+  const t = useTranslations("pages.dashboard.onboarding.steps");
+  const label = t(`${step.id}.label`);
+  const description = t(`${step.id}.description`);
+  const cta = t(`${step.id}.cta`);
+  return (
+    <li
+      className={cn(
+        "flex items-center gap-3 rounded-md border bg-background px-3 py-2",
+        step.done ? "border-emerald-200 dark:border-emerald-900/50" : "border-border",
+      )}
+    >
+      <div
+        className={cn(
+          "flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-medium tabular-nums",
+          step.done
+            ? "bg-emerald-500 text-white"
+            : "bg-muted text-muted-foreground",
+        )}
+      >
+        {step.done ? <Check className="size-3.5" strokeWidth={3} /> : idx + 1}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p
+          className={cn(
+            "truncate text-sm font-medium",
+            step.done && "text-muted-foreground line-through",
+          )}
+        >
+          {label}
+        </p>
+        {!step.done && (
+          <p className="truncate text-[11px] text-muted-foreground">
+            {description}
+          </p>
+        )}
+      </div>
+      {!step.done && (
+        <Link
+          href={step.href}
+          className="inline-flex h-7 shrink-0 items-center gap-1 rounded-md bg-primary px-2.5 text-[11px] font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          {cta}
+          <ArrowRight className="size-3" />
+        </Link>
+      )}
+    </li>
   );
 }

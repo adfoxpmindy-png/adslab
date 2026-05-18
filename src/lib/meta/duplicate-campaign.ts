@@ -1,3 +1,6 @@
+import { getTranslations } from "next-intl/server";
+
+import { FALLBACK_LOCALE, type Locale } from "@/i18n/locales";
 import { prisma } from "@/lib/prisma";
 import { getFreshAccessToken } from "./client";
 import { graphFetch } from "./graph-api";
@@ -6,6 +9,13 @@ import {
   isCboCampaign,
   thbToMinorUnits,
 } from "./campaign-actions";
+
+async function getDuplicateErrors(locale: Locale | undefined) {
+  return getTranslations({
+    locale: locale ?? FALLBACK_LOCALE,
+    namespace: "pages.campaigns.duplicateErrors",
+  });
+}
 
 /**
  * Stage 2 — Duplicate an existing Meta campaign with optional name +
@@ -46,6 +56,8 @@ export type DuplicateInput = {
   lifetimeBudgetMultiplier?: number;
   /** Initial status of the duplicate. PAUSED by default for safety. */
   initialStatus?: "PAUSED" | "ACTIVE";
+  /** User's preferred locale — used to translate user-facing error messages. */
+  locale?: Locale;
 };
 
 export type DuplicateResult =
@@ -82,6 +94,7 @@ type MetaCampaignDetail = {
 export async function duplicateCampaign(
   input: DuplicateInput,
 ): Promise<DuplicateResult> {
+  const t = await getDuplicateErrors(input.locale);
   // 1. Resolve source + verify ownership
   const source = await prisma.metaCampaign.findFirst({
     where: { id: input.sourceCampaignId, connection: { tenantId: input.tenantId } },
@@ -112,60 +125,56 @@ export async function duplicateCampaign(
 
   if (wantsBudgetOverride) {
     if (!isCboCampaign(source)) {
-      return await logFailure(
-        input,
-        source,
-        "Budget อยู่ที่ระดับ ad set (ABO) — ปรับ budget ตอน duplicate ไม่ได้",
-      );
+      return await logFailure(input, source, t("abo"));
     }
     const isDailyMode = source.dailyBudget !== null;
 
     if (input.dailyBudget !== undefined && input.dailyBudgetMultiplier !== undefined) {
-      return await logFailure(input, source, "ระบุได้แค่อย่างใดอย่างหนึ่ง: dailyBudget หรือ dailyBudgetMultiplier");
+      return await logFailure(input, source, t("dailyExclusive"));
     }
     if (input.lifetimeBudget !== undefined && input.lifetimeBudgetMultiplier !== undefined) {
-      return await logFailure(input, source, "ระบุได้แค่อย่างใดอย่างหนึ่ง: lifetimeBudget หรือ lifetimeBudgetMultiplier");
+      return await logFailure(input, source, t("lifetimeExclusive"));
     }
 
     if (isDailyMode) {
       if (input.lifetimeBudget !== undefined || input.lifetimeBudgetMultiplier !== undefined) {
-        return await logFailure(input, source, "Source ใช้ daily budget — ใช้ dailyBudget หรือ dailyBudgetMultiplier");
+        return await logFailure(input, source, t("sourceDailyMode"));
       }
       if (input.dailyBudget !== undefined) {
         resolvedDailyBudget = input.dailyBudget;
       } else if (input.dailyBudgetMultiplier !== undefined) {
         if (!Number.isFinite(input.dailyBudgetMultiplier) || input.dailyBudgetMultiplier <= 0 || input.dailyBudgetMultiplier > MAX_MULTIPLIER) {
-          return await logFailure(input, source, `Multiplier ต้องอยู่ระหว่าง 0 ถึง ${MAX_MULTIPLIER}`);
+          return await logFailure(input, source, t("multiplierRange", { max: MAX_MULTIPLIER }));
         }
         resolvedDailyBudget = ((source.dailyBudget as number) / 100) * input.dailyBudgetMultiplier;
       }
       if (resolvedDailyBudget !== undefined) {
         if (resolvedDailyBudget < MIN_BUDGET_THB) {
-          return await logFailure(input, source, `Budget ต่ำกว่าขั้นต่ำ ฿${MIN_BUDGET_THB}`);
+          return await logFailure(input, source, t("budgetBelowMin", { min: MIN_BUDGET_THB }));
         }
         if (resolvedDailyBudget > MAX_BUDGET_THB) {
-          return await logFailure(input, source, `Budget เกินเพดาน ฿${MAX_BUDGET_THB.toLocaleString()}`);
+          return await logFailure(input, source, t("budgetAboveMax", { max: MAX_BUDGET_THB.toLocaleString() }));
         }
       }
     } else {
       // lifetime mode
       if (input.dailyBudget !== undefined || input.dailyBudgetMultiplier !== undefined) {
-        return await logFailure(input, source, "Source ใช้ lifetime budget — ใช้ lifetimeBudget หรือ lifetimeBudgetMultiplier");
+        return await logFailure(input, source, t("sourceLifetimeMode"));
       }
       if (input.lifetimeBudget !== undefined) {
         resolvedLifetimeBudget = input.lifetimeBudget;
       } else if (input.lifetimeBudgetMultiplier !== undefined) {
         if (!Number.isFinite(input.lifetimeBudgetMultiplier) || input.lifetimeBudgetMultiplier <= 0 || input.lifetimeBudgetMultiplier > MAX_MULTIPLIER) {
-          return await logFailure(input, source, `Multiplier ต้องอยู่ระหว่าง 0 ถึง ${MAX_MULTIPLIER}`);
+          return await logFailure(input, source, t("multiplierRange", { max: MAX_MULTIPLIER }));
         }
         resolvedLifetimeBudget = ((source.lifetimeBudget as number) / 100) * input.lifetimeBudgetMultiplier;
       }
       if (resolvedLifetimeBudget !== undefined) {
         if (resolvedLifetimeBudget < MIN_BUDGET_THB) {
-          return await logFailure(input, source, `Budget ต่ำกว่าขั้นต่ำ ฿${MIN_BUDGET_THB}`);
+          return await logFailure(input, source, t("budgetBelowMin", { min: MIN_BUDGET_THB }));
         }
         if (resolvedLifetimeBudget > MAX_BUDGET_THB) {
-          return await logFailure(input, source, `Budget เกินเพดาน ฿${MAX_BUDGET_THB.toLocaleString()}`);
+          return await logFailure(input, source, t("budgetAboveMax", { max: MAX_BUDGET_THB.toLocaleString() }));
         }
       }
     }
@@ -187,7 +196,7 @@ export async function duplicateCampaign(
     },
   });
   if (!connection || connection.status !== "ACTIVE") {
-    return await logFailure(input, source, "Meta connection ไม่พร้อมใช้งาน");
+    return await logFailure(input, source, t("connectionNotReady"));
   }
   const accessToken = await getFreshAccessToken(connection);
 

@@ -10,6 +10,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Compass, Loader2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,16 @@ const EDGE_TYPES = {
 type Mode = "overview" | "drilldown";
 type Range = "today" | "yesterday" | "last_7d" | "last_30d";
 
+const LOCALE_MAP: Record<string, string> = {
+  th: "th-TH",
+  en: "en-US",
+  lo: "lo-LA",
+};
+
 export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
+  const t = useTranslations("common.journey");
+  const locale = useLocale();
+  const intlLocale = LOCALE_MAP[locale] ?? "en-US";
   const [graph, setGraph] = useState<JourneyGraph | null>(null);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<Mode>("overview");
@@ -51,6 +61,7 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
   // Load graph
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     const params = new URLSearchParams({ tenantSlug, mode, range });
     if (mode === "drilldown" && drillCampaignId) {
@@ -61,7 +72,7 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
       .then((d) => {
         if (cancelled) return;
         if (d.error) {
-          toast.error(typeof d.error === "string" ? d.error : "โหลด journey ไม่สำเร็จ");
+          toast.error(typeof d.error === "string" ? d.error : t("loadFailed"));
           setGraph(null);
         } else {
           setGraph(d.graph);
@@ -76,7 +87,7 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
     return () => {
       cancelled = true;
     };
-  }, [tenantSlug, mode, range, drillCampaignId]);
+  }, [tenantSlug, mode, range, drillCampaignId, t]);
 
   // Compose React Flow nodes/edges from the graph
   const { rfNodes, rfEdges, selectedNode } = useMemo(() => {
@@ -167,7 +178,7 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
             onChange={(e) => setDrillCampaignId(e.target.value || null)}
             className="h-8 rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="">-- เลือก campaign --</option>
+            <option value="">{t("selectCampaign")}</option>
             {campaignOptions.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.label}
@@ -181,10 +192,10 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
           onChange={(e) => setRange(e.target.value as Range)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="today">วันนี้</option>
-          <option value="yesterday">เมื่อวาน</option>
-          <option value="last_7d">7 วันล่าสุด</option>
-          <option value="last_30d">30 วันล่าสุด</option>
+          <option value="today">{t("rangeToday")}</option>
+          <option value="yesterday">{t("rangeYesterday")}</option>
+          <option value="last_7d">{t("range7d")}</option>
+          <option value="last_30d">{t("range30d")}</option>
         </select>
 
         {graph && (
@@ -193,8 +204,8 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
               {graph.nodes.length} nodes · {graph.edges.length} edges
             </span>
             <span className="text-muted-foreground">
-              Spend: <span className="font-semibold text-foreground">
-                ฿{Intl.NumberFormat("th-TH").format(Math.round(graph.totalSpendThb))}
+              {t("spend")}: <span className="font-semibold text-foreground">
+                ฿{Intl.NumberFormat(intlLocale).format(Math.round(graph.totalSpendThb))}
               </span>
             </span>
           </div>
@@ -206,18 +217,15 @@ export function JourneyCanvas({ tenantSlug }: { tenantSlug: string }) {
         {loading ? (
           <div className="flex h-full items-center justify-center gap-2">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">กำลังวาด journey...</span>
+            <span className="text-sm text-muted-foreground">{t("drawing")}</span>
           </div>
         ) : !graph || graph.nodes.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
             <Compass className="size-8 text-muted-foreground" />
-            <p className="text-sm font-medium">ยังไม่มี data ใน range / scope นี้</p>
-            <p className="max-w-md text-xs text-muted-foreground">
-              เลือก date range อื่น หรือลอง sync dashboard ก่อน — journey
-              ใช้ insights cache เดียวกับ Dashboard
-            </p>
+            <p className="text-sm font-medium">{t("emptyTitle")}</p>
+            <p className="max-w-md text-xs text-muted-foreground">{t("emptyHint")}</p>
             <Button size="sm" variant="outline" onClick={() => setRange("last_30d")}>
-              ลองดู 30d
+              {t("try30d")}
             </Button>
           </div>
         ) : (

@@ -17,7 +17,7 @@ export type MetricDeltaProps = {
   /** Flip colors so negative=good (use for cost metrics). Default: false */
   invertColors?: boolean;
   className?: string;
-  /** Optional comparison label e.g. "vs ช่วงก่อน" */
+  /** Optional comparison label e.g. "vs previous period" */
   comparison?: string;
 };
 

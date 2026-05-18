@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Target, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,6 +21,7 @@ const DISMISS_KEY_PREFIX = "adslab:scope-banner-dismissed:";
  * prompt rather than a permanent toggle.
  */
 export function ScopePromptBanner({ tenantSlug }: { tenantSlug: string }) {
+  const t = useTranslations("banners.scopePrompt");
   const key = `${DISMISS_KEY_PREFIX}${tenantSlug}`;
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -39,28 +41,22 @@ export function ScopePromptBanner({ tenantSlug }: { tenantSlug: string }) {
         <Target className="size-5 text-primary" />
       </div>
       <div className="flex-1 min-w-0 space-y-1">
-        <p className="text-sm font-medium">
-          ตั้งค่า Tenant Scope เพื่อโฟกัสเฉพาะ accounts/campaigns ที่ใช้
-        </p>
-        <p className="text-xs text-muted-foreground">
-          ตอนนี้ดูทุก ad account ของ Business Manager ที่เชื่อมไว้ —
-          ตั้ง scope ได้เพื่อให้ Dashboard, Reports, และ AI Report
-          วิเคราะห์เฉพาะ scope ที่กำหนด
-        </p>
+        <p className="text-sm font-medium">{t("title")}</p>
+        <p className="text-xs text-muted-foreground">{t("description")}</p>
       </div>
       <div className="flex shrink-0 items-center gap-1">
         <Link
           href={`/t/${tenantSlug}/settings/integrations`}
           className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
         >
-          ตั้งค่าตอนนี้
+          {t("setupNow")}
           <ArrowRight className="size-3.5" />
         </Link>
         <Button
           size="icon-sm"
           variant="ghost"
           onClick={dismiss}
-          title="ซ่อน"
+          title={t("hide")}
         >
           <X className="size-4" />
         </Button>

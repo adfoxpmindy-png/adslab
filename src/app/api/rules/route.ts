@@ -6,10 +6,12 @@
  */
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { maxActiveRulesForPlan } from "@/lib/billing/tier-rules";
 import type { PlanKey } from "@/lib/billing/plans";
 import {
@@ -95,11 +97,13 @@ export async function POST(request: Request) {
     const activeCount = await prisma.autoRule.count({
       where: { tenantId: tenant.id, enabled: true },
     });
+    const locale = await resolveUserLocale(session.userId);
+    const t = await getTranslations({ locale, namespace: "api.rules" });
     if (cap === 0) {
       return NextResponse.json(
         {
           error: "upgrade_required",
-          message: "Auto-rules ต้องการ plan แบบจ่ายเงินขั้นต่ำ Starter",
+          message: t("upgradeRequired"),
           currentTier: planKey ?? "trial",
           requiredTier: "starter",
         },
@@ -110,7 +114,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "rule_limit_reached",
-          message: `ถึง limit ${cap} rules ของ plan แล้ว — disabled หรือลบ rule เก่า หรือ upgrade plan`,
+          message: t("limitReached", { limit: cap }),
           limit: cap,
           currentTier: planKey,
         },

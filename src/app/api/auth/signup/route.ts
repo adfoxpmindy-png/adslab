@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
+import { getTranslations } from "next-intl/server";
 
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth/password";
@@ -8,15 +9,25 @@ import { getSession } from "@/lib/auth/session";
 import { resolveUniqueSlug } from "@/lib/utils/slug";
 import { sendEmail } from "@/lib/email/send";
 import { verifyEmailTemplate } from "@/lib/email/templates/verify-email";
-
-const signupSchema = z.object({
-  email: z.email("รูปแบบอีเมลไม่ถูกต้อง"),
-  password: z.string().min(8, "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร"),
-  name: z.string().min(2, "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร").max(64),
-  tenantName: z.string().min(2, "ชื่อ Agency ต้องมีอย่างน้อย 2 ตัวอักษร").max(64),
-});
+import { resolveActiveLocale, resolveUserLocale } from "@/lib/i18n/server";
 
 export async function POST(request: NextRequest) {
+  // Pre-resolve translations using the active locale cookie so validation
+  // errors come back in the visitor's chosen language (signup happens
+  // before a user record exists, so resolveUserLocale isn't available).
+  const activeLocale = await resolveActiveLocale();
+  const t = await getTranslations({
+    locale: activeLocale,
+    namespace: "api.auth.signup",
+  });
+
+  const signupSchema = z.object({
+    email: z.email(t("invalidEmail")),
+    password: z.string().min(8, t("passwordTooShort")),
+    name: z.string().min(2, t("nameTooShort")).max(64),
+    tenantName: z.string().min(2, t("tenantNameTooShort")).max(64),
+  });
+
   let body: unknown;
   try {
     body = await request.json();
@@ -32,7 +43,7 @@ export async function POST(request: NextRequest) {
       if (!fieldErrors[key]) fieldErrors[key] = issue.message;
     }
     return NextResponse.json(
-      { error: "ข้อมูลไม่ถูกต้อง", fieldErrors },
+      { error: t("invalidPayload"), fieldErrors },
       { status: 400 },
     );
   }
@@ -47,8 +58,8 @@ export async function POST(request: NextRequest) {
   if (existing) {
     return NextResponse.json(
       {
-        error: "อีเมลนี้ถูกใช้แล้ว",
-        fieldErrors: { email: "อีเมลนี้ถูกใช้แล้ว" },
+        error: t("emailTaken"),
+        fieldErrors: { email: t("emailTaken") },
       },
       { status: 409 },
     );
@@ -95,7 +106,8 @@ export async function POST(request: NextRequest) {
   // Send verification email — best effort, don't block signup.
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const verifyUrl = `${appUrl}/verify-email?token=${verificationToken}`;
-  const template = verifyEmailTemplate({ name, verifyUrl });
+  const locale = await resolveUserLocale(user.id);
+  const template = await verifyEmailTemplate({ name, verifyUrl, locale });
   const emailResult = await sendEmail({
     to: user.email,
     subject: template.subject,

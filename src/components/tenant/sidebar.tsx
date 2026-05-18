@@ -17,7 +17,7 @@ type SidebarProps = {
 
 /**
  * Top-level nav. Goals folded into Reports' detail surface and the
- * old "Insights (เร็วๆ นี้)" dead link removed. Event Log moved
+ * old "Insights (coming soon)" dead link removed. Event Log moved
  * under /audiences as its own tab to keep the top-level list to the
  * actions a daily user does: Dashboard, Reports, Campaigns, Audiences.
  */

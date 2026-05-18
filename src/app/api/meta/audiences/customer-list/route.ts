@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { getFreshAccessToken } from "@/lib/meta/client";
 import { graphFetch } from "@/lib/meta/graph-api";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 const bodySchema = z.object({
   metaAccountId: z.string().regex(/^act_/),
@@ -44,6 +46,8 @@ export async function POST(request: Request) {
 
   const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
+  const locale = await resolveUserLocale(session.userId);
+  const t = await getTranslations({ locale, namespace: "api.audiences" });
 
   const body = await request.json().catch(() => ({}));
   const parsed = bodySchema.safeParse(body);
@@ -55,7 +59,7 @@ export async function POST(request: Request) {
   const total = hashedEmails.length + hashedPhones.length;
   if (total < MIN_TOTAL) {
     return NextResponse.json(
-      { error: `ต้องมีอย่างน้อย ${MIN_TOTAL} แถว (Meta minimum). ตอนนี้มี ${total}` },
+      { error: t("minRowsRequired", { min: MIN_TOTAL, count: total }) },
       { status: 400 },
     );
   }
@@ -86,7 +90,7 @@ export async function POST(request: Request) {
   });
   if (!connection || connection.status !== "ACTIVE") {
     return NextResponse.json(
-      { error: "Meta connection ไม่พร้อมใช้งาน" },
+      { error: t("connectionNotReady") },
       { status: 502 },
     );
   }

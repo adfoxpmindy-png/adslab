@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { buildPageOAuthUrl, signPageOAuthState } from "@/lib/meta/page-oauth";
 
 /**
@@ -35,7 +37,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   if (tenant.members[0].role !== "OWNER") {
-    return NextResponse.json({ error: "เฉพาะ OWNER เชื่อมต่อ Page Management ได้" }, { status: 403 });
+    const locale = await resolveUserLocale(session.userId);
+    const t = await getTranslations({ locale, namespace: "api.meta.pageOauth" });
+    return NextResponse.json({ error: t("ownerOnly") }, { status: 403 });
   }
 
   const state = signPageOAuthState({ tenantId: tenant.id, userId: session.userId });

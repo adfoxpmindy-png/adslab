@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
+import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { uploadAdImage } from "@/lib/meta/images";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 /**
  * POST /api/creatives/{id}/meta-hash?tenantSlug=<slug>&metaAccountId=act_xxx
@@ -29,7 +31,9 @@ export async function POST(
   }
 
   const { id } = await params;
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
+  const locale = await resolveUserLocale(session.userId);
 
   const creative = await prisma.tenantCreative.findFirst({
     where: { id, tenantId: tenant.id, deletedAt: null },
@@ -80,6 +84,7 @@ export async function POST(
       tenantId: tenant.id,
       metaAccountId,
       file,
+      locale,
     });
     // Persist hash for next time.
     await prisma.tenantCreative.update({

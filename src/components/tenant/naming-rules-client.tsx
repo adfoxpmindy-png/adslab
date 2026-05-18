@@ -3,13 +3,14 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { objectiveLabelTh } from "@/lib/goals/meta-objective-map";
+import { objectiveLabel } from "@/lib/goals/meta-objective-map";
 
 type GoalObjective =
   | "AWARENESS"
@@ -51,6 +52,8 @@ export function NamingRulesClient({
   sampleCampaigns,
   canEdit,
 }: Props) {
+  const t = useTranslations("pages.naming.rules");
+  const tObj = useTranslations("pages.goals.objective");
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -79,11 +82,11 @@ export function NamingRulesClient({
   async function createRule(e: React.FormEvent) {
     e.preventDefault();
     if (!pattern.trim()) {
-      toast.error("กรอก pattern ก่อน");
+      toast.error(t("errors.enterPattern"));
       return;
     }
     setCreating(true);
-    const toastId = toast.loading("กำลังเพิ่มกฎ...");
+    const toastId = toast.loading(t("toasts.creating"));
     try {
       const res = await fetch(`/api/naming-rules?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -92,31 +95,31 @@ export function NamingRulesClient({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "เพิ่มไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : t("errors.createFail"));
       }
-      toast.success("✓ เพิ่มกฎแล้ว", { id: toastId });
+      toast.success(t("toasts.created"), { id: toastId });
       setPattern("");
       setPriority(0);
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "เพิ่มไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : t("errors.createFail"), { id: toastId });
     } finally {
       setCreating(false);
     }
   }
 
   async function deleteRule(id: string) {
-    if (!confirm("ลบกฎนี้?")) return;
-    const toastId = toast.loading("กำลังลบ...");
+    if (!confirm(t("toasts.confirmDelete"))) return;
+    const toastId = toast.loading(t("toasts.deleting"));
     try {
       const res = await fetch(`/api/naming-rules?tenantSlug=${tenantSlug}&id=${id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("ลบไม่สำเร็จ");
-      toast.success("✓ ลบแล้ว", { id: toastId });
+      if (!res.ok) throw new Error(t("errors.deleteFail"));
+      toast.success(t("toasts.deleted"), { id: toastId });
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ลบไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : t("errors.deleteFail"), { id: toastId });
     }
   }
 
@@ -132,7 +135,7 @@ export function NamingRulesClient({
       if (!res.ok) throw new Error();
       startTransition(() => router.refresh());
     } catch {
-      toast.error("ปรับลำดับไม่สำเร็จ");
+      toast.error(t("errors.priorityFail"));
     }
   }
 
@@ -142,22 +145,22 @@ export function NamingRulesClient({
       <div className="space-y-4 lg:col-span-2">
         {canEdit && (
           <Card className="px-4 py-4">
-            <h2 className="mb-3 text-sm font-semibold">เพิ่มกฎใหม่</h2>
+            <h2 className="mb-3 text-sm font-semibold">{t("form.heading")}</h2>
             <form onSubmit={createRule} className="space-y-3">
               <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                    Pattern (substring หรือ regex)
+                    {t("form.patternLabel")}
                   </label>
                   <Input
                     value={pattern}
                     onChange={(e) => setPattern(e.target.value)}
-                    placeholder={isRegex ? "^awareness_|^aw_" : "awareness"}
+                    placeholder={isRegex ? t("form.patternPlaceholderRegex") : t("form.patternPlaceholderText")}
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                    Objective
+                    {t("form.objectiveLabel")}
                   </label>
                   <select
                     value={objective}
@@ -166,14 +169,14 @@ export function NamingRulesClient({
                   >
                     {OBJECTIVES.map((o) => (
                       <option key={o} value={o}>
-                        {objectiveLabelTh(o)}
+                        {objectiveLabel(o, tObj)}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                    Priority
+                    {t("form.priorityLabel")}
                   </label>
                   <Input
                     type="number"
@@ -193,11 +196,11 @@ export function NamingRulesClient({
                     onChange={(e) => setIsRegex(e.target.checked)}
                     className="size-4"
                   />
-                  ใช้ regex
+                  {t("form.useRegex")}
                 </label>
                 <Button type="submit" disabled={creating} className="gap-2">
                   <Plus className="size-3.5" />
-                  เพิ่มกฎ
+                  {t("form.addBtn")}
                 </Button>
               </div>
             </form>
@@ -206,11 +209,11 @@ export function NamingRulesClient({
 
         <Card className="p-0">
           <div className="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground">
-            กฎที่ใช้อยู่ ({initialRules.length}) — เรียงตาม priority สูงไปต่ำ
+            {t("list.header", { count: initialRules.length })}
           </div>
           {initialRules.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              ยังไม่มีกฎ — เพิ่มกฎแรกข้างบน
+              {t("list.empty")}
             </div>
           ) : (
             <ul className="divide-y divide-border">
@@ -254,14 +257,14 @@ export function NamingRulesClient({
                     )}
                   </div>
                   <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    {objectiveLabelTh(r.objective)}
+                    {objectiveLabel(r.objective, tObj)}
                   </span>
                   {canEdit && (
                     <Button
                       size="icon-xs"
                       variant="ghost"
                       onClick={() => deleteRule(r.id)}
-                      title="ลบกฎ"
+                      title={t("list.deleteTooltip")}
                     >
                       <Trash2 className="size-3" />
                     </Button>
@@ -276,7 +279,7 @@ export function NamingRulesClient({
       {/* Right: live preview pane */}
       <Card className="h-fit p-0">
         <div className="border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground">
-          ตัวอย่างการแมตช์
+          {t("preview.heading")}
           {pattern && (
             <span className="ml-2 text-foreground">
               {previewMatches.length} / {sampleCampaigns.length}
@@ -285,11 +288,11 @@ export function NamingRulesClient({
         </div>
         {!pattern.trim() ? (
           <div className="py-8 px-4 text-center text-xs text-muted-foreground">
-            พิมพ์ pattern ด้านซ้าย → จะดู campaign ที่แมตช์ที่นี่
+            {t("preview.promptToType")}
           </div>
         ) : previewMatches.length === 0 ? (
           <div className="py-8 px-4 text-center text-xs text-muted-foreground">
-            ไม่มี campaign ใดใน 100 ตัวอย่างที่ตรงกับ pattern นี้
+            {t("preview.noMatch")}
           </div>
         ) : (
           <ul className="max-h-[420px] divide-y divide-border overflow-y-auto">
@@ -304,7 +307,7 @@ export function NamingRulesClient({
             ))}
             {previewMatches.length > 50 && (
               <li className="px-4 py-1.5 text-xs italic text-muted-foreground">
-                ... และอีก {previewMatches.length - 50}
+                {t("preview.andMore", { n: previewMatches.length - 50 })}
               </li>
             )}
           </ul>

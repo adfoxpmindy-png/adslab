@@ -39,15 +39,15 @@ export default async function AIOptimizePage({
             <div className="flex size-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
               <Sparkles className="size-5" />
             </div>
-            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
+            <p className="text-sm font-medium">{tPages("gate.title")}</p>
             <p className="max-w-sm text-xs text-muted-foreground">
-              AI Optimization Center ต้องการข้อมูลจริงจาก Meta เพื่อวิเคราะห์ + แนะนำการปรับปรุง
+              {tPages("gate.description")}
             </p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "gap-2")}
             >
-              ไปที่ Settings
+              {tPages("gate.cta")}
             </Link>
           </Card>
         </div>

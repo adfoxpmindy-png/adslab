@@ -9,14 +9,14 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
 
-import { DEFAULT_LOCALE, FALLBACK_LOCALE, isLocale, resolveLocaleFromString } from "./locales";
+import { DEFAULT_LOCALE, FALLBACK_LOCALE, isLocale, resolveLocaleFromString, type Locale } from "./locales";
 
 export const COOKIE_NAME = "adslab-locale";
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get(COOKIE_NAME)?.value;
-  let locale = isLocale(cookieLocale ?? "") ? cookieLocale! : null;
+  let locale: Locale | null = isLocale(cookieLocale ?? "") ? (cookieLocale as Locale) : null;
 
   if (!locale) {
     const headerStore = await headers();

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { LogOut, User as UserIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ type UserMenuProps = {
 
 export function UserMenu({ name, email }: UserMenuProps) {
   const router = useRouter();
+  const t = useTranslations("userMenu");
   const initial = name.trim().charAt(0).toUpperCase() || "?";
 
   async function handleLogout() {
@@ -37,7 +39,7 @@ export function UserMenu({ name, email }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-sm" aria-label="เมนูผู้ใช้" />
+          <Button variant="ghost" size="icon-sm" aria-label={t("ariaLabel")} />
         }
       >
         <Avatar className="size-7">
@@ -56,12 +58,12 @@ export function UserMenu({ name, email }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>
           <UserIcon className="size-4" />
-          โปรไฟล์ (เร็วๆ นี้)
+          {t("profileSoon")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={handleLogout}>
           <LogOut className="size-4" />
-          ออกจากระบบ
+          {t("logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

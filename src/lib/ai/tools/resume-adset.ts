@@ -21,7 +21,7 @@ export const resumeAdSetTool = defineTool({
     required: ["adSetId"],
     additionalProperties: false,
   },
-  summarize: (input) => `เปิด ad set ${input.adSetId}`,
+  summarize: (input) => `Resume ad set ${input.adSetId}`,
   async handler(input, ctx) {
     const result = await performAdSetAction({
       tenantId: ctx.tenantId,

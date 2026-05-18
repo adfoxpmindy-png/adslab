@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifySiteKey } from "@/lib/event-sdk/site-key";
 import { checkFeature } from "@/lib/billing/gate";
+import { DEFAULT_LOCALE } from "@/i18n/locales";
 
 /**
  * GET /api/event-sdk/config/[siteKey]
@@ -49,7 +50,9 @@ export async function GET(
   // Phase 9 gate: Event SDK is a paid add-on. If inactive, return an
   // empty rule set so the SDK loads gracefully on customer sites but
   // fires nothing. Logging this anywhere costly would be noisy — silent.
-  const gate = await checkFeature(decoded.tenantId, "event-sdk");
+  // Public endpoint (no user session) — use default locale for any
+  // localized hint; the hint is not surfaced in this response anyway.
+  const gate = await checkFeature(decoded.tenantId, "event-sdk", DEFAULT_LOCALE);
   if (!gate.ok) {
     return NextResponse.json(
       { pixelId: decoded.pixelId, rules: [] },

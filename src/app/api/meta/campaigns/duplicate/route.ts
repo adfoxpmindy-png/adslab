@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { duplicateCampaign } from "@/lib/meta/duplicate-campaign";
 
 const bodySchema = z
@@ -17,11 +18,11 @@ const bodySchema = z
   })
   .refine(
     (b) => !(b.dailyBudget !== undefined && b.dailyBudgetMultiplier !== undefined),
-    { message: "ระบุได้แค่ dailyBudget หรือ dailyBudgetMultiplier" },
+    { message: "Specify only dailyBudget or dailyBudgetMultiplier" },
   )
   .refine(
     (b) => !(b.lifetimeBudget !== undefined && b.lifetimeBudgetMultiplier !== undefined),
-    { message: "ระบุได้แค่ lifetimeBudget หรือ lifetimeBudgetMultiplier" },
+    { message: "Specify only lifetimeBudget or lifetimeBudgetMultiplier" },
   );
 
 /**
@@ -48,9 +49,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues }, { status: 400 });
   }
 
+  const locale = await resolveUserLocale(session.userId);
   const result = await duplicateCampaign({
     tenantId: tenant.id,
     userId: session.userId,
+    locale,
     ...parsed.data,
   });
 

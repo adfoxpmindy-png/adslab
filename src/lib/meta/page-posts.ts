@@ -10,10 +10,19 @@
  *   - single video  → /{PAGE_ID}/videos      with description + scheduled_publish_time
  */
 import { put, del } from "@vercel/blob";
+import { getTranslations } from "next-intl/server";
 
+import { type Locale, FALLBACK_LOCALE } from "@/i18n/locales";
 import { prisma } from "@/lib/prisma";
 import { graphFetch } from "./graph-api";
 import { getManagedPageAccessToken } from "./page-client";
+
+async function getServerErrors(locale: Locale | undefined) {
+  return getTranslations({
+    locale: locale ?? FALLBACK_LOCALE,
+    namespace: "pages.posts.serverErrors",
+  });
+}
 
 const GRAPH_VERSION = "v23.0";
 
@@ -28,6 +37,7 @@ const MAX_CAPTION_LENGTH = 5000;
 export type UploadMediaInput = {
   tenantId: string;
   file: File;
+  locale?: Locale;
 };
 
 export type UploadMediaResult =
@@ -35,15 +45,16 @@ export type UploadMediaResult =
   | { ok: false; error: string };
 
 export async function uploadMediaToBlob(input: UploadMediaInput): Promise<UploadMediaResult> {
-  const { tenantId, file } = input;
+  const { tenantId, file, locale } = input;
+  const t = await getServerErrors(locale);
   const isImage = ALLOWED_IMAGE.has(file.type);
   const isVideo = ALLOWED_VIDEO.has(file.type);
   if (!isImage && !isVideo) {
-    return { ok: false, error: `ประเภทไฟล์ไม่รองรับ: ${file.type}` };
+    return { ok: false, error: t("unsupportedFileType", { type: file.type }) };
   }
   const maxBytes = isImage ? MAX_IMAGE_BYTES : MAX_VIDEO_BYTES;
   if (file.size > maxBytes) {
-    return { ok: false, error: `ไฟล์ใหญ่เกิน ${maxBytes / 1024 / 1024}MB` };
+    return { ok: false, error: t("fileTooLarge", { maxMb: maxBytes / 1024 / 1024 }) };
   }
   const safeName = file.name.replace(/[^\w.-]+/g, "_");
   const pathname = `posts/${tenantId}/${Date.now()}-${safeName}`;
@@ -75,6 +86,7 @@ export type SchedulePostInput = {
   scheduledAt: Date;
   createdByUserId?: string | null;
   conversationId?: string | null;
+  locale?: Locale;
 };
 
 export type SchedulePostResult =
@@ -96,22 +108,23 @@ function detectKind(mediaUrls: string[]): "PHOTO" | "ALBUM" | "VIDEO" {
 }
 
 export async function schedulePagePost(input: SchedulePostInput): Promise<SchedulePostResult> {
+  const t = await getServerErrors(input.locale);
   // 1. Validate
   if (!input.caption || input.caption.length === 0) {
-    return { ok: false, error: "Caption ห้ามว่าง" };
+    return { ok: false, error: t("captionEmpty") };
   }
   if (input.caption.length > MAX_CAPTION_LENGTH) {
-    return { ok: false, error: `Caption ยาวเกิน ${MAX_CAPTION_LENGTH} ตัวอักษร` };
+    return { ok: false, error: t("captionTooLong", { max: MAX_CAPTION_LENGTH }) };
   }
   if (input.mediaUrls.length === 0) {
-    return { ok: false, error: "ต้องมีรูป/วิดีโออย่างน้อย 1 ชิ้น" };
+    return { ok: false, error: t("mediaRequired") };
   }
   const leadMs = input.scheduledAt.getTime() - Date.now();
   if (leadMs < MIN_LEAD_TIME_MS) {
-    return { ok: false, error: "เวลาที่ตั้งต้องห่างจากนี้อย่างน้อย 10 นาที" };
+    return { ok: false, error: t("scheduleTooSoon") };
   }
   if (leadMs > MAX_LEAD_TIME_MS) {
-    return { ok: false, error: "เวลาที่ตั้งต้องไม่เกิน 6 เดือนข้างหน้า" };
+    return { ok: false, error: t("scheduleTooFar") };
   }
 
   let postKind: "PHOTO" | "ALBUM" | "VIDEO";
@@ -132,7 +145,7 @@ export async function schedulePagePost(input: SchedulePostInput): Promise<Schedu
   if (!managedPage) {
     return {
       ok: false,
-      error: `Page ${input.metaPageId} ไม่ได้เชื่อมต่อกับ tenant นี้ (เชื่อม Page Management ก่อน)`,
+      error: t("pageNotConnected", { pageId: input.metaPageId }),
     };
   }
 
@@ -253,19 +266,21 @@ export async function listPagePosts(input: ListScheduledInput) {
 export type CancelInput = {
   tenantId: string;
   pagePostId: string;
+  locale?: Locale;
 };
 
 export async function cancelPagePost(input: CancelInput): Promise<{ ok: boolean; error?: string }> {
+  const t = await getServerErrors(input.locale);
   const post = await prisma.pagePost.findFirst({
     where: { id: input.pagePostId, tenantId: input.tenantId },
     select: { id: true, status: true, metaPostId: true, metaPageId: true },
   });
   if (!post) return { ok: false, error: "Post not found" };
   if (post.status !== "SCHEDULED") {
-    return { ok: false, error: `ไม่สามารถยกเลิกโพสต์สถานะ ${post.status}` };
+    return { ok: false, error: t("cannotCancelStatus", { status: post.status }) };
   }
   if (!post.metaPostId) {
-    return { ok: false, error: "ไม่มี Meta post id" };
+    return { ok: false, error: t("missingMetaPostId") };
   }
   const pageToken = await getManagedPageAccessToken(input.tenantId, post.metaPageId);
   try {

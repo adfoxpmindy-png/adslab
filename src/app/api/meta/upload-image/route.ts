@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { uploadAdImage } from "@/lib/meta/images";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 /**
  * POST /api/meta/upload-image?tenantSlug=<slug>&metaAccountId=act_xxx
@@ -23,8 +24,9 @@ export async function POST(request: Request) {
     );
   }
 
-  await requireSession();
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
+  const locale = await resolveUserLocale(session.userId);
 
   const form = await request.formData();
   const file = form.get("file");
@@ -37,6 +39,7 @@ export async function POST(request: Request) {
       tenantId: tenant.id,
       metaAccountId,
       file,
+      locale,
     });
     return NextResponse.json(result);
   } catch (err) {

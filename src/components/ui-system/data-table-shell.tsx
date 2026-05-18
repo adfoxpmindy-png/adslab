@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils";
  *   <DataTableShell>
  *     <DataTableHead>
  *       <DataTableHeadRow>
- *         <DataTableHeadCell>ชื่อ</DataTableHeadCell>
- *         <DataTableHeadCell>สถานะ</DataTableHeadCell>
+ *         <DataTableHeadCell>Name</DataTableHeadCell>
+ *         <DataTableHeadCell>Status</DataTableHeadCell>
  *       </DataTableHeadRow>
  *     </DataTableHead>
  *     <DataTableBody>

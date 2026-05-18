@@ -46,9 +46,9 @@ export const setAdSetBudgetTool = defineTool({
   },
   summarize: (input) => {
     if (input.dailyBudget !== undefined) {
-      return `ปรับ daily budget ของ ad set ${input.adSetId} เป็น ฿${input.dailyBudget.toLocaleString("th-TH")}`;
+      return `Set daily budget of ad set ${input.adSetId} to ฿${input.dailyBudget.toLocaleString("en-US")}`;
     }
-    return `ปรับ lifetime budget ของ ad set ${input.adSetId} เป็น ฿${input.lifetimeBudget!.toLocaleString("th-TH")}`;
+    return `Set lifetime budget of ad set ${input.adSetId} to ฿${input.lifetimeBudget!.toLocaleString("en-US")}`;
   },
   async handler(input, ctx) {
     const result = await performAdSetAction({

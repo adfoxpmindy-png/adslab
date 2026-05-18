@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export default async function NamingRulesPage({
 }) {
   const { tenantSlug } = await params;
   const { tenant, role } = await requireTenantMember(tenantSlug);
+  const t = await getTranslations("pages.naming.page");
 
   const [rules, sampleCampaigns, connection] = await Promise.all([
     prisma.namingConvention.findMany({
@@ -42,8 +44,8 @@ export default async function NamingRulesPage({
   return (
     <>
       <SetPageTitle
-        title="กฎการตั้งชื่อ Campaign"
-        subtitle={'ใช้คีย์เวิร์ดในชื่อ campaign (เช่น "awareness", "sale") เพื่อให้ระบบ auto-classify ออกเป็น objective ที่กำหนด — ทำงานก่อน Meta objective แต่หลัง manual override'}
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <Link
@@ -51,17 +53,17 @@ export default async function NamingRulesPage({
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
-          กลับไปหน้า Goals
+          {t("backToGoals")}
         </Link>
 
         {!isConnected ? (
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน</p>
+            <p className="text-sm font-medium">{t("needMetaConnection")}</p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "gap-2")}
             >
-              ไปที่ Settings
+              {t("goToSettings")}
             </Link>
           </Card>
         ) : (

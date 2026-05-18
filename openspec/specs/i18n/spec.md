@@ -78,3 +78,45 @@ The CI pipeline SHALL run a script after every PR that compares the key sets of 
 #### Scenario: Developer adds a Thai-only key
 - **WHEN** a developer commits a new key in `th.json` but forgets `en.json` / `lo.json`
 - **THEN** the CI step prints a yellow warning naming the key and the missing locales, but the build still passes (so urgent fixes are unblocked)
+
+### Requirement: Locale-aware date/time picker (no native HTML inputs)
+The system SHALL use a custom `<DatePicker>` component at `src/components/ui/date-picker.tsx` for every date / datetime / time input in user-facing forms. Native `<input type="date">` and `<input type="datetime-local">` MUST NOT appear in JSX because the browser default UI is inconsistent across OSes and unrelated to the app's active locale.
+
+The picker reads `common.datePicker.{months,weekdays,yearOffset}` from the active locale's dictionary. `yearOffset` is `543` for Thai (Buddhist Era) and `0` for English / Lao (Gregorian).
+
+#### Scenario: Thai user picks May 17, 2026
+- **WHEN** a Thai user opens the campaign end-date picker
+- **THEN** the displayed year is `2569` (BE), the months read "ม.ค." / "ก.พ." / etc., and the weekday row shows Thai abbreviations
+
+#### Scenario: English user picks the same calendar date
+- **WHEN** an English user opens the same picker and selects May 17, 2026
+- **THEN** the displayed year is `2026` (Gregorian) and the ISO value returned to the form (`"2026-05-17"`) matches what the Thai user produces for the same calendar day
+
+### Requirement: Verification matrix before declaring i18n-touching work "done"
+Any task touching i18n (migration, refactor, new feature) MUST pass ALL of these checks before the implementer claims completion. Single-dimension verification has historically (5 rounds on 2026-05-18) missed real bugs.
+
+1. `grep -rn "[ก-๛]" src --include="*.ts" --include="*.tsx"` returns only `฿` and the documented intentional skip files (locale self-names, AI prompt directives, sentence-split regex)
+2. `grep -rnE 'toLocaleString\("th-TH"\)|toLocaleDateString\("th-TH"|Intl\.NumberFormat\("th-TH"|Intl\.DateTimeFormat\("th-TH"' src` returns 0
+3. `grep -rn 'type="date"\|type="datetime-local"' src` returns 0 in JSX
+4. `python scripts/audit-missing-keys-v3.py` returns 0 missing keys + 0 TH/EN/LO drift
+5. `python scripts/audit-emojis.py` returns 0 for src + 0 for each locale JSON
+6. `npx tsc --noEmit` clean
+7. `npm run build` succeeds
+
+Check #4 is the only one that catches `MISSING_MESSAGE` runtime crashes from `t("nonexistent.key")`. `tsc` and `build` do NOT detect missing translation keys.
+
+#### Scenario: PR claims i18n feature is complete
+- **WHEN** an engineer claims an i18n-touching feature is ready for review
+- **THEN** the PR description must include green output for all 7 checks; partial completion is described honestly as "X/7 checks pass, Y deferred because Z"
+
+### Requirement: No decorative emojis in UI / translations / AI prompts
+UI text, translation values, and AI system prompts MUST NOT contain decorative emojis. Use lucide-react icon components for visual cues. Exceptions:
+- `฿` (Baht currency sign for THB display)
+- Locale self-names (`ไทย`, `English`, `ລາວ (beta)`)
+- Regex literals that match Thai/Lao text characters
+
+Decorative emojis in AI system prompts also bias the model to mirror them in output — strip at the source.
+
+#### Scenario: Engineer writes a success toast
+- **WHEN** an engineer writes `toast.success("✓ Saved")` in code or `"saved": "✅ Saved"` in a translation file
+- **THEN** code review rejects it — use `toast.success(t("saved"))` with translation value `"Saved"` (no glyph) and rely on the toast library's built-in icon

@@ -88,7 +88,11 @@ export default async function DashboardPage({
               hasCampaign={campaignCount > 0}
             />
           )}
-          <ConnectMetaCta tenantSlug={tenantSlug} />
+          <ConnectMetaCta
+            tenantSlug={tenantSlug}
+            title={tPages("connectMetaCtaTitle")}
+            description={tPages("connectMetaCtaDescription")}
+          />
         </div>
       </>
     );
@@ -119,18 +123,23 @@ export default async function DashboardPage({
   );
 }
 
-function ConnectMetaCta({ tenantSlug }: { tenantSlug: string }) {
+function ConnectMetaCta({
+  tenantSlug,
+  title,
+  description,
+}: {
+  tenantSlug: string;
+  title: string;
+  description: string;
+}) {
   return (
     <Card className="flex flex-col items-center justify-center gap-4 py-16 text-center">
       <div className="flex size-14 items-center justify-center rounded-full bg-[#1877F2]/10">
         <MetaIcon className="size-7 text-[#1877F2]" />
       </div>
       <div className="max-w-md space-y-2">
-        <h2 className="text-xl font-semibold tracking-tight">เชื่อม Meta เพื่อเริ่มใช้งาน</h2>
-        <p className="text-sm text-muted-foreground">
-          เชื่อมต่อ Facebook Business Manager ของคุณกับ AdsLab เพื่อให้ AI วิเคราะห์
-          และ optimize แคมเปญของคุณได้ทุกวัน
-        </p>
+        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       <Link
         href={`/t/${tenantSlug}/settings/integrations`}

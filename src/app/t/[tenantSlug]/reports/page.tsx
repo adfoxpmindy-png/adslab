@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -9,12 +10,6 @@ import { cn } from "@/lib/utils";
 import { ReportsClient } from "@/components/tenant/reports-client";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope, applyScopeFilter } from "@/lib/tenant-scope";
-
-const STATUS_LABEL: Record<string, { label: string; tone: string }> = {
-  COMPLETED: { label: "เสร็จแล้ว", tone: "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300" },
-  GENERATING: { label: "กำลังสร้าง...", tone: "text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300" },
-  FAILED: { label: "ล้มเหลว", tone: "text-destructive bg-destructive/10" },
-};
 
 export default async function ReportsListPage({
   params,
@@ -29,6 +24,13 @@ export default async function ReportsListPage({
   const { tenant, role } = await requireTenantMember(tenantSlug);
   const scope = await getEffectiveScope(session.userId, tenant.id);
   const scopeFilter = applyScopeFilter(scope);
+  const t = await getTranslations("pages.reports.page");
+
+  const STATUS_LABEL: Record<string, { label: string; tone: string }> = {
+    COMPLETED: { label: t("statusCompleted"), tone: "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300" },
+    GENERATING: { label: t("statusGenerating"), tone: "text-amber-700 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300" },
+    FAILED: { label: t("statusFailed"), tone: "text-destructive bg-destructive/10" },
+  };
 
   const connection = await prisma.metaConnection.findUnique({
     where: { tenantId: tenant.id },
@@ -38,7 +40,7 @@ export default async function ReportsListPage({
   const isConnected = connection !== null && connection.status === "ACTIVE";
 
   // Load: list of scopes + reports for the selected scope (or all-tenant
-  // by default). The "ทั้งหมด" view filters to scopeId IS NULL so the
+  // by default). The "All" view filters to scopeId IS NULL so the
   // cron-generated reports are visible.
   const [scopes, accounts, campaigns, reports] = await Promise.all([
     prisma.reportScope.findMany({
@@ -101,18 +103,18 @@ export default async function ReportsListPage({
   return (
     <>
       <SetPageTitle
-        title="รายงานประจำวัน"
-        subtitle={'ฉบับ "ทั้งหมด" สร้างอัตโนมัติทุกเช้า 9 โมง — รายงาน scope กดเองตามต้องการ'}
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         {!isConnected ? (
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน AI Reports</p>
+          <p className="text-sm font-medium">{t("needMetaConnection")}</p>
           <Link
             href={`/t/${tenantSlug}/settings/integrations`}
             className={cn(buttonVariants({ size: "sm" }), "gap-2")}
           >
-            ไปที่ Settings
+            {t("goToSettings")}
           </Link>
         </Card>
       ) : (

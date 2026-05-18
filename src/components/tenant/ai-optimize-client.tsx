@@ -15,6 +15,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -30,6 +31,7 @@ import {
   KpiCard,
   StatusBadge,
 } from "@/components/ui-system";
+import { formatCurrency } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import type { OptimizationRecommendation, OptimizationSummary, Severity } from "@/lib/ai/optimization-engine";
 
@@ -42,6 +44,8 @@ type Props = {
 type Tab = "all" | "high" | "medium" | "low";
 
 export function AIOptimizeClient({ tenantSlug, recommendations, summary }: Props) {
+  const tPages = useTranslations("pages.aiOptimize");
+  const locale = useLocale();
   const [tab, setTab] = useState<Tab>("all");
   const [selectedId, setSelectedId] = useState<string | null>(
     recommendations.find((r) => r.severity === "high")?.id ?? recommendations[0]?.id ?? null,
@@ -76,25 +80,25 @@ export function AIOptimizeClient({ tenantSlug, recommendations, summary }: Props
       {/* KPI summary */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard
-          label="โอกาสในการปรับปรุง"
+          label={tPages("kpi.opportunities")}
           value={summary.totalCount.toString()}
           icon={Sparkles}
           tint="brand"
         />
         <KpiCard
-          label="คาดการณ์ ROAS เพิ่มขึ้น"
+          label={tPages("kpi.roasUplift")}
           value={`+${summary.predictedRoasUpliftPct.toFixed(1)}%`}
           icon={TrendingUp}
           tint="emerald"
         />
         <KpiCard
-          label="ประหยัดงบประมาณได้"
-          value={formatThb(summary.potentialMonthlySavingsThb)}
+          label={tPages("kpi.savings")}
+          value={formatThb(summary.potentialMonthlySavingsThb, locale)}
           icon={PiggyBank}
           tint="amber"
         />
         <KpiCard
-          label="แคมเปญที่ได้รับผลกระทบ"
+          label={tPages("kpi.affectedCampaigns")}
           value={summary.affectedCampaignCount.toString()}
           icon={Layers}
           tint="sky"
@@ -104,8 +108,8 @@ export function AIOptimizeClient({ tenantSlug, recommendations, summary }: Props
       {isEmpty ? (
         <EmptyState
           icon={Sparkles}
-          title="แคมเปญของคุณทำงานได้ดีอยู่แล้ว"
-          description="ตอนนี้ AI ยังไม่พบจุดที่ต้องปรับปรุง — ลองมาเช็คใหม่อีกครั้งใน 24 ชั่วโมง หรือเพิ่มงบให้แคมเปญที่ทำได้ดีเพื่อ scale"
+          title={tPages("empty.title")}
+          description={tPages("empty.description")}
         />
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
@@ -125,7 +129,7 @@ export function AIOptimizeClient({ tenantSlug, recommendations, summary }: Props
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >
-                    {labelForTab(t)} ({counts[t]})
+                    {tPages(`tab.${t}`)} ({counts[t]})
                   </button>
                 ))}
               </div>
@@ -134,7 +138,7 @@ export function AIOptimizeClient({ tenantSlug, recommendations, summary }: Props
                 className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent"
               >
                 <RefreshCw className="size-3.5" />
-                รีเฟรชข้อมูล
+                {tPages("refreshData")}
               </button>
             </div>
 
@@ -146,7 +150,7 @@ export function AIOptimizeClient({ tenantSlug, recommendations, summary }: Props
           </div>
 
           {/* Right: Detail panel */}
-          <DetailPanel rec={selected} />
+          <DetailPanel rec={selected} locale={locale} />
         </div>
       )}
     </div>
@@ -166,12 +170,13 @@ function RecommendationsTable({
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const tPages = useTranslations("pages.aiOptimize");
   if (rows.length === 0) {
     return (
       <EmptyState
         icon={Lightbulb}
-        title="ไม่มีคำแนะนำในระดับนี้"
-        description="ลองดูที่ tab อื่น หรือกดรีเฟรชเพื่อให้ AI วิเคราะห์ใหม่"
+        title={tPages("emptyTab.title")}
+        description={tPages("emptyTab.description")}
       />
     );
   }
@@ -180,12 +185,12 @@ function RecommendationsTable({
     <DataTableShell>
       <DataTableHead>
         <DataTableHeadRow>
-          <DataTableHeadCell>คำแนะนำ</DataTableHeadCell>
-          <DataTableHeadCell>แคมเปญ/ชุดโฆษณา</DataTableHeadCell>
-          <DataTableHeadCell>เหตุผล</DataTableHeadCell>
-          <DataTableHeadCell>ผลลัพธ์ที่คาดว่าจะได้รับ</DataTableHeadCell>
-          <DataTableHeadCell>ความสำคัญ</DataTableHeadCell>
-          <DataTableHeadCell className="text-right">การดำเนินการ</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.action")}</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.target")}</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.reason")}</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.predicted")}</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.severity")}</DataTableHeadCell>
+          <DataTableHeadCell className="text-right">{tPages("table.actions")}</DataTableHeadCell>
         </DataTableHeadRow>
       </DataTableHead>
       <DataTableBody>
@@ -244,11 +249,11 @@ function RecommendationsTable({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toast.success("ใช้คำแนะนำแล้ว (demo — ยังไม่ apply จริง)");
+                      toast.success(tPages("applySuccess"));
                     }}
                     className="rounded-lg bg-brand-gradient px-2.5 py-1 text-[11px] font-medium text-white shadow-card transition-all hover:-translate-y-0.5"
                   >
-                    ใช้คำแนะนำ
+                    {tPages("applyBtn")}
                   </button>
                   <button
                     type="button"
@@ -271,11 +276,12 @@ function RecommendationsTable({
 // Right detail panel
 // =============================================================================
 
-function DetailPanel({ rec }: { rec: OptimizationRecommendation | null }) {
+function DetailPanel({ rec, locale }: { rec: OptimizationRecommendation | null; locale: string }) {
+  const tPages = useTranslations("pages.aiOptimize");
   if (!rec) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
-        เลือกคำแนะนำในตารางเพื่อดูรายละเอียด
+        {tPages("panel.selectHint")}
       </div>
     );
   }
@@ -284,7 +290,7 @@ function DetailPanel({ rec }: { rec: OptimizationRecommendation | null }) {
     <aside className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card">
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          คำแนะนำสำหรับคุณ
+          {tPages("panel.aiLabel")}
         </p>
         <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
           <Sparkles className="size-3" />
@@ -295,12 +301,13 @@ function DetailPanel({ rec }: { rec: OptimizationRecommendation | null }) {
       <div>
         <h3 className="text-lg font-bold tracking-tight">{rec.title}</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          ใน {rec.subtitle} ของแคมเปญ <span className="text-foreground">{rec.campaignName}</span>
+          {tPages("panel.context", { subtitle: rec.subtitle })}{" "}
+          <span className="text-foreground">{rec.campaignName}</span>
         </p>
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold">เหตุผล</p>
+        <p className="mb-2 text-xs font-semibold">{tPages("panel.reasons")}</p>
         <ul className="space-y-2 rounded-lg border border-border bg-muted/30 p-3">
           {rec.reasons.map((reason, i) => (
             <li key={i} className="flex items-baseline gap-2 text-xs text-foreground/80">
@@ -312,16 +319,16 @@ function DetailPanel({ rec }: { rec: OptimizationRecommendation | null }) {
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold">ประสิทธิภาพปัจจุบัน</p>
+        <p className="mb-2 text-xs font-semibold">{tPages("panel.current")}</p>
         <dl className="grid grid-cols-3 gap-3 rounded-lg border border-border bg-muted/30 p-3 text-xs">
           <Stat label="ROAS" value={rec.currentMetrics.roas > 0 ? `${rec.currentMetrics.roas.toFixed(2)}x` : "—"} />
           <Stat label="CTR" value={`${rec.currentMetrics.ctr.toFixed(2)}%`} />
-          <Stat label="Spend" value={formatThb(rec.currentMetrics.spend)} />
+          <Stat label="Spend" value={formatThb(rec.currentMetrics.spend, locale)} />
         </dl>
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold">ผลลัพธ์ที่คาดว่าจะได้รับ</p>
+        <p className="mb-2 text-xs font-semibold">{tPages("panel.predicted")}</p>
         <div className={cn("rounded-lg border p-3 text-sm font-semibold", "border-success/30 bg-success/10 text-success")}>
           <CircleDollarSign className="mb-1 size-4" />
           {rec.predictedImpact}
@@ -330,10 +337,10 @@ function DetailPanel({ rec }: { rec: OptimizationRecommendation | null }) {
 
       <button
         type="button"
-        onClick={() => toast.success("ใช้คำแนะนำแล้ว (demo)")}
+        onClick={() => toast.success(tPages("applySuccessShort"))}
         className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-gradient py-3 text-sm font-semibold text-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
       >
-        ใช้คำแนะนำนี้
+        {tPages("panel.applyBtn")}
       </button>
     </aside>
   );
@@ -353,9 +360,10 @@ function Stat({ label, value }: { label: string; value: string }) {
 // =============================================================================
 
 function SeverityBadge({ severity }: { severity: Severity }) {
-  if (severity === "high") return <StatusBadge variant="destructive">สูง</StatusBadge>;
-  if (severity === "medium") return <StatusBadge variant="warning">กลาง</StatusBadge>;
-  return <StatusBadge variant="info">ต่ำ</StatusBadge>;
+  const tPages = useTranslations("pages.aiOptimize");
+  if (severity === "high") return <StatusBadge variant="destructive">{tPages("severity.high")}</StatusBadge>;
+  if (severity === "medium") return <StatusBadge variant="warning">{tPages("severity.medium")}</StatusBadge>;
+  return <StatusBadge variant="info">{tPages("severity.low")}</StatusBadge>;
 }
 
 function actionIcon(kind: OptimizationRecommendation["actionKind"]) {
@@ -401,23 +409,10 @@ function impactColor(kind: OptimizationRecommendation["actionKind"]): string {
   }
 }
 
-function labelForTab(t: Tab): string {
-  if (t === "all") return "ทั้งหมด";
-  if (t === "high") return "ความสำคัญสูง";
-  if (t === "medium") return "ความสำคัญกลาง";
-  return "ความสำคัญต่ำ";
-}
-
 function truncate(s: string, n: number): string {
   return s.length > n ? `${s.slice(0, n - 1)}…` : s;
 }
 
-const thbFormatter = new Intl.NumberFormat("th-TH", {
-  style: "currency",
-  currency: "THB",
-  maximumFractionDigits: 0,
-});
-
-function formatThb(value: number): string {
-  return thbFormatter.format(Math.round(value));
+function formatThb(value: number, locale: string): string {
+  return formatCurrency(Math.round(value), locale);
 }

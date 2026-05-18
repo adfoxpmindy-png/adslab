@@ -6,6 +6,7 @@ import { verifySiteKey } from "@/lib/event-sdk/site-key";
 import { getFreshAccessToken } from "@/lib/meta/client";
 import { graphFetch } from "@/lib/meta/graph-api";
 import { checkFeature } from "@/lib/billing/gate";
+import { DEFAULT_LOCALE } from "@/i18n/locales";
 
 /**
  * POST /api/event-sdk/capi
@@ -75,7 +76,9 @@ export async function POST(request: Request) {
   // silently — SDK is fire-and-forget so we don't want to break customer
   // sites. The browser pixel still doesn't fire (config endpoint already
   // returns empty rules) — this is purely a server-side safety net.
-  const gate = await checkFeature(decoded.tenantId, "event-sdk");
+  // Public endpoint (no user session) — use default locale for any
+  // localized hint; response is 204 anyway so the hint is discarded.
+  const gate = await checkFeature(decoded.tenantId, "event-sdk", DEFAULT_LOCALE);
   if (!gate.ok) {
     return new Response(null, { status: 204, headers: cors() });
   }

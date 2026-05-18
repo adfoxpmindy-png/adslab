@@ -54,7 +54,7 @@ export async function performAdAction(
     },
   });
   if (!ad) {
-    return { ok: false, error: `Ad ${input.adId} ไม่พบใน tenant นี้` };
+    return { ok: false, error: `Ad ${input.adId} not found in this tenant` };
   }
 
   const afterStatus = input.action.type === "PAUSE" ? "PAUSED" : "ACTIVE";

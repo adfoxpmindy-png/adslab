@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 import { requireSession } from "@/lib/auth/session";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { schedulePagePost } from "@/lib/meta/page-posts";
 
@@ -46,8 +48,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   const role = tenant.members[0].role;
+  const locale = await resolveUserLocale(session.userId);
   if (role !== "OWNER" && role !== "MEDIA_BUYER") {
-    return NextResponse.json({ error: "ไม่มีสิทธิ์" }, { status: 403 });
+    const t = await getTranslations({ locale, namespace: "api.common" });
+    return NextResponse.json({ error: t("forbidden") }, { status: 403 });
   }
 
   const result = await schedulePagePost({
@@ -57,6 +61,7 @@ export async function POST(request: Request) {
     mediaUrls: body.mediaUrls,
     scheduledAt: new Date(body.scheduledAt),
     createdByUserId: session.userId,
+    locale,
   });
   if (!result.ok) {
     return NextResponse.json({ error: result.error, pagePostId: result.pagePostId }, { status: 400 });

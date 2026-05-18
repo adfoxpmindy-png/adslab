@@ -1,6 +1,9 @@
-import Link from "next/link";
+"use client";
 
-import { COMPANY, entityLabelTh, hasDisplayableTaxId } from "@/lib/company";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+
+import { COMPANY, hasDisplayableTaxId } from "@/lib/company";
 
 /**
  * Site-wide footer with company legal info, contact details, and
@@ -13,38 +16,54 @@ import { COMPANY, entityLabelTh, hasDisplayableTaxId } from "@/lib/company";
  *   - tax ID is displayed
  *   - contact info is reachable
  *   - links to refund/privacy/terms are present from every page
+ *
+ * Client component so it can render inside both server pages (landing,
+ * privacy, terms) and client pages (login, signup). Translations are
+ * resolved via the NextIntlClientProvider that wraps the app.
  */
 export function SiteFooter() {
+  const t = useTranslations("siteFooter");
+  const tCompany = useTranslations("company");
+
+  const entityLabel =
+    COMPANY.entityType === "JURISTIC"
+      ? tCompany("entityLabel.juristic")
+      : tCompany("entityLabel.individual");
+  const taxIdLabel =
+    COMPANY.entityType === "JURISTIC"
+      ? t("taxIdLabel.juristic")
+      : t("taxIdLabel.individual");
+  const legalName = tCompany("legalName");
+  const address = tCompany("address");
+
   return (
     <footer className="border-t border-border bg-muted/30">
       <div className="mx-auto max-w-6xl px-6 py-8">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{entityLabelTh()}</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{entityLabel}</p>
             <p className="mt-1 font-semibold text-foreground">
-              {COMPANY.showLegalNamePublicly ? COMPANY.legalNameTh : COMPANY.brandName}
+              {COMPANY.showLegalNamePublicly ? legalName : COMPANY.brandName}
             </p>
             <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
               {hasDisplayableTaxId() && (
                 <div>
-                  <dt className="inline">
-                    {COMPANY.entityType === "JURISTIC" ? "เลขผู้เสียภาษี" : "เลขประจำตัวประชาชน"}:{" "}
-                  </dt>
+                  <dt className="inline">{taxIdLabel}: </dt>
                   <dd className="inline">{COMPANY.taxId}</dd>
                 </div>
               )}
               <div>
-                <dt className="inline">ที่อยู่: </dt>
-                <dd className="inline">{COMPANY.addressTh}</dd>
+                <dt className="inline">{t("addressLabel")}: </dt>
+                <dd className="inline">{address}</dd>
               </div>
             </dl>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">ติดต่อ</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("contactHeading")}</p>
             <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
               <div>
-                <dt className="inline">Email: </dt>
+                <dt className="inline">{t("emailLabel")}: </dt>
                 <dd className="inline">
                   <a href={`mailto:${COMPANY.supportEmail}`} className="text-cyan-600 hover:underline">
                     {COMPANY.supportEmail}
@@ -52,33 +71,33 @@ export function SiteFooter() {
                 </dd>
               </div>
               <div>
-                <dt className="inline">โทร: </dt>
+                <dt className="inline">{t("phoneLabel")}: </dt>
                 <dd className="inline">{COMPANY.contactPhone}</dd>
               </div>
             </dl>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">นโยบาย</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("policyHeading")}</p>
             <ul className="mt-3 space-y-1 text-xs">
               <li>
                 <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
-                  นโยบายความเป็นส่วนตัว (Privacy Policy)
+                  {t("links.privacy")}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-muted-foreground hover:text-foreground">
-                  ข้อกำหนดการใช้บริการ (Terms of Service)
+                  {t("links.terms")}
                 </Link>
               </li>
               <li>
                 <Link href="/refund-policy" className="text-muted-foreground hover:text-foreground">
-                  นโยบายการคืนเงิน (Refund Policy)
+                  {t("links.refund")}
                 </Link>
               </li>
               <li>
                 <Link href="/data-deletion" className="text-muted-foreground hover:text-foreground">
-                  การลบข้อมูล (Data Deletion)
+                  {t("links.dataDeletion")}
                 </Link>
               </li>
             </ul>
@@ -86,7 +105,7 @@ export function SiteFooter() {
         </div>
 
         <p className="mt-8 text-center text-[11px] text-muted-foreground">
-          © {new Date().getFullYear()} {COMPANY.brandName}. ระบบชำระเงินผ่าน Omise (PCI DSS Level 1).
+          {t("copyright", { year: new Date().getFullYear(), brand: COMPANY.brandName })}
         </p>
       </div>
     </footer>

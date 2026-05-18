@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { CompetitorSpyClient } from "@/components/tenant/competitor-spy-client";
@@ -9,6 +11,7 @@ export default async function CompetitorsPage({
 }) {
   const { tenantSlug } = await params;
   await requireTenantMember(tenantSlug);
+  const t = await getTranslations("pages.competitorSpy");
 
   // Mock data — until we wire Meta Ad Library + TikTok Creative Center
   // pollers. The UI is the same shape that those will populate.
@@ -17,10 +20,7 @@ export default async function CompetitorsPage({
 
   return (
     <>
-      <SetPageTitle
-        title="Competitor Ads Spy"
-        subtitle="ติดตามและวิเคราะห์โฆษณาคู่แข่งในอุตสาหกรรมของคุณ"
-      />
+      <SetPageTitle title={t("title")} subtitle={t("subtitle")} />
       <CompetitorSpyClient
         tenantSlug={tenantSlug}
         competitors={competitors}

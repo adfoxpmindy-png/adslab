@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
   Calendar,
@@ -42,6 +42,7 @@ import {
   StatusBadge,
 } from "@/components/ui-system";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
+import { formatCurrency } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 const CampaignsStructureMindmap = dynamic(
@@ -91,6 +92,8 @@ type Props = {
 
 export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
   const tPages = useTranslations("pages.campaigns");
+  const tCommon = useTranslations("common");
+  const tStatus = useTranslations("status");
   const [view, setView] = useState<ViewMode>("table");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "ACTIVE" | "PAUSED" | "OTHER">("all");
@@ -135,7 +138,7 @@ export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
               )}
             >
               <Network className="size-3.5" />
-              โครงสร้าง
+              {tPages("view.structure")}
             </button>
             <button
               onClick={() => setView("table")}
@@ -147,7 +150,7 @@ export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
               )}
             >
               <TableIcon className="size-3.5" />
-              ตาราง
+              {tPages("view.table")}
             </button>
           </div>
 
@@ -157,19 +160,19 @@ export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
               className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent"
             >
               <Settings2 className="size-3.5" />
-              คอลัมน์
+              {tPages("action.columns")}
             </button>
             <button
               type="button"
               className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent"
             >
               <Download className="size-3.5" />
-              ส่งออก
+              {tPages("action.export")}
             </button>
             {canEdit && (
               <Link href={`/t/${tenantSlug}/campaigns/new`} className={brandButton({ size: "md" })}>
                 <Plus className="size-4" />
-                สร้างแคมเปญ
+                {tPages("action.create")}
               </Link>
             )}
           </div>
@@ -183,18 +186,18 @@ export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="ค้นหาแคมเปญ, Ad Set, Ads..."
+                placeholder={tPages("search.placeholder")}
                 className="pl-9"
               />
             </div>
-            <FilterPill icon={Filter} label="สถานะ" value={statusFilter} onChange={(v) => setStatusFilter(v as typeof statusFilter)} options={[
-              { value: "all", label: "ทั้งหมด" },
-              { value: "ACTIVE", label: "กำลังใช้งาน" },
-              { value: "PAUSED", label: "หยุดชั่วคราว" },
-              { value: "OTHER", label: "อื่นๆ" },
+            <FilterPill icon={Filter} label={tPages("filter.status")} value={statusFilter} onChange={(v) => setStatusFilter(v as typeof statusFilter)} options={[
+              { value: "all", label: tCommon("all") },
+              { value: "ACTIVE", label: tStatus("activeAlt") },
+              { value: "PAUSED", label: tStatus("pausedAlt") },
+              { value: "OTHER", label: tPages("filter.other") },
             ]} />
-            <FilterPill icon={Calendar} label="วัตถุประสงค์" value={objectiveFilter} onChange={setObjectiveFilter} options={[
-              { value: "all", label: "ทั้งหมด" },
+            <FilterPill icon={Calendar} label={tPages("filter.objective")} value={objectiveFilter} onChange={setObjectiveFilter} options={[
+              { value: "all", label: tCommon("all") },
               ...objectives.map((o) => ({ value: o, label: prettyObjective(o) })),
             ]} />
           </div>
@@ -270,6 +273,7 @@ function CampaignsTable({
   canEdit: boolean;
   tenantSlug: string;
 }) {
+  const tPages = useTranslations("pages.campaigns");
   // Per-campaign: expanded? + lazy-loaded ad set tree
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [structures, setStructures] = useState<Record<string, StructureState>>({});
@@ -325,13 +329,13 @@ function CampaignsTable({
     return (
       <EmptyState
         icon={Layers}
-        title="ไม่พบแคมเปญที่ตรงเงื่อนไข"
-        description="ลองล้างฟิลเตอร์หรือสร้างแคมเปญใหม่"
+        title={tPages("empty.title")}
+        description={tPages("empty.description")}
         action={
           canEdit ? (
             <Link href={`/t/${tenantSlug}/campaigns/new`} className={brandButton({ size: "md" })}>
               <Plus className="size-4" />
-              สร้างแคมเปญ
+              {tPages("action.create")}
             </Link>
           ) : null
         }
@@ -344,11 +348,11 @@ function CampaignsTable({
       <DataTableHead>
         <DataTableHeadRow>
           <DataTableHeadCell className="w-9 pl-3" />
-          <DataTableHeadCell>ชื่อ</DataTableHeadCell>
-          <DataTableHeadCell>สถานะ</DataTableHeadCell>
-          <DataTableHeadCell>วัตถุประสงค์</DataTableHeadCell>
-          <DataTableHeadCell className="text-right">งบประมาณ</DataTableHeadCell>
-          <DataTableHeadCell className="text-right">ค่าใช้จ่าย</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.name")}</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.status")}</DataTableHeadCell>
+          <DataTableHeadCell>{tPages("table.objective")}</DataTableHeadCell>
+          <DataTableHeadCell className="text-right">{tPages("table.budget")}</DataTableHeadCell>
+          <DataTableHeadCell className="text-right">{tPages("table.spend")}</DataTableHeadCell>
           <DataTableHeadCell className="text-right">Impressions</DataTableHeadCell>
           <DataTableHeadCell className="text-right">CTR</DataTableHeadCell>
           <DataTableHeadCell className="text-right">CPC</DataTableHeadCell>
@@ -394,10 +398,12 @@ function CampaignRowGroup({
   onToggleAdSet: (id: string) => void;
   tenantSlug: string;
 }) {
+  const tPages = useTranslations("pages.campaigns");
+  const locale = useLocale();
   // Build a focused diagnose prompt for the AI. The system prompt already
   // teaches the 3-lever framework + senior-media-buyer tone, so the AI
   // will ground the answer in real Meta data + Nick's playbook.
-  const diagnosePrompt = `Diagnose แคมเปญ "${row.name}" (id: ${row.metaCampaignId}) — ใช้ getCampaignInsights ดึง 7-day metrics, แล้วบอก 3 levers (creative / landing page / offer) ตัวไหนน่าจะคือปัญหา + แนะนำ action ที่ทำได้พรุ่งนี้`;
+  const diagnosePrompt = tPages("diagnose.prompt", { name: row.name, id: row.metaCampaignId });
   return (
     <>
       <DataTableRow expandable expanded={expanded} onToggle={onToggleCampaign}>
@@ -414,7 +420,7 @@ function CampaignRowGroup({
               href={`/t/${tenantSlug}/ai?q=${encodeURIComponent(diagnosePrompt)}`}
               onClick={(e) => e.stopPropagation()}
               className="ml-1 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-60 transition-opacity hover:bg-violet-50 hover:text-violet-700 hover:opacity-100 dark:hover:bg-violet-950/40 dark:hover:text-violet-300"
-              title="Diagnose แคมเปญนี้ด้วย AI (เปิด AI Chat พร้อมคำถาม)"
+              title={tPages("diagnose.tooltip")}
             >
               <Stethoscope className="size-3.5" />
             </Link>
@@ -431,10 +437,10 @@ function CampaignRowGroup({
         <DataTableCell numeric>
           <BudgetCell campaign={row} />
         </DataTableCell>
-        <DataTableCell numeric>{formatThb(row.metrics.spend)}</DataTableCell>
+        <DataTableCell numeric>{formatThb(row.metrics.spend, locale)}</DataTableCell>
         <DataTableCell numeric>{formatNumber(row.metrics.impressions)}</DataTableCell>
         <DataTableCell numeric>{row.metrics.ctr.toFixed(2)}%</DataTableCell>
-        <DataTableCell numeric>{formatThb(row.metrics.cpc)}</DataTableCell>
+        <DataTableCell numeric>{formatThb(row.metrics.cpc, locale)}</DataTableCell>
         <DataTableCell numeric>
           <RoasCell value={row.metrics.roas} />
         </DataTableCell>
@@ -445,7 +451,7 @@ function CampaignRowGroup({
         <NestedErrorRow message={state.error} onRetry={onToggleCampaign} />
       )}
       {expanded && state.status === "loaded" && state.data.adSets.length === 0 && (
-        <NestedEmptyRow message="แคมเปญนี้ยังไม่มี Ad Set" />
+        <NestedEmptyRow message={tPages("adset.empty")} />
       )}
       {expanded &&
         state.status === "loaded" &&
@@ -470,6 +476,8 @@ function AdSetRowGroup({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const tPages = useTranslations("pages.campaigns");
+  const locale = useLocale();
   return (
     <>
       <DataTableRow depth={1} expandable expanded={expanded} onToggle={onToggle}>
@@ -481,7 +489,7 @@ function AdSetRowGroup({
                 {adset.name}
               </p>
               <p className="truncate text-[11px] text-muted-foreground">
-                {adset.ads.length} โฆษณา
+                {tPages("adset.adsCount", { count: adset.ads.length })}
                 {adset.optimizationGoal && ` · ${prettyOptGoal(adset.optimizationGoal)}`}
               </p>
             </div>
@@ -496,17 +504,17 @@ function AdSetRowGroup({
         <DataTableCell numeric>
           <AdSetBudgetCell adset={adset} />
         </DataTableCell>
-        <DataTableCell numeric>{formatThb(adset.metrics.spend)}</DataTableCell>
+        <DataTableCell numeric>{formatThb(adset.metrics.spend, locale)}</DataTableCell>
         <DataTableCell numeric>{formatNumber(adset.metrics.impressions)}</DataTableCell>
         <DataTableCell numeric>{adset.metrics.ctr.toFixed(2)}%</DataTableCell>
-        <DataTableCell numeric>{formatThb(adset.metrics.cpc)}</DataTableCell>
+        <DataTableCell numeric>{formatThb(adset.metrics.cpc, locale)}</DataTableCell>
         <DataTableCell numeric>
           <RoasCell value={adset.metrics.roas} />
         </DataTableCell>
       </DataTableRow>
 
       {expanded && adset.ads.length === 0 && (
-        <NestedEmptyRow depth={2} message="Ad Set นี้ยังไม่มีโฆษณา" />
+        <NestedEmptyRow depth={2} message={tPages("adset.noAds")} />
       )}
       {expanded && adset.ads.map((ad) => <AdRow key={ad.id} ad={ad} />)}
     </>
@@ -514,6 +522,7 @@ function AdSetRowGroup({
 }
 
 function AdRow({ ad }: { ad: AdNode }) {
+  const locale = useLocale();
   return (
     <DataTableRow depth={2}>
       <td aria-hidden className="w-9 pl-3" />
@@ -537,10 +546,10 @@ function AdRow({ ad }: { ad: AdNode }) {
       <DataTableCell numeric>
         <span className="text-xs text-muted-foreground">—</span>
       </DataTableCell>
-      <DataTableCell numeric>{formatThb(ad.metrics.spend)}</DataTableCell>
+      <DataTableCell numeric>{formatThb(ad.metrics.spend, locale)}</DataTableCell>
       <DataTableCell numeric>{formatNumber(ad.metrics.impressions)}</DataTableCell>
       <DataTableCell numeric>{ad.metrics.ctr.toFixed(2)}%</DataTableCell>
-      <DataTableCell numeric>{formatThb(ad.metrics.cpc)}</DataTableCell>
+      <DataTableCell numeric>{formatThb(ad.metrics.cpc, locale)}</DataTableCell>
       <DataTableCell numeric>
         <RoasCell value={ad.metrics.roas} />
       </DataTableCell>
@@ -567,18 +576,20 @@ function AdThumbnail({ ad }: { ad: AdNode }) {
 }
 
 function AdSetBudgetCell({ adset }: { adset: AdSetNode }) {
+  const tPages = useTranslations("pages.campaigns");
+  const locale = useLocale();
   if (adset.dailyBudget) {
     return (
       <span>
-        {formatThb(adset.dailyBudget / 100)}
-        <span className="ml-1 text-[10px] text-muted-foreground">/วัน</span>
+        {formatThb(adset.dailyBudget / 100, locale)}
+        <span className="ml-1 text-[10px] text-muted-foreground">{tPages("budget.perDay")}</span>
       </span>
     );
   }
   if (adset.lifetimeBudget) {
     return (
       <span>
-        {formatThb(adset.lifetimeBudget / 100)}
+        {formatThb(adset.lifetimeBudget / 100, locale)}
         <span className="ml-1 text-[10px] text-muted-foreground">total</span>
       </span>
     );
@@ -587,12 +598,13 @@ function AdSetBudgetCell({ adset }: { adset: AdSetNode }) {
 }
 
 function NestedLoadingRow() {
+  const tPages = useTranslations("pages.campaigns");
   return (
     <tr className="border-b border-border/40 bg-muted/20">
       <td colSpan={10} className="px-4 py-4">
         <div className="flex items-center gap-2 pl-12 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
-          กำลังโหลด Ad Sets...
+          {tPages("loading.adSets")}
         </div>
       </td>
     </tr>
@@ -600,18 +612,20 @@ function NestedLoadingRow() {
 }
 
 function NestedErrorRow({ message, onRetry }: { message: string; onRetry: () => void }) {
+  const tPages = useTranslations("pages.campaigns");
+  const tCommon = useTranslations("common");
   return (
     <tr className="border-b border-border/40 bg-destructive/5">
       <td colSpan={10} className="px-4 py-3">
         <div className="flex items-center gap-2 pl-12 text-xs text-destructive">
           <AlertCircle className="size-3.5" />
-          <span>โหลดไม่สำเร็จ: {message}</span>
+          <span>{tPages("errorLoad", { message })}</span>
           <button
             type="button"
             onClick={onRetry}
             className="ml-2 rounded-md border border-destructive/30 px-2 py-0.5 text-[11px] font-medium hover:bg-destructive/10"
           >
-            ลองอีกครั้ง
+            {tCommon("tryAgain")}
           </button>
         </div>
       </td>
@@ -653,10 +667,11 @@ function prettyOptGoal(goal: string): string {
 }
 
 function CampaignStatusBadge({ status }: { status: string }) {
+  const tStatus = useTranslations("status");
   const bucket = bucketStatus(status);
-  if (bucket === "ACTIVE") return <StatusBadge variant="active">กำลังใช้งาน</StatusBadge>;
-  if (bucket === "PAUSED") return <StatusBadge variant="paused">หยุดชั่วคราว</StatusBadge>;
-  return <StatusBadge variant="closed">ปิดการใช้งาน</StatusBadge>;
+  if (bucket === "ACTIVE") return <StatusBadge variant="active">{tStatus("activeAlt")}</StatusBadge>;
+  if (bucket === "PAUSED") return <StatusBadge variant="paused">{tStatus("pausedAlt")}</StatusBadge>;
+  return <StatusBadge variant="closed">{tStatus("closed")}</StatusBadge>;
 }
 
 function RoasCell({ value }: { value: number }) {
@@ -667,18 +682,20 @@ function RoasCell({ value }: { value: number }) {
 }
 
 function BudgetCell({ campaign }: { campaign: CampaignRow }) {
+  const tPages = useTranslations("pages.campaigns");
+  const locale = useLocale();
   if (campaign.dailyBudget) {
     return (
       <span>
-        {formatThb(campaign.dailyBudget / 100)}
-        <span className="ml-1 text-[10px] text-muted-foreground">/วัน</span>
+        {formatThb(campaign.dailyBudget / 100, locale)}
+        <span className="ml-1 text-[10px] text-muted-foreground">{tPages("budget.perDay")}</span>
       </span>
     );
   }
   if (campaign.lifetimeBudget) {
     return (
       <span>
-        {formatThb(campaign.lifetimeBudget / 100)}
+        {formatThb(campaign.lifetimeBudget / 100, locale)}
         <span className="ml-1 text-[10px] text-muted-foreground">total</span>
       </span>
     );
@@ -691,9 +708,10 @@ function BudgetCell({ campaign }: { campaign: CampaignRow }) {
 // =============================================================================
 
 function MindmapSkeleton() {
+  const tPages = useTranslations("pages.campaigns");
   return (
     <div className="grid h-[600px] place-items-center rounded-2xl border border-border bg-card shadow-card">
-      <div className="text-sm text-muted-foreground">กำลังโหลดมุมมองโครงสร้าง...</div>
+      <div className="text-sm text-muted-foreground">{tPages("loading.structure")}</div>
     </div>
   );
 }
@@ -730,15 +748,10 @@ export function prettyObjective(obj: string): string {
   return OBJECTIVE_LABELS[obj] ?? obj.replace(/^OUTCOME_/, "");
 }
 
-const thbFormatter = new Intl.NumberFormat("th-TH", {
-  style: "currency",
-  currency: "THB",
-  maximumFractionDigits: 0,
-});
 const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
-function formatThb(value: number): string {
-  return thbFormatter.format(Math.round(value));
+function formatThb(value: number, locale: string): string {
+  return formatCurrency(Math.round(value), locale);
 }
 function formatNumber(value: number): string {
   return numberFormatter.format(Math.round(value));

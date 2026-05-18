@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { duplicateCampaign } from "@/lib/meta/duplicate-campaign";
 import { defineTool } from "./types";
@@ -63,16 +65,24 @@ export const duplicateCampaignTool = defineTool({
     additionalProperties: false,
   },
   summarize: (input) => {
+    // summarize is sync (no locale here); the AI confirmation card shows
+    // English here, while AI's natural-language reply is steered by
+    // LOCALE_DIRECTIVE.
     const bits: string[] = [];
     if (input.dailyBudgetMultiplier) bits.push(`×${input.dailyBudgetMultiplier} budget`);
     if (input.lifetimeBudgetMultiplier) bits.push(`×${input.lifetimeBudgetMultiplier} lifetime budget`);
-    if (input.dailyBudget) bits.push(`฿${input.dailyBudget.toLocaleString("th-TH")}/day`);
-    if (input.lifetimeBudget) bits.push(`฿${input.lifetimeBudget.toLocaleString("th-TH")} lifetime`);
-    if (input.initialStatus === "ACTIVE") bits.push("ACTIVE ทันที");
+    if (input.dailyBudget) bits.push(`฿${input.dailyBudget.toLocaleString("en-US")}/day`);
+    if (input.lifetimeBudget) bits.push(`฿${input.lifetimeBudget.toLocaleString("en-US")} lifetime`);
+    if (input.initialStatus === "ACTIVE") bits.push("ACTIVE immediately");
     const tail = bits.length > 0 ? ` (${bits.join(", ")})` : "";
     return `Duplicate campaign ${input.campaignId}${tail}`;
   },
   async handler(input, ctx) {
+    const locale = await resolveUserLocale(ctx.userId);
+    const tErr = await getTranslations({
+      locale,
+      namespace: "pages.campaigns.duplicateErrors",
+    });
     // Resolve internal id from Meta digit id.
     const campaign = await prisma.metaCampaign.findFirst({
       where: {
@@ -82,7 +92,7 @@ export const duplicateCampaignTool = defineTool({
       select: { id: true },
     });
     if (!campaign) {
-      return { error: `Campaign ${input.campaignId} ไม่พบใน tenant นี้` };
+      return { error: tErr("campaignNotFound", { id: input.campaignId }) };
     }
     const result = await duplicateCampaign({
       tenantId: ctx.tenantId,
@@ -94,6 +104,7 @@ export const duplicateCampaignTool = defineTool({
       dailyBudgetMultiplier: input.dailyBudgetMultiplier,
       lifetimeBudgetMultiplier: input.lifetimeBudgetMultiplier,
       initialStatus: input.initialStatus,
+      locale,
     });
     if (!result.ok) return { error: result.error };
     return {

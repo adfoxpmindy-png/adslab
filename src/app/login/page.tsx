@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { SiteFooter } from "@/components/site-footer";
 type FieldErrors = Partial<Record<"email" | "password", string>>;
 
 function LoginForm() {
+  const t = useTranslations("pages.login");
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
@@ -48,7 +50,7 @@ function LoginForm() {
 
       if (!res.ok) {
         if (data.fieldErrors) setFieldErrors(data.fieldErrors);
-        setFormError(data.error ?? "เกิดข้อผิดพลาด");
+        setFormError(data.error ?? t("errors.generic"));
         setPending(false);
         return;
       }
@@ -57,7 +59,7 @@ function LoginForm() {
       router.refresh();
     } catch (err) {
       console.error(err);
-      setFormError("เชื่อมต่อ server ไม่ได้ ลองอีกครั้ง");
+      setFormError(t("errors.serverUnreachable"));
       setPending(false);
     }
   }
@@ -65,7 +67,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-1.5">
-        <Label htmlFor="email">อีเมล</Label>
+        <Label htmlFor="email">{t("emailLabel")}</Label>
         <Input
           id="email"
           name="email"
@@ -81,7 +83,7 @@ function LoginForm() {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="password">รหัสผ่าน</Label>
+        <Label htmlFor="password">{t("passwordLabel")}</Label>
         <Input
           id="password"
           name="password"
@@ -102,13 +104,14 @@ function LoginForm() {
       )}
 
       <Button type="submit" className="w-full" disabled={pending}>
-        {pending ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
+        {pending ? t("submitting") : t("submit")}
       </Button>
     </form>
   );
 }
 
 export default function LoginPage() {
+  const t = useTranslations("pages.login");
   return (
     <div className="flex min-h-screen flex-col bg-muted/30">
     <main className="flex flex-1 items-center justify-center px-4 py-12">
@@ -123,14 +126,14 @@ export default function LoginPage() {
             className="h-12 w-auto dark:brightness-0 dark:invert"
           />
           <p className="mt-2 text-sm text-muted-foreground">
-            ยิงแอดให้เร็ว แม่น scale ได้
+            {t("tagline")}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">เข้าสู่ระบบ</CardTitle>
-            <CardDescription>ใช้บัญชีของคุณเพื่อจัดการแคมเปญ</CardDescription>
+            <CardTitle className="text-xl">{t("title")}</CardTitle>
+            <CardDescription>{t("subtitle")}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -141,9 +144,9 @@ export default function LoginPage() {
         </Card>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          ยังไม่มีบัญชี?{" "}
+          {t("noAccount")}{" "}
           <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline">
-            สมัครสมาชิก
+            {t("signup")}
           </Link>
         </p>
         <LegalFooter />

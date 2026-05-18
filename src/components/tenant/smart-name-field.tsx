@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Check, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Check, Lightbulb, Sparkles, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,7 @@ export function SmartNameField({
   onChange: (v: string) => void;
   placeholder?: string;
 }) {
+  const tr = useTranslations("common.smartNameField");
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [showAllSuggestions, setShowAllSuggestions] = useState(false);
@@ -116,24 +118,24 @@ export function SmartNameField({
         {value && matchedTemplate && (
           <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
             <Check className="size-3" strokeWidth={3} />
-            ตรง template &ldquo;{matchedTemplate.name}&rdquo;
+            {tr("matchesTemplate", { name: matchedTemplate.name })}
           </span>
         )}
         {value && !matchedTemplate && templates.length > 0 && (
           <span className="text-muted-foreground">
-            ยังไม่ตรง template ใดของ tenant — ใช้ suggestion ด้านล่างได้
+            {tr("noTemplateMatch")}
           </span>
         )}
         {overTruncate && !nearLimit && (
           <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
             <AlertTriangle className="size-3" />
-            เกิน {META_NAME_TRUNCATE_WARN} ตัวอักษร — Meta UI จะตัดให้สั้นใน list
+            {tr("truncateWarning", { limit: META_NAME_TRUNCATE_WARN })}
           </span>
         )}
         {nearLimit && (
           <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
             <AlertTriangle className="size-3" />
-            ใกล้ limit ของ Meta ({META_NAME_MAX})
+            {tr("nearLimit", { limit: META_NAME_MAX })}
           </span>
         )}
       </div>
@@ -143,7 +145,7 @@ export function SmartNameField({
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-[11px] text-muted-foreground">
             <Sparkles className="mr-0.5 inline-block size-3" />
-            แนะนำ:
+            {tr("suggestions")}
           </span>
           {visibleSuggestions.map(({ template, rendered }) => {
             const active = value === rendered;
@@ -174,10 +176,10 @@ export function SmartNameField({
               {showAllSuggestions ? (
                 <>
                   <X className="mr-0.5 inline-block size-3" />
-                  ย่อ
+                  {tr("collapse")}
                 </>
               ) : (
-                <>+{suggestions.length - 3} อื่นๆ</>
+                <>{tr("moreOthers", { count: suggestions.length - 3 })}</>
               )}
             </button>
           )}
@@ -185,9 +187,9 @@ export function SmartNameField({
       )}
 
       {loaded && templates.length === 0 && (
-        <p className="text-[11px] text-muted-foreground">
-          💡 ตั้ง naming template ใน Settings → Naming Standards เพื่อให้ระบบเสนอชื่อ
-          อัตโนมัติ
+        <p className="flex items-start gap-1 text-[11px] text-muted-foreground">
+          <Lightbulb className="mt-0.5 size-3 shrink-0" />
+          <span>{tr("noTemplatesHint")}</span>
         </p>
       )}
     </div>

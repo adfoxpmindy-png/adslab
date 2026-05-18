@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
+import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 const createSchema = z.object({
   name: z.string().min(1).max(80),
@@ -46,6 +49,7 @@ export async function POST(request: Request) {
   if (!tenantSlug) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
   const body = await request.json().catch(() => ({}));
   const parsed = createSchema.safeParse(body);
@@ -67,7 +71,9 @@ export async function POST(request: Request) {
   } catch (e) {
     const msg = (e as Error).message;
     if (msg.includes("Unique constraint")) {
-      return NextResponse.json({ error: "Scope ชื่อนี้มีอยู่แล้ว" }, { status: 409 });
+      const locale = await resolveUserLocale(session.userId);
+      const t = await getTranslations({ locale, namespace: "api.scopes" });
+      return NextResponse.json({ error: t("nameTaken") }, { status: 409 });
     }
     throw e;
   }
@@ -83,6 +89,7 @@ export async function PATCH(request: Request) {
   if (!tenantSlug) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
   const body = await request.json().catch(() => ({}));
   const parsed = updateSchema.safeParse(body);
@@ -101,7 +108,9 @@ export async function PATCH(request: Request) {
   } catch (e) {
     const msg = (e as Error).message;
     if (msg.includes("Unique constraint")) {
-      return NextResponse.json({ error: "Scope ชื่อนี้มีอยู่แล้ว" }, { status: 409 });
+      const locale = await resolveUserLocale(session.userId);
+      const t = await getTranslations({ locale, namespace: "api.scopes" });
+      return NextResponse.json({ error: t("nameTaken") }, { status: 409 });
     }
     throw e;
   }

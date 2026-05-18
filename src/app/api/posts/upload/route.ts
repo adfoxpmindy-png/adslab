@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 import { requireSession } from "@/lib/auth/session";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { uploadMediaToBlob } from "@/lib/meta/page-posts";
 
@@ -33,8 +35,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   const role = tenant.members[0].role;
+  const locale = await resolveUserLocale(session.userId);
   if (role !== "OWNER" && role !== "MEDIA_BUYER") {
-    return NextResponse.json({ error: "ไม่มีสิทธิ์" }, { status: 403 });
+    const t = await getTranslations({ locale, namespace: "api.common" });
+    return NextResponse.json({ error: t("forbidden") }, { status: 403 });
   }
 
   const form = await request.formData();
@@ -42,8 +46,7 @@ export async function POST(request: Request) {
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "file field is required" }, { status: 400 });
   }
-
-  const result = await uploadMediaToBlob({ tenantId: tenant.id, file });
+  const result = await uploadMediaToBlob({ tenantId: tenant.id, file, locale });
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }

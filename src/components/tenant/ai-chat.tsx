@@ -13,6 +13,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -29,13 +30,40 @@ export type Message = {
 };
 
 /**
- * Floating "ถาม AI" chat panel. Sits as a FAB bottom-right on every
+ * Sample prompt keys (resolved via pages.ai.chat.samplePrompts.<key>).
+ * Kept exported so the full-page AI client can reuse the same set.
+ */
+export const SAMPLE_PROMPT_KEYS = [
+  "listActive",
+  "worstBudget",
+  "digittribeRoas",
+] as const;
+
+/**
+ * Compatibility export: returns the *current locale's* resolved prompt
+ * strings for callers that need them as a plain array (e.g. EmptyChat
+ * on the full-page AI client). Hooked from a component context.
+ */
+export function useSamplePrompts(): string[] {
+  const t = useTranslations("pages.ai.chat.samplePrompts");
+  return SAMPLE_PROMPT_KEYS.map((k) => t(k));
+}
+
+// Back-compat: existing imports of SAMPLE_PROMPTS still resolve, but
+// they should be replaced with useSamplePrompts() inside components.
+// This array holds the *keys*, so consumers must translate before render.
+export const SAMPLE_PROMPTS: readonly string[] = SAMPLE_PROMPT_KEYS;
+
+/**
+ * Floating chat panel. Sits as a FAB bottom-right on every
  * tenant page and expands to a slide-over drawer on click. State
  * (open/closed, active conversation id) lives in component state —
  * we re-create a thread per session unless the user explicitly picks
  * an old one. Keeps the surface minimal until we add a thread list.
  */
 export function AIChat({ tenantSlug }: { tenantSlug: string }) {
+  const t = useTranslations("pages.ai.chat");
+  const samplePrompts = useSamplePrompts();
   const [open, setOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -55,9 +83,9 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
       .then((r) => r.json())
       .then((d) => setConversationId(d.conversationId))
       .catch(() => {
-        toast.error("เริ่ม AI chat ไม่สำเร็จ");
+        toast.error(t("startFailed"));
       });
-  }, [open, tenantSlug, conversationId]);
+  }, [open, tenantSlug, conversationId, t]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -70,6 +98,7 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
     if (!text || sending || !conversationId) return;
     setInput("");
     // Optimistic user bubble
+    // eslint-disable-next-line react-hooks/purity -- send() is invoked from form onSubmit / event handlers, not render; Date.now() is safe here
     const tempId = `temp-${Date.now()}`;
     setMessages((prev) => [
       ...prev,
@@ -94,12 +123,12 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
       );
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error ?? "ส่งไม่สำเร็จ");
+        throw new Error(data.error ?? t("sendFailed"));
       }
       // Reload full thread so tool_call + tool_result rows show
       await loadMessages();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ส่งไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("sendFailed"));
     } finally {
       setSending(false);
     }
@@ -118,10 +147,10 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
         },
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Decision failed");
+      if (!res.ok) throw new Error(data.error ?? t("decisionFailed"));
       await loadMessages();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Decision failed");
+      toast.error(err instanceof Error ? err.message : t("decisionFailed"));
     } finally {
       setSending(false);
     }
@@ -154,10 +183,10 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
           "fixed bottom-6 right-6 z-40 flex h-12 items-center gap-2 rounded-full bg-primary px-4 text-primary-foreground shadow-lg transition-all hover:scale-105",
           open && "opacity-0 pointer-events-none",
         )}
-        title="ถาม AI"
+        title={t("fabLabel")}
       >
         <Sparkles className="size-4" />
-        <span className="text-sm font-medium">ถาม AI</span>
+        <span className="text-sm font-medium">{t("fabLabel")}</span>
       </button>
 
       {/* Slide-over panel */}
@@ -179,7 +208,7 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
                 <div>
                   <p className="text-sm font-semibold">AI Master</p>
                   <p className="text-[10px] text-muted-foreground">
-                    ผู้เชี่ยวชาญ Meta Ads
+                    {t("expertSubtitle")}
                   </p>
                 </div>
               </div>
@@ -188,7 +217,7 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
                   href={`/t/${tenantSlug}/ai${conversationId ? `?c=${conversationId}` : ""}`}
                   onClick={() => setOpen(false)}
                   className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                  title="เปิดแบบเต็มหน้า"
+                  title={t("openFullPage")}
                 >
                   <Maximize2 className="size-3.5" />
                 </Link>
@@ -203,9 +232,9 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
               {messages.length === 0 && !sending && (
                 <div className="flex flex-col items-center gap-2 py-8 text-center text-xs text-muted-foreground">
                   <Sparkles className="size-8 text-primary/40" />
-                  <p>เริ่มต้นด้วยคำถาม เช่น:</p>
+                  <p>{t("emptyHint")}</p>
                   <div className="flex flex-col gap-1">
-                    {SAMPLE_PROMPTS.map((p) => (
+                    {samplePrompts.map((p) => (
                       <button
                         key={p}
                         type="button"
@@ -232,7 +261,7 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
               {sending && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Loader2 className="size-3 animate-spin" />
-                  AI กำลังคิด...
+                  {t("thinking")}
                 </div>
               )}
             </div>
@@ -249,7 +278,7 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="พิมพ์คำถามหรือสั่งงาน..."
+                  placeholder={t("inputPlaceholder")}
                   disabled={sending || !conversationId}
                   className="flex-1"
                 />
@@ -258,7 +287,7 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
                 </Button>
               </form>
               <p className="mt-1.5 text-[10px] text-muted-foreground">
-                AI ใช้ tools (listCampaigns, getCampaignInsights) ค้นข้อมูลจริง
+                {t("toolsHint")}
               </p>
             </div>
           </div>
@@ -267,12 +296,6 @@ export function AIChat({ tenantSlug }: { tenantSlug: string }) {
     </>
   );
 }
-
-export const SAMPLE_PROMPTS = [
-  "list campaigns ที่ active",
-  "campaign ไหนเสีย budget เยอะที่สุดในสัปดาห์นี้",
-  "ROAS ของ Digittribe เป็นยังไง",
-];
 
 export function MessageBubble({
   message,
@@ -285,6 +308,7 @@ export function MessageBubble({
   onCancel: () => void;
   disabled: boolean;
 }) {
+  const t = useTranslations("pages.ai.chat");
   if (message.role === "user") {
     return (
       <div className="flex justify-end">
@@ -316,7 +340,7 @@ export function MessageBubble({
             <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-300" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
-                AI ขอยืนยันก่อนทำ action
+                {t("confirm.title")}
               </p>
               <p className="mt-0.5 text-sm text-amber-950 dark:text-amber-100">
                 {message.content}
@@ -330,7 +354,7 @@ export function MessageBubble({
               onClick={onCancel}
               className="rounded-md border border-border bg-background px-3 py-1 text-xs font-medium hover:bg-muted disabled:opacity-50"
             >
-              ยกเลิก
+              {t("confirm.cancel")}
             </button>
             <button
               type="button"
@@ -339,7 +363,7 @@ export function MessageBubble({
               className="inline-flex items-center gap-1 rounded-md bg-amber-600 px-3 py-1 text-xs font-medium text-white hover:bg-amber-700 disabled:opacity-50"
             >
               <Check className="size-3" strokeWidth={3} />
-              ยืนยัน
+              {t("confirm.confirm")}
             </button>
           </div>
         </div>
@@ -358,7 +382,7 @@ export function MessageBubble({
             )}
           >
             {isApproved ? <Check className="size-3" strokeWidth={3} /> : <X className="size-3" />}
-            {isApproved ? "ทำแล้ว: " : "ยกเลิก: "}
+            {isApproved ? t("approved") : t("cancelled")}
             <code className="font-medium">{truncate(message.content, 80)}</code>
           </div>
         </div>
@@ -372,7 +396,7 @@ export function MessageBubble({
       <div className="flex justify-start">
         <div className="inline-flex max-w-[85%] items-center gap-1.5 rounded-md border border-dashed border-border px-2 py-1 text-[11px] text-muted-foreground">
           <Wrench className="size-3" />
-          ผลลัพธ์: <code className="text-foreground">{truncate(message.content, 80)}</code>
+          {t("resultLabel")}<code className="text-foreground">{truncate(message.content, 80)}</code>
         </div>
       </div>
     );

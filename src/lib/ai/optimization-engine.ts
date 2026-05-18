@@ -21,7 +21,10 @@ import type { ParsedInsight, ParsedCampaignInsight } from "@/lib/meta/insights";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
 import { formatCurrency, formatNumber as fmtNumber } from "@/lib/i18n/format";
 
-type TFn = (key: string, values?: Record<string, string | number>) => string;
+// next-intl Translator is a callable object with .rich/.markup/.raw/.has —
+// can't be modeled as a plain function. Use the server `getTranslations`
+// return type unwrapped from its Promise so namespaced translators flow in.
+type TFn = Awaited<ReturnType<typeof getTranslations>>;
 
 // =============================================================================
 // Types
@@ -51,7 +54,7 @@ export type OptimizationRecommendation = {
   accountName: string;
   /** Bullet-point reasons that led to this recommendation */
   reasons: string[];
-  /** Predicted impact summary, e.g. "ประหยัด ฿12,450/เดือน" */
+  /** Predicted impact summary, e.g. "Save ฿12,450/month" */
   predictedImpact: string;
   /** For sorting / coloring */
   severity: Severity;
@@ -68,7 +71,7 @@ export type OptimizationRecommendation = {
 export type OptimizationSummary = {
   /** Total recommendations across all severities */
   totalCount: number;
-  /** Sum of "ประมาณการประหยัด" across "pause_adset" + "decrease_budget" */
+  /** Sum of "estimated savings" across "pause_adset" + "decrease_budget" */
   potentialMonthlySavingsThb: number;
   /** Average projected ROAS uplift if all high-severity recs applied */
   predictedRoasUpliftPct: number;
@@ -256,7 +259,7 @@ function analyzeCampaign(
 function computeSummary(recs: OptimizationRecommendation[]): OptimizationSummary {
   const totalCount = recs.length;
   // Extract monetary value from predictedImpact strings (rough heuristic — those
-  // that contain "ประหยัด" or "ลด spend").
+  // produced by "pause_adset" or "decrease_budget" recommendations).
   const savings = recs
     .filter((r) => r.actionKind === "pause_adset" || r.actionKind === "decrease_budget")
     .reduce((sum, r) => {
@@ -287,7 +290,7 @@ function truncate(s: string, n: number): string {
   return s.length > n ? `${s.slice(0, n - 1)}…` : s;
 }
 
-const thbFormatter = new Intl.NumberFormat("th-TH", {
+const thbFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "THB",
   maximumFractionDigits: 0,

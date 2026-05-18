@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +19,7 @@ export default async function VerifyEmailPage({
   searchParams: SearchParams;
 }) {
   const { token } = await searchParams;
+  const t = await getTranslations("pages.verifyEmail");
 
   let result: VerifyResult;
   if (!token) {
@@ -47,6 +49,34 @@ export default async function VerifyEmailPage({
     if (member) dashboardHref = `/t/${member.tenant.slug}/dashboard`;
   }
 
+  function titleFor(status: VerifyResult["status"]): string {
+    switch (status) {
+      case "success":
+        return t("titleSuccess");
+      case "used":
+        return t("titleUsed");
+      case "expired":
+        return t("titleExpired");
+      case "invalid":
+      default:
+        return t("titleInvalid");
+    }
+  }
+
+  function descriptionFor(status: VerifyResult["status"]): string {
+    switch (status) {
+      case "success":
+        return t("descSuccess");
+      case "used":
+        return t("descUsed");
+      case "expired":
+        return t("descExpired");
+      case "invalid":
+      default:
+        return t("descInvalid");
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <div className="w-full max-w-md">
@@ -73,7 +103,7 @@ export default async function VerifyEmailPage({
                 href={dashboardHref}
                 className={cn(buttonVariants({ size: "lg" }), "w-full")}
               >
-                ไปที่แดชบอร์ด
+                {t("goToDashboard")}
               </Link>
             )}
 
@@ -84,27 +114,27 @@ export default async function VerifyEmailPage({
             {!isLoggedIn && result.status !== "success" && (
               <div className="space-y-3">
                 <p className="text-center text-sm text-muted-foreground">
-                  กรุณาเข้าสู่ระบบเพื่อขอเมลยืนยันใหม่
+                  {t("loginPrompt")}
                 </p>
                 <Link
                   href="/login"
                   className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
                 >
-                  เข้าสู่ระบบ
+                  {t("loginBtn")}
                 </Link>
               </div>
             )}
 
             {result.status === "used" && (
               <p className="text-center text-sm text-muted-foreground">
-                คุณสามารถ
+                {t("usedPrefix")}
                 <Link
                   href={dashboardHref ?? "/login"}
                   className="ml-1 font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  เข้าสู่แดชบอร์ด
+                  {t("usedLink")}
                 </Link>
-                {" "}ได้เลย
+                {" "}{t("usedSuffix")}
               </p>
             )}
           </CardContent>
@@ -112,32 +142,4 @@ export default async function VerifyEmailPage({
       </div>
     </main>
   );
-}
-
-function titleFor(status: VerifyResult["status"]): string {
-  switch (status) {
-    case "success":
-      return "ยืนยันอีเมลสำเร็จ ✓";
-    case "used":
-      return "อีเมลถูกยืนยันแล้ว";
-    case "expired":
-      return "ลิงก์หมดอายุ";
-    case "invalid":
-    default:
-      return "ลิงก์ไม่ถูกต้อง";
-  }
-}
-
-function descriptionFor(status: VerifyResult["status"]): string {
-  switch (status) {
-    case "success":
-      return "ขอบคุณที่ยืนยันอีเมล — บัญชีของคุณพร้อมใช้งานแล้ว";
-    case "used":
-      return "ลิงก์ยืนยันนี้ถูกใช้งานไปแล้ว";
-    case "expired":
-      return "ลิงก์ยืนยันมีอายุ 24 ชั่วโมง — กรุณาขอเมลใหม่";
-    case "invalid":
-    default:
-      return "ไม่พบลิงก์ยืนยันที่ตรงกัน หรือลิงก์อาจเสียหาย";
-  }
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { uploadCreative } from "@/lib/creatives/service";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 /**
  * POST /api/creatives/upload?tenantSlug=<slug>
@@ -36,11 +37,13 @@ export async function POST(request: Request) {
   }
 
   const name = form.get("name");
+  const locale = await resolveUserLocale(session.userId);
   const result = await uploadCreative({
     tenantId: tenant.id,
     file,
     name: typeof name === "string" && name.length > 0 ? name : undefined,
     createdById: session.userId,
+    locale,
   });
 
   if (!result.ok) {

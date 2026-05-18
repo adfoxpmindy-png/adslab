@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { getFreshAccessToken } from "@/lib/meta/client";
 import { graphFetch } from "@/lib/meta/graph-api";
 
@@ -109,7 +111,7 @@ export async function POST(request: Request) {
   if (!tenantSlug) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
-  await requireSession();
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
 
   const body = await request.json().catch(() => ({}));
@@ -148,9 +150,11 @@ export async function POST(request: Request) {
     );
     if (existing.data.length > 0) {
       const e = existing.data[0];
+      const locale = await resolveUserLocale(session.userId);
+      const t = await getTranslations({ locale, namespace: "api.meta.pixels" });
       return NextResponse.json(
         {
-          error: `Ad account นี้มี Pixel อยู่แล้ว: "${e.name}" (ID ${e.id}) — Meta จำกัด 1 Pixel ต่อ ad account`,
+          error: t("alreadyExists", { name: e.name, id: e.id }),
           existingPixelId: e.id,
         },
         { status: 409 },

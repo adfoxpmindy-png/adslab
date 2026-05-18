@@ -1,20 +1,21 @@
 /**
- * Parse a free-form Thai/English boost request into a structured
+ * Parse a free-form Thai/English/Lao boost request into a structured
  * intent. Used by /api/boost/plan.
  *
- * Example input (verified against a real client message):
- *   บูสต์วีดีโอให้หน่อยครับ เป็น Views โพสละ 1250 บาท ให้จบพรุ่งนี้ 10.00 น.
- *   https://facebook.com/share/v/1AtdSLKovS/
- *   https://facebook.com/reel/2046794962859921
- *   ...
+ * Example input (verified against a real Thai client message; same
+ * approach applies to English/Lao):
+ *   "Please boost this video for Views, 1250 THB per post, finish by
+ *    10:00 tomorrow.
+ *    https://facebook.com/share/v/1AtdSLKovS/
+ *    https://facebook.com/reel/2046794962859921"
  *
  * Output (zod-validated):
  *   {
  *     budgetMode: "per_post",
  *     budgetThb: 1250,
  *     objectiveHint: "views",
- *     scheduleEndIso: "2026-05-15T03:00:00.000Z",  // 10:00 +07:00 → 03:00Z
- *     kpi: null,  // not specified in prompt — UI must ask
+ *     scheduleEndIso: "2026-05-15T03:00:00.000Z",  // 10:00 +07:00 -> 03:00Z
+ *     kpi: null,  // not specified in prompt - UI must ask
  *     purpose: null,
  *     notes: "..."
  *   }
@@ -25,11 +26,11 @@ import { aiChat } from "./openrouter";
 export const BoostKpiSchema = z.object({
   /** Metric the user cares about */
   type: z.enum(["views", "engagement", "clicks", "reach", "cpv", "cpe", "cpc", "cpm", "other"]),
-  /** Target value, e.g. 10000 for "10k views" or 0.05 for "CPV ≤ 0.05" */
+  /** Target value, e.g. 10000 for "10k views" or 0.05 for "CPV <= 0.05" */
   target: z.number().positive().nullable(),
-  /** Free-form unit/qualifier, e.g. "views", "ต่อคลิก" */
+  /** Free-form unit/qualifier, e.g. "views", "per click" */
   unit: z.string().nullable(),
-  /** Direction — "at_least" for "ให้ได้", "at_most" for "ไม่เกิน" */
+  /** Direction - "at_least" for "at least" phrasing, "at_most" for "no more than" */
   direction: z.enum(["at_least", "at_most"]).nullable(),
 });
 
@@ -62,13 +63,13 @@ const SYSTEM_PROMPT = `You are AdsLab's boost-request parser for SE-Asia media b
 
 For free-form string fields ("purpose", "assumptions[]", "notes"), respond in the same language as the input message (Thai → Thai, English → English, Lao → Lao). Structured fields (enums, numbers, ISO dates) follow the schema regardless.
 
-Always reason in Bangkok local time (UTC+7). When the user says "พรุ่งนี้" or "วันนี้", interpret relative to the current Bangkok date provided in the user message.
+Always reason in Bangkok local time (UTC+7). When the user uses relative dates such as "today" or "tomorrow" (or their Thai/Lao equivalents), interpret them relative to the current Bangkok date provided in the user message.
 
 Output STRICTLY valid JSON matching this shape, with no extra prose:
 
 {
   "budgetMode": "per_post" | "total",
-  "budgetThb": <number — strip "บาท", interpret "k"/"พัน" multiplier>,
+  "budgetThb": <number — strip any currency suffix (THB / baht / its Thai script form) and interpret "k" or local thousands-word multipliers>,
   "objectiveHint": "views" | "engagement" | "clicks" | "conversions" | "reach" | "leads" | "unknown",
   "scheduleEndIso": <ISO 8601 UTC string, or null>,
   "scheduleStartIso": <ISO 8601 UTC string, or null>,
@@ -84,17 +85,17 @@ Output STRICTLY valid JSON matching this shape, with no extra prose:
 }
 
 Rules:
-- "โพสละ N บาท" → budgetMode: "per_post", budgetThb: N
-- "งบรวม N" or "ทั้งหมด N" → budgetMode: "total"
-- If unclear, default to "per_post" and add an assumption "เราเข้าใจว่าเป็นบัดเจ็ตต่อโพส"
-- "Views" or "ยอดวิว" → objectiveHint: "views"
-- "Engagement" or "การมีส่วนร่วม" → "engagement"
-- "คลิก" or "ทราฟฟิก" → "clicks"
-- "ขาย" or "ซื้อ" or "Sales" → "conversions"
-- "ให้จบ <time>" → scheduleEndIso; convert from Bangkok to UTC
-- KPI is ONLY filled if user gave an explicit target (e.g. "ให้ได้ 10000 views", "CPV ไม่เกิน 0.5"). Otherwise null.
-- Purpose is ONLY filled if user explicitly said why (e.g. "เพื่อ launch", "ทดสอบ creative"). Otherwise null.
-- Do NOT extract URLs — the server handles that separately.
+- "N THB per post" -> budgetMode: "per_post", budgetThb: N
+- "total budget N" or "altogether N" -> budgetMode: "total"
+- If unclear, default to "per_post" and add an assumption (in the input language) saying you interpreted the amount as per-post budget.
+- "Views" or any local equivalent -> objectiveHint: "views"
+- "Engagement" or any local equivalent -> "engagement"
+- "Clicks" / "Traffic" -> "clicks"
+- "Sales" / "Buy" -> "conversions"
+- "finish by <time>" / "end at <time>" -> scheduleEndIso; convert from Bangkok to UTC.
+- KPI is ONLY filled if the user gave an explicit target (e.g. "at least 10000 views", or "CPV no more than 0.5"). Otherwise null.
+- Purpose is ONLY filled if the user explicitly said why (e.g. "for launch", "testing creative"). Otherwise null.
+- Do NOT extract URLs - the server handles that separately.
 
 Output ONLY the JSON object. No markdown fences, no commentary.`;
 

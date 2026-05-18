@@ -12,13 +12,13 @@ import { MetricDelta } from "./metric-delta";
  * the top of Overview / Optimization / Competitor pages.
  */
 export type KpiCardProps = {
-  /** Short label e.g. "ค่าใช้จ่ายรวม" */
+  /** Short label e.g. "Total spend" */
   label: string;
   /** The big number — pre-formatted string (e.g. "฿124,560" or "4.32") */
   value: React.ReactNode;
   /** Optional delta vs comparison period (%). Pass numeric float */
   delta?: number;
-  /** Helper text below delta, e.g. "vs 1-30 เม.ย." */
+  /** Helper text below delta, e.g. "vs Apr 1-30" */
   comparison?: string;
   /** Lucide icon to render in the colored circle */
   icon: LucideIcon;

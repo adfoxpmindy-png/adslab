@@ -1,4 +1,8 @@
+import { getTranslations } from "next-intl/server";
+
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/i18n/locales";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { getFreshAccessToken } from "./client";
 import { graphFetch } from "./graph-api";
 import { invalidateDashboardCache } from "./dashboard-service";
@@ -65,6 +69,12 @@ export type PerformActionInput = {
   tenantId: string;
   userId: string;
   campaignId: string; // internal MetaCampaign.id (cuid)
+  /**
+   * Optional locale override. When omitted, falls back to
+   * `resolveUserLocale(userId)` so error messages return in the
+   * caller's preferred language.
+   */
+  locale?: Locale;
 } & ActionInput;
 
 export type PerformActionResult =
@@ -83,6 +93,12 @@ export type PerformActionResult =
 export async function performCampaignAction(
   input: PerformActionInput,
 ): Promise<PerformActionResult> {
+  const locale = input.locale ?? (await resolveUserLocale(input.userId));
+  const t = await getTranslations({
+    locale,
+    namespace: "meta.campaignActions",
+  });
+
   // 1. Resolve campaign + verify ownership
   const campaign = await prisma.metaCampaign.findFirst({
     where: { id: input.campaignId, connection: { tenantId: input.tenantId } },
@@ -117,49 +133,33 @@ export async function performCampaignAction(
     metaBody = { status: afterStatus };
   } else if (input.action === "SET_BUDGET") {
     if (!isCboCampaign(campaign)) {
-      return await logFailure(
-        input,
-        campaign,
-        "Budget อยู่ที่ระดับ ad set — แก้ใน Meta Ads Manager",
-      );
+      return await logFailure(input, campaign, t("budgetAtAdSet"));
     }
     const isDaily = input.dailyBudget !== undefined;
     const isLifetime = input.lifetimeBudget !== undefined;
     if (isDaily === isLifetime) {
-      return await logFailure(
-        input,
-        campaign,
-        "ต้องระบุอย่างใดอย่างหนึ่ง: dailyBudget หรือ lifetimeBudget",
-      );
+      return await logFailure(input, campaign, t("budgetEitherOr"));
     }
     // Lock to the model the campaign already uses — Meta rejects swaps.
     if (isDaily && campaign.dailyBudget === null) {
-      return await logFailure(
-        input,
-        campaign,
-        "Campaign นี้ใช้ lifetime budget อยู่ — แก้แบบ lifetime แทน",
-      );
+      return await logFailure(input, campaign, t("useLifetimeInstead"));
     }
     if (isLifetime && campaign.lifetimeBudget === null) {
-      return await logFailure(
-        input,
-        campaign,
-        "Campaign นี้ใช้ daily budget อยู่ — แก้แบบ daily แทน",
-      );
+      return await logFailure(input, campaign, t("useDailyInstead"));
     }
     const thb = (isDaily ? input.dailyBudget : input.lifetimeBudget) as number;
     if (thb < MIN_BUDGET_THB) {
       return await logFailure(
         input,
         campaign,
-        `Budget ต่ำกว่าขั้นต่ำ ฿${MIN_BUDGET_THB}`,
+        t("budgetBelowMin", { min: MIN_BUDGET_THB }),
       );
     }
     if (thb > MAX_BUDGET_THB) {
       return await logFailure(
         input,
         campaign,
-        `Budget เกินเพดาน ฿${MAX_BUDGET_THB.toLocaleString()} — ตรวจสอบว่าใส่ตัวเลขถูกหรือไม่`,
+        t("budgetAboveMax", { max: MAX_BUDGET_THB.toLocaleString() }),
       );
     }
     const minor = thbToMinorUnits(thb);
@@ -181,7 +181,7 @@ export async function performCampaignAction(
     // Allow end_time == now (= "end now") but reject anything older —
     // Meta rejects past times anyway.
     if (input.endTime.getTime() < now - 60_000) {
-      return await logFailure(input, campaign, "end_time ต้องไม่ใช่อดีต");
+      return await logFailure(input, campaign, t("endTimePast"));
     }
     beforeValue = { endTime: campaign.endTime?.toISOString() ?? null };
     afterValue = { endTime: input.endTime.toISOString() };

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -26,6 +27,7 @@ export function ComingSoonCard({
   title: string;
   description: string;
 }) {
+  const t = useTranslations("comingSoon");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -33,7 +35,7 @@ export function ComingSoonCard({
 
   async function submit() {
     if (!email.trim()) {
-      toast.error("ใส่ email");
+      toast.error(t("emailRequired"));
       return;
     }
     setSubmitting(true);
@@ -49,11 +51,11 @@ export function ComingSoonCard({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ไม่สำเร็จ");
+      if (!res.ok) throw new Error(data.error ?? t("submitFailed"));
       setSubmitted(true);
-      toast.success("✓ ลงทะเบียนความสนใจแล้ว — เราจะแจ้งเมื่อเปิดให้ใช้");
+      toast.success(t("registered"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("submitFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -71,7 +73,7 @@ export function ComingSoonCard({
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
             <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
-              Coming Soon
+              {t("badge")}
             </span>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>
@@ -85,14 +87,13 @@ export function ComingSoonCard({
               <Check className="size-3" strokeWidth={3} />
             </div>
             <span>
-              ลงทะเบียนแล้ว <span className="font-medium">{email}</span> — เราจะแจ้งเมื่อ
-              {title} พร้อมใช้
+              {t("registeredInline")} <span className="font-medium">{email}</span> — {t("willNotifyWhenReady", { title })}
             </span>
           </div>
         ) : (
           <div className="space-y-2">
             <label className="block text-xs font-medium text-muted-foreground">
-              อยากใช้ {title}? — ใส่ email เพื่อให้เราแจ้งเมื่อพร้อม
+              {t("promptLabel", { title })}
             </label>
             <div className="flex gap-2">
               <Input
@@ -109,7 +110,7 @@ export function ComingSoonCard({
                 disabled={submitting || !email.trim()}
               >
                 {submitting && <Loader2 className="mr-1.5 size-3.5 animate-spin" />}
-                ลงทะเบียน
+                {t("submit")}
               </Button>
             </div>
           </div>

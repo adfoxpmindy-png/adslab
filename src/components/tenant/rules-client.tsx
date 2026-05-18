@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -10,12 +11,14 @@ import {
   Shield,
   Sparkles,
   Trash2,
+  X,
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { BrandButton, SectionHeader } from "@/components/ui-system";
+import { formatDate, formatDateTime } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import {
   ACTIONS,
@@ -59,31 +62,46 @@ type Props = {
   adSets: EntityOption[];
 };
 
-const METRIC_LABELS: Record<(typeof METRICS)[number], string> = {
-  cpv: "CPV (฿/view)",
-  roas: "ROAS",
-  spend: "Spend (฿)",
-  frequency: "Frequency",
-  ctr: "CTR",
-};
 const OP_LABELS: Record<(typeof OPS)[number], string> = {
   gt: ">",
   gte: "≥",
   lt: "<",
   lte: "≤",
 };
-const ACTION_LABELS: Record<RuleAction, string> = {
-  pause_adset: "Pause Ad Set",
-  pause_campaign: "Pause Campaign",
-  notify_email: "ส่ง email แจ้ง OWNER",
-  notify_in_app: "ขึ้น notification ในแอพ",
-};
-const INTERVAL_LABELS: Record<number, string> = {
-  60: "ทุก 1 ชม.",
-  360: "ทุก 6 ชม.",
-  720: "ทุก 12 ชม.",
-  1440: "ทุก 24 ชม.",
-};
+
+// Translator type for label-builder helpers. Use the bare `useTranslations`
+// return type so any namespaced translator (e.g. `useTranslations("pages.rules")`)
+// is assignable — the actual Translator is a callable object with extra
+// methods (.rich/.markup/.raw/.has), which a plain function signature can't model.
+type TFn = ReturnType<typeof useTranslations>;
+
+function metricLabels(t: TFn): Record<(typeof METRICS)[number], string> {
+  return {
+    cpv: t("metric.cpv"),
+    roas: t("metric.roas"),
+    spend: t("metric.spend"),
+    frequency: t("metric.frequency"),
+    ctr: t("metric.ctr"),
+  };
+}
+
+function actionLabels(t: TFn): Record<RuleAction, string> {
+  return {
+    pause_adset: t("action.pauseAdset"),
+    pause_campaign: t("action.pauseCampaign"),
+    notify_email: t("action.notifyEmail"),
+    notify_in_app: t("action.notifyInApp"),
+  };
+}
+
+function intervalLabels(t: TFn): Record<number, string> {
+  return {
+    60: t("interval.every1h"),
+    360: t("interval.every6h"),
+    720: t("interval.every12h"),
+    1440: t("interval.every24h"),
+  };
+}
 
 const EMPTY_CONDITION: RuleCondition = {
   metric: "cpv",
@@ -102,6 +120,7 @@ export function RulesClient({
   campaigns,
   adSets,
 }: Props) {
+  const tPages = useTranslations("pages.rules");
   const [rules, setRules] = useState(initialRules);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<RuleSummary | null>(null);
@@ -119,8 +138,13 @@ export function RulesClient({
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <SectionHeader
-          title={`${rules.length} rule${rules.length === 1 ? "" : "s"} · active ${activeCount}/${cap}`}
-          subtitle="กดเปิด/ปิดเพื่อ activate · กดชื่อเพื่อแก้ไข · กด ⋯ เพื่อดู history"
+          title={tPages("header.summary", {
+            count: rules.length,
+            unit: rules.length === 1 ? tPages("header.unitOne") : tPages("header.unitMany"),
+            active: activeCount,
+            cap,
+          })}
+          subtitle={tPages("header.subtitle")}
         />
         <div className="flex gap-2">
           {canEdit && (
@@ -130,7 +154,7 @@ export function RulesClient({
               className="inline-flex items-center gap-1.5 rounded-xl border border-violet-300 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700 hover:bg-violet-100 dark:border-violet-900 dark:bg-violet-950/40 dark:text-violet-200"
             >
               <Sparkles className="size-4" />
-              ขอ AI แนะนำ
+              {tPages("header.askAi")}
             </button>
           )}
           {canEdit && (
@@ -140,10 +164,10 @@ export function RulesClient({
                 setFormOpen(true);
               }}
               disabled={!canCreate}
-              title={!canCreate ? "ถึง limit ของ plan แล้ว" : undefined}
+              title={!canCreate ? tPages("header.atCapTooltip") : undefined}
             >
               <Plus className="size-4" />
-              เพิ่ม rule
+              {tPages("header.addRule")}
             </BrandButton>
           )}
         </div>
@@ -152,9 +176,9 @@ export function RulesClient({
       {rules.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
           <Shield className="mx-auto mb-3 size-10 text-muted-foreground" />
-          <p className="text-sm font-medium">ยังไม่มี rule</p>
+          <p className="text-sm font-medium">{tPages("empty.title")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            ตั้ง rule เพื่อให้ AdsLab pause adset หรือแจ้งเตือนคุณอัตโนมัติเมื่อ KPI ไม่ดี
+            {tPages("empty.description")}
           </p>
         </div>
       )}
@@ -231,12 +255,12 @@ export function RulesClient({
       const { rule } = (await res.json()) as { rule: RuleSummary };
       setRules((rs) => rs.map((r) => (r.id === id ? { ...r, ...rule } : r)));
     } catch (e) {
-      toast.error(`อัพเดทไม่สำเร็จ: ${(e as Error).message}`);
+      toast.error(tPages("toast.updateFailed", { message: (e as Error).message }));
     }
   }
 
   async function deleteRule(id: string) {
-    if (!confirm("ลบ rule นี้? RuleRun history จะถูกลบด้วย")) return;
+    if (!confirm(tPages("toast.confirmDelete"))) return;
     try {
       const res = await fetch(
         `/api/rules/${id}?tenantSlug=${encodeURIComponent(tenantSlug)}`,
@@ -244,9 +268,9 @@ export function RulesClient({
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setRules((rs) => rs.filter((r) => r.id !== id));
-      toast.success("ลบแล้ว");
+      toast.success(tPages("toast.deleteSuccess"));
     } catch (e) {
-      toast.error(`ลบไม่สำเร็จ: ${(e as Error).message}`);
+      toast.error(tPages("toast.deleteFailed", { message: (e as Error).message }));
     }
   }
 }
@@ -268,6 +292,10 @@ function RuleRow({
   onDelete: () => void;
   onHistory: () => void;
 }) {
+  const tPages = useTranslations("pages.rules");
+  const locale = useLocale();
+  const ACTION_LABELS = actionLabels(tPages);
+  const INTERVAL_LABELS = intervalLabels(tPages);
   const [testing, setTesting] = useState(false);
   async function handleTest() {
     setTesting(true);
@@ -282,7 +310,7 @@ function RuleRow({
         `Test: evaluated ${body.stats.evaluated} target(s) — ${body.stats.fired} matched`,
       );
     } catch (e) {
-      toast.error(`Test ล้มเหลว: ${(e as Error).message}`);
+      toast.error(tPages("toast.testFailed", { message: (e as Error).message }));
     } finally {
       setTesting(false);
     }
@@ -317,12 +345,18 @@ function RuleRow({
                 {rule.condition.metric.toUpperCase()} {OP_LABELS[rule.condition.op]}{" "}
                 {rule.condition.value}
               </span>{" "}
-              ใน {rule.condition.windowHours}h ที่ {rule.condition.scope} → {ACTION_LABELS[rule.action]} ·
-              เช็ค {INTERVAL_LABELS[rule.minIntervalMinutes]}
+              {tPages("row.inWindow", {
+                hours: rule.condition.windowHours,
+                scope: rule.condition.scope,
+              })}{" "}
+              → {ACTION_LABELS[rule.action]} ·{" "}
+              {tPages("row.checkEvery", { interval: INTERVAL_LABELS[rule.minIntervalMinutes] })}
               {rule.lastFiredAt && (
                 <>
                   {" · "}
-                  ฟายล่าสุด {new Date(rule.lastFiredAt).toLocaleDateString("th-TH")}
+                  {tPages("row.lastFired", {
+                    date: formatDate(new Date(rule.lastFiredAt), locale),
+                  })}
                 </>
               )}
             </p>
@@ -334,7 +368,7 @@ function RuleRow({
             onClick={handleTest}
             disabled={testing || !canEdit}
             className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent disabled:opacity-50"
-            title="ทดสอบ rule ตอนนี้"
+            title={tPages("row.testTooltip")}
           >
             {testing ? <Loader2 className="size-3.5 animate-spin" /> : <Zap className="size-3.5" />}
           </button>
@@ -342,7 +376,7 @@ function RuleRow({
             type="button"
             onClick={onHistory}
             className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-            title="ดู history"
+            title={tPages("row.historyTooltip")}
           >
             <Clock className="size-3.5" />
           </button>
@@ -351,7 +385,7 @@ function RuleRow({
               type="button"
               onClick={onDelete}
               className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-              title="ลบ"
+              title={tPages("row.deleteTooltip")}
             >
               <Trash2 className="size-3.5" />
             </button>
@@ -377,6 +411,10 @@ function RuleFormModal({
   onCancel: () => void;
   onSaved: (rule: RuleSummary) => void;
 }) {
+  const tPages = useTranslations("pages.rules");
+  const METRIC_LABELS = metricLabels(tPages);
+  const ACTION_LABELS = actionLabels(tPages);
+  const INTERVAL_LABELS = intervalLabels(tPages);
   const [name, setName] = useState(existing?.name ?? "");
   const [enabled, setEnabled] = useState(existing?.enabled ?? true);
   const [cond, setCond] = useState<RuleCondition>(existing?.condition ?? EMPTY_CONDITION);
@@ -389,7 +427,7 @@ function RuleFormModal({
 
   function handleSave() {
     if (!name.trim()) {
-      toast.error("ใส่ชื่อ rule");
+      toast.error(tPages("toast.needName"));
       return;
     }
     startSaving(async () => {
@@ -416,37 +454,42 @@ function RuleFormModal({
         }
         const { rule } = (await res.json()) as { rule: RuleSummary };
         onSaved(rule);
-        toast.success(isEdit ? "แก้ไขแล้ว" : "สร้างแล้ว");
+        toast.success(
+          isEdit ? tPages("toast.saveSuccessEdited") : tPages("toast.saveSuccessCreated"),
+        );
       } catch (e) {
-        toast.error(`บันทึกไม่สำเร็จ: ${(e as Error).message}`);
+        toast.error(tPages("toast.saveFailed", { message: (e as Error).message }));
       }
     });
   }
 
   return (
-    <ModalShell title={existing ? "แก้ไข rule" : "สร้าง rule ใหม่"} onClose={onCancel}>
+    <ModalShell
+      title={existing ? tPages("form.editTitle") : tPages("form.createTitle")}
+      onClose={onCancel}
+    >
       <div className="space-y-4">
-        <Field label="ชื่อ rule">
+        <Field label={tPages("form.nameLabel")}>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="เช่น pause adset ถ้า CPV เกิน ฿5 ใน 2 ชม."
+            placeholder={tPages("form.namePlaceholder")}
             maxLength={120}
           />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Scope">
+          <Field label={tPages("form.scopeLabel")}>
             <select
               value={cond.scope}
               onChange={(e) => setCond({ ...cond, scope: e.target.value as RuleCondition["scope"] })}
               className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
             >
-              <option value="adset">Ad Set</option>
-              <option value="campaign">Campaign</option>
+              <option value="adset">{tPages("form.scopeAdset")}</option>
+              <option value="campaign">{tPages("form.scopeCampaign")}</option>
             </select>
           </Field>
-          <Field label="Metric">
+          <Field label={tPages("form.metricLabel")}>
             <select
               value={cond.metric}
               onChange={(e) =>
@@ -464,7 +507,7 @@ function RuleFormModal({
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <Field label="Operator">
+          <Field label={tPages("form.operatorLabel")}>
             <select
               value={cond.op}
               onChange={(e) => setCond({ ...cond, op: e.target.value as RuleCondition["op"] })}
@@ -477,7 +520,7 @@ function RuleFormModal({
               ))}
             </select>
           </Field>
-          <Field label="Value">
+          <Field label={tPages("form.valueLabel")}>
             <Input
               type="number"
               step="any"
@@ -485,7 +528,7 @@ function RuleFormModal({
               onChange={(e) => setCond({ ...cond, value: Number(e.target.value) })}
             />
           </Field>
-          <Field label="Window">
+          <Field label={tPages("form.windowLabel")}>
             <select
               value={cond.windowHours}
               onChange={(e) =>
@@ -502,7 +545,7 @@ function RuleFormModal({
           </Field>
         </div>
 
-        <Field label="Action">
+        <Field label={tPages("form.actionLabel")}>
           <select
             value={action}
             onChange={(e) => setAction(e.target.value as RuleAction)}
@@ -516,7 +559,7 @@ function RuleFormModal({
           </select>
         </Field>
 
-        <Field label="ความถี่ที่เช็ค (min interval)">
+        <Field label={tPages("form.intervalLabel")}>
           <select
             value={minInterval}
             onChange={(e) => setMinInterval(Number(e.target.value))}
@@ -531,11 +574,15 @@ function RuleFormModal({
         </Field>
 
         <Field
-          label={`เลือก ${cond.scope === "campaign" ? "campaign" : "ad set"} เฉพาะ (ไม่เลือก = ทั้งหมด)`}
+          label={
+            cond.scope === "campaign"
+              ? tPages("form.targetLabelCampaign")
+              : tPages("form.targetLabelAdSet")
+          }
         >
           <div className="max-h-40 overflow-y-auto rounded-md border border-border bg-background p-2 text-xs">
             {targetOptions.length === 0 ? (
-              <p className="text-muted-foreground">ไม่มีตัวเลือก</p>
+              <p className="text-muted-foreground">{tPages("form.noTargets")}</p>
             ) : (
               targetOptions.slice(0, 80).map((t) => (
                 <label key={t.id} className="flex items-center gap-2 py-1 hover:bg-accent/50">
@@ -563,7 +610,7 @@ function RuleFormModal({
             checked={enabled}
             onChange={(e) => setEnabled(e.target.checked)}
           />
-          เปิดใช้งานทันที (นับเข้า tier cap)
+          {tPages("form.enableNow")}
         </label>
       </div>
 
@@ -573,11 +620,11 @@ function RuleFormModal({
           onClick={onCancel}
           className="rounded-md px-4 py-2 text-sm hover:bg-accent"
         >
-          ยกเลิก
+          {tPages("form.cancel")}
         </button>
         <BrandButton onClick={handleSave} disabled={saving}>
           {saving && <Loader2 className="size-4 animate-spin" />}
-          {existing ? "บันทึก" : "สร้าง rule"}
+          {existing ? tPages("form.save") : tPages("form.createBtn")}
         </BrandButton>
       </div>
     </ModalShell>
@@ -595,6 +642,8 @@ function RuleHistoryDrawer({
   ruleName: string;
   onClose: () => void;
 }) {
+  const tPages = useTranslations("pages.rules");
+  const locale = useLocale();
   const [runs, setRuns] = useState<Array<{
     id: string;
     tickAt: string;
@@ -616,15 +665,15 @@ function RuleHistoryDrawer({
   }, [ruleId, tenantSlug]);
 
   return (
-    <ModalShell title={`History · ${ruleName}`} onClose={onClose}>
+    <ModalShell title={tPages("history.title", { ruleName })} onClose={onClose}>
       {runs === null ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
           <Loader2 className="mx-auto mb-2 size-5 animate-spin" />
-          กำลังโหลด...
+          {tPages("history.loading")}
         </p>
       ) : runs.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
-          ยังไม่มี evaluation — เปิด rule แล้วรอ cron tick หรือกด Test
+          {tPages("history.empty")}
         </p>
       ) : (
         <div className="max-h-[60vh] space-y-1.5 overflow-y-auto">
@@ -649,7 +698,7 @@ function RuleHistoryDrawer({
                   vs {r.threshold}
                 </span>
                 <span className="shrink-0 text-muted-foreground">
-                  {new Date(r.tickAt).toLocaleString("th-TH")}
+                  {formatDateTime(r.tickAt, locale)}
                 </span>
               </div>
               <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
@@ -673,6 +722,8 @@ function SuggestionsModal({
   onClose: () => void;
   onAccept: (saved: RuleSummary) => void;
 }) {
+  const tPages = useTranslations("pages.rules");
+  const ACTION_LABELS = actionLabels(tPages);
   const [loading, startLoading] = useTransition();
   const [candidates, setCandidates] = useState<Candidate[] | null>(null);
   const [accepting, setAccepting] = useState<string | null>(null);
@@ -688,7 +739,7 @@ function SuggestionsModal({
         const body = (await res.json()) as { candidates: Candidate[] };
         setCandidates(body.candidates ?? []);
       } catch (e) {
-        toast.error(`AI ขัดข้อง: ${(e as Error).message}`);
+        toast.error(tPages("suggest.aiError", { message: (e as Error).message }));
       }
     });
   }
@@ -715,36 +766,36 @@ function SuggestionsModal({
       const { rule } = (await res.json()) as { rule: RuleSummary };
       onAccept(rule);
       setCandidates((cs) => cs?.filter((x) => x.name !== c.name) ?? null);
-      toast.success(`เพิ่มแล้ว: ${c.name} (disabled — เปิดได้ใน list)`);
+      toast.success(tPages("suggest.addSuccess", { name: c.name }));
     } catch (e) {
-      toast.error(`เพิ่มไม่สำเร็จ: ${(e as Error).message}`);
+      toast.error(tPages("suggest.addFailed", { message: (e as Error).message }));
     } finally {
       setAccepting(null);
     }
   }
 
   return (
-    <ModalShell title="AI แนะนำ Rule" onClose={onClose}>
+    <ModalShell title={tPages("suggest.title")} onClose={onClose}>
       {!candidates && !loading && (
         <div className="py-6 text-center">
           <Sparkles className="mx-auto mb-3 size-10 text-violet-500" />
           <p className="text-sm">
-            ให้ AI ดู pattern การ pause ของคุณช่วง 30 วันที่ผ่านมา แล้วแนะนำ rule ที่อาจเข้าจังหวะ
+            {tPages("suggest.intro")}
           </p>
           <BrandButton onClick={loadSuggestions} className="mt-4">
-            ขอ AI แนะนำ 3 ตัว
+            {tPages("suggest.askThree")}
           </BrandButton>
         </div>
       )}
       {loading && (
         <p className="py-8 text-center text-sm text-muted-foreground">
           <Loader2 className="mx-auto mb-2 size-5 animate-spin" />
-          AI กำลังคิด...
+          {tPages("suggest.thinking")}
         </p>
       )}
       {candidates && candidates.length === 0 && (
         <p className="py-8 text-center text-sm text-muted-foreground">
-          ไม่มี candidate ที่ AI แนะนำ — อาจจะข้อมูลน้อยเกิน เปิด rule เองได้
+          {tPages("suggest.noCandidates")}
         </p>
       )}
       {candidates && candidates.length > 0 && (
@@ -755,8 +806,12 @@ function SuggestionsModal({
               <p className="mt-1 text-xs text-muted-foreground">{c.rationale}</p>
               <p className="mt-2 font-mono text-[11px] text-muted-foreground">
                 {c.condition.metric.toUpperCase()} {OP_LABELS[c.condition.op]}{" "}
-                {c.condition.value} ใน {c.condition.windowHours}h ที่ {c.condition.scope} →{" "}
-                {ACTION_LABELS[c.action]}
+                {c.condition.value}{" "}
+                {tPages("suggest.inWindow", {
+                  hours: c.condition.windowHours,
+                  scope: c.condition.scope,
+                })}{" "}
+                → {ACTION_LABELS[c.action]}
               </p>
               <div className="mt-2 flex justify-end">
                 <button
@@ -770,7 +825,7 @@ function SuggestionsModal({
                   ) : (
                     <Plus className="size-3" />
                   )}
-                  เพิ่ม (disabled)
+                  {tPages("suggest.addBtn")}
                 </button>
               </div>
             </div>
@@ -782,22 +837,24 @@ function SuggestionsModal({
 }
 
 function UpsellCard({ tenantSlug, planKey }: { tenantSlug: string; planKey: PlanKey | null }) {
+  const tPages = useTranslations("pages.rules");
   return (
     <div className="rounded-2xl border border-violet-200 bg-violet-50/40 p-8 text-center dark:border-violet-900 dark:bg-violet-950/20">
       <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-brand-gradient text-white">
         <Shield className="size-6" />
       </div>
-      <p className="text-base font-semibold">Auto-rules อยู่ใน plan แบบจ่ายเงิน</p>
+      <p className="text-base font-semibold">{tPages("upsell.title")}</p>
       <p className="mt-1 text-sm text-muted-foreground">
-        Plan ปัจจุบัน: <code>{planKey ?? "ทดลองใช้ / ยังไม่ได้เลือก"}</code> — upgrade
-        เพื่อปลด rules
+        {tPages("upsell.currentPlan")}{" "}
+        <code>{planKey ?? tPages("upsell.trialOrNone")}</code>
+        {tPages("upsell.upgradeNote")}
       </p>
       <a
         href={`/t/${tenantSlug}/settings/billing`}
         className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-gradient px-5 py-2 text-sm font-medium text-white shadow-card hover:opacity-95"
       >
         <Zap className="size-4" />
-        Upgrade plan
+        {tPages("upsell.upgradeBtn")}
       </a>
     </div>
   );
@@ -814,6 +871,7 @@ function ModalShell({
   onClose: () => void;
   children: React.ReactNode;
 }) {
+  const tPages = useTranslations("pages.rules");
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
       <div
@@ -826,9 +884,9 @@ function ModalShell({
             type="button"
             onClick={onClose}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
-            aria-label="ปิด"
+            aria-label={tPages("modal.closeAria")}
           >
-            ✕
+            <X className="size-4" />
           </button>
         </div>
         {children}

@@ -1,15 +1,19 @@
 /**
- * Feature gating. Single entry point: `requireFeature(tenantId, key)`
+ * Feature gating. Single entry point: `requireFeature(tenantId, key, locale)`
  * throws `FeatureGateError` if the tenant's effective subscription
  * does not allow the requested feature.
  *
- * Callers must translate the error into HTTP 402 (Payment Required)
- * with a Thai-language reason. See `gateErrorToResponse()` helper.
+ * The `upgradeHint` on the error is already localized to the caller's
+ * `locale` (resolved via `resolveUserLocale(userId)` at the call site).
+ * Callers translate the error into HTTP 402 (Payment Required) with
+ * `gateErrorToResponse()`.
  */
 
 import { cache } from "react";
+import { getTranslations } from "next-intl/server";
 
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/i18n/locales";
 import {
   type PlanKey,
   getPlan,
@@ -56,10 +60,16 @@ export const getEffectiveSubscription = cache(async (tenantId: string) => {
 /**
  * Check a feature. Throws on block. The current-day counter for
  * `ai-chat-msg` is read from UsageMetric.
+ *
+ * @param locale  Caller-resolved locale. Used to localize the
+ *                `upgradeHint` on `FeatureGateError`. Pass the result
+ *                of `resolveUserLocale(userId)` from
+ *                `@/lib/i18n/server`.
  */
 export async function requireFeature(
   tenantId: string,
   feature: FeatureKey,
+  locale: Locale,
   ctx?: { delta?: number },
 ): Promise<void> {
   const sub = await getEffectiveSubscription(tenantId);
@@ -88,6 +98,7 @@ export async function requireFeature(
 
   const planKey = sub.plan.key as PlanKey;
   const planDef = getPlan(planKey);
+  const t = await getTranslations({ locale, namespace: "billing.gate" });
 
   switch (feature) {
     case "ai-chat":
@@ -106,7 +117,7 @@ export async function requireFeature(
         throw new FeatureGateError(
           "ai-chat-msg",
           "TIER_LIMIT",
-          `เกินโควต้า AI วันนี้ (${planDef.aiMsgPerDay} ข้อความ/วัน) — อัปเกรดเพื่อใช้ต่อ`,
+          t("aiMsgLimit", { limit: planDef.aiMsgPerDay }),
         );
       }
       return;
@@ -125,7 +136,7 @@ export async function requireFeature(
         throw new FeatureGateError(
           "ad-account-count",
           "TIER_LIMIT",
-          `เกินจำนวน ad accounts ที่ tier นี้รองรับ (${limit}) — อัปเกรด หรือซื้อ Extra Ad Account เพิ่ม`,
+          t("adAccountLimit", { limit }),
         );
       }
       return;
@@ -136,7 +147,7 @@ export async function requireFeature(
         throw new FeatureGateError(
           "event-sdk",
           "ADDON_REQUIRED",
-          "ฟีเจอร์ Event SDK ต้องเปิด add-on ก่อน (฿590/เดือน)",
+          t("eventSdkAddon"),
         );
       }
       return;
@@ -149,7 +160,7 @@ export async function requireFeature(
         throw new FeatureGateError(
           "white-label",
           "ADDON_REQUIRED",
-          "White-label เปิดเป็น add-on ฿490/เดือน หรืออัปเกรดเป็น Scale (รวมฟรี)",
+          t("whiteLabelAddon"),
         );
       }
       return;
@@ -160,7 +171,7 @@ export async function requireFeature(
         throw new FeatureGateError(
           "priority-ai",
           "ADDON_REQUIRED",
-          "Priority AI (Claude Opus) ต้องเปิด add-on ก่อน (฿890/เดือน)",
+          t("priorityAiAddon"),
         );
       }
       return;
@@ -172,10 +183,11 @@ export async function requireFeature(
 export async function checkFeature(
   tenantId: string,
   feature: FeatureKey,
+  locale: Locale,
   ctx?: { delta?: number },
 ): Promise<{ ok: true } | { ok: false; reason: GateReason; hint?: string }> {
   try {
-    await requireFeature(tenantId, feature, ctx);
+    await requireFeature(tenantId, feature, locale, ctx);
     return { ok: true };
   } catch (err) {
     if (err instanceof FeatureGateError) {

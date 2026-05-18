@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { getTranslations } from "next-intl/server";
 
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { schedulePagePost } from "@/lib/meta/page-posts";
 import { defineTool } from "./types";
 
@@ -58,12 +60,19 @@ export const schedulePagePostTool = defineTool({
       minute: "2-digit",
     });
     const snippet = input.caption.slice(0, 60).replace(/\n/g, " ");
-    return `ตั้งเวลาโพสต์เพจ ${input.pageId} วัน ${when}: "${snippet}..."`;
+    // NOTE: summarize is sync and renders into the AI confirmation card;
+    // localized version of this line lives at pages.boost.* in the future
+    // when summaries are wired through useTranslations. Until then, the
+    // AI's natural-language reply (steered by LOCALE_DIRECTIVE) is what
+    // the user actually reads.
+    return `Schedule page ${input.pageId} post for ${when}: "${snippet}..."`;
   },
   async handler(input, ctx) {
+    const locale = await resolveUserLocale(ctx.userId);
+    const tErr = await getTranslations({ locale, namespace: "pages.posts.serverErrors" });
     const scheduledAt = new Date(input.scheduledAt);
     if (Number.isNaN(scheduledAt.getTime())) {
-      return { error: "scheduledAt ไม่ใช่ ISO datetime ที่ถูกต้อง" };
+      return { error: tErr("invalidScheduledAt") };
     }
     const result = await schedulePagePost({
       tenantId: ctx.tenantId,
@@ -73,6 +82,7 @@ export const schedulePagePostTool = defineTool({
       scheduledAt,
       createdByUserId: ctx.userId,
       conversationId: ctx.conversationId,
+      locale,
     });
     if (!result.ok) return { error: result.error, pagePostId: result.pagePostId };
     return {

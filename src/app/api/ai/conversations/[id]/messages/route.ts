@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { sendMessage } from "@/lib/ai/chat-service";
 import { requireFeature, FeatureGateError, gateErrorToResponse } from "@/lib/billing/gate";
 import { recordAiUsage } from "@/lib/billing/usage";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 /**
  * GET  /api/ai/conversations/[id]/messages?tenantSlug=  → full transcript
@@ -76,9 +77,10 @@ export async function POST(
   if (!conv) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   // Phase 9 gate: AI chat + daily message cap.
+  const locale = await resolveUserLocale(session.userId);
   try {
-    await requireFeature(tenant.id, "ai-chat");
-    await requireFeature(tenant.id, "ai-chat-msg", { delta: 1 });
+    await requireFeature(tenant.id, "ai-chat", locale);
+    await requireFeature(tenant.id, "ai-chat-msg", locale, { delta: 1 });
   } catch (err) {
     if (err instanceof FeatureGateError) return gateErrorToResponse(err);
     throw err;

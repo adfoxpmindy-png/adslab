@@ -25,7 +25,7 @@ export const pauseAdSetTool = defineTool({
     required: ["adSetId"],
     additionalProperties: false,
   },
-  summarize: (input) => `หยุด ad set ${input.adSetId}`,
+  summarize: (input) => `Pause ad set ${input.adSetId}`,
   async handler(input, ctx) {
     const result = await performAdSetAction({
       tenantId: ctx.tenantId,

@@ -23,7 +23,7 @@ export const resumeCampaignTool = defineTool({
     required: ["campaignId"],
     additionalProperties: false,
   },
-  summarize: (input) => `เปิด campaign ${input.campaignId} ใหม่`,
+  summarize: (input) => `Resume campaign ${input.campaignId}`,
   async handler(input, ctx) {
     const campaign = await prisma.metaCampaign.findFirst({
       where: {
@@ -32,7 +32,7 @@ export const resumeCampaignTool = defineTool({
       },
       select: { id: true, name: true },
     });
-    if (!campaign) return { error: `Campaign ${input.campaignId} ไม่พบ` };
+    if (!campaign) return { error: `Campaign ${input.campaignId} not found` };
     const result = await performCampaignAction({
       tenantId: ctx.tenantId,
       userId: ctx.userId,

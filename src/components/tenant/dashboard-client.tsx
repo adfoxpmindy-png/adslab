@@ -1,22 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KpiBadge } from "@/components/tenant/kpi-badge";
+import { formatCurrency as intlFormatCurrency } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import type { DashboardPayload, DateRangeKey, ParsedInsight } from "@/lib/meta/insights";
 
-const PRESETS: Array<{ key: DateRangeKey; label: string }> = [
-  { key: "today", label: "วันนี้" },
-  { key: "yesterday", label: "เมื่อวาน" },
-  { key: "last_7d", label: "7 วันล่าสุด" },
-  { key: "last_30d", label: "30 วันล่าสุด" },
+const PRESET_KEYS: Array<{ key: DateRangeKey; tKey: "today" | "yesterday" | "last_7d" | "last_30d" }> = [
+  { key: "today", tKey: "today" },
+  { key: "yesterday", tKey: "yesterday" },
+  { key: "last_7d", tKey: "last_7d" },
+  { key: "last_30d", tKey: "last_30d" },
 ];
 
 type Props = {
@@ -36,18 +39,12 @@ export function DashboardClient({
   initialIsStale,
   canRefresh,
 }: Props) {
+  const t = useTranslations("pages.dashboardV1");
   const [range, setRange] = useState<DateRangeKey>(initialRange);
   const [payload, setPayload] = useState<DashboardPayload | null>(initialPayload);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
-
-  // Whenever range changes from initial, fetch fresh.
-  useEffect(() => {
-    if (range === initialRange && payload?.range === initialRange) return;
-    void fetchForRange(range);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [range]);
 
   async function fetchForRange(r: DateRangeKey) {
     setLoading(true);
@@ -57,11 +54,20 @@ export function DashboardClient({
       if (!res.ok) throw new Error(data.error ?? "Fetch failed");
       setPayload(data);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "โหลดข้อมูลไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
   }
+
+  // Whenever range changes from initial, fetch fresh. fetchForRange declared
+  // above so the lint rule doesn't flag use-before-declare.
+  useEffect(() => {
+    if (range === initialRange && payload?.range === initialRange) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchForRange calls setLoading inside, but it's an async fetch — state updates happen after await, not synchronously inside the effect callback
+    void fetchForRange(range);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [range]);
 
   async function handleRefresh() {
     if (!canRefresh) return;
@@ -74,7 +80,7 @@ export function DashboardClient({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Refresh failed");
       setPayload(data);
-      toast.success("ซิงค์ข้อมูลใหม่เรียบร้อย");
+      toast.success(t("toast.syncSuccess"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Refresh failed");
     } finally {
@@ -143,39 +149,41 @@ function DateRangeBar({
   fromCache: boolean;
   isStale: boolean;
 }) {
+  const t = useTranslations("pages.dashboardV1");
+  const tPresets = useTranslations("pages.dashboardV1.presets");
   const isCustom = range.startsWith("custom:");
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-1.5">
-          {PRESETS.map((p) => (
+          {PRESET_KEYS.map((p) => (
             <Button
               key={p.key}
               variant={range === p.key ? "default" : "outline"}
               size="sm"
               onClick={() => onChange(p.key)}
             >
-              {p.label}
+              {tPresets(p.tKey)}
             </Button>
           ))}
           <Button variant={isCustom ? "default" : "outline"} size="sm" onClick={onToggleCustom}>
-            กำหนดเอง
+            {t("custom")}
           </Button>
         </div>
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           {fetchedAt && (
             <span>
-              ซิงค์ {new Date(fetchedAt).toLocaleString("th-TH")}
-              {isStale && <span className="ml-1 text-amber-600 dark:text-amber-400">(stale)</span>}
-              {fromCache && !isStale && <span className="ml-1">(cached)</span>}
+              {t("syncedAt", { when: new Date(fetchedAt).toLocaleString() })}
+              {isStale && <span className="ml-1 text-amber-600 dark:text-amber-400">{t("stale")}</span>}
+              {fromCache && !isStale && <span className="ml-1">{t("cached")}</span>}
             </span>
           )}
           {canRefresh && (
             <Button variant="ghost" size="sm" onClick={onRefresh} disabled={refreshing} className="gap-1.5">
               <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} />
-              ซิงค์
+              {t("sync")}
             </Button>
           )}
         </div>
@@ -193,12 +201,14 @@ function CustomRangePicker({
   range: DateRangeKey;
   onApply: (from: string, to: string) => void;
 }) {
+  const t = useTranslations("pages.dashboardV1");
   const initial = useMemo(() => {
     if (range.startsWith("custom:")) {
       const [from, to] = range.slice("custom:".length).split("..");
       return { from, to };
     }
     const today = new Date().toISOString().slice(0, 10);
+    // eslint-disable-next-line react-hooks/purity -- intentional: default date range computed at memo-time when range changes
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     return { from: weekAgo, to: today };
   }, [range]);
@@ -208,31 +218,25 @@ function CustomRangePicker({
 
   return (
     <Card className="flex flex-wrap items-end gap-3 p-4">
-      <div className="space-y-1.5">
-        <Label htmlFor="from-date">ตั้งแต่</Label>
-        <Input
-          id="from-date"
-          type="date"
+      <div className="w-44 space-y-1.5">
+        <Label>{t("fromDate")}</Label>
+        <DatePicker
           value={from}
           max={to}
-          onChange={(e) => setFrom(e.target.value)}
-          className="w-44"
+          onChange={(next) => setFrom(next)}
         />
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="to-date">ถึง</Label>
-        <Input
-          id="to-date"
-          type="date"
+      <div className="w-44 space-y-1.5">
+        <Label>{t("toDate")}</Label>
+        <DatePicker
           value={to}
           min={from}
           max={new Date().toISOString().slice(0, 10)}
-          onChange={(e) => setTo(e.target.value)}
-          className="w-44"
+          onChange={(next) => setTo(next)}
         />
       </div>
       <Button onClick={() => onApply(from, to)} disabled={!from || !to || from > to}>
-        นำมาใช้
+        {t("apply")}
       </Button>
     </Card>
   );
@@ -241,9 +245,10 @@ function CustomRangePicker({
 // -----------------------------------------------------------------------------
 
 function KpiCardsRow({ summary }: { summary: DashboardPayload["summary"] }) {
+  const locale = useLocale();
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      <KpiCard label="Total Spend" value={formatThb(summary.spendThb)} />
+      <KpiCard label="Total Spend" value={formatThb(summary.spendThb, locale)} />
       <KpiCard label="Impressions" value={formatNumber(summary.impressions)} />
       <KpiCard label="Clicks" value={formatNumber(summary.clicks)} />
       <KpiCard
@@ -291,14 +296,15 @@ function KpiSkeleton() {
 // -----------------------------------------------------------------------------
 
 function AccountTable({ accounts }: { accounts: ParsedInsight[] }) {
+  const t = useTranslations("pages.dashboardV1");
   const sorted = useMemo(() => [...accounts].sort((a, b) => b.spend - a.spend), [accounts]);
 
   if (sorted.every((a) => a.spend === 0)) {
     return (
       <Card className="flex flex-col items-center justify-center gap-2 border-dashed py-12 text-center">
-        <p className="text-sm font-medium">ยังไม่มี campaign ที่ทำงานในช่วงที่เลือก</p>
+        <p className="text-sm font-medium">{t("emptyTitle")}</p>
         <p className="text-xs text-muted-foreground">
-          ลองเลือกช่วงเวลาอื่น หรือไปสร้าง campaign ใน Meta Ads Manager ก่อน
+          {t("emptyDescription")}
         </p>
       </Card>
     );
@@ -331,6 +337,9 @@ function AccountTable({ accounts }: { accounts: ParsedInsight[] }) {
 }
 
 function Row({ account }: { account: ParsedInsight }) {
+  const tCpm = useTranslations("pages.dashboardV1.cpm");
+  const tRoas = useTranslations("pages.dashboardV1.roas");
+  const locale = useLocale();
   const cpmTone = account.cpm < 50 ? "good" : account.cpm < 100 ? "warn" : "bad";
   const roasTone = account.roas >= 3 ? "good" : account.roas >= 2 ? "warn" : "bad";
 
@@ -345,7 +354,7 @@ function Row({ account }: { account: ParsedInsight }) {
         </div>
       </Td>
       <Td align="right" mono>
-        {formatCurrency(account.spend, account.currency)}
+        {formatCurrency(account.spend, account.currency, locale)}
       </Td>
       <Td align="right" mono>
         {formatNumber(account.impressions)}
@@ -356,7 +365,7 @@ function Row({ account }: { account: ParsedInsight }) {
       <Td align="right">
         <span className="inline-flex items-center gap-1.5">
           <span className="font-mono">{account.cpm.toFixed(0)}</span>
-          {account.cpm > 0 && <KpiBadge tone={cpmTone}>{cpmTone === "good" ? "ดี" : cpmTone === "warn" ? "เฝ้าระวัง" : "แพง"}</KpiBadge>}
+          {account.cpm > 0 && <KpiBadge tone={cpmTone}>{tCpm(cpmTone)}</KpiBadge>}
         </span>
       </Td>
       <Td align="right" mono>
@@ -366,7 +375,7 @@ function Row({ account }: { account: ParsedInsight }) {
         {account.roas > 0 ? (
           <span className="inline-flex items-center gap-1.5">
             <span className="font-mono">{account.roas.toFixed(2)}x</span>
-            <KpiBadge tone={roasTone}>{roasTone === "good" ? "ดี" : roasTone === "warn" ? "เฝ้าระวัง" : "ต่ำ"}</KpiBadge>
+            <KpiBadge tone={roasTone}>{tRoas(roasTone)}</KpiBadge>
           </span>
         ) : (
           <span className="text-muted-foreground">—</span>
@@ -410,26 +419,17 @@ function Td({
 // Formatters
 // -----------------------------------------------------------------------------
 
-const thbFormatter = new Intl.NumberFormat("th-TH", {
-  style: "currency",
-  currency: "THB",
-  maximumFractionDigits: 0,
-});
 const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
-function formatThb(value: number): string {
-  return thbFormatter.format(Math.round(value));
+function formatThb(value: number, locale: string): string {
+  return intlFormatCurrency(Math.round(value), locale);
 }
 function formatNumber(value: number): string {
   return numberFormatter.format(Math.round(value));
 }
-function formatCurrency(value: number, currency: string): string {
+function formatCurrency(value: number, currency: string, locale: string): string {
   try {
-    return new Intl.NumberFormat("th-TH", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(Math.round(value));
+    return intlFormatCurrency(Math.round(value), locale, currency);
   } catch {
     return `${formatNumber(value)} ${currency}`;
   }

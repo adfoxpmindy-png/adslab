@@ -1,4 +1,5 @@
 import { Bell } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { TenantSwitcher } from "@/components/tenant/tenant-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -16,7 +17,8 @@ type TopbarV2Props = {
  * tenant switcher + theme toggle + notification bell. User profile
  * lives in sidebar bottom per mockup.
  */
-export function TopbarV2({ currentTenantSlug, tenants }: TopbarV2Props) {
+export async function TopbarV2({ currentTenantSlug, tenants }: TopbarV2Props) {
+  const t = await getTranslations("topbar");
   return (
     <header className="flex h-16 shrink-0 items-center gap-3 border-b border-border bg-background px-4 sm:gap-4 sm:px-6">
       <MobileNav tenantSlug={currentTenantSlug} />
@@ -28,7 +30,7 @@ export function TopbarV2({ currentTenantSlug, tenants }: TopbarV2Props) {
         <button
           type="button"
           className="relative inline-flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          aria-label="การแจ้งเตือน"
+          aria-label={t("notifications")}
         >
           <Bell className="size-4" />
           <span className="absolute top-2 right-2 size-1.5 rounded-full bg-brand-pink" />

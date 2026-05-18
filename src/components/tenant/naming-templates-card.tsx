@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Plus, Sparkles, Trash2, Type, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Lightbulb, Loader2, Plus, Sparkles, Trash2, Type, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -24,21 +25,24 @@ type AiSuggestion = {
   evidence_examples?: string[];
 };
 
-const PLACEHOLDER_HINTS = [
-  { token: "{MM}", desc: "เดือน 2 หลัก" },
-  { token: "{YY}", desc: "ปี 2 หลัก" },
-  { token: "{YYYY}", desc: "ปี 4 หลัก" },
-  { token: "{DD}", desc: "วัน 2 หลัก" },
-  { token: "{Month}", desc: "เดือน (Jan/Feb/..)" },
-  { token: "{Custom}", desc: "ค่ากำหนดเอง" },
-];
+const PLACEHOLDER_TOKENS = [
+  { token: "{MM}", hintKey: "MM" },
+  { token: "{YY}", hintKey: "YY" },
+  { token: "{YYYY}", hintKey: "YYYY" },
+  { token: "{DD}", hintKey: "DD" },
+  { token: "{Month}", hintKey: "Month" },
+  { token: "{Custom}", hintKey: "Custom" },
+] as const;
 
 /**
  * Renders a preview string for a template pattern by substituting
  * date placeholders with current (Bangkok) date values. Mirrors
  * `src/lib/naming-template.ts#renderTemplate`.
+ *
+ * `customFallback` is the localized placeholder shown for `{Custom}`
+ * so the preview reads naturally in the user's language.
  */
-function renderPreview(pattern: string): string {
+function renderPreview(pattern: string, customFallback: string): string {
   const now = new Date(Date.now() + 7 * 60 * 60 * 1000);
   const mm = String(now.getUTCMonth() + 1).padStart(2, "0");
   const yy = String(now.getUTCFullYear() % 100).padStart(2, "0");
@@ -54,7 +58,7 @@ function renderPreview(pattern: string): string {
     .replace(/\{YYYY\}/g, yyyy)
     .replace(/\{DD\}/g, dd)
     .replace(/\{Month\}/g, monthShort)
-    .replace(/\{Custom\}/g, "<กรอกเอง>");
+    .replace(/\{Custom\}/g, customFallback);
 }
 
 export function NamingTemplatesCard({
@@ -64,6 +68,8 @@ export function NamingTemplatesCard({
   tenantSlug: string;
   canEdit: boolean;
 }) {
+  const t = useTranslations("pages.naming.templates");
+  const customFallback = t("previewFallback");
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -72,6 +78,7 @@ export function NamingTemplatesCard({
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     fetch(`/api/naming-templates?tenantSlug=${tenantSlug}`)
       .then((r) => r.json())
@@ -90,18 +97,18 @@ export function NamingTemplatesCard({
   }, [tenantSlug, refreshKey]);
 
   async function deleteTemplate(id: string) {
-    if (!confirm("ลบ template นี้?")) return;
+    if (!confirm(t("toast.confirmDelete"))) return;
     try {
       const res = await fetch(
         `/api/naming-templates/${id}?tenantSlug=${tenantSlug}`,
         { method: "DELETE" },
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ลบไม่สำเร็จ");
-      toast.success("ลบแล้ว", { duration: 2000 });
+      if (!res.ok) throw new Error(data.error ?? t("toast.deleteFail"));
+      toast.success(t("toast.deleted"), { duration: 2000 });
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ลบไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("toast.deleteFail"));
     }
   }
 
@@ -113,22 +120,27 @@ export function NamingTemplatesCard({
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold tracking-tight">Naming Standards</h2>
+            <h2 className="text-xl font-semibold tracking-tight">{t("header.title")}</h2>
             <span className="rounded-md bg-orange-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-orange-700 dark:bg-orange-950/60 dark:text-orange-300">
-              Templates
+              {t("header.badge")}
             </span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            กำหนดมาตรฐานชื่อ Campaign — Campaign Builder จะแนะนำชื่อตาม template
-            อัตโนมัติ (เช่น <code>Sale_{`{MM}{YY}`}</code> → Sale_0626)
-          </p>
+          <p
+            className="mt-1 text-sm text-muted-foreground"
+            // The intro text contains a small <code> snippet for the example
+            // pattern; render via dangerouslySetInnerHTML so translators can
+            // place the snippet appropriately in their language.
+            dangerouslySetInnerHTML={{
+              __html: t("header.intro", { example: "{MM}{YY}" }),
+            }}
+          />
         </div>
       </header>
 
       <Card className="p-5">
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm">
-            <span className="text-muted-foreground">Templates:</span>{" "}
+            <span className="text-muted-foreground">{t("templatesCount")}</span>{" "}
             <span className="font-semibold tabular-nums">{templates.length}</span>
           </p>
           {canEdit && (
@@ -140,7 +152,7 @@ export function NamingTemplatesCard({
                 className="gap-1.5"
               >
                 <Sparkles className="size-3.5" />
-                AI วิเคราะห์ชื่อ
+                {t("actions.aiAnalyze")}
               </Button>
               <Button
                 size="sm"
@@ -148,7 +160,7 @@ export function NamingTemplatesCard({
                 className="gap-1.5"
               >
                 <Plus className="size-3.5" />
-                เพิ่ม Template
+                {t("actions.addTemplate")}
               </Button>
             </div>
           )}
@@ -157,33 +169,33 @@ export function NamingTemplatesCard({
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-6">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+            <span className="text-sm text-muted-foreground">{t("loading")}</span>
           </div>
         ) : templates.length === 0 ? (
           <div className="rounded-md border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
-            ยังไม่มี template — กดเพิ่ม template หรือใช้ AI วิเคราะห์ชื่อที่มีอยู่
+            {t("empty")}
           </div>
         ) : (
           <ul className="divide-y divide-border">
-            {templates.map((t) => (
-              <li key={t.id} className="flex items-start gap-3 py-2.5">
+            {templates.map((tpl) => (
+              <li key={tpl.id} className="flex items-start gap-3 py-2.5">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{t.name}</span>
-                    {t.isDefault && (
+                    <span className="text-sm font-medium">{tpl.name}</span>
+                    {tpl.isDefault && (
                       <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium uppercase text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                        Suggest
+                        {t("suggestBadge")}
                       </span>
                     )}
                   </div>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">
-                    Pattern: <code className="text-foreground">{t.pattern}</code>
-                    {" · "}Preview:{" "}
-                    <code className="text-foreground">{renderPreview(t.pattern)}</code>
+                    {t("patternWord")}: <code className="text-foreground">{tpl.pattern}</code>
+                    {" · "}{t("previewWord")}:{" "}
+                    <code className="text-foreground">{renderPreview(tpl.pattern, customFallback)}</code>
                   </p>
-                  {t.description && (
+                  {tpl.description && (
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
-                      {t.description}
+                      {tpl.description}
                     </p>
                   )}
                 </div>
@@ -191,9 +203,9 @@ export function NamingTemplatesCard({
                   <Button
                     size="icon-sm"
                     variant="ghost"
-                    onClick={() => deleteTemplate(t.id)}
+                    onClick={() => deleteTemplate(tpl.id)}
                     className="text-destructive"
-                    title="ลบ template"
+                    title={t("deleteTooltip")}
                   >
                     <Trash2 className="size-3.5" />
                   </Button>
@@ -238,6 +250,8 @@ function CreateTemplateModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const t = useTranslations("pages.naming.templates");
+  const customFallback = t("previewFallback");
   const [name, setName] = useState("");
   const [pattern, setPattern] = useState("");
   const [description, setDescription] = useState("");
@@ -245,7 +259,7 @@ function CreateTemplateModal({
 
   async function submit() {
     if (!name.trim() || !pattern.trim()) {
-      return toast.error("ชื่อ + pattern ต้องไม่ว่าง");
+      return toast.error(t("create.errors.nameAndPattern"));
     }
     setSubmitting(true);
     try {
@@ -259,11 +273,11 @@ function CreateTemplateModal({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "สร้างไม่สำเร็จ");
-      toast.success("✓ เพิ่ม template แล้ว", { duration: 2500 });
+      if (!res.ok) throw new Error(data.error ?? t("create.errors.createFail"));
+      toast.success(t("create.success"), { duration: 2500 });
       onCreated();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("create.errors.generic"));
     } finally {
       setSubmitting(false);
     }
@@ -280,9 +294,9 @@ function CreateTemplateModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">เพิ่ม Naming Template</h3>
+            <h3 className="text-base font-semibold">{t("create.title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              ใส่ placeholder ตามรายการด้านล่างเพื่อให้ Campaign Builder แทนค่าให้
+              {t("create.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -292,40 +306,40 @@ function CreateTemplateModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ชื่อ Template
+            {t("create.nameLabel")}
           </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="เช่น Sale Campaign"
+            placeholder={t("create.namePlaceholder")}
           />
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Pattern
+            {t("create.patternLabel")}
           </label>
           <Input
             value={pattern}
             onChange={(e) => setPattern(e.target.value)}
-            placeholder="เช่น Sale_{MM}{YY}"
+            placeholder={t("create.patternPlaceholder")}
           />
           {pattern && (
             <p className="mt-1 text-[11px] text-muted-foreground">
-              Preview ตอนนี้:{" "}
+              {t("previewNow")}{" "}
               <code className="font-medium text-foreground">
-                {renderPreview(pattern)}
+                {renderPreview(pattern, customFallback)}
               </code>
             </p>
           )}
           <div className="mt-2 flex flex-wrap gap-1">
-            {PLACEHOLDER_HINTS.map((h) => (
+            {PLACEHOLDER_TOKENS.map((h) => (
               <button
                 key={h.token}
                 type="button"
                 onClick={() => setPattern((p) => p + h.token)}
                 className="rounded-md border border-border bg-muted/30 px-2 py-0.5 text-[11px] hover:bg-muted"
-                title={h.desc}
+                title={t(`placeholderHints.${h.hintKey}`)}
               >
                 <code>{h.token}</code>
               </button>
@@ -335,18 +349,18 @@ function CreateTemplateModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            คำอธิบาย (optional)
+            {t("create.descriptionLabel")}
           </label>
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="เช่น ใช้สำหรับ campaign ลดราคารายเดือน"
+            placeholder={t("create.descriptionPlaceholder")}
           />
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            ยกเลิก
+            {t("create.cancel")}
           </Button>
           <Button
             size="sm"
@@ -354,7 +368,7 @@ function CreateTemplateModal({
             disabled={submitting || !name.trim() || !pattern.trim()}
           >
             {submitting && <Loader2 className="mr-1.5 size-3.5 animate-spin" />}
-            สร้าง
+            {t("create.createBtn")}
           </Button>
         </div>
       </div>
@@ -371,6 +385,8 @@ function AiSuggestModal({
   onClose: () => void;
   onAccepted: () => void;
 }) {
+  const t = useTranslations("pages.naming.templates");
+  const customFallback = t("previewFallback");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<AiSuggestion[]>([]);
   const [notes, setNotes] = useState<string | null>(null);
@@ -390,7 +406,7 @@ function AiSuggestModal({
         },
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ไม่สำเร็จ");
+      if (!res.ok) throw new Error(data.error ?? t("aiModal.errors.generic"));
       const sugg = data.suggestion as {
         templates?: AiSuggestion[];
         notes?: string;
@@ -399,13 +415,14 @@ function AiSuggestModal({
       setNotes(sugg?.notes ?? null);
       setAnalyzed(data.analyzed ?? 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "AI วิเคราะห์ไม่สำเร็จ");
+      setError(err instanceof Error ? err.message : t("aiModal.errors.aiFail"));
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- run() does async fetch; setState happens after await, intentional mount fetch
     void run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -422,11 +439,11 @@ function AiSuggestModal({
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "เพิ่มไม่สำเร็จ");
-      toast.success(`✓ เพิ่ม "${s.name}"`, { duration: 2000 });
+      if (!res.ok) throw new Error(data.error ?? t("aiModal.errors.addFail"));
+      toast.success(t("aiModal.addedToast", { name: s.name }), { duration: 2000 });
       // Allow user to accept more without closing — refresh list happens via parent on close
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("aiModal.errors.generic"));
     }
   }
 
@@ -443,10 +460,10 @@ function AiSuggestModal({
           <div>
             <h3 className="flex items-center gap-2 text-base font-semibold">
               <Sparkles className="size-4 text-orange-600" />
-              AI วิเคราะห์ชื่อ Campaign
+              {t("aiModal.title")}
             </h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              อ่านชื่อ campaign ที่มีอยู่ → เสนอ template ที่ใช้บ่อย
+              {t("aiModal.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -458,7 +475,7 @@ function AiSuggestModal({
           <div className="flex items-center justify-center gap-2 py-12">
             <Loader2 className="size-4 animate-spin text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              กำลังให้ AI วิเคราะห์...
+              {t("aiModal.loading")}
             </span>
           </div>
         ) : error ? (
@@ -468,11 +485,12 @@ function AiSuggestModal({
         ) : (
           <>
             <p className="text-[11px] text-muted-foreground">
-              วิเคราะห์ {analyzed} campaign names — ได้ {suggestions.length} suggestions
+              {t("aiModal.analyzedSummary", { analyzed, count: suggestions.length })}
             </p>
             {notes && (
-              <p className="rounded-md border border-blue-200 bg-blue-50/60 p-2 text-xs text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
-                💡 {notes}
+              <p className="flex items-start gap-1.5 rounded-md border border-blue-200 bg-blue-50/60 p-2 text-xs text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
+                <Lightbulb className="mt-0.5 size-3.5 shrink-0" />
+                <span>{notes}</span>
               </p>
             )}
             <ul className="space-y-2">
@@ -487,9 +505,9 @@ function AiSuggestModal({
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{s.name}</p>
                     <p className="text-[11px] text-muted-foreground">
-                      Pattern: <code className="text-foreground">{s.pattern}</code>
-                      {" · "}Preview:{" "}
-                      <code className="text-foreground">{renderPreview(s.pattern)}</code>
+                      {t("patternWord")}: <code className="text-foreground">{s.pattern}</code>
+                      {" · "}{t("previewWord")}:{" "}
+                      <code className="text-foreground">{renderPreview(s.pattern, customFallback)}</code>
                     </p>
                     {s.description && (
                       <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -503,14 +521,14 @@ function AiSuggestModal({
                     )}
                   </div>
                   <Button size="sm" variant="outline" onClick={() => accept(s)}>
-                    + ใช้
+                    {t("aiModal.useBtn")}
                   </Button>
                 </li>
               ))}
             </ul>
             {suggestions.length === 0 && (
               <p className="rounded-md border border-dashed border-border p-3 text-center text-xs text-muted-foreground">
-                AI ไม่พบ pattern ที่ชัดเจน — ลองสร้าง template เองได้
+                {t("aiModal.noPatterns")}
               </p>
             )}
           </>
@@ -518,10 +536,10 @@ function AiSuggestModal({
 
         <div className="flex justify-end gap-2 pt-1">
           <Button variant="ghost" size="sm" onClick={onClose}>
-            ปิด
+            {t("aiModal.closeBtn")}
           </Button>
           <Button size="sm" onClick={onAccepted}>
-            เสร็จ
+            {t("aiModal.doneBtn")}
           </Button>
         </div>
       </div>

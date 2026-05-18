@@ -3,21 +3,23 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { FileText, Plus, Search, Settings2, Sparkles, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { formatDateTime } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
-const PROGRESS_MESSAGES = [
-  "📊 กำลังดึงข้อมูลจาก Meta...",
-  "🔍 วิเคราะห์ campaigns...",
-  "🤖 Claude กำลังคิด...",
-  "✍️ เขียนรายงานเป็นภาษาไทย...",
-  "✨ เกือบเสร็จแล้ว...",
-];
+const PROGRESS_KEYS = [
+  "progress.fetching",
+  "progress.analyzing",
+  "progress.thinking",
+  "progress.writing",
+  "progress.almostDone",
+] as const;
 
 type Scope = {
   id: string;
@@ -60,6 +62,8 @@ export function ReportsClient({
   reports,
   statusLabels,
 }: Props) {
+  const t = useTranslations("pages.reports");
+  const locale = useLocale();
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [scopeModalOpen, setScopeModalOpen] = useState<"create" | { edit: Scope } | null>(null);
@@ -75,11 +79,11 @@ export function ReportsClient({
   async function handleGenerate() {
     if (generating) return;
     setGenerating(true);
-    const toastId = toast.loading(PROGRESS_MESSAGES[0], { duration: 120_000 });
+    const toastId = toast.loading(t(PROGRESS_KEYS[0]), { duration: 120_000 });
     let idx = 0;
     const interval = setInterval(() => {
-      idx = Math.min(idx + 1, PROGRESS_MESSAGES.length - 1);
-      toast.loading(PROGRESS_MESSAGES[idx], { id: toastId, duration: 120_000 });
+      idx = Math.min(idx + 1, PROGRESS_KEYS.length - 1);
+      toast.loading(t(PROGRESS_KEYS[idx]), { id: toastId, duration: 120_000 });
     }, 4000);
 
     try {
@@ -88,18 +92,18 @@ export function ReportsClient({
       const res = await fetch(`/api/reports/generate?${qs.toString()}`, { method: "POST" });
       const data = await res.json();
       clearInterval(interval);
-      if (!res.ok) throw new Error(data.error ?? "สร้างรายงานไม่สำเร็จ");
+      if (!res.ok) throw new Error(data.error ?? t("toast.generateFail"));
 
       if (data.status === "skipped") {
-        toast.info("มีรายงานของวันนี้อยู่แล้ว — กำลังพาไปดู", { id: toastId, duration: 2500 });
+        toast.info(t("toast.alreadyExistsToday"), { id: toastId, duration: 2500 });
       } else {
-        toast.success("✓ สร้างรายงานสำเร็จ", { id: toastId, duration: 3000 });
+        toast.success(t("toast.generateSuccess"), { id: toastId, duration: 3000 });
       }
       router.push(`/t/${tenantSlug}/reports/${data.reportId}`);
       router.refresh();
     } catch (err) {
       clearInterval(interval);
-      toast.error(err instanceof Error ? err.message : "สร้างรายงานไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : t("toast.generateFail"), {
         id: toastId,
         duration: 5000,
       });
@@ -109,20 +113,20 @@ export function ReportsClient({
   }
 
   async function deleteScope(scope: Scope) {
-    if (!confirm(`ลบ scope "${scope.name}"? (รายงานเก่าจะยังอยู่)`)) return;
+    if (!confirm(t("toast.confirmDelete", { name: scope.name }))) return;
     try {
       const res = await fetch(`/api/scopes?tenantSlug=${tenantSlug}&id=${scope.id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error();
-      toast.success("✓ ลบ scope แล้ว");
+      toast.success(t("toast.deleted"));
       // If we were viewing the deleted scope, fall back to "All".
       if (selectedScopeId === scope.id) {
         router.push(`/t/${tenantSlug}/reports`);
       }
       startTransition(() => router.refresh());
     } catch {
-      toast.error("ลบไม่สำเร็จ");
+      toast.error(t("toast.deleteFail"));
     }
   }
 
@@ -131,14 +135,14 @@ export function ReportsClient({
       {/* Scope toolbar — single horizontal row, wraps on narrow screens */}
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-card/40 px-3 py-2">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Scope
+          {t("toolbar.scope")}
         </span>
         <select
           value={selectedScopeId ?? ""}
           onChange={(e) => changeScope(e.target.value || null)}
           className="h-8 max-w-[240px] rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="">ทั้งหมด (default)</option>
+          <option value="">{t("toolbar.allDefault")}</option>
           {scopes.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -155,7 +159,7 @@ export function ReportsClient({
               className="gap-1.5"
             >
               <Plus className="size-3.5" />
-              สร้างใหม่
+              {t("toolbar.createNew")}
             </Button>
             {selectedScopeId && (
               <>
@@ -167,10 +171,10 @@ export function ReportsClient({
                     if (s) setScopeModalOpen({ edit: s });
                   }}
                   className="gap-1.5"
-                  title="แก้ไข scope นี้"
+                  title={t("toolbar.editTooltip")}
                 >
                   <Settings2 className="size-3.5" />
-                  แก้ไข
+                  {t("toolbar.edit")}
                 </Button>
                 <Button
                   size="icon-sm"
@@ -180,7 +184,7 @@ export function ReportsClient({
                     if (s) deleteScope(s);
                   }}
                   className="text-destructive"
-                  title="ลบ scope นี้"
+                  title={t("toolbar.deleteTooltip")}
                 >
                   <Trash2 className="size-3.5" />
                 </Button>
@@ -199,10 +203,10 @@ export function ReportsClient({
             <Sparkles className={cn("size-3.5", generating && "animate-pulse")} />
             <span className="truncate max-w-[260px]">
               {generating
-                ? PROGRESS_MESSAGES[0]
+                ? t(PROGRESS_KEYS[0])
                 : selectedScopeId
-                  ? "สร้างรายงาน scope นี้"
-                  : "สร้างรายงานเดี๋ยวนี้"}
+                  ? t("toolbar.generateScope")
+                  : t("toolbar.generateNow")}
             </span>
           </Button>
         )}
@@ -213,12 +217,10 @@ export function ReportsClient({
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-16 text-center">
           <FileText className="size-8 text-muted-foreground" />
           <p className="text-sm font-medium">
-            {selectedScopeId
-              ? "ยังไม่มีรายงานสำหรับ scope นี้"
-              : "ยังไม่มีรายงาน"}
+            {selectedScopeId ? t("list.emptyForScope") : t("list.empty")}
           </p>
           <p className="text-xs text-muted-foreground">
-            คลิก &quot;สร้างรายงาน&quot; เพื่อให้ AI สรุปข้อมูลของเมื่อวานให้คุณ
+            {t("list.emptyHint")}
           </p>
         </Card>
       ) : (
@@ -244,7 +246,7 @@ export function ReportsClient({
                           {status.label}
                         </span>
                         {r.deliveredAt && (
-                          <span className="text-[11px] text-muted-foreground">ส่งอีเมลแล้ว</span>
+                          <span className="text-[11px] text-muted-foreground">{t("list.emailSent")}</span>
                         )}
                       </div>
                       {r.previewText && (
@@ -254,7 +256,7 @@ export function ReportsClient({
                       )}
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-0.5 text-[11px] text-muted-foreground">
-                      <span>{new Date(r.generatedAt).toLocaleString("th-TH")}</span>
+                      <span>{formatDateTime(r.generatedAt, locale)}</span>
                       {r.estimatedCostUsd > 0 && (
                         <span>${r.estimatedCostUsd.toFixed(4)}</span>
                       )}
@@ -304,6 +306,7 @@ function ScopeModal({
   onClose: () => void;
   onSaved: (id: string) => void;
 }) {
+  const t = useTranslations("pages.reports");
   const [name, setName] = useState(editing?.name ?? "");
   const [accountIds, setAccountIds] = useState<Set<string>>(
     new Set(editing?.accountIds ?? []),
@@ -351,11 +354,11 @@ function ScopeModal({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("ตั้งชื่อ scope ก่อน");
+      toast.error(t("toast.nameScope"));
       return;
     }
     setSaving(true);
-    const toastId = toast.loading("กำลังบันทึก...");
+    const toastId = toast.loading(t("toast.saving"));
     try {
       const url = `/api/scopes?tenantSlug=${tenantSlug}`;
       const body = editing
@@ -377,12 +380,12 @@ function ScopeModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "บันทึกไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : t("toast.saveFail"));
       }
-      toast.success("✓ บันทึก scope แล้ว", { id: toastId, duration: 2500 });
+      toast.success(t("toast.saved"), { id: toastId, duration: 2500 });
       onSaved(data.scope.id);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : t("toast.saveFail"), {
         id: toastId,
         duration: 5000,
       });
@@ -404,11 +407,10 @@ function ScopeModal({
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-base font-semibold">
-              {editing ? "แก้ไข Scope" : "สร้าง Scope ใหม่"}
+              {editing ? t("modal.editTitle") : t("modal.createTitle")}
             </h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              เลือกชุด ads accounts / campaigns ที่ต้องการให้ AI วิเคราะห์เฉพาะกลุ่ม —
-              เว้นว่างทั้งสองส่วน = ทั้ง workspace
+              {t("modal.hint")}
             </p>
           </div>
           <Button type="button" size="icon-sm" variant="ghost" onClick={onClose}>
@@ -420,11 +422,11 @@ function ScopeModal({
           {/* Accounts column */}
           <section className="flex min-h-0 flex-col rounded-md border border-border">
             <header className="border-b border-border bg-muted/30 px-3 py-2 text-xs font-medium">
-              Ad Accounts —{" "}
+              {t("modal.accountsHeading")} —{" "}
               <span className="text-muted-foreground">
                 {accountIds.size === 0
-                  ? "ทุก account (ไม่ filter)"
-                  : `เลือก ${accountIds.size} / ${accounts.length}`}
+                  ? t("modal.allAccounts")
+                  : t("modal.accountsSelected", { selected: accountIds.size, total: accounts.length })}
               </span>
             </header>
             <div className="flex-1 overflow-y-auto">
@@ -461,11 +463,11 @@ function ScopeModal({
           <section className="flex min-h-0 flex-col rounded-md border border-border">
             <header className="space-y-2 border-b border-border bg-muted/30 px-3 py-2">
               <div className="text-xs font-medium">
-                Campaigns —{" "}
+                {t("modal.campaignsHeading")} —{" "}
                 <span className="text-muted-foreground">
                   {campaignIds.size === 0
-                    ? "ทุก campaign ใน accounts ที่เลือก"
-                    : `เลือก ${campaignIds.size}`}
+                    ? t("modal.allCampaignsInAccounts")
+                    : t("modal.campaignsSelected", { selected: campaignIds.size })}
                 </span>
               </div>
               <div className="relative">
@@ -473,7 +475,7 @@ function ScopeModal({
                 <Input
                   value={campaignQuery}
                   onChange={(e) => setCampaignQuery(e.target.value)}
-                  placeholder="ค้นหาชื่อ campaign..."
+                  placeholder={t("modal.campaignSearchPlaceholder")}
                   className="h-7 pl-7 text-xs"
                 />
               </div>
@@ -481,7 +483,7 @@ function ScopeModal({
             <div className="flex-1 overflow-y-auto">
               {visibleCampaigns.length === 0 ? (
                 <p className="px-3 py-4 text-center text-xs text-muted-foreground">
-                  ไม่มี campaign — ลองล้าง filter หรือเลือก accounts น้อยลง
+                  {t("modal.campaignsEmpty")}
                 </p>
               ) : (
                 <ul className="divide-y divide-border">
@@ -517,22 +519,22 @@ function ScopeModal({
         <div className="flex flex-wrap items-end justify-between gap-3 border-t border-border pt-3">
           <div className="flex-1 space-y-1">
             <label className="block text-xs font-medium text-muted-foreground">
-              ชื่อ scope
+              {t("modal.scopeNameLabel")}
             </label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="เช่น FROST, Asahi Q2, New Launches..."
+              placeholder={t("modal.scopeNamePlaceholder")}
               className="max-w-sm"
               required
             />
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={onClose}>
-              ยกเลิก
+              {t("modal.cancel")}
             </Button>
             <Button type="submit" size="sm" disabled={saving}>
-              {editing ? "บันทึกการแก้ไข" : "สร้าง scope"}
+              {editing ? t("modal.saveEdit") : t("modal.createBtn")}
             </Button>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Check, Filter, Pencil, Search, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { objectiveLabelTh } from "@/lib/goals/meta-objective-map";
+import { objectiveLabel } from "@/lib/goals/meta-objective-map";
 import { formatKpi } from "@/lib/goals/evaluator";
 
 type GoalKpi =
@@ -78,26 +79,28 @@ const OBJECTIVES: GoalObjective[] = [
   "STORE_VISITS",
 ];
 
-// Source badge styling: confidence ordered green→yellow→gray→red.
-const SOURCE_STYLE: Record<GoalSource | "UNRESOLVED", { label: string; tone: string }> = {
+// Source badge styling: confidence ordered green→yellow→gray→red. The
+// label key points into `pages.goals.source.*` so each subcomponent can
+// translate it via its own `useTranslations` call.
+const SOURCE_STYLE: Record<GoalSource | "UNRESOLVED", { labelKey: string; tone: string }> = {
   USER_MANUAL: {
-    label: "ตั้งเอง",
+    labelKey: "userManual",
     tone: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
   },
   AUTO_NAME: {
-    label: "จากชื่อ",
+    labelKey: "autoName",
     tone: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300",
   },
   AUTO_META: {
-    label: "จาก Meta",
+    labelKey: "autoMeta",
     tone: "bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300",
   },
   TENANT_DEFAULT: {
-    label: "ค่า default",
+    labelKey: "tenantDefault",
     tone: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
   },
   UNRESOLVED: {
-    label: "ยังไม่ตั้ง",
+    labelKey: "unresolved",
     tone: "bg-destructive/10 text-destructive",
   },
 };
@@ -111,6 +114,8 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
+  const t = useTranslations("pages.goals");
+  const tObj = useTranslations("pages.goals.objective");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -207,10 +212,10 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
 
   async function applyBulk() {
     if (selected.size === 0) {
-      toast.error("ยังไม่ได้เลือก campaign");
+      toast.error(t("toast.notSelected"));
       return;
     }
-    const toastId = toast.loading(`กำลังตั้ง goal ให้ ${selected.size} campaigns...`);
+    const toastId = toast.loading(t("toast.settingFor", { count: selected.size }));
     try {
       const res = await fetch(`/api/goals?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -221,17 +226,17 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "บันทึกไม่สำเร็จ");
-      toast.success(`✓ บันทึก ${data.updated} campaigns`, { id: toastId });
+      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : t("toast.saveFail"));
+      toast.success(t("toast.savedCount", { count: data.updated }), { id: toastId });
       setSelected(new Set());
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : t("toast.saveFail"), { id: toastId });
     }
   }
 
   async function setOne(campaignId: string, objective: GoalObjective) {
-    const toastId = toast.loading("กำลังบันทึก...");
+    const toastId = toast.loading(t("toast.saving"));
     try {
       const res = await fetch(`/api/goals?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -239,17 +244,17 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
         body: JSON.stringify({ campaignId, objective }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "บันทึกไม่สำเร็จ");
-      toast.success("✓ บันทึกแล้ว", { id: toastId });
+      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : t("toast.saveFail"));
+      toast.success(t("toast.saved"), { id: toastId });
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : t("toast.saveFail"), { id: toastId });
     }
   }
 
   async function saveTarget(campaign: Campaign, primaryKpi: GoalKpi | null, primaryTarget: number | null) {
     if (!campaign.goal.objective) return;
-    const toastId = toast.loading("กำลังบันทึก target...");
+    const toastId = toast.loading(t("toast.savingTarget"));
     try {
       const res = await fetch(`/api/goals?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -262,28 +267,28 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "บันทึกไม่สำเร็จ");
-      toast.success("✓ บันทึก target แล้ว", { id: toastId });
+      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : t("toast.saveFail"));
+      toast.success(t("toast.targetSaved"), { id: toastId });
       setEditingTarget(null);
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "บันทึกไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : t("toast.saveFail"), { id: toastId });
     }
   }
 
   async function clearOverride(campaignId: string) {
-    const toastId = toast.loading("กำลังลบ override...");
+    const toastId = toast.loading(t("toast.clearingOverride"));
     try {
       const res = await fetch(
         `/api/goals?tenantSlug=${tenantSlug}&campaignId=${encodeURIComponent(campaignId)}`,
         { method: "DELETE" },
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "ลบไม่สำเร็จ");
-      toast.success("✓ กลับไปใช้ค่า auto", { id: toastId });
+      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : t("toast.deleteFail"));
+      toast.success(t("toast.revertedToAuto"), { id: toastId });
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ลบไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : t("toast.deleteFail"), { id: toastId });
     }
   }
 
@@ -293,18 +298,18 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
       <Card className="px-5 py-4">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
           <div>
-            <span className="text-muted-foreground">รวม:</span>{" "}
-            <span className="font-semibold tabular-nums">{stats.total}</span> campaigns
+            <span className="text-muted-foreground">{t("stats.totalLabel")}</span>{" "}
+            <span className="font-semibold tabular-nums">{stats.total}</span> {t("stats.campaignsUnit")}
           </div>
           {Array.from(stats.by.entries()).map(([obj, count]) => (
             <div key={obj}>
-              <span className="text-muted-foreground">{objectiveLabelTh(obj as GoalObjective)}:</span>{" "}
+              <span className="text-muted-foreground">{objectiveLabel(obj as GoalObjective, tObj)}:</span>{" "}
               <span className="font-semibold tabular-nums">{count}</span>
             </div>
           ))}
           {stats.unresolved > 0 && (
             <div className="text-destructive">
-              <span>ยังไม่ตั้ง:</span>{" "}
+              <span>{t("stats.unresolvedLabel")}</span>{" "}
               <span className="font-semibold tabular-nums">{stats.unresolved}</span>
             </div>
           )}
@@ -319,7 +324,7 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ค้นหา campaign หรือ ad account..."
+              placeholder={t("search.placeholder")}
               className="pl-8"
             />
           </div>
@@ -328,12 +333,12 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
             value={sourceFilter}
             onChange={(v) => setSourceFilter(v as typeof sourceFilter)}
             options={[
-              { value: "ALL", label: "ทุก source" },
-              { value: "USER_MANUAL", label: "ตั้งเอง" },
-              { value: "AUTO_META", label: "จาก Meta" },
-              { value: "AUTO_NAME", label: "จากชื่อ" },
-              { value: "TENANT_DEFAULT", label: "ค่า default" },
-              { value: "UNRESOLVED", label: "ยังไม่ตั้ง" },
+              { value: "ALL", label: t("filter.allSources") },
+              { value: "USER_MANUAL", label: t("source.userManual") },
+              { value: "AUTO_META", label: t("source.autoMeta") },
+              { value: "AUTO_NAME", label: t("source.autoName") },
+              { value: "TENANT_DEFAULT", label: t("source.tenantDefault") },
+              { value: "UNRESOLVED", label: t("source.unresolved") },
             ]}
           />
 
@@ -341,7 +346,7 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
             value={accountFilter}
             onChange={setAccountFilter}
             options={[
-              { value: "ALL", label: "ทุก account" },
+              { value: "ALL", label: t("filter.allAccounts") },
               ...accountOptions.map((a) => ({ value: a.id, label: a.name })),
             ]}
           />
@@ -350,9 +355,9 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
         {canEdit && selected.size > 0 && (
           <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2">
             <span className="text-sm font-medium">
-              เลือก {selected.size} campaigns —
+              {t("bulk.selected", { count: selected.size })}
             </span>
-            <span className="text-sm text-muted-foreground">ตั้ง objective:</span>
+            <span className="text-sm text-muted-foreground">{t("bulk.setObjective")}</span>
             <select
               value={bulkObjective}
               onChange={(e) => setBulkObjective(e.target.value as GoalObjective)}
@@ -360,17 +365,17 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
             >
               {OBJECTIVES.map((o) => (
                 <option key={o} value={o}>
-                  {objectiveLabelTh(o)}
+                  {objectiveLabel(o, tObj)}
                 </option>
               ))}
             </select>
             <Button size="sm" onClick={applyBulk} disabled={pending}>
               <Check className="size-3.5" />
-              บันทึกทั้งหมด
+              {t("bulk.saveAll")}
             </Button>
             <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
               <X className="size-3.5" />
-              ล้าง
+              {t("bulk.clear")}
             </Button>
           </div>
         )}
@@ -388,9 +393,9 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
       {/* Campaign list grouped by account */}
       {grouped.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ไม่พบ campaign ที่ตรงกับเงื่อนไข</p>
+          <p className="text-sm font-medium">{t("empty.title")}</p>
           <p className="text-xs text-muted-foreground">
-            ลองล้าง filter หรือลองค้นหาคำอื่น
+            {t("empty.subtitle")}
           </p>
         </Card>
       ) : (
@@ -402,9 +407,9 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
               disabled={!canEdit}
             >
               <Filter className="mr-1 inline size-3" />
-              เลือก/ยกเลิกทั้งหมดในมุมมองนี้ ({filtered.length})
+              {t("list.selectAllToggle", { count: filtered.length })}
             </button>
-            <span>{filtered.length} / {campaigns.length} campaigns</span>
+            <span>{t("list.selectionSummary", { filtered: filtered.length, total: campaigns.length })}</span>
           </div>
           <div className="divide-y divide-border">
             {grouped.map((acc) => (
@@ -412,7 +417,7 @@ export function GoalsClient({ tenantSlug, campaigns, canEdit }: Props) {
                 <div className="bg-muted/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {acc.name}
                   <span className="ml-2 font-normal normal-case text-muted-foreground/70">
-                    · {acc.rows.length} campaigns
+                    {t("list.accountCampaignsCount", { count: acc.rows.length })}
                   </span>
                 </div>
                 {acc.rows.map((c) => (
@@ -460,6 +465,7 @@ function TargetModal({
   onClose: () => void;
   onSave: (kpi: GoalKpi | null, target: number | null) => void;
 }) {
+  const t = useTranslations("pages.goals");
   const defaultKpi = campaign.goal.primaryKpi ?? (campaign.goal.objective ? OBJECTIVE_KPI_HINT[campaign.goal.objective] : "ROAS");
   const [kpi, setKpi] = useState<GoalKpi>(defaultKpi);
   const [target, setTarget] = useState<string>(
@@ -476,7 +482,7 @@ function TargetModal({
       return;
     }
     if (!Number.isFinite(n) || n < 0) {
-      toast.error("กรอกตัวเลขให้ถูกต้อง");
+      toast.error(t("toast.invalidNumber"));
       return;
     }
     onSave(kpi, n);
@@ -493,7 +499,7 @@ function TargetModal({
         className="w-full max-w-md space-y-4 rounded-lg border border-border bg-background p-5 shadow-lg"
       >
         <div>
-          <h3 className="text-sm font-semibold">ตั้ง target สำหรับ campaign นี้</h3>
+          <h3 className="text-sm font-semibold">{t("modal.title")}</h3>
           <p className="mt-1 truncate text-xs text-muted-foreground" title={campaign.name}>
             {campaign.name}
           </p>
@@ -501,7 +507,7 @@ function TargetModal({
 
         <div className="space-y-2">
           <label className="block text-xs font-medium text-muted-foreground">
-            Primary KPI
+            {t("modal.primaryKpi")}
           </label>
           <select
             value={kpi}
@@ -518,7 +524,7 @@ function TargetModal({
 
         <div className="space-y-2">
           <label className="block text-xs font-medium text-muted-foreground">
-            Target value (เว้นว่าง = ใช้ default)
+            {t("modal.targetLabel")}
           </label>
           <Input
             type="number"
@@ -526,16 +532,16 @@ function TargetModal({
             min="0"
             value={target}
             onChange={(e) => setTarget(e.target.value)}
-            placeholder="เช่น 2.5 สำหรับ ROAS, 50 สำหรับ CPM"
+            placeholder={t("modal.targetPlaceholder")}
           />
         </div>
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
-            ยกเลิก
+            {t("modal.cancel")}
           </Button>
           <Button type="submit" size="sm">
-            บันทึก
+            {t("modal.save")}
           </Button>
         </div>
       </form>
@@ -584,11 +590,14 @@ function Row({
   onEditTarget: () => void;
   canEdit: boolean;
 }) {
+  const t = useTranslations("pages.goals");
+  const tObj = useTranslations("pages.goals.objective");
   const statusDot = STATUS_STYLE[campaign.effectiveStatus] ?? "bg-zinc-400";
   const sourceKey = !campaign.goal.resolved
     ? "UNRESOLVED"
     : (campaign.goal.source as GoalSource);
   const sourceStyle = SOURCE_STYLE[sourceKey];
+  const sourceLabel = t(`source.${sourceStyle.labelKey}` as Parameters<typeof t>[0]);
   const isManual = campaign.goal.source === "USER_MANUAL";
   const evalBadge = campaign.evaluation;
 
@@ -605,7 +614,7 @@ function Row({
           checked={selected}
           onChange={onToggle}
           className="size-4 cursor-pointer"
-          aria-label={`เลือก ${campaign.name}`}
+          aria-label={t("row.checkboxAria", { name: campaign.name })}
         />
       )}
 
@@ -617,11 +626,11 @@ function Row({
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {campaign.goal.objective && (
           <span className="rounded-md bg-muted px-2 py-0.5 font-medium">
-            {objectiveLabelTh(campaign.goal.objective)}
+            {objectiveLabel(campaign.goal.objective, tObj)}
           </span>
         )}
         <span className={cn("rounded-md px-2 py-0.5 font-medium", sourceStyle.tone)}>
-          {sourceStyle.label}
+          {sourceLabel}
         </span>
         {evalBadge && evalBadge.status !== "no-data" && (
           <span
@@ -631,7 +640,7 @@ function Row({
                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
                 : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
             )}
-            title={`เป้า ${formatKpi(evalBadge.kpi, evalBadge.target)}${evalBadge.customTarget ? " (custom)" : ""}`}
+            title={`${t("row.evalTargetTooltip", { target: formatKpi(evalBadge.kpi, evalBadge.target) })}${evalBadge.customTarget ? t("row.evalCustomSuffix") : ""}`}
           >
             {evalBadge.kpi} {formatKpi(evalBadge.kpi, evalBadge.actual)}
           </span>
@@ -649,11 +658,11 @@ function Row({
             className="h-7 max-w-[180px] rounded-md border border-border bg-background px-2 text-xs"
           >
             <option value="" disabled>
-              ตั้ง objective...
+              {t("row.setObjectivePlaceholder")}
             </option>
             {OBJECTIVES.map((o) => (
               <option key={o} value={o}>
-                {objectiveLabelTh(o)}
+                {objectiveLabel(o, tObj)}
               </option>
             ))}
           </select>
@@ -661,13 +670,13 @@ function Row({
             size="xs"
             variant="ghost"
             onClick={onEditTarget}
-            title="ตั้ง target"
+            title={t("row.setTargetTooltip")}
             disabled={!campaign.goal.objective}
           >
             <Pencil className="size-3" />
           </Button>
           {isManual && (
-            <Button size="xs" variant="ghost" onClick={onClear} title="ล้าง override">
+            <Button size="xs" variant="ghost" onClick={onClear} title={t("row.clearOverrideTooltip")}>
               <X className="size-3" />
             </Button>
           )}

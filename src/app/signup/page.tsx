@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { SiteFooter } from "@/components/site-footer";
 type FieldErrors = Partial<Record<"name" | "email" | "password" | "tenantName", string>>;
 
 export default function SignupPage() {
+  const t = useTranslations("pages.signup");
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export default function SignupPage() {
 
       if (!res.ok) {
         if (data.fieldErrors) setFieldErrors(data.fieldErrors);
-        setFormError(data.error ?? "เกิดข้อผิดพลาด");
+        setFormError(data.error ?? t("errors.generic"));
         setPending(false);
         return;
       }
@@ -55,7 +57,7 @@ export default function SignupPage() {
       router.refresh();
     } catch (err) {
       console.error(err);
-      setFormError("เชื่อมต่อ server ไม่ได้ ลองอีกครั้ง");
+      setFormError(t("errors.serverUnreachable"));
       setPending(false);
     }
   }
@@ -74,20 +76,20 @@ export default function SignupPage() {
             className="h-12 w-auto dark:brightness-0 dark:invert"
           />
           <p className="mt-2 text-sm text-muted-foreground">
-            ยิงแอดให้เร็ว แม่น scale ได้
+            {t("tagline")}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">สมัครสมาชิก</CardTitle>
-            <CardDescription>เริ่มใช้งานฟรี 30 วัน</CardDescription>
+            <CardTitle className="text-xl">{t("title")}</CardTitle>
+            <CardDescription>{t("subtitle")}</CardDescription>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="name">ชื่อของคุณ</Label>
+                <Label htmlFor="name">{t("nameLabel")}</Label>
                 <Input
                   id="name"
                   name="name"
@@ -95,7 +97,7 @@ export default function SignupPage() {
                   autoComplete="name"
                   required
                   disabled={pending}
-                  placeholder="เช่น อินดี้"
+                  placeholder={t("namePlaceholder")}
                 />
                 {fieldErrors.name && (
                   <p className="text-xs text-destructive">{fieldErrors.name}</p>
@@ -103,14 +105,14 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="tenantName">ชื่อ Agency / Workspace</Label>
+                <Label htmlFor="tenantName">{t("tenantLabel")}</Label>
                 <Input
                   id="tenantName"
                   name="tenantName"
                   type="text"
                   required
                   disabled={pending}
-                  placeholder="เช่น My Agency"
+                  placeholder={t("tenantPlaceholder")}
                 />
                 {fieldErrors.tenantName && (
                   <p className="text-xs text-destructive">{fieldErrors.tenantName}</p>
@@ -118,7 +120,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="email">อีเมล</Label>
+                <Label htmlFor="email">{t("emailLabel")}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -134,7 +136,7 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="password">รหัสผ่าน</Label>
+                <Label htmlFor="password">{t("passwordLabel")}</Label>
                 <Input
                   id="password"
                   name="password"
@@ -143,7 +145,7 @@ export default function SignupPage() {
                   minLength={8}
                   required
                   disabled={pending}
-                  placeholder="อย่างน้อย 8 ตัวอักษร"
+                  placeholder={t("passwordPlaceholder")}
                 />
                 {fieldErrors.password && (
                   <p className="text-xs text-destructive">{fieldErrors.password}</p>
@@ -157,16 +159,16 @@ export default function SignupPage() {
               )}
 
               <Button type="submit" className="w-full" disabled={pending}>
-                {pending ? "กำลังสมัคร..." : "สมัครสมาชิก"}
+                {pending ? t("submitting") : t("submit")}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          มีบัญชีอยู่แล้ว?{" "}
+          {t("haveAccount")}{" "}
           <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
-            เข้าสู่ระบบ
+            {t("login")}
           </Link>
         </p>
         <LegalFooter />

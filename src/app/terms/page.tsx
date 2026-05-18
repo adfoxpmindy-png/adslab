@@ -1,104 +1,117 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { SiteFooter } from "@/components/site-footer";
 import { COMPANY } from "@/lib/company";
 
-export const metadata: Metadata = {
-  title: "Terms of Service / ข้อกำหนดการใช้บริการ · AdsLab",
-  description: "Terms governing the use of AdsLab.",
-};
-
 const LAST_UPDATED = "2026-05-11";
 const CONTACT_EMAIL = COMPANY.supportEmail;
 
-export default function TermsPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.terms");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
+
+export default async function TermsPage() {
+  const t = await getTranslations("pages.terms");
+  const privacyLink = (chunks: React.ReactNode) => (
+    <Link className="text-primary underline-offset-4 hover:underline" href="/privacy">
+      {chunks}
+    </Link>
+  );
+  const deletionLink = (chunks: React.ReactNode) => (
+    <Link className="text-primary underline-offset-4 hover:underline" href="/data-deletion">
+      {chunks}
+    </Link>
+  );
+  const strong = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
+
   return (
     <>
     <main className="mx-auto max-w-3xl px-6 py-12">
       <div className="mb-8">
         <Link href="/" className="text-sm text-muted-foreground underline-offset-4 hover:underline">
-          ← AdsLab
+          {t("backHome")}
         </Link>
       </div>
 
       <header className="mb-10">
-        <h1 className="text-3xl font-semibold tracking-tight">Terms of Service / ข้อกำหนดการใช้บริการ</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated / อัปเดตล่าสุด: {LAST_UPDATED}</p>
+        <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("lastUpdated", { date: LAST_UPDATED })}</p>
       </header>
 
       {/* ============== Thai ============== */}
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">ภาษาไทย</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{t("thaiHeading")}</h2>
 
-        <Block title="1. การยอมรับข้อกำหนด">
-          การสมัครและใช้บริการ AdsLab ถือว่าคุณยอมรับข้อกำหนดฉบับนี้และ <Link className="text-primary underline-offset-4 hover:underline" href="/privacy">นโยบายความเป็นส่วนตัว</Link> ของเรา
-          หากคุณไม่ยอมรับ กรุณาหยุดใช้บริการ
+        <Block title={t("th.s1.title")}>
+          {t.rich("th.s1.body", { privacyLink })}
         </Block>
 
-        <Block title="2. บริการที่ให้">
-          AdsLab เป็นเครื่องมือบริหารจัดการแคมเปญโฆษณาดิจิทัล รวมถึง dashboard, AI report, AI optimization
-          เราเป็น <strong>เครื่องมือเสริม</strong> — ไม่ใช่ผู้รับประกันผลลัพธ์ทางการตลาด การตัดสินใจสุดท้ายเป็นของผู้ใช้
+        <Block title={t("th.s2.title")}>
+          {t.rich("th.s2.body", { strong })}
         </Block>
 
-        <Block title="3. บัญชีผู้ใช้">
+        <Block title={t("th.s3.title")}>
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>คุณต้องมีอายุ 20 ปีบริบูรณ์ขึ้นไป หรือได้รับอนุญาตจากผู้ปกครอง</li>
-            <li>คุณรับผิดชอบการรักษาความปลอดภัยของรหัสผ่าน</li>
-            <li>ห้ามแบ่งปันบัญชีกับผู้อื่น (ใช้ระบบ Team / Workspace แทน)</li>
-            <li>คุณต้องให้ข้อมูลที่ถูกต้องและอัปเดต</li>
+            <li>{t("th.s3.item1")}</li>
+            <li>{t("th.s3.item2")}</li>
+            <li>{t("th.s3.item3")}</li>
+            <li>{t("th.s3.item4")}</li>
           </ul>
         </Block>
 
-        <Block title="4. การใช้งานที่ยอมรับได้">
-          คุณตกลงจะไม่:
+        <Block title={t("th.s4.title")}>
+          {t("th.s4.intro")}
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>ใช้ AdsLab ในกิจกรรมที่ผิดกฎหมาย หรือละเมิดนโยบายของ Meta</li>
-            <li>พยายามเข้าถึงข้อมูลของผู้ใช้รายอื่นโดยไม่ได้รับอนุญาต</li>
-            <li>ใช้ scraping, reverse engineering, หรือ rate-limit bypass</li>
-            <li>ส่ง spam, malware, หรือเนื้อหาที่ละเมิดทรัพย์สินทางปัญญา</li>
-            <li>ใช้ AI features เพื่อสร้างข้อมูลที่ทำให้เข้าใจผิดอย่างเป็นระบบ</li>
+            <li>{t("th.s4.item1")}</li>
+            <li>{t("th.s4.item2")}</li>
+            <li>{t("th.s4.item3")}</li>
+            <li>{t("th.s4.item4")}</li>
+            <li>{t("th.s4.item5")}</li>
           </ul>
         </Block>
 
-        <Block title="5. การชำระเงิน (Phase 2 — ตอนนี้ฟรี)">
-          ในช่วง MVP / Beta บริการเป็น free. เมื่อเริ่ม subscription:
+        <Block title={t("th.s5.title")}>
+          {t("th.s5.intro")}
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>คุณจะได้ระยะทดลองฟรี 30 วัน</li>
-            <li>ค่าบริการจะเรียกเก็บล่วงหน้ารายเดือน/รายปี</li>
-            <li>ยกเลิกได้ทุกเมื่อ — บริการสิ้นสุดสิ้นรอบบิลปัจจุบัน</li>
-            <li>คืนเงิน: ภายใน 7 วันแรกของรอบบิลใหม่ ในกรณีที่ยังไม่ได้ใช้งานหลัก</li>
+            <li>{t("th.s5.item1")}</li>
+            <li>{t("th.s5.item2")}</li>
+            <li>{t("th.s5.item3")}</li>
+            <li>{t("th.s5.item4")}</li>
           </ul>
         </Block>
 
-        <Block title="6. ทรัพย์สินทางปัญญา">
-          AdsLab (รวมถึง code, design, AI prompts, brand) เป็นของเรา
-          ข้อมูลและเนื้อหาที่คุณ upload หรือสร้างผ่าน AdsLab ยังคงเป็นของคุณ — เราเพียงประมวลผลเพื่อให้บริการ
+        <Block title={t("th.s6.title")}>
+          {t("th.s6.body")}
         </Block>
 
-        <Block title="7. ข้อจำกัดความรับผิด">
+        <Block title={t("th.s7.title")}>
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>AdsLab ให้บริการ &quot;as-is&quot; ไม่รับประกันผลกำไรหรือผลลัพธ์ทางการตลาด</li>
-            <li>เราไม่รับผิดต่อความเสียหายทางอ้อม (เช่น ขาดทุนจากการตัดสินใจตาม AI suggestion)</li>
-            <li>ความรับผิดสูงสุดจำกัดที่ค่าบริการที่คุณจ่ายมา 12 เดือนล่าสุด</li>
+            <li>{t("th.s7.item1")}</li>
+            <li>{t("th.s7.item2")}</li>
+            <li>{t("th.s7.item3")}</li>
           </ul>
         </Block>
 
-        <Block title="8. การยกเลิก / การระงับบริการ">
-          เรามีสิทธิ์ระงับ/ยกเลิกบัญชีที่ละเมิดข้อกำหนดนี้ คุณยกเลิกบัญชีของคุณเองได้ที่ Settings
-          ดูการลบข้อมูลที่ <Link className="text-primary underline-offset-4 hover:underline" href="/data-deletion">Data Deletion</Link>
+        <Block title={t("th.s8.title")}>
+          {t.rich("th.s8.body", { deletionLink })}
         </Block>
 
-        <Block title="9. กฎหมายที่ใช้บังคับ">
-          ข้อกำหนดนี้อยู่ภายใต้กฎหมายไทย ข้อพิพาทพิจารณาที่ศาลในประเทศไทย
+        <Block title={t("th.s9.title")}>
+          {t("th.s9.body")}
         </Block>
 
-        <Block title="10. การเปลี่ยนแปลงข้อกำหนด">
-          เราอาจปรับปรุงข้อกำหนดเป็นครั้งคราว แจ้งทางอีเมล 14 วันก่อนมีผล
+        <Block title={t("th.s10.title")}>
+          {t("th.s10.body")}
         </Block>
 
-        <Block title="11. ติดต่อ">
-          อีเมล: <a className="text-primary underline-offset-4 hover:underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        <Block title={t("th.s11.title")}>
+          {t("th.s11.emailLabel")} <a className="text-primary underline-offset-4 hover:underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         </Block>
       </section>
 
@@ -106,87 +119,83 @@ export default function TermsPage() {
 
       {/* ============== English ============== */}
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">English</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{t("englishHeading")}</h2>
 
-        <Block title="1. Acceptance of Terms">
-          By signing up for and using AdsLab, you agree to these Terms and our <Link className="text-primary underline-offset-4 hover:underline" href="/privacy">Privacy Policy</Link>.
-          If you do not agree, please discontinue use.
+        <Block title={t("en.s1.title")}>
+          {t.rich("en.s1.body", { privacyLink })}
         </Block>
 
-        <Block title="2. Service Description">
-          AdsLab is a digital advertising campaign management platform including dashboards, AI reports, and AI optimization.
-          We are a <strong>tool</strong> — not a guarantor of marketing results. Final decisions remain with the user.
+        <Block title={t("en.s2.title")}>
+          {t.rich("en.s2.body", { strong })}
         </Block>
 
-        <Block title="3. User Accounts">
+        <Block title={t("en.s3.title")}>
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>You must be 20+ years old, or have parental/guardian consent</li>
-            <li>You are responsible for password security</li>
-            <li>Do not share accounts (use Team / Workspace features instead)</li>
-            <li>Provide accurate and up-to-date information</li>
+            <li>{t("en.s3.item1")}</li>
+            <li>{t("en.s3.item2")}</li>
+            <li>{t("en.s3.item3")}</li>
+            <li>{t("en.s3.item4")}</li>
           </ul>
         </Block>
 
-        <Block title="4. Acceptable Use">
-          You agree not to:
+        <Block title={t("en.s4.title")}>
+          {t("en.s4.intro")}
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>Use AdsLab for illegal activity or in violation of Meta&apos;s policies</li>
-            <li>Attempt to access other users&apos; data without authorization</li>
-            <li>Scrape, reverse-engineer, or bypass rate limits</li>
-            <li>Send spam, malware, or copyright-infringing content</li>
-            <li>Use AI features to systematically generate misleading content</li>
+            <li>{t("en.s4.item1")}</li>
+            <li>{t("en.s4.item2")}</li>
+            <li>{t("en.s4.item3")}</li>
+            <li>{t("en.s4.item4")}</li>
+            <li>{t("en.s4.item5")}</li>
           </ul>
         </Block>
 
-        <Block title="5. Payment (Phase 2 — currently free)">
-          During MVP / Beta the service is free. When subscriptions launch:
+        <Block title={t("en.s5.title")}>
+          {t("en.s5.intro")}
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>You will receive a 30-day free trial</li>
-            <li>Fees are charged in advance, monthly or annually</li>
-            <li>Cancel at any time — service ends at the end of the current billing cycle</li>
-            <li>Refunds: within the first 7 days of a new billing cycle if usage was minimal</li>
+            <li>{t("en.s5.item1")}</li>
+            <li>{t("en.s5.item2")}</li>
+            <li>{t("en.s5.item3")}</li>
+            <li>{t("en.s5.item4")}</li>
           </ul>
         </Block>
 
-        <Block title="6. Intellectual Property">
-          AdsLab (including code, design, AI prompts, brand) belongs to us.
-          Data and content you upload or generate through AdsLab remains yours — we only process it to provide the service.
+        <Block title={t("en.s6.title")}>
+          {t("en.s6.body")}
         </Block>
 
-        <Block title="7. Limitation of Liability">
+        <Block title={t("en.s7.title")}>
           <ul className="ml-6 list-disc space-y-1.5">
-            <li>AdsLab is provided &quot;as-is&quot; with no guarantee of profit or marketing results</li>
-            <li>We are not liable for indirect damages (e.g. losses from decisions based on AI suggestions)</li>
-            <li>Maximum liability is capped at fees paid by you in the prior 12 months</li>
+            <li>{t("en.s7.item1")}</li>
+            <li>{t("en.s7.item2")}</li>
+            <li>{t("en.s7.item3")}</li>
           </ul>
         </Block>
 
-        <Block title="8. Termination / Suspension">
-          We reserve the right to suspend or terminate accounts that violate these Terms.
-          You may cancel your own account at any time in Settings. See <Link className="text-primary underline-offset-4 hover:underline" href="/data-deletion">Data Deletion</Link> for data removal.
+        <Block title={t("en.s8.title")}>
+          {t.rich("en.s8.body", { deletionLink })}
         </Block>
 
-        <Block title="9. Governing Law">
-          These Terms are governed by the laws of Thailand. Disputes will be resolved in Thai courts.
+        <Block title={t("en.s9.title")}>
+          {t("en.s9.body")}
         </Block>
 
-        <Block title="10. Changes to These Terms">
-          We may update these Terms from time to time. We will notify you via email at least 14 days before changes take effect.
+        <Block title={t("en.s10.title")}>
+          {t("en.s10.body")}
         </Block>
 
-        <Block title="11. Contact">
-          Email: <a className="text-primary underline-offset-4 hover:underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        <Block title={t("en.s11.title")}>
+          {t("en.s11.emailLabel")} <a className="text-primary underline-offset-4 hover:underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         </Block>
       </section>
 
       <footer className="mt-16 border-t border-border pt-6 text-sm text-muted-foreground">
-        <Link href="/privacy" className="underline-offset-4 hover:underline">Privacy Policy</Link>
+        <Link href="/privacy" className="underline-offset-4 hover:underline">{t("footer.privacy")}</Link>
         {" · "}
-        <Link href="/refund-policy" className="underline-offset-4 hover:underline">Refund Policy</Link>
+        <Link href="/refund-policy" className="underline-offset-4 hover:underline">{t("footer.refund")}</Link>
         {" · "}
-        <Link href="/data-deletion" className="underline-offset-4 hover:underline">Data Deletion</Link>
+        <Link href="/data-deletion" className="underline-offset-4 hover:underline">{t("footer.deletion")}</Link>
         {" · "}
-        <Link href="/" className="underline-offset-4 hover:underline">AdsLab</Link>
+        <Link href="/" className="underline-offset-4 hover:underline">{t("footer.home")}</Link>
       </footer>
     </main>
     <SiteFooter />

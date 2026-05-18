@@ -1,4 +1,7 @@
+import { getTranslations } from "next-intl/server";
+
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/i18n/locales";
 import { getFreshAccessToken } from "./client";
 
 /**
@@ -22,12 +25,17 @@ export async function uploadAdImage(params: {
   tenantId: string;
   metaAccountId: string;
   file: File;
+  /** Locale used to format user-facing validation errors. */
+  locale: Locale;
 }): Promise<UploadResult> {
+  const t = await getTranslations({ locale: params.locale, namespace: "api.metaImages" });
   if (!ALLOWED_TYPES.has(params.file.type)) {
-    throw new Error("ไฟล์ต้องเป็น JPG หรือ PNG เท่านั้น");
+    throw new Error(t("mustBeJpgPng"));
   }
   if (params.file.size > MAX_IMAGE_BYTES) {
-    throw new Error(`ไฟล์เกิน 8MB (${(params.file.size / 1024 / 1024).toFixed(1)}MB)`);
+    throw new Error(
+      t("tooLarge", { sizeMb: (params.file.size / 1024 / 1024).toFixed(1) }),
+    );
   }
 
   const connection = await prisma.metaConnection.findUnique({

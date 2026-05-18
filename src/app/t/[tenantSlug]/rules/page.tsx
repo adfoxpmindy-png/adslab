@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -19,6 +20,7 @@ export default async function RulesPage({
   const { tenantSlug } = await params;
   const { tenant, role } = await requireTenantMember(tenantSlug);
   const canEdit = role === "OWNER" || role === "MEDIA_BUYER";
+  const t = await getTranslations("pages.rules.page");
 
   const connection = await prisma.metaConnection.findUnique({
     where: { tenantId: tenant.id },
@@ -37,17 +39,17 @@ export default async function RulesPage({
     return (
       <>
         <SetPageTitle
-          title="กฎอัตโนมัติ"
-          subtitle="ตั้ง if-then ให้ AdsLab pause/แจ้งเตือนแคมเปญตามเงื่อนไข"
+          title={t("title")}
+          subtitle={t("subtitle")}
         />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-            <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้กฎอัตโนมัติ</p>
+            <p className="text-sm font-medium">{t("needMetaConnection")}</p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "gap-2")}
             >
-              ไปที่ Settings
+              {t("goToSettings")}
             </Link>
           </Card>
         </div>
@@ -78,8 +80,8 @@ export default async function RulesPage({
   return (
     <>
       <SetPageTitle
-        title="กฎอัตโนมัติ"
-        subtitle={`ตั้ง if-then ให้ AdsLab pause/แจ้งเตือนแคมเปญตามเงื่อนไข · ใช้ ${rules.filter((r) => r.enabled).length}/${cap} ของ plan`}
+        title={t("title")}
+        subtitle={t("subtitleWithUsage", { used: rules.filter((r) => r.enabled).length, cap })}
       />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <RulesClient

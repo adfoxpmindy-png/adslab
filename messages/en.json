@@ -1,4 +1,185 @@
 {
+  "comingSoon": {
+    "badge": "Coming Soon",
+    "emailRequired": "Enter an email",
+    "submitFailed": "Something went wrong",
+    "registered": "Interest registered — we'll let you know when it's ready",
+    "registeredInline": "Registered",
+    "willNotifyWhenReady": "We'll let you know when {title} is ready",
+    "promptLabel": "Want to use {title}? Enter your email and we'll notify you when it's ready",
+    "submit": "Register"
+  },
+  "company": {
+    "legalName": "Nopphadon Rattananam-om",
+    "address": "8/26 Vibhavadi Rangsit Rd., Soi Vibhavadi Rangsit 22, Chom Phon, Chatuchak, Bangkok 10900",
+    "entityLabel": {
+      "juristic": "Operated by",
+      "individual": "Service provider"
+    }
+  },
+  "siteFooter": {
+    "taxIdLabel": {
+      "juristic": "Tax ID",
+      "individual": "Citizen ID"
+    },
+    "addressLabel": "Address",
+    "contactHeading": "Contact",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "policyHeading": "Policies",
+    "links": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "refund": "Refund Policy",
+      "dataDeletion": "Data Deletion"
+    },
+    "copyright": "© {year} {brand}. Payments processed by Omise (PCI DSS Level 1)."
+  },
+  "billing": {
+    "gate": {
+      "aiMsgLimit": "Daily AI quota exceeded ({limit} messages/day) — upgrade to continue",
+      "adAccountLimit": "Ad-account limit reached for your tier ({limit}) — upgrade or buy an Extra Ad Account",
+      "eventSdkAddon": "Event SDK requires the add-on (฿590/month)",
+      "whiteLabelAddon": "White-label is a ฿490/month add-on, or upgrade to Scale (included free)",
+      "priorityAiAddon": "Priority AI (Claude Opus) requires the add-on (฿890/month)"
+    }
+  },
+  "api": {
+    "auth": {
+      "signup": {
+        "invalidEmail": "Invalid email format",
+        "passwordTooShort": "Password must be at least 8 characters",
+        "nameTooShort": "Name must be at least 2 characters",
+        "tenantNameTooShort": "Agency name must be at least 2 characters",
+        "invalidPayload": "Invalid input",
+        "emailTaken": "This email is already in use"
+      },
+      "login": {
+        "invalidEmail": "Invalid email format",
+        "passwordRequired": "Please enter your password",
+        "invalidPayload": "Invalid input",
+        "invalidCredentials": "Incorrect email or password"
+      },
+      "unauthorized": "Please sign in"
+    },
+    "rules": {
+      "upgradeRequired": "Auto-rules requires a paid plan, minimum Starter",
+      "limitReached": "Reached the {limit}-rule limit of your plan — disable or delete an old rule, or upgrade your plan",
+      "planNoActivate": "Your current plan does not allow activating rules",
+      "limitReachedRules": "Reached limit of {cap} rules"
+    },
+    "boost": {
+      "plan": {
+        "noFacebookLinks": "No Facebook links found in the message",
+        "connectionInactive": "Meta connection is not active",
+        "resolveFailed": "Could not resolve any URLs"
+      },
+      "kpi": {
+        "atLeast": "min",
+        "atMost": "max"
+      }
+    },
+    "emailVerification": {
+      "userNotFound": "User account not found",
+      "alreadyVerified": "Your email is already verified"
+    },
+    "pagePosts": {
+      "adsNotEnabled": "This Page does not have ads enabled yet — enable it in Meta Ads Manager first (Page Settings → Advertising) or paste a Post ID/URL below"
+    },
+    "audiences": {
+      "lookalikeNote": "Meta will compute the Lookalike within ~6 hours — size starts at 0 then grows",
+      "minRowsRequired": "At least {min} rows are required (Meta minimum). Current count: {count}",
+      "connectionNotReady": "Meta connection is not available"
+    },
+    "creatives": {
+      "fileTooLarge": "File is too large (over {maxMb}MB)",
+      "unsupportedType": "Unsupported file type: {type}"
+    },
+    "scopes": {
+      "nameTaken": "A scope with this name already exists"
+    },
+    "metaImages": {
+      "mustBeJpgPng": "File must be JPG or PNG only",
+      "tooLarge": "File exceeds 8MB ({sizeMb}MB)"
+    },
+    "common": {
+      "forbidden": "Forbidden"
+    },
+    "meta": {
+      "campaignCreate": {
+        "conversionGoalNeedsPixel": "Conversion goal requires a Pixel",
+        "conversionGoalNeedsEvent": "Conversion goal requires an event or Custom Conversion"
+      },
+      "duplicate": {
+        "dailyBudgetEitherOr": "Specify only dailyBudget or dailyBudgetMultiplier",
+        "lifetimeBudgetEitherOr": "Specify only lifetimeBudget or lifetimeBudgetMultiplier"
+      },
+      "oauth": {
+        "ownerOnly": "Only OWNER can connect Meta"
+      },
+      "pageOauth": {
+        "ownerOnly": "Only OWNER can connect Page Management"
+      },
+      "pixels": {
+        "alreadyExists": "This ad account already has a Pixel: \"{name}\" (ID {id}) — Meta limits 1 Pixel per ad account",
+        "shareNeedsBm": "Target ad account is not in a Business Manager — Pixel sharing only works with BM accounts"
+      },
+      "campaignActions": {
+        "dailyOrLifetime": "Must specify daily or lifetime"
+      }
+    },
+    "namingRules": {
+      "patternExists": "A rule for this pattern already exists"
+    },
+    "namingTemplates": {
+      "noCampaigns": "No campaigns in this tenant to analyze"
+    }
+  },
+  "rootMetadata": {
+    "description": "Launch ads faster, scale with precision — Thai-first SaaS for media buyers",
+    "ogDescription": "Launch ads faster, scale with precision"
+  },
+  "meta": {
+    "adsetActions": {
+      "adSetNotFound": "Ad set {id} was not found in this tenant",
+      "budgetEitherOr": "Specify exactly one of: dailyBudget or lifetimeBudget",
+      "noOwnBudget": "This ad set has no budget of its own — edit at the campaign level (CBO)",
+      "useLifetimeInstead": "This ad set uses a lifetime budget — edit as lifetime instead",
+      "useDailyInstead": "This ad set uses a daily budget — edit as daily instead",
+      "budgetBelowMin": "Budget below minimum ฿{min}",
+      "budgetAboveMax": "Budget exceeds maximum ฿{max} — double-check the number"
+    },
+    "campaignActions": {
+      "budgetAtAdSet": "Budget is at the ad set level — edit in Meta Ads Manager",
+      "budgetEitherOr": "Specify exactly one of: dailyBudget or lifetimeBudget",
+      "useLifetimeInstead": "This campaign uses a lifetime budget — edit as lifetime instead",
+      "useDailyInstead": "This campaign uses a daily budget — edit as daily instead",
+      "budgetBelowMin": "Budget below minimum ฿{min}",
+      "budgetAboveMax": "Budget exceeds maximum ฿{max} — double-check the number",
+      "endTimePast": "end_time cannot be in the past"
+    },
+    "urlResolver": {
+      "emptyUrl": "URL is empty",
+      "redirectFailed": "Could not follow link: {message}",
+      "unsupportedUrl": "Unsupported URL format: {url}",
+      "metaUnknown": "Meta does not recognize this content ({id}): {message}",
+      "noOwnerPage": "Could not find the owning Page for this post — it may be a user post that can't be boosted",
+      "reelPostIdNotFound": "Could not find post_id for reel {videoId} — it may be too new, or you are not an admin of Page {pageName}"
+    },
+    "campaignCreate": {
+      "budgetNotNumber": "{name} must be a number",
+      "budgetBelowMin": "{name} is below minimum ฿{min}",
+      "budgetAboveMax": "{name} exceeds maximum ฿{max}",
+      "cboBudgetRequired": "CBO requires a campaign-level budget",
+      "aboBudgetRequired": "ABO requires an ad-set-level budget",
+      "connectionNotFound": "Meta connection not found",
+      "connectionInactive": "Connection {status} — please reconnect",
+      "adAccountNotInTenant": "This ad account is not part of the tenant's Meta connection",
+      "pfbidResolveFailed": "Failed to resolve pfbid post id: {message}",
+      "reelThumbnailFailed": "Failed to fetch reel thumbnail: {message}",
+      "reelNoThumbnail": "Reel has no thumbnail"
+    }
+  },
   "sidebar": {
     "nav": {
       "overview": "Overview",
@@ -37,6 +218,23 @@
     "en": "English",
     "lo": "ລາວ (beta)"
   },
+  "userMenu": {
+    "ariaLabel": "User menu",
+    "profileSoon": "Profile (coming soon)",
+    "logout": "Log out"
+  },
+  "platformBar": {
+    "loading": "Loading...",
+    "accountsLabel": "Accounts: {count}",
+    "accountsLabelAll": "Accounts: All ({count})",
+    "accountsLabelScope": "Accounts: {count}/{total} (scope)",
+    "accountsLabelPartial": "Accounts: {count}/{total}",
+    "accountsLabelShort": "All",
+    "searchPlaceholder": "Search ad account...",
+    "selectAll": "Select all",
+    "clearAll": "Clear all",
+    "notFound": "No account found"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -55,7 +253,65 @@
     "tryAgain": "Try again",
     "settingsLink": "Go to Settings",
     "connectMetaFirst": "Connect Meta before using this",
-    "all": "All"
+    "all": "All",
+    "datePicker": {
+      "placeholder": "Select date",
+      "time": "Time",
+      "timezone": "(UTC+7)",
+      "clear": "Clear",
+      "today": "Today",
+      "ok": "OK",
+      "weekdays": [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+      ],
+      "months": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ],
+      "yearOffset": "0"
+    },
+    "smartNameField": {
+      "matchesTemplate": "Matches template \"{name}\"",
+      "noTemplateMatch": "Doesn't match any tenant template — use a suggestion below",
+      "truncateWarning": "Over {limit} chars — Meta UI will truncate in lists",
+      "nearLimit": "Near the Meta limit ({limit})",
+      "suggestions": "Suggestions:",
+      "collapse": "Collapse",
+      "moreOthers": "+{count} more",
+      "noTemplatesHint": "Set a naming template in Settings → Naming Standards to get auto-suggestions"
+    },
+    "journey": {
+      "loadFailed": "Failed to load journey",
+      "modeOverview": "Overview",
+      "modeDrillIn": "Drill-in",
+      "selectCampaign": "-- Select campaign --",
+      "rangeToday": "Today",
+      "rangeYesterday": "Yesterday",
+      "range7d": "Last 7 days",
+      "range30d": "Last 30 days",
+      "spend": "Spend",
+      "drawing": "Drawing journey...",
+      "emptyTitle": "No data in this range / scope yet",
+      "emptyHint": "Pick another date range, or sync the dashboard first — journey shares the insights cache with the Dashboard",
+      "try30d": "Try 30d",
+      "openInCampaigns": "Open in Campaigns"
+    }
   },
   "languageSwitcher": {
     "errorChange": "Couldn't change language"
@@ -107,6 +363,7 @@
     "cancelBtn": "Cancel",
     "back": "Back to posts list",
     "compose": {
+      "noPagesEmpty": "No managed pages yet — re-sync via Settings → Page Management",
       "pageLabel": "Post to which page",
       "mediaLabel": "Image / video",
       "videoOnlyOne": "Video files must be uploaded one at a time (can't mix with images)",
@@ -145,10 +402,133 @@
     "goToPostsCta": "Go to \"Page Posts\"",
     "reauthorize": "re-authorize"
   },
+  "metaConnection": {
+    "flashSuccess": "Meta connected successfully",
+    "flashError": "Meta connection failed: {error}",
+    "syncSuccess": "Synced — {count} ad accounts",
+    "syncFailedDefault": "Sync failed",
+    "disconnectFailedDefault": "Disconnect failed",
+    "disconnectConfirm": "Disconnect Meta? Cached data will be removed.",
+    "disconnectSuccess": "Disconnected",
+    "notConnectedTitle": "Meta not connected yet",
+    "notConnectedBody": "Connect so AdsLab can read your ad accounts and start optimizing.",
+    "connectBtn": "Connect with Meta",
+    "ownerOnly": "Only OWNER can connect",
+    "connectedAt": "Connected {when}",
+    "lastSynced": "Last synced {when}",
+    "syncing": "Syncing...",
+    "syncBtn": "Sync",
+    "disconnecting": "Disconnecting...",
+    "disconnectBtn": "Disconnect",
+    "tokenExpired": "Token expired or revoked — please reconnect",
+    "reconnect": "Reconnect"
+  },
   "settings": {
     "pageMgmt": {
       "title": "Page Management",
       "subtitle": "Compose + schedule Facebook page posts (separate from your ads connection)"
+    },
+    "tenantScope": {
+      "saving": "Saving...",
+      "saveFailedDefault": "Failed",
+      "savedToast": "Tenant Scope saved",
+      "saveFailed": "Save failed",
+      "description": "Define which ad accounts and campaigns this tenant manages — every page in the tenant filters by this default (users can still narrow it further on their own).",
+      "currentLabel": "Currently: {summary}",
+      "summaryAllAccounts": "all accounts ({total})",
+      "summaryAccountsCount": "{count}/{total} accounts",
+      "summaryAllCampaigns": "all campaigns in scope",
+      "summaryCampaignsCount": "{count}/{total} campaigns",
+      "unsavedChanges": "Unsaved changes",
+      "saveBtn": "Save",
+      "ownerOnly": "Only OWNER can edit",
+      "accountSection": {
+        "countAll": "all ({total})",
+        "countSome": "{count}/{total}",
+        "searchPlaceholder": "Search ad account...",
+        "selectAll": "Select all",
+        "clear": "Clear"
+      },
+      "campaignSection": {
+        "countAll": "all campaigns in scope ({total})",
+        "countSome": "{count}/{total}",
+        "searchPlaceholder": "Search campaign...",
+        "selectAll": "All",
+        "clear": "Clear",
+        "emptyNote": "No campaigns in the selected accounts"
+      },
+      "patternSection": {
+        "summaryEmpty": "not set",
+        "summaryActive": "{count} pattern, matches {matched} campaigns right now",
+        "explainerBefore": "A pattern will",
+        "explainerHighlight": "auto-include any campaign whose name matches",
+        "explainerAfter": "— both existing and future ones — e.g. \"contains Sale\" pulls Sale0426, Sale0526, and next month's Sale0626 into scope automatically.",
+        "delete": "Delete",
+        "patternPlaceholder": "e.g. Sale or Promo",
+        "addBtn": "+ Add",
+        "previewLine": "Preview: matches {matched} campaigns right now — {names}",
+        "previewExtra": "+{extra} more"
+      }
+    },
+    "ai": {
+      "persona": {
+        "heading": "AI Persona",
+        "subtitle": "Tune the tone + role of AI Master so it fits your team and business",
+        "loading": "Loading...",
+        "roleLabel": "Role",
+        "rolePlaceholder": "e.g. Thai media buyer expert",
+        "customLabel": "Custom Instructions",
+        "customPlaceholder": "e.g. respond in short bullet points, never use the word 'optimize', always include ROAS when discussing a campaign",
+        "customNote": "These instructions are injected into the system prompt for every chat — everyone on the team sees them",
+        "ragLabel": "Let AI use the Knowledge Base (RAG) — search documents before answering",
+        "saveBtn": "Save",
+        "savedToast": "AI Persona saved"
+      },
+      "knowledge": {
+        "heading": "AI Knowledge",
+        "subtitle": "Upload documents / paste text / add URLs — AI will use them as context when answering domain-specific questions",
+        "addBtn": "Add document",
+        "loading": "Loading...",
+        "empty": {
+          "title": "No documents yet",
+          "subtitle": "Upload documents — for example brand guidelines, target-audience research, past campaign learnings, ad-copy templates"
+        },
+        "confirmDelete": "Delete this document?",
+        "deletedToast": "Deleted"
+      },
+      "upload": {
+        "title": "Add Knowledge document",
+        "subtitle": "Documents the AI will draw on — shared across the whole tenant team",
+        "modes": {
+          "text": "Paste Text",
+          "pdf": "Upload PDF",
+          "url": "From URL"
+        },
+        "titleLabel": "Document title",
+        "titleLabelPdfHint": "(leave empty = use file name)",
+        "titlePlaceholder": "e.g. Brand voice guidelines",
+        "text": {
+          "label": "Content",
+          "placeholder": "Paste content here...",
+          "summary": "{chars} characters · about {chunks} chunks"
+        },
+        "pdf": {
+          "choose": "Choose a PDF file",
+          "changeHint": "{size} KB — click to change"
+        },
+        "url": {
+          "label": "URL"
+        },
+        "processing": "Processing + embedding...",
+        "errors": {
+          "selectPdf": "Please choose a PDF file",
+          "enterUrl": "Please enter a URL",
+          "titleAndText": "Please enter a title + text"
+        },
+        "cancel": "Cancel",
+        "submit": "Upload",
+        "successAdded": "Added document \"{title}\" ({chunks} chunks)"
+      }
     }
   },
   "status": {
@@ -158,20 +538,323 @@
     "published": "Published",
     "cancelled": "Cancelled",
     "failed": "Failed",
-    "pending": "Pending"
+    "pending": "Pending",
+    "closed": "Closed",
+    "activeAlt": "Active",
+    "pausedAlt": "Paused"
   },
   "pages": {
     "dashboard": {
       "title": "Overview",
-      "subtitle": "Summary of all ad performance"
+      "subtitle": "Summary of all ad performance",
+      "presets": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "last_7d": "Last 7 days",
+        "last_30d": "Last 30 days"
+      },
+      "syncedAt": "Synced {when}",
+      "stale": "(stale)",
+      "cached": "(cached)",
+      "syncBtn": "Sync",
+      "toast": {
+        "fetchFailed": "Couldn't load data",
+        "syncSuccess": "Data synced",
+        "refreshFailed": "Refresh failed"
+      },
+      "kpi": {
+        "spend": "Total spend",
+        "sales": "Total sales",
+        "roas": "ROAS (overall)",
+        "clicks": "Clicks (total)"
+      },
+      "empty": {
+        "title": "No campaign data in this range",
+        "description": "Try a different range or create a new campaign"
+      },
+      "trend": {
+        "title": "Performance trend",
+        "subtitleDaily": "Spend, sales, ROAS by day",
+        "subtitleAccount": "Comparison by account"
+      },
+      "platform": {
+        "title": "Performance by platform",
+        "subtitle": "Spend share per platform",
+        "noSpend": "No spend yet",
+        "totalSpend": "Total spend"
+      },
+      "chart": {
+        "spend": "Spend",
+        "sales": "Sales",
+        "roas": "ROAS",
+        "noData": "No data in this range"
+      },
+      "tile": {
+        "campaigns": "Active campaigns",
+        "accounts": "ad accounts",
+        "conversions": "Total conversions",
+        "active": "Active",
+        "paused": "Paused",
+        "closed": "Closed",
+        "accountActive": "active",
+        "accountOther": "other",
+        "purchases": "purchases"
+      },
+      "top": {
+        "title": "Top performing campaigns",
+        "subtitle": "Top 5 by spend",
+        "campaign": "Campaign",
+        "spend": "Spend",
+        "sales": "Sales",
+        "clicks": "Clicks",
+        "status": "Status"
+      },
+      "onboarding": {
+        "headerTitle": "Get started with AdsLab",
+        "headerDone": "{done}/{total} done",
+        "subtitle": "Follow the steps below to run your first campaign in ~5 minutes",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "dismiss": "Hide forever",
+        "steps": {
+          "meta": {
+            "label": "Connect Meta Business Manager",
+            "description": "OAuth with Facebook so AdsLab can read data + manage ads",
+            "cta": "Connect now"
+          },
+          "scope": {
+            "label": "Pick ad accounts this tenant manages",
+            "description": "Instead of every account in the BM — only the relevant ones",
+            "cta": "Set scope"
+          },
+          "naming": {
+            "label": "Define a Naming Convention",
+            "description": "AdsLab will suggest names following your standard + auto-pin to scope",
+            "cta": "Set template"
+          },
+          "campaign": {
+            "label": "Create your first Campaign",
+            "description": "Use Campaign Builder — Smart Name Field + AI suggestions",
+            "cta": "Create campaign"
+          }
+        }
+      },
+      "connectMetaCtaTitle": "Connect Meta to get started",
+      "connectMetaCtaDescription": "Link your Facebook Business Manager to AdsLab so the AI can analyze and optimize your campaigns every day"
+    },
+    "dashboardV1": {
+      "presets": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "last_7d": "Last 7 days",
+        "last_30d": "Last 30 days"
+      },
+      "custom": "Custom",
+      "syncedAt": "Synced {when}",
+      "stale": "(stale)",
+      "cached": "(cached)",
+      "sync": "Sync",
+      "fromDate": "From",
+      "toDate": "To",
+      "apply": "Apply",
+      "emptyTitle": "No campaigns ran in the selected range",
+      "emptyDescription": "Try another range, or create a campaign in Meta Ads Manager first",
+      "cpm": {
+        "good": "Good",
+        "warn": "Watch",
+        "bad": "High"
+      },
+      "roas": {
+        "good": "Good",
+        "warn": "Watch",
+        "bad": "Low"
+      },
+      "toast": {
+        "fetchFailed": "Failed to load data",
+        "syncSuccess": "Synced fresh data"
+      }
     },
     "boost": {
       "title": "Quick Boost",
-      "subtitle": "OWNER + MEDIA_BUYER only"
+      "subtitle": "OWNER + MEDIA_BUYER only",
+      "gate": {
+        "needMeta": "Connect Meta before using Quick Boost",
+        "cta": "Go to Settings",
+        "ownerOnly": "This feature is for OWNER + MEDIA_BUYER"
+      },
+      "input": {
+        "title": "Paste the message you received from the client",
+        "subtitle": "AI will interpret + extract URLs + prepare campaigns for you to review before publishing",
+        "examplePrompt": "Please boost the video — Views, 1250 baht per post, finish tomorrow 10:00 AM. https://facebook.com/reel/2046794962859921\nhttps://facebook.com/reel/1002568998876934",
+        "useExample": "Use example",
+        "analyzeBtn": "Analyze + plan",
+        "analyzing": "AI is analyzing..."
+      },
+      "intent": {
+        "understood": "AI understood:",
+        "urlErrors": "URLs that could not be resolved:"
+      },
+      "kpiGate": {
+        "title": "KPI + Purpose",
+        "subtitle": "AI needs to know in order to evaluate results later — and required if you want to publish immediately",
+        "kpiLabel": "KPI",
+        "kpiPlaceholder": "e.g. 10,000 views minimum / CPV ≤ 0.5 baht",
+        "purposeLabel": "Purpose",
+        "purposePlaceholder": "e.g. test creative / pre-launch / promote campaign"
+      },
+      "plan": {
+        "headerTitle": "Plan: {count} campaigns",
+        "headerSubtitle": "Total ฿{total} — review and edit before creating",
+        "summary": "{count} campaigns · ฿{total}",
+        "defaultStatusNote": "Default status: PAUSED (safe) — enable later on the /campaigns page",
+        "saveDraft": "Create as Draft (PAUSED)",
+        "publishActive": "Confirm spending ฿{total} + publish immediately",
+        "publishActiveTooltip": "Enter KPI + Purpose first"
+      },
+      "results": {
+        "title": "Results — {success}/{total} succeeded",
+        "subtitle": "Click a campaign name to open its detail page",
+        "newBoost": "Boost a new job",
+        "view": "View",
+        "reelNotPromotable": "Meta says this reel can't be promoted — common causes: reel is too old / paid partnership / video monetization permission not approved yet / standalone reel not tied to a Page post promotable pool. Try a new reel posted directly from the Page"
+      },
+      "brief": {
+        "removeAria": "Remove from plan",
+        "selectPlaceholder": "— select —",
+        "budgetLabel": "Budget (THB lifetime)",
+        "startLabel": "Start",
+        "endLabel": "End",
+        "durationHours": "Runs {hours} hr.",
+        "durationDays": "Runs ~{days} days"
+      },
+      "toast": {
+        "promptTooShort": "Please write a longer message",
+        "planFailed": "Planning failed: {message}",
+        "noBriefs": "No campaigns to create",
+        "needKpiPurpose": "Enter KPI + Purpose before publishing immediately",
+        "executeSuccess": "Created {success}/{total} campaigns successfully",
+        "executeFailed": "Run failed: {message}"
+      },
+      "confirm": {
+        "executeActive": "Confirm spending ฿{total} on {count} campaigns? KPI: {kpi}\nPurpose: {purpose} Press OK to publish immediately"
+      },
+      "kpi": {
+        "atLeast": "min",
+        "atMost": "max"
+      },
+      "briefBuilder": {
+        "warningNoAccount": "Page \"{name}\" ({pageId}) has no connected ad account — pick one in this card",
+        "warningNoEndTime": "No end time specified — defaulting to +24h from start",
+        "warningNoObjective": "No objective specified — defaulting to Engagement"
+      }
     },
     "campaigns": {
       "title": "Campaigns",
-      "subtitle": "Manage and plan your campaigns"
+      "subtitle": "Manage and plan your campaigns",
+      "mindmap": {
+        "empty": "No campaigns at the moment",
+        "campaignLabel": "Campaign",
+        "campaignsCountUnit": "campaigns",
+        "otherHub": "Other"
+      },
+      "view": {
+        "structure": "Structure",
+        "table": "Table"
+      },
+      "action": {
+        "columns": "Columns",
+        "export": "Export",
+        "create": "Create campaign"
+      },
+      "search": {
+        "placeholder": "Search campaigns, ad sets, ads..."
+      },
+      "filter": {
+        "status": "Status",
+        "objective": "Objective",
+        "other": "Other"
+      },
+      "table": {
+        "name": "Name",
+        "status": "Status",
+        "objective": "Objective",
+        "budget": "Budget",
+        "spend": "Spend"
+      },
+      "budget": {
+        "perDay": "/day"
+      },
+      "diagnose": {
+        "tooltip": "Diagnose this campaign with AI (opens AI Chat with the question)",
+        "prompt": "Diagnose campaign \"{name}\" (id: {id}) — pull 7-day metrics with getCampaignInsights, then tell me which of the 3 levers (creative / landing page / offer) is the likely problem + recommend a concrete action I can take tomorrow"
+      },
+      "empty": {
+        "title": "No campaigns match these filters",
+        "description": "Clear the filters or create a new campaign"
+      },
+      "loading": {
+        "adSets": "Loading ad sets...",
+        "structure": "Loading structure view..."
+      },
+      "errorLoad": "Couldn't load: {message}",
+      "adset": {
+        "empty": "This campaign has no ad sets yet",
+        "noAds": "This ad set has no ads yet",
+        "adsCount": "{count} ads"
+      },
+      "duplicateErrors": {
+        "abo": "Budget lives at the ad set level (ABO) — cannot adjust budget when duplicating",
+        "dailyExclusive": "Specify only one: dailyBudget or dailyBudgetMultiplier",
+        "lifetimeExclusive": "Specify only one: lifetimeBudget or lifetimeBudgetMultiplier",
+        "sourceDailyMode": "Source uses a daily budget — use dailyBudget or dailyBudgetMultiplier",
+        "sourceLifetimeMode": "Source uses a lifetime budget — use lifetimeBudget or lifetimeBudgetMultiplier",
+        "multiplierRange": "Multiplier must be between 0 and {max}",
+        "budgetBelowMin": "Budget is below the minimum of ฿{min}",
+        "budgetAboveMax": "Budget exceeds the maximum of ฿{max}",
+        "connectionNotReady": "Meta connection is not ready",
+        "campaignNotFound": "Campaign {id} was not found in this tenant",
+        "activateNow": "ACTIVE immediately"
+      }
+    },
+    "campaignsNew": {
+      "title": "New campaign",
+      "subtitle": "Create Campaign → Ad Set → Ad in Meta in one shot. Everything starts in PAUSED for safety.",
+      "backLink": "Back to Campaigns",
+      "noPages": {
+        "title": "No managed Facebook Pages found",
+        "body": "Every ad must publish \"in name of\" a Facebook Page. Make sure the Meta-connected user is an admin/editor of at least 1 Page, then reconnect Meta.",
+        "settingsCta": "Go to Settings"
+      },
+      "noAccounts": "No active ad account found. Check Meta Business Manager."
+    },
+    "campaignsHistory": {
+      "title": "Action history",
+      "subtitle": "Every action taken via AdsLab — who / when / which campaign / before → after",
+      "backLink": "Back to Campaigns",
+      "filterLabel": "Filter",
+      "action": {
+        "all": "All actions",
+        "pause": "Pause",
+        "resume": "Resume",
+        "setBudget": "Edit budget",
+        "setEndDate": "Edit end date"
+      },
+      "result": {
+        "all": "All results",
+        "success": "Success",
+        "failed": "Failed"
+      },
+      "userAll": "All users",
+      "filterSubmit": "Filter",
+      "filterClear": "Clear",
+      "totalSuffix": "{count} items",
+      "empty": {
+        "title": "No action history yet",
+        "body": "Pause/Resume or edit budget on the Campaigns page to create your first audit log"
+      },
+      "pageIndicator": "Page {page} / {total}",
+      "prev": "Previous",
+      "next": "Next"
     },
     "ads": {
       "title": "Ads",
@@ -179,41 +862,2254 @@
     },
     "audiences": {
       "title": "Audiences",
-      "subtitle": "Build Custom Audiences from customer lists, Pixel, or Lookalike — new audiences appear in the Campaign Builder instantly"
+      "subtitle": "Build Custom Audiences from customer lists, Pixel, or Lookalike — new audiences appear in the Campaign Builder instantly",
+      "tabs": {
+        "audiences": "Audiences",
+        "pixels": "Pixels",
+        "conversions": "Custom Conversions",
+        "events": "Events (SDK)",
+        "new": "NEW"
+      },
+      "subtype": {
+        "customer": "Customer list",
+        "pixel": "Pixel (website)",
+        "lookalike": "Lookalike",
+        "engagement": "Engagement",
+        "app": "App activity"
+      },
+      "filter": {
+        "allTypes": "All types",
+        "allAccounts": "All accounts",
+        "allBusinesses": "All Businesses",
+        "showing": "Showing {filtered} / {total}",
+        "totalLabel": "Total:",
+        "audiencesUnit": "audiences",
+        "conversionsUnit": "custom conversions"
+      },
+      "actions": {
+        "create": "Create Audience",
+        "createFirst": "Create first Audience",
+        "createPixel": "Create Pixel",
+        "createPixelFirst": "Create first Pixel",
+        "createConversion": "Create Custom Conversion",
+        "createConversionFirst": "Create first Custom Conversion",
+        "createRule": "Create Rule",
+        "createRuleFirst": "Create first Rule",
+        "create2": "Create",
+        "back": "← Back",
+        "cancel": "Cancel"
+      },
+      "search": {
+        "placeholder": "Search audience name..."
+      },
+      "list": {
+        "deleteTitle": "Delete audience",
+        "deleteConfirm": "Delete audience \"{name}\"? (This affects Meta — cannot be undone)",
+        "deleting": "Deleting...",
+        "deleted": "Deleted",
+        "deleteFail": "Delete failed",
+        "emptyTitle": "No audience yet",
+        "emptyDescription": "Create an audience from a customer list (email/phone), Lookalike, or Pixel — usable in Campaign Builder right away",
+        "emptyFiltered": "No audience matches the filter"
+      },
+      "pixels": {
+        "bannerTitle": "Why can I only create a few Pixels?",
+        "bannerLimit": "Meta limit <strong>5 Pixels per Business Manager</strong> (if BM is not verified) — verified BMs get up to 100 Pixels",
+        "bannerShare": "But <strong>1 Pixel can be used on multiple ad accounts</strong> within the same BM — click \"Share\" to extend the Pixel to other ad accounts",
+        "bannerScope": "Each Pixel = 1 website / 1 client, not 1 ad account",
+        "totalLabel": "All Pixels:",
+        "noBM": "(No BM)",
+        "loading": "Loading Pixels...",
+        "emptyTitle": "No Pixel yet",
+        "emptyDescription": "Create a Pixel to install a tracking code on your website — then you can build a Website Custom Audience from visitors",
+        "idPrefix": "ID",
+        "bmPrefix": "BM:",
+        "firedAt": "Last fired {when}",
+        "usedWith": "Used with {count} ad account{plural}",
+        "andOthers": "+{count} more",
+        "unavailable": "unavailable",
+        "openEventsManager": "Open in Events Manager (Facebook)",
+        "eventsManager": "Events Manager",
+        "shareTitle": "Use this Pixel on another ad account in the same BM",
+        "share": "Share",
+        "copyCode": "Copy code",
+        "copied": "Copied",
+        "copyFail": "Copy failed"
+      },
+      "sharePixel": {
+        "title": "Share Pixel",
+        "subtitle": "Extend <strong>{name}</strong> to another ad account in the same BM",
+        "subtitleWithBM": "({bm})",
+        "notInBM": "This Pixel is not in a Business Manager — sharing is not possible",
+        "allShared": "No other ad account in this BM is missing the Pixel — this Pixel is already on every ad account in the BM",
+        "targetLabel": "Target Ad Account",
+        "hint": "Only shows ad accounts in the same BM — Meta does not allow sharing across BMs",
+        "pickAccount": "Pick an ad account",
+        "loading": "Sharing Pixel...",
+        "successPrefix": "Pixel shared to",
+        "fail": "Share failed",
+        "submit": "Share Pixel"
+      },
+      "createPixel": {
+        "title": "Create new Pixel",
+        "subtitle": "A Pixel holds the tracking code installed on your website",
+        "adAccountLabel": "Ad Account",
+        "storageHint": "The Pixel will be stored under Business Manager: <strong>{business}</strong> — find it in Events Manager after creating",
+        "nameLabel": "Pixel name",
+        "namePlaceholder": "e.g. Main Website Pixel",
+        "limitWarning": "Meta allows <strong>1 Pixel per ad account</strong> — if this account already has a Pixel the system will warn instead of creating a duplicate",
+        "nameRequired": "Pixel name required",
+        "loading": "Creating Pixel...",
+        "successPrefix": "Pixel created",
+        "fail": "Create failed"
+      },
+      "pixelCode": {
+        "title": "Install Code — {name}",
+        "subtitle": "Paste this code into the <head> of every page on your site (Pixel ID {id})",
+        "storedIn": "Stored in BM:",
+        "openEventsManager": "Open Events Manager",
+        "empty": "No install code yet — try refreshing"
+      },
+      "createAudience": {
+        "title": "Create new Audience",
+        "subtitle": "Choose the data source for the audience",
+        "customerTitle": "Customer list",
+        "customerDesc": "Upload your existing customer emails/phones → retarget",
+        "websiteTitle": "Website visitors (Pixel)",
+        "websiteDesc": "People who visited the site, captured by Pixel — retarget visitors",
+        "lookalikeTitle": "Lookalike",
+        "lookalikeDesc": "People similar to an existing audience — expand prospecting",
+        "soon": "soon"
+      },
+      "customerList": {
+        "adAccountLabel": "Ad Account",
+        "nameLabel": "Audience name",
+        "namePlaceholder": "e.g. Customers Q1 2026",
+        "descLabel": "Description (optional)",
+        "descPlaceholder": "e.g. Email list from Shopify, latest 1 Apr 2026",
+        "uploadLabel": "Upload CSV (email / phone)",
+        "parsing": "Reading file...",
+        "found": "Found {emails} email + {phones} phone",
+        "changeFile": "Click to change file",
+        "dropHint": "Pick CSV / TXT — any column works (email or phone)",
+        "minWarning": "Meta requires at least {min} rows — currently have {total}",
+        "readyHint": "Ready to send — PII is hashed with SHA-256 in your browser (server never sees raw data)",
+        "submit": "Create Audience",
+        "errNameRequired": "Audience name required",
+        "errMinRows": "Need at least {min} rows (Meta minimum) — currently have {total}",
+        "loadingHash": "Hashing {total} rows...",
+        "loadingUpload": "Creating audience + uploading...",
+        "success": "Created \"{name}\" — {users} rows",
+        "fail": "Create failed",
+        "parseFail": "CSV parse failed: {message}"
+      },
+      "lookalike": {
+        "ratioClosest": "Most similar (~narrow)",
+        "ratioClose": "Similar",
+        "ratioMixed": "Mixed",
+        "ratioWidest": "Widest",
+        "adAccountLabel": "Ad Account",
+        "sourceLabel": "Source Audience (seed audience)",
+        "sourceEmpty": "No eligible source audience in this account — need a Custom/Website audience with size ≥ 100 first",
+        "sourcePlaceholder": "-- pick source --",
+        "nameLabel": "Lookalike name",
+        "namePlaceholder": "e.g. Lookalike Customers TH 1%",
+        "countryLabel": "Country (ISO code)",
+        "similarityLabel": "Similarity",
+        "processingHint": "Lookalikes take ~6 hours to compute — size starts at 0 then grows",
+        "submit": "Create Lookalike",
+        "errNameRequired": "Lookalike name required",
+        "errSourceRequired": "Pick a source audience",
+        "loading": "Creating Lookalike...",
+        "success": "Lookalike \"{name}\" created — Meta computes within ~6 hours",
+        "fail": "Create failed"
+      },
+      "website": {
+        "adAccountLabel": "Ad Account",
+        "pixelLabel": "Pixel",
+        "loadingSuffix": "(loading...)",
+        "noPixel": "No Pixel in this account — create a Pixel first (Tab \"Pixels\")",
+        "pixelPlaceholder": "-- pick Pixel --",
+        "nameLabel": "Audience name",
+        "namePlaceholder": "e.g. Website visitors 30d",
+        "ruleLabel": "Rule",
+        "ruleAll": "Everyone who visits the site",
+        "ruleUrlContains": "URL contains...",
+        "ruleEvent": "Pixel event = ...",
+        "ruleUrlPlaceholder": "e.g. /product or /thank-you",
+        "ruleEventPlaceholder": "e.g. Purchase, AddToCart, Lead",
+        "retentionLabel": "Retention (days)",
+        "retentionUnit": "{days} days",
+        "submit": "Create Audience",
+        "errNameRequired": "Audience name required",
+        "errPixelRequired": "Pick a Pixel",
+        "errRuleValueRequired": "Enter the rule value",
+        "loading": "Creating audience...",
+        "success": "Created \"{name}\"",
+        "fail": "Create failed"
+      },
+      "conversions": {
+        "bannerTitle": "What is a Custom Conversion?",
+        "bannerItem1": "Define a URL pattern → conversion event without writing event code on the site",
+        "bannerItem2": "e.g. \"URL contains <code>/thank-you</code>\" = Purchase event (Meta counts it automatically)",
+        "bannerItem3": "Useful for sites with basic Pixel installed but no dev to map events",
+        "loading": "Loading...",
+        "emptyTitle": "No Custom Conversion yet",
+        "emptyDescription": "Create a Custom Conversion to map URL → conversion event without writing event code on the site",
+        "deleteTitle": "Delete Custom Conversion",
+        "deleteConfirm": "Delete Custom Conversion \"{name}\"? (This affects Meta — cannot be undone)",
+        "deleting": "Deleting...",
+        "deleted": "Deleted",
+        "deleteFail": "Delete failed",
+        "pixelPrefix": "Pixel:",
+        "categoryPrefix": "Category:",
+        "rulePrefix": "Rule:"
+      },
+      "createConversion": {
+        "title": "Create Custom Conversion",
+        "subtitle": "Map a URL pattern → conversion event without writing event code on the site",
+        "adAccountLabel": "Ad Account",
+        "pixelLabel": "Pixel",
+        "loadingSuffix": "(loading...)",
+        "noPixel": "No Pixel in this account — create a Pixel first (tab \"Pixels\")",
+        "pixelPlaceholder": "-- pick Pixel --",
+        "nameLabel": "Conversion name",
+        "namePlaceholder": "e.g. Order Complete, Lead Form Submit",
+        "urlRuleLabel": "URL rule",
+        "urlContains": "URL contains",
+        "urlEquals": "URL equals",
+        "urlNotContains": "URL NOT contains",
+        "valuePlaceholder": "e.g. /thank-you or /checkout/complete",
+        "matchHint": "Meta matches against the URL of PageViews this Pixel fires on the site",
+        "categoryLabel": "Category (for Meta optimization)",
+        "categoryHint": "Tells Meta which standard event this conversion resembles — affects optimization",
+        "errNameRequired": "Name required",
+        "errPixelRequired": "Pick a Pixel",
+        "errUrlRequired": "Enter a URL pattern",
+        "loading": "Creating Custom Conversion...",
+        "success": "Created \"{name}\"",
+        "fail": "Create failed",
+        "eventPurchase": "Purchase — completed checkout",
+        "eventAddToCart": "Add to Cart — added to cart",
+        "eventInitiateCheckout": "Initiate Checkout — started checkout",
+        "eventLead": "Lead — filled out form",
+        "eventCompleteRegistration": "Complete Registration — signed up",
+        "eventAddPaymentInfo": "Add Payment Info — entered payment info",
+        "eventViewContent": "View Content — viewed product",
+        "eventSearch": "Search — searched",
+        "eventSubscribe": "Subscribe — subscribed",
+        "eventContact": "Contact — contacted",
+        "eventAddToWishlist": "Add to Wishlist",
+        "eventFindLocation": "Find Location",
+        "eventDonate": "Donate",
+        "eventSchedule": "Schedule",
+        "eventStartTrial": "Start Trial",
+        "eventSubmitApplication": "Submit Application",
+        "eventCustomizeProduct": "Customize Product",
+        "eventOther": "Other — custom"
+      },
+      "events": {
+        "logPageTitle": "SDK Event Log",
+        "logPageSubtitle": "See events fired by the SDK + the CAPI relay status — debug rules before running a real campaign",
+        "log": {
+          "allEvents": "All events",
+          "allStatuses": "All statuses",
+          "loading": "Loading...",
+          "empty": "No event log yet — once the SDK is on the site, your rules will start firing events here"
+        },
+        "bannerTitle": "Events SDK — track events instantly without writing code",
+        "bannerItem1": "Drop <strong>1 script tag</strong> on the site → our SDK fires Meta Pixel events based on rules you set here",
+        "bannerItem2": "Triggers: URL match, click selector, form submit, scroll %, time on page",
+        "bannerItem3": "Sends both <strong>browser Pixel + server CAPI</strong> (resists ad blockers / iOS 14)",
+        "totalLabel": "All Rules:",
+        "enabledLabel": "({count} enabled)",
+        "viewLog": "View Event Log",
+        "sdkInstallCode": "SDK Install Code",
+        "installSdkFirst": "Install SDK first",
+        "loading": "Loading...",
+        "emptyTitle": "No Event Rule yet",
+        "emptyDescription": "Create a rule so our SDK auto-fires Meta Pixel events on the customer's site — no event code needed",
+        "needPixel": "Need to create a Pixel first in the Pixels tab",
+        "rulesUnit": "rule",
+        "rulesUnitPlural": "rules",
+        "installCode": "Install code",
+        "disabled": "disabled",
+        "enableTitle": "Enable rule",
+        "disableTitle": "Disable rule",
+        "deleteTitle": "Delete rule",
+        "deleteConfirm": "Delete rule \"{name}\"?",
+        "deleteFail": "Delete failed",
+        "deleted": "Deleted",
+        "updateFail": "Update failed",
+        "firesUnit": "fires",
+        "lastFiredPrefix": "last"
+      },
+      "createRule": {
+        "title": "Create Event Rule",
+        "subtitle": "When trigger matches → SDK fires Meta Pixel event + sends CAPI",
+        "pixelLabel": "Pixel",
+        "noPixel": "No Pixel",
+        "nameLabel": "Rule name",
+        "namePlaceholder": "e.g. Track Purchase on Thank-You Page",
+        "eventLabel": "Event Name (Meta standard)",
+        "triggerLabel": "Trigger",
+        "trigUrl": "URL match",
+        "trigClick": "Click on selector",
+        "trigForm": "Form submit",
+        "trigScroll": "Scroll percentage",
+        "trigTime": "Time on page",
+        "trigCustom": "Custom window event",
+        "opContains": "contains",
+        "opEquals": "equals",
+        "opNotContains": "not contains",
+        "opStartsWith": "starts with",
+        "opRegex": "regex",
+        "fireOncePerSession": "Fire once per session",
+        "urlPlaceholder": "/thank-you",
+        "clickPlaceholder": ".add-to-cart-button or #checkout-btn",
+        "formPlaceholder": "Leave empty = any form, or \"form.lead-form\"",
+        "secondsUnit": "seconds",
+        "customPlaceholder": "window event name, e.g. myAppPurchase",
+        "errNameRequired": "Rule name required",
+        "errPixelRequired": "Pick a Pixel",
+        "errTriggerIncomplete": "Fill in the trigger data",
+        "loading": "Creating rule...",
+        "success": "Created \"{name}\"",
+        "fail": "Create failed"
+      },
+      "sdkInstall": {
+        "title": "SDK Install Code",
+        "subtitle": "For Pixel: <strong>{name}</strong> · paste this snippet into the <head> of every page on the site",
+        "warning": "Use instead of the basic Meta Pixel code — our SDK injects the Pixel itself, do not install in two places on the same page (would double-count events)",
+        "empty": "Failed to load install code — try refreshing"
+      },
+      "ruleCondition": {
+        "anyForm": "any form",
+        "urlOp": "URL {op} \"{value}\"",
+        "selector": "selector \"{value}\"",
+        "formSelector": "form \"{value}\""
+      },
+      "time": {
+        "minutesAgo": "{n} min ago",
+        "hoursAgo": "{n} hr ago",
+        "daysAgo": "{n} days ago",
+        "monthsAgo": "{n} months ago"
+      }
     },
     "creatives": {
       "title": "Creatives",
-      "subtitle": "Image + video library used by your campaigns"
+      "subtitle": "Image + video library used by your campaigns",
+      "searchPlaceholder": "Search by name...",
+      "filterAll": "All",
+      "filterImage": "Image",
+      "filterVideo": "Video",
+      "upload": "Upload",
+      "loadMore": "Load more",
+      "loadMoreFailed": "Failed to load more: {message}",
+      "deleted": "Deleted",
+      "delete": "Delete",
+      "deleteFailed": "Delete failed: {message}",
+      "deleteConfirm": "Delete this creative? Ads already using it will remain in Meta.",
+      "emptyAllTitle": "No creatives in your library yet",
+      "emptyAllDescription": "Upload images or videos to use in campaigns — the Campaign Builder will pull from this library.",
+      "emptyFilteredTitle": "No creatives match the current filter",
+      "emptyFilteredDescription": "Try clearing the filter or uploading new ones.",
+      "uploadModalTitle": "Upload creative",
+      "uploadModalHint": "Supports jpg, png, webp, gif, mp4 (max 10MB per file)",
+      "close": "Close",
+      "uploadingProgress": "Uploading {done} / {total}",
+      "chooseFiles": "Choose files (multi-select supported)",
+      "orDragHere": "Or drag and drop here",
+      "uploadFileFailed": "Failed to upload {name}: {message}",
+      "uploadDoneCount": "Uploaded {count} files",
+      "libraryPicker": {
+        "title": "Pick from creative library",
+        "subtitle": "Choose an image creative you have uploaded — we will send it to Meta automatically",
+        "close": "Close",
+        "loading": "Loading...",
+        "emptyTitle": "Library is empty",
+        "emptyDescription": "Upload a creative first on the \"Creatives\" page",
+        "loadFailed": "Failed to load library: {message}",
+        "prepareFailed": "Failed to prepare image: {message}"
+      },
+      "kpiImage": "Images",
+      "kpiVideo": "Videos",
+      "kpiAi": "Made with AI",
+      "kpiTotal": "Total"
     },
     "posts": {
       "title": "Page Posts",
-      "subtitle": "Compose and schedule Facebook page posts"
+      "subtitle": "Compose and schedule Facebook page posts",
+      "serverErrors": {
+        "unsupportedFileType": "Unsupported file type: {type}",
+        "fileTooLarge": "File exceeds {maxMb}MB limit",
+        "captionEmpty": "Caption cannot be empty",
+        "captionTooLong": "Caption exceeds {max} characters",
+        "mediaRequired": "At least one image or video is required",
+        "scheduleTooSoon": "Scheduled time must be at least 10 minutes from now",
+        "scheduleTooFar": "Scheduled time must be within 6 months from now",
+        "pageNotConnected": "Page {pageId} is not connected to this tenant (connect Page Management first)",
+        "cannotCancelStatus": "Cannot cancel a post in status {status}",
+        "missingMetaPostId": "No Meta post id available",
+        "invalidScheduledAt": "scheduledAt is not a valid ISO datetime"
+      }
     },
     "postsNew": {
       "title": "New post"
     },
     "reports": {
-      "title": "Reports"
+      "title": "Reports",
+      "generate": {
+        "progress": {
+          "fetching": "Fetching data from Meta...",
+          "analyzingAccounts": "Analyzing ad accounts...",
+          "thinking": "Claude is thinking...",
+          "writing": "Writing the report...",
+          "almostDone": "Almost done..."
+        },
+        "button": "Generate report now",
+        "skipped": "Today's report already exists — taking you there",
+        "success": "Report generated",
+        "failed": "Couldn't generate the report"
+      },
+      "progress": {
+        "fetching": "Fetching data from Meta...",
+        "analyzing": "Analyzing campaigns...",
+        "thinking": "Claude is thinking...",
+        "writing": "Writing the report...",
+        "almostDone": "Almost done..."
+      },
+      "toolbar": {
+        "scope": "Scope",
+        "allDefault": "All (default)",
+        "createNew": "Create new",
+        "editTooltip": "Edit this scope",
+        "edit": "Edit",
+        "deleteTooltip": "Delete this scope",
+        "generateScope": "Generate report for this scope",
+        "generateNow": "Generate report now"
+      },
+      "toast": {
+        "generateFail": "Failed to generate report",
+        "alreadyExistsToday": "Today's report already exists — opening it",
+        "generateSuccess": "Report generated successfully",
+        "confirmDelete": "Delete scope \"{name}\"? (Existing reports will remain)",
+        "deleted": "Scope deleted",
+        "deleteFail": "Failed to delete",
+        "nameScope": "Please name the scope first",
+        "saving": "Saving...",
+        "saveFail": "Failed to save",
+        "saved": "Scope saved"
+      },
+      "list": {
+        "emptyForScope": "No reports for this scope yet",
+        "empty": "No reports yet",
+        "emptyHint": "Click \"Generate report\" to have AI summarize yesterday's data for you",
+        "emailSent": "Email sent"
+      },
+      "modal": {
+        "editTitle": "Edit Scope",
+        "createTitle": "Create new Scope",
+        "hint": "Pick the ad accounts / campaigns you want AI to focus on — leaving both empty = entire workspace",
+        "accountsHeading": "Ad Accounts",
+        "allAccounts": "All accounts (no filter)",
+        "accountsSelected": "{selected} / {total} selected",
+        "campaignsHeading": "Campaigns",
+        "allCampaignsInAccounts": "All campaigns in selected accounts",
+        "campaignsSelected": "{selected} selected",
+        "campaignSearchPlaceholder": "Search campaign name...",
+        "campaignsEmpty": "No campaigns — try clearing the filter or selecting fewer accounts",
+        "scopeNameLabel": "Scope name",
+        "scopeNamePlaceholder": "e.g. FROST, Asahi Q2, New Launches...",
+        "cancel": "Cancel",
+        "saveEdit": "Save changes",
+        "createBtn": "Create scope"
+      },
+      "page": {
+        "title": "Daily reports",
+        "subtitle": "The \"All\" report is generated automatically every morning at 9 AM — scope reports are on-demand",
+        "needMetaConnection": "You need to connect Meta before using AI Reports",
+        "goToSettings": "Go to Settings",
+        "statusCompleted": "Completed",
+        "statusGenerating": "Generating...",
+        "statusFailed": "Failed"
+      },
+      "actionsPanel": {
+        "title": "AI recommended actions",
+        "stats": "{pending} pending · {applied} applied · {dismissed} skipped",
+        "applied": "Applied",
+        "dismissed": "Skipped",
+        "dismiss": "Skip",
+        "doing": "Working...",
+        "skipping": "Skipping...",
+        "done": "Done",
+        "skipped": "Skipped",
+        "failed": "Failed",
+        "confirmAction": "{action} campaign \"{name}\"?",
+        "actionPause": "Pause",
+        "actionResume": "Resume",
+        "actionSetBudget": "Set budget",
+        "actionSetEndDate": "Set end date",
+        "actionDuplicate": "Duplicate",
+        "paramSetBudgetDaily": "to THB {amount}/day",
+        "paramSetBudgetLifetime": "to THB {amount} lifetime",
+        "paramSetEndDate": "to {when}",
+        "paramDailyBudgetMultiplier": "x{value} budget",
+        "paramLifetimeBudgetMultiplier": "x{value} lifetime budget",
+        "paramActiveImmediately": "ACTIVE immediately"
+      },
+      "viewer": {
+        "backToList": "Back to report list",
+        "statusLabel": "Status: {status}",
+        "statusCompleted": "Completed",
+        "statusGenerating": "Generating...",
+        "statusFailed": "Failed",
+        "emailedAt": "Emailed at {when}",
+        "generationFailed": "Report generation failed",
+        "generatingMessage": "AI is analyzing your data..."
+      },
+      "badges": {
+        "pending": "Pending",
+        "ignored": "Not done",
+        "targetDeleted": "Target deleted",
+        "noData": "No data",
+        "followed": "Followed",
+        "confidenceTooltip": "30 days: followed {successful}/{total} times, success {percent}%",
+        "confidenceLabel": "Suggested {total} times · success {percent}%"
+      }
     },
     "aiOptimize": {
       "title": "AI Optimization Center",
-      "subtitle": "AI analyzes your campaigns and suggests real-time optimizations"
+      "subtitle": "AI analyzes your campaigns and suggests real-time optimizations",
+      "gate": {
+        "title": "Connect Meta before using this",
+        "description": "AI Optimization Center needs real Meta data to analyze and recommend improvements",
+        "cta": "Go to Settings"
+      },
+      "kpi": {
+        "opportunities": "Optimization opportunities",
+        "roasUplift": "Predicted ROAS lift",
+        "savings": "Potential budget savings",
+        "affectedCampaigns": "Affected campaigns"
+      },
+      "empty": {
+        "title": "Your campaigns are running well",
+        "description": "AI doesn't see anything to improve right now — check back in 24 hours, or scale up the campaigns that are already performing"
+      },
+      "tab": {
+        "all": "All",
+        "high": "High priority",
+        "medium": "Medium priority",
+        "low": "Low priority"
+      },
+      "refreshData": "Refresh data",
+      "emptyTab": {
+        "title": "No recommendations at this level",
+        "description": "Try another tab or refresh to re-run the AI analysis"
+      },
+      "table": {
+        "action": "Recommendation",
+        "target": "Campaign / ad set",
+        "reason": "Reason",
+        "predicted": "Predicted result",
+        "severity": "Priority",
+        "actions": "Actions"
+      },
+      "applyBtn": "Apply",
+      "applySuccess": "Recommendation applied (demo — not really applied yet)",
+      "applySuccessShort": "Recommendation applied (demo)",
+      "panel": {
+        "aiLabel": "Recommendation for you",
+        "context": "In {subtitle} of campaign",
+        "reasons": "Reasons",
+        "current": "Current performance",
+        "predicted": "Predicted result",
+        "applyBtn": "Apply this recommendation",
+        "selectHint": "Pick a recommendation in the table to see details"
+      },
+      "severity": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      }
     },
     "memory": {
       "title": "AI Memory",
-      "subtitle": "What the AI has learned from your accounts"
+      "subtitle": "What the AI has learned from your accounts",
+      "emptyTitle": "AI is gathering data",
+      "emptyBody": "You will start seeing results within 7 days after the first recommendation. The AI will calculate whether each suggestion actually worked and learn how to recommend better next time.",
+      "emptyTracking": "Currently tracking {pending} recommendations",
+      "successRateHeading": "Success rate over the last 4 weeks",
+      "weekPrefix": "Week {week}",
+      "pendingNote": "+ {pending} more recommendations awaiting results (the AI will calculate once the 7-day window closes)",
+      "breakdownHeading": "Breakdown by recommendation type",
+      "noBreakdownYet": "Not enough data to break down by group yet",
+      "tableTypeCol": "Type",
+      "tableTotalCol": "Total",
+      "tableSuccessCol": "Successful",
+      "recentHeading": "Latest outcomes (20 items)",
+      "noOutcomesYet": "No calculated outcomes yet",
+      "showingNote": "Showing 20 most recent of {totalOutcomes} total outcomes",
+      "actionType": {
+        "pause": "Pause campaign",
+        "resume": "Resume campaign",
+        "scaleBudget": "Scale / duplicate budget",
+        "changeBudget": "Adjust budget",
+        "refreshCreative": "Refresh creative",
+        "changeTargeting": "Adjust audience",
+        "diagnose": "Diagnose issue",
+        "other": "Other"
+      }
+    },
+    "login": {
+      "tagline": "Launch ads faster. Scale with precision.",
+      "title": "Sign in",
+      "subtitle": "Use your account to manage campaigns",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signup": "Create account",
+      "errors": {
+        "generic": "Something went wrong",
+        "serverUnreachable": "Couldn't reach the server. Try again."
+      }
+    },
+    "signup": {
+      "tagline": "Launch ads faster. Scale with precision.",
+      "title": "Create account",
+      "subtitle": "Start free for 30 days",
+      "nameLabel": "Your name",
+      "namePlaceholder": "e.g. Indy",
+      "tenantLabel": "Agency / Workspace name",
+      "tenantPlaceholder": "e.g. My Agency",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "submit": "Create account",
+      "submitting": "Creating...",
+      "haveAccount": "Already have an account?",
+      "login": "Sign in",
+      "errors": {
+        "generic": "Something went wrong",
+        "serverUnreachable": "Couldn't reach the server. Try again."
+      }
     },
     "tools": {
       "title": "Tools",
-      "subtitle": "All AI tools and advanced utilities"
+      "subtitle": "All AI tools and advanced utilities",
+      "sectionTitle": "All tools",
+      "toolCount": "{count} tools",
+      "items": {
+        "aiMaster": {
+          "label": "AI Master",
+          "description": "AI assistant that chats about campaigns + can pause/scale them"
+        },
+        "journey": {
+          "label": "Customer Journey",
+          "description": "Floating-island map of the customer path from ad to page to conversion"
+        },
+        "competitors": {
+          "label": "Competitor Spy",
+          "description": "Track and analyze competitor ads in your industry"
+        },
+        "events": {
+          "label": "Event Tracking SDK",
+          "description": "Pixel + CAPI event tracking — drop straight into the client website"
+        },
+        "customConversions": {
+          "label": "Custom Conversions",
+          "description": "Create custom events + conversion rules directly on Meta"
+        },
+        "namingTemplates": {
+          "label": "Naming Templates",
+          "description": "Templates for campaign/ad set names + AI auto-suggest"
+        },
+        "goals": {
+          "label": "Goals",
+          "description": "Set KPI targets per campaign + let AI evaluate the result"
+        },
+        "aiOptimize": {
+          "label": "AI Optimize",
+          "description": "AI analyzes + recommends campaign improvements in real time"
+        }
+      }
+    },
+    "verifyEmail": {
+      "titleSuccess": "Email verified",
+      "titleUsed": "Email already verified",
+      "titleExpired": "Link expired",
+      "titleInvalid": "Invalid link",
+      "descSuccess": "Thanks for verifying your email — your account is ready to use.",
+      "descUsed": "This verification link has already been used.",
+      "descExpired": "Verification links are valid for 24 hours — please request a new one.",
+      "descInvalid": "We couldn't find a matching verification link, or it may be corrupted.",
+      "goToDashboard": "Go to dashboard",
+      "loginPrompt": "Please log in to request a new verification email.",
+      "loginBtn": "Log in",
+      "usedPrefix": "You can",
+      "usedLink": "go to your dashboard",
+      "usedSuffix": "any time",
+      "resend": {
+        "send": "Resend verification email",
+        "sending": "Sending...",
+        "successMsg": "Verification email sent. Please check your inbox.",
+        "failedMsg": "Failed to resend email",
+        "connectionError": "Cannot connect to server"
+      }
+    },
+    "settingsBilling": {
+      "title": "Billing",
+      "subtitle": "View your current plan, payment history, and manage your subscription",
+      "noSubscription": "Subscription not found",
+      "currentPlan": "Current plan",
+      "pricePeriod": "฿{price} / {periodLabel} (VAT included)",
+      "periodMonth": "month",
+      "periodYear": "year",
+      "aiMsgPerDay": "AI messages/day",
+      "unlimited": "Unlimited",
+      "trialUntil": "Trial ends",
+      "nextBilling": "Next billing date",
+      "willCancelToday": "Will cancel today",
+      "perMonth": "฿{price}/month",
+      "includedInPlan": "Included in plan",
+      "addOnOn": "On",
+      "addOnOff": "Off",
+      "invoicesHeading": "Payment history",
+      "noInvoices": "No invoices yet",
+      "tableDate": "Date",
+      "tableAmount": "Amount",
+      "tableStatus": "Status",
+      "tableVat": "VAT",
+      "vatSplit": "฿{base} + ฿{vat} VAT",
+      "status": {
+        "trialing": "Trialing",
+        "active": "Active",
+        "pastDue": "Past due",
+        "suspended": "Suspended",
+        "cancelled": "Cancelled"
+      },
+      "invoiceStatus": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      },
+      "actions": {
+        "actionFailed": "Action failed",
+        "addonEnabled": "Add-on enabled",
+        "addonDisabled": "Add-on disabled",
+        "cancelConfirm": "Cancel your subscription? You can keep using it until the end of the current billing period.",
+        "cancelFailed": "Cancel failed",
+        "cancelSuccess": "Subscription cancelled",
+        "cancel": "Cancel subscription",
+        "addonOn": "Enable {label}",
+        "addonOff": "Disable {label}"
+      }
     },
     "goals": {
       "title": "Campaign Goals",
-      "subtitle": "Set each campaign's objective so AI can evaluate it against the right yardstick (Awareness → CPM, Sales → ROAS, etc.)"
+      "subtitle": "Set each campaign's objective so AI can evaluate it against the right yardstick (Awareness → CPM, Sales → ROAS, etc.)",
+      "gate": {
+        "needMeta": "Connect Meta before using Goals",
+        "cta": "Go to Settings"
+      },
+      "namingRulesLink": "Name-based rules",
+      "objective": {
+        "AWARENESS": "Awareness (build awareness)",
+        "ENGAGEMENT": "Engagement (interactions)",
+        "TRAFFIC": "Traffic (site/page visits)",
+        "LEADS": "Leads (capture leads/chats)",
+        "SALES": "Sales (purchase/conversion)",
+        "APP_PROMOTION": "App Promotion (installs)",
+        "STORE_VISITS": "Store Visits (foot traffic)"
+      },
+      "source": {
+        "userManual": "Manual",
+        "autoName": "From name",
+        "autoMeta": "From Meta",
+        "tenantDefault": "Default",
+        "unresolved": "Not set"
+      },
+      "stats": {
+        "totalLabel": "Total:",
+        "campaignsUnit": "campaigns",
+        "unresolvedLabel": "Not set:"
+      },
+      "search": {
+        "placeholder": "Search campaign or ad account..."
+      },
+      "filter": {
+        "allSources": "All sources",
+        "allAccounts": "All accounts"
+      },
+      "bulk": {
+        "selected": "{count} campaigns selected —",
+        "setObjective": "Set objective:",
+        "saveAll": "Save all",
+        "clear": "Clear"
+      },
+      "toast": {
+        "notSelected": "No campaign selected",
+        "settingFor": "Setting goal for {count} campaigns...",
+        "saveFail": "Failed to save",
+        "savedCount": "Saved {count} campaigns",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "savingTarget": "Saving target...",
+        "targetSaved": "Target saved",
+        "clearingOverride": "Removing override...",
+        "revertedToAuto": "Reverted to auto value",
+        "deleteFail": "Failed to delete",
+        "invalidNumber": "Please enter a valid number"
+      },
+      "empty": {
+        "title": "No campaigns match the filter",
+        "subtitle": "Try clearing the filter or searching for something else"
+      },
+      "list": {
+        "selectAllToggle": "Select/deselect all in this view ({count})",
+        "selectionSummary": "{filtered} / {total} campaigns",
+        "accountCampaignsCount": "· {count} campaigns"
+      },
+      "row": {
+        "setObjectivePlaceholder": "Set objective...",
+        "setTargetTooltip": "Set target",
+        "clearOverrideTooltip": "Clear override",
+        "checkboxAria": "Select {name}",
+        "evalTargetTooltip": "Target {target}",
+        "evalCustomSuffix": "(custom)"
+      },
+      "modal": {
+        "title": "Set target for this campaign",
+        "primaryKpi": "Primary KPI",
+        "targetLabel": "Target value (leave empty = use default)",
+        "targetPlaceholder": "e.g. 2.5 for ROAS, 50 for CPM",
+        "cancel": "Cancel",
+        "save": "Save"
+      }
     },
     "ai": {
       "title": "AI Master",
-      "subtitle": "AI assistant for analysis + campaign management"
+      "subtitle": "AI assistant for analysis + campaign management",
+      "newConversation": "New conversation",
+      "newDefaultTitle": "New conversation",
+      "untitled": "Untitled",
+      "messagesCount": "{count} messages",
+      "noConversations": "No conversations yet",
+      "loadingThread": "Loading...",
+      "thinking": "AI is thinking...",
+      "inputPlaceholder": "Type a question or command — e.g. 'Which campaign has the lowest ROAS this week?'",
+      "toolsHint": "AI uses tools (listCampaigns, getCampaignInsights, searchKnowledge, pause/resume/setBudget) to fetch real data and act",
+      "empty": {
+        "headline": "AI Master is ready",
+        "subtitle": "Use plain language — pause/resume, edit budget, or ask about real campaign data",
+        "tryAsking": "Try asking"
+      },
+      "toast": {
+        "createFailed": "Couldn't start a new conversation",
+        "sendFailed": "Send failed"
+      },
+      "relative": {
+        "justNow": "just now",
+        "minutes": "{value}m ago",
+        "hours": "{value}h ago",
+        "days": "{value}d ago",
+        "unknown": "—"
+      },
+      "chat": {
+        "fabLabel": "Ask AI",
+        "expertSubtitle": "Meta Ads expert",
+        "openFullPage": "Open full page",
+        "emptyHint": "Start with a question, e.g.:",
+        "thinking": "AI is thinking...",
+        "inputPlaceholder": "Type a question or command...",
+        "toolsHint": "AI uses tools (listCampaigns, getCampaignInsights) to fetch real data",
+        "startFailed": "Couldn't start AI chat",
+        "sendFailed": "Send failed",
+        "decisionFailed": "Decision failed",
+        "samplePrompts": {
+          "listActive": "list active campaigns",
+          "worstBudget": "which campaign burned the most budget this week?",
+          "digittribeRoas": "what is Digittribe's ROAS?"
+        },
+        "confirm": {
+          "title": "AI is asking to confirm before running the action",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "approved": "Done:",
+        "cancelled": "Cancelled:",
+        "resultLabel": "Result:"
+      }
+    },
+    "landing": {
+      "meta": {
+        "title": "AdsLab · Thai-first SaaS for Meta media buyers",
+        "description": "Tool for media buyers and agencies to run Meta ads faster and more accurately with Thai-fluent AI — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK all in one place",
+        "ogTitle": "AdsLab · Thai-first SaaS for Meta media buyers",
+        "ogDescription": "Run ads faster, smarter, scalable — free 7-day trial"
+      },
+      "header": {
+        "pricing": "Pricing",
+        "login": "Log in",
+        "signup": "Start free 7-day trial"
+      },
+      "hero": {
+        "pill": "Thai-first · SaaS for Meta media buyers",
+        "headline": "Run ads faster, sharper, scalable",
+        "subtitle": "Optimize Meta ads with Thai-fluent AI — Dashboard, Audience, Custom Conversions, Customer Journey, Event SDK all in one place",
+        "ctaPrimary": "Start free 7-day trial",
+        "ctaSecondary": "View pricing",
+        "microcopy": "No signup fee · cancel anytime · billing starts after the 7-day trial"
+      },
+      "features": {
+        "heading": "Covers everything a Meta media buyer needs",
+        "subheading": "From a unified dashboard → AI analysis + recommendations → take action to optimize",
+        "dashboardTitle": "Unified Dashboard",
+        "dashboardDesc": "See spend / ROAS / CTR / CPM for every ad account in one place, with date-range + client filters",
+        "aiTitle": "AI Master — Thai-fluent assistant",
+        "aiDesc": "Drive the AI via chat: see insights, pause campaigns, change budgets, search your own knowledge base",
+        "audienceTitle": "Audience + Custom Conversions",
+        "audienceDesc": "Build Custom/Lookalike audiences + Custom Conversions and push them to Meta instantly",
+        "builderTitle": "Campaign Builder",
+        "builderDesc": "Create + duplicate campaigns with AI-suggested names and targeting tied to your objective",
+        "sdkTitle": "Event SDK + CAPI",
+        "sdkDesc": "Install Pixel + Conversions API in one click — covers every event type, PixelYourSite-style but Thai-native",
+        "journeyTitle": "Customer Journey Map",
+        "journeyDesc": "Floating-island map showing the customer path from ad → page → conversion — clean and easy to grasp"
+      },
+      "pricing": {
+        "heading": "Pricing tiered by your ad spend",
+        "subheading": "Pay for what you actually use · every tier includes 7% VAT · cancel anytime",
+        "perMonth": "/month",
+        "recommendedBadge": "Recommended",
+        "starterSuitable": "ad spend < ฿10,000/month",
+        "starterBullets": [
+          "1 ad account",
+          "AI messages — 30/day",
+          "Dashboard + AI Master",
+          "Customer Journey"
+        ],
+        "growthSuitable": "ad spend ฿10k–฿30k/month",
+        "growthBullets": [
+          "3 ad accounts",
+          "AI 100 messages/day",
+          "All Starter features",
+          "Custom Conversions"
+        ],
+        "proSuitable": "ad spend ฿30k–฿100k/month",
+        "proBullets": [
+          "10 ad accounts",
+          "AI 300 messages/day",
+          "All Growth features",
+          "Audience Management"
+        ],
+        "scaleSuitable": "ad spend ฿100k–฿500k/month",
+        "scaleBullets": [
+          "25 ad accounts",
+          "Unlimited AI",
+          "White-label reports included",
+          "Priority support"
+        ],
+        "addonsHeading": "Add-ons (toggle on/off in any tier)",
+        "addon1Name": "Event SDK + Pixel Tracking",
+        "addon1Price": "฿590/month",
+        "addon2Name": "Extra Ad Account",
+        "addon2Price": "฿190/account/month",
+        "addon3Name": "White-label Reports",
+        "addon3Price": "฿490/month (free on Scale+)",
+        "addon4Name": "Priority AI (Claude Opus)",
+        "addon4Price": "฿890/month",
+        "enterpriseQuestion": "ad spend > ฿1,000,000/month?",
+        "enterpriseCta": "Contact sales",
+        "enterpriseSuffix": "for the Enterprise plan",
+        "payHeading": "Payment + refunds",
+        "pay1": "7-day free trial — card saved up front, no charge during trial",
+        "pay2": "Auto-billing starts on day 8 if not cancelled (3 email reminders sent ahead)",
+        "pay3": "Refund eligible within the first 7 days of a billing cycle — pro-rated",
+        "pay4": "Cancel auto-renewal anytime · access continues to end of cycle",
+        "pay5": "Payments via Omise (PCI DSS Level 1) · Visa, Mastercard, JCB, AMEX supported",
+        "payLinkPrefix": "Read more at",
+        "payRefundLink": "Refund Policy",
+        "payTermsLink": "Terms of Service"
+      },
+      "cta": {
+        "heading": "Ready to sharpen your ads?",
+        "subtitle": "Sign up free for 7 days · no signup fee · cancel anytime",
+        "button": "Start free 7-day trial"
+      }
+    },
+    "events": {
+      "logPageTitle": "SDK Event Log",
+      "logPageSubtitle": "Inspect events the SDK has fired + CAPI relay status — use this to debug rules before running a real campaign",
+      "log": {
+        "allEvents": "All events",
+        "allStatuses": "All statuses",
+        "loading": "Loading...",
+        "empty": "No event log yet — install the SDK on your site and your rules will start firing events here"
+      }
+    },
+    "campaignBuilder": {
+      "objective": {
+        "OUTCOME_SALES": {
+          "label": "Sales",
+          "sublabel": "Sales / Conversion"
+        },
+        "OUTCOME_LEADS": {
+          "label": "Leads",
+          "sublabel": "Collect leads / Inbox"
+        },
+        "OUTCOME_ENGAGEMENT": {
+          "label": "Engagement",
+          "sublabel": "Engagement (video / chat)"
+        },
+        "OUTCOME_TRAFFIC": {
+          "label": "Traffic",
+          "sublabel": "Website / Link Clicks"
+        },
+        "OUTCOME_AWARENESS": {
+          "label": "Awareness",
+          "sublabel": "Build awareness"
+        },
+        "OUTCOME_APP_PROMOTION": {
+          "label": "App Promotion",
+          "sublabel": "App installs"
+        }
+      },
+      "optimizationGoal": {
+        "LINK_CLICKS": {
+          "label": "Link Clicks",
+          "descSales": "Send people to the website (post must have a link)",
+          "descTraffic": "Maximize click count"
+        },
+        "CONVERSATIONS": {
+          "label": "Messages",
+          "descSales": "Sell via Page chat",
+          "descLeads": "Send people to Page chat",
+          "descEngagement": "Send people to Page chat"
+        },
+        "OFFSITE_CONVERSIONS": {
+          "label": "Conversions (Pixel)",
+          "desc": "Optimize for website events — Pixel must be set up first"
+        },
+        "VALUE": {
+          "label": "Value (Pixel)",
+          "desc": "Optimize by purchase value (requires Pixel + value events)"
+        },
+        "THRUPLAY": {
+          "label": "Video Views",
+          "labelAwareness": "Video Views (Thruplay)",
+          "descEngagement": "Watch video ≥15s (post must be a video)",
+          "descAwareness": "Watch video ≥15s"
+        },
+        "LANDING_PAGE_VIEWS": {
+          "label": "Landing Page Views",
+          "desc": "Click + actually open the landing page"
+        },
+        "REACH": {
+          "label": "Reach",
+          "descAwareness": "Show the ad to as many people as possible",
+          "descAppPromotion": "App-specific optimization needs app setup first — use Reach instead"
+        },
+        "IMPRESSIONS": {
+          "label": "Impressions",
+          "desc": "Number of times the ad is shown"
+        }
+      },
+      "pixelEvent": {
+        "PURCHASE": "Purchase — completed purchase",
+        "ADD_TO_CART": "Add to Cart",
+        "INITIATE_CHECKOUT": "Initiate Checkout — started checkout",
+        "LEAD": "Lead — submitted form",
+        "COMPLETE_REGISTRATION": "Complete Registration — signed up",
+        "ADD_PAYMENT_INFO": "Add Payment Info",
+        "VIEW_CONTENT": "View Content — viewed product",
+        "SEARCH": "Search",
+        "SUBSCRIBE": "Subscribe — opted in",
+        "CONTACT": "Contact"
+      },
+      "field": {
+        "campaignName": "Campaign name",
+        "objective": "Objective",
+        "optimization": "Optimization goal",
+        "pixelConversion": "Pixel + Conversion",
+        "budget": "Budget",
+        "facebookPage": "Facebook Page",
+        "creativeSource": "Ad source",
+        "imageFromLibrary": "Image from library",
+        "adText": "Ad text ({count}/125)",
+        "linkDestination": "Destination URL",
+        "image": "Image",
+        "selectPostCount": "Select post ({count} posts)",
+        "selectPostLoading": "Select post (loading...)",
+        "location": "Location",
+        "gender": "Gender",
+        "ageMin": "Min age",
+        "ageMax": "Max age",
+        "interests": "Interests",
+        "customAudienceLoading": "Custom Audience (loading...)",
+        "customAudienceCount": "Custom Audience ({count} in this account)",
+        "budgetMode": "Budget mode",
+        "specialAdCategory": "Special Ad Category",
+        "headline": "Headline ({count}/40)",
+        "description": "Description ({count}/30)",
+        "callToAction": "Call To Action",
+        "adSetName": "Ad Set name (blank = auto)",
+        "adName": "Ad name (blank = auto)",
+        "scheduleStart": "Start",
+        "scheduleEnd": "End",
+        "scheduleHint": "Specify both date and time — Thailand time (UTC+7)"
+      },
+      "placeholder": {
+        "campaignName": "e.g. Summer Sale 2026",
+        "primaryText": "Main text shown above the image",
+        "linkUrl": "https://example.com/landing",
+        "headline": "Short headline",
+        "description": "Description",
+        "scheduleStart": "Pick start date + time",
+        "scheduleEnd": "Pick end date + time",
+        "manualPostId": "Paste URL or Post ID (supports pfbid... and <pageid>_<postid>)",
+        "searchInterest": "Search interests (e.g. 'fashion', 'cooking', 'gaming', 'travel')",
+        "searchGeo": "Search countries / regions / cities (e.g. 'Bangkok', 'Chiang Mai', 'Asia')",
+        "searchPage": "Search Pages ({count} Pages available)...",
+        "pixelSelect": "-- Select Pixel --",
+        "customConversionSelect": "-- Select Custom Conversion --",
+        "currency": "฿"
+      },
+      "creative": {
+        "newImage": "Upload new image",
+        "fromLibrary": "Pick from library",
+        "existingPost": "Use existing post",
+        "selectedClickToChange": "Selected — click to change",
+        "clickToPickLibrary": "Click to pick from creatives library",
+        "uploaded": "Uploaded — click to change",
+        "uploadFile": "Pick JPG/PNG (≤ 8MB)",
+        "uploading": "Uploading...",
+        "uploadSuccess": "Image uploaded",
+        "title": "Ad + image / post",
+        "linkUrlHint": "URL the user lands on when clicking the ad (required for image ads with a Call to Action) — if you don't want a CTA, use &ldquo;Use existing post&rdquo; and pick a post without a link"
+      },
+      "post": {
+        "loading": "Loading...",
+        "fetchFail": "Failed to load posts",
+        "noPromotable": "No promotable post on this Page",
+        "noPromotableDescription": "Meta returned 0 posts — maybe the Page hasn't posted anything yet, or the posts are too old (Meta limits to the last ~3 months). Try entering a post ID below",
+        "noText": "(no text)",
+        "manualHint": "Or paste a Facebook post Post ID / URL directly",
+        "willUse": "Will use:",
+        "willUseResolveHint": "(server will resolve to canonical ID at create time)",
+        "formatError": "Format not recognized — try pasting the full URL or just the numeric ID"
+      },
+      "page": {
+        "notFound": "No Page found — tap &ldquo;Refresh Pages&rdquo; below",
+        "noResults": "No match for &ldquo;{query}&rdquo;",
+        "change": "Change",
+        "cancel": "Cancel",
+        "refresh": "↻ Refresh Pages from Meta (if you can't find your Page)",
+        "refreshing": "Syncing Pages...",
+        "syncSuccess": "Pages synced — refresh the page to see the new list",
+        "syncFail": "Failed to sync Pages"
+      },
+      "pixel": {
+        "loading": "Loading Pixels...",
+        "loadingConversions": "Loading Custom Conversions...",
+        "noPixelWarn": "No Pixel in this Ad Account — go to",
+        "audiencesPixelsTab": "Audiences → Pixels tab",
+        "toCreate": "to create one",
+        "noCustomConversionWarn": "No Custom Conversion — create one at",
+        "audiencesConversionsTab": "Audiences → Custom Conversions tab",
+        "eventStandard": "Standard event",
+        "eventCustom": "Custom Conversion (URL rule)",
+        "hintCustom": "Custom Conversion = map URL pattern → event without writing event code on the website",
+        "hintStandard": "Meta will optimize delivery toward people likely to trigger this event — the Pixel needs to fire ~50 events/week for good optimization"
+      },
+      "budget": {
+        "daily": "Per day",
+        "lifetime": "Lifetime",
+        "perDaySuffix": "/day",
+        "lifetimeSuffix": "lifetime"
+      },
+      "audience": {
+        "loading": "Loading...",
+        "empty": "None — create in Meta Ads Manager or wait for Stage 4 (audience builder)"
+      },
+      "gender": {
+        "all": "All",
+        "male": "Male",
+        "female": "Female"
+      },
+      "advanced": {
+        "toggle": "Advanced options",
+        "toggleHint": "(targeting / audience / headline / CTA / etc.)",
+        "ageWarning1": "Meta requires",
+        "ageWarning2": "for ads targeting Thailand — anything lower will be rejected",
+        "specialAdNone": "None"
+      },
+      "interest": {
+        "searching": "Searching...",
+        "relatedTitle": "Related interests",
+        "noSuggestions": "Meta has no suggestions for this seed set — try adding another interest as seed",
+        "broadHint": "Optional — Meta will use broad targeting (everyone matching location + age + gender)"
+      },
+      "geo": {
+        "searching": "Searching...",
+        "include": "+ Include",
+        "exclude": "− Exclude"
+      },
+      "submit": {
+        "clearDraft": "Clear draft",
+        "clearDraftConfirm": "Clear draft and start over?",
+        "creating": "Creating...",
+        "previewBtn": "Preview before creating →"
+      },
+      "preview": {
+        "title": "Preview before creating campaign",
+        "subtitle": "Double-check before publishing — Meta will start charging immediately if you pick ACTIVE",
+        "adPreviewLabel": "Ad preview",
+        "postNoImage": "(this post has no image)",
+        "imageFallback": "(image)",
+        "back": "← Back to edit",
+        "saveDraft": "Save draft (PAUSED)",
+        "publishNow": "Publish now (ACTIVE)",
+        "publishConfirm": "Publish now = Meta will start charging + run the ad immediately — confirm?",
+        "summaryInclude": "Include:",
+        "summaryExclude": "Exclude:",
+        "summaryAge": "Age:",
+        "summaryGender": "Gender:",
+        "summaryInterests": "Interests:",
+        "summaryWorldwide": "Worldwide (no filter)",
+        "summaryBudget": "฿{amount}{suffix}",
+        "creativeExistingPost": "Existing post",
+        "creativeFromLibraryWithLink": "Image (from library) + link",
+        "creativeFromLibraryNoLink": "Image (from library) + no link",
+        "creativeNewImageWithLink": "Image (newly uploaded) + link",
+        "creativeNewImageNoLink": "Image (newly uploaded) + no link",
+        "noPage": "(no page)"
+      },
+      "toast": {
+        "publishing": "Publishing campaign...",
+        "savingDraft": "Saving draft (PAUSED)...",
+        "verbPublished": "Published",
+        "verbSavedDraft": "Saved draft for",
+        "publishSuccess": "{verb} \"{name}\"",
+        "publishFail": "Failed to create"
+      },
+      "validate": {
+        "campaignName": "Enter a campaign name",
+        "page": "Pick a Facebook Page",
+        "budgetMinDaily": "Daily budget minimum is ฿20",
+        "budgetMinLifetime": "Lifetime budget minimum is ฿20",
+        "lifetimeNeedsDates": "Lifetime budget requires start + end",
+        "needImage": "Prepare an image first",
+        "needPost": "Pick a post",
+        "needLink": "Enter a URL",
+        "needPrimaryText": "Enter ad text",
+        "needPixel": "Pick a Pixel for the Conversion goal",
+        "needEvent": "Pick an event to optimize for",
+        "needCustomConversion": "Pick a Custom Conversion"
+      }
+    },
+    "refundPolicy": {
+      "metaTitle": "Refund Policy · AdsLab",
+      "metaDescription": "Refund terms for AdsLab subscriptions",
+      "backHome": "← Back to home",
+      "title": "Refund Policy",
+      "lastUpdated": "Refund Policy · Last updated: May 13, 2026",
+      "trial": {
+        "heading": "1. 7-Day Free Trial",
+        "body1": "Every new AdsLab subscriber gets a <strong>7-day</strong> free trial starting from the day your credit card is saved. During the trial you can use the full feature set of your selected plan and <strong>cancel anytime with no charge</strong>.",
+        "body2": "If you do not cancel before the trial ends, billing begins automatically on the following day for the selected plan. We send email reminders 2 days, 1 day, and on the trial-end date so you can decide."
+      },
+      "prorated": {
+        "heading": "2. Pro-rated Refund for New Billing Cycle",
+        "body": "After a new billing charge (post-trial, or monthly/annual renewal), you are eligible for a refund <strong>within the first 7 days of the cycle</strong>. The refundable amount is calculated proportionally to the remaining days of the cycle (pro-rated).",
+        "formulaLabel": "Formula:",
+        "formula": "refund = amount_paid × (remaining_days_in_cycle ÷ total_days_in_cycle)",
+        "exampleLabel": "Example:",
+        "exampleBody": "Subscribed to Starter ฿1,490/month, used for 3 days, requested refund",
+        "exampleCalc": "refund = ฿1,490 × (27 ÷ 30) = ฿1,341"
+      },
+      "cancel": {
+        "heading": "3. Cancelling Your Subscription",
+        "body": "You can cancel anytime from <code>Settings → Billing → Cancel subscription</code>. After cancelling:",
+        "item1": "You retain access until the end of the current billing cycle (no automatic refund).",
+        "item2": "No auto-renewal in the next cycle.",
+        "item3": "Your data is kept in the system for 90 days. If you resubscribe within that window, all your data is restored."
+      },
+      "nonRefundable": {
+        "heading": "4. Non-Refundable Cases",
+        "body": "Refunds are not available in the following cases:",
+        "item1": "Past the first 7 days of a billing cycle (you can still cancel to prevent renewal).",
+        "item2": "Account suspended for violation of the Terms of Service.",
+        "item3": "Payment made through channels other than Omise (e.g., direct transfer — not supported in the current Phase)."
+      },
+      "process": {
+        "heading": "5. How to Request a Refund",
+        "step1": "Go to <code>Settings → Billing</code> in your dashboard.",
+        "step2": "On the target Invoice, click <code>Request refund</code>.",
+        "step3": "The system processes the refund back to your original card via Omise within 5–10 business days.",
+        "step4": "You will receive an email confirmation once the refund is complete.",
+        "specialContact": "For issues or special-circumstance refund requests, contact us at"
+      },
+      "planChange": {
+        "heading": "6. Changing Plans",
+        "body": "If you upgrade (e.g., Starter → Pro) mid-cycle, the system charges the pro-rated difference for the remaining days. If you downgrade, the new plan takes effect at the next billing cycle (no difference refunded)."
+      },
+      "contact": {
+        "heading": "7. Contact Us",
+        "emailLabel": "Email:",
+        "phoneLabel": "Phone:",
+        "addressLabel": "Address:"
+      },
+      "english": {
+        "heading": "Refund Policy (Summary)",
+        "trial": "<strong>7-day free trial:</strong> No charge during trial period. Cancel anytime via Settings → Billing.",
+        "prorated": "<strong>Pro-rated refund within 7 days of new billing cycle:</strong> Eligible amount calculated as <code>payment × (remaining_days ÷ total_days_in_period)</code>.",
+        "cancel": "<strong>Cancellation:</strong> Access continues until end of current billing period. No refund issued on cancellation itself, but no further charges.",
+        "nonRefundable": "<strong>Non-refundable cases:</strong> Beyond 7-day window; suspended accounts due to ToS violation.",
+        "contactLabel": "<strong>Contact:</strong>"
+      }
+    },
+    "terms": {
+      "metaTitle": "Terms of Service · AdsLab",
+      "metaDescription": "Terms governing the use of AdsLab.",
+      "backHome": "← AdsLab",
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: {date}",
+      "thaiHeading": "ภาษาไทย",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. Acceptance of Terms",
+          "body": "By signing up for and using AdsLab, you agree to these Terms and our <privacyLink>Privacy Policy</privacyLink>. If you do not agree, please discontinue use."
+        },
+        "s2": {
+          "title": "2. Service Description",
+          "body": "AdsLab is a digital advertising campaign management platform including dashboards, AI reports, and AI optimization. We are a <strong>tool</strong> — not a guarantor of marketing results. Final decisions remain with the user."
+        },
+        "s3": {
+          "title": "3. User Accounts",
+          "item1": "You must be 20+ years old, or have parental/guardian consent.",
+          "item2": "You are responsible for password security.",
+          "item3": "Do not share accounts (use the Team / Workspace system instead).",
+          "item4": "You must provide accurate and up-to-date information."
+        },
+        "s4": {
+          "title": "4. Acceptable Use",
+          "intro": "You agree not to:",
+          "item1": "Use AdsLab for illegal activity or in violation of Meta's policies.",
+          "item2": "Attempt to access other users' data without authorization.",
+          "item3": "Scrape, reverse-engineer, or bypass rate limits.",
+          "item4": "Send spam, malware, or copyright-infringing content.",
+          "item5": "Use AI features to systematically generate misleading content."
+        },
+        "s5": {
+          "title": "5. Payment (Phase 2 — currently free)",
+          "intro": "During MVP / Beta the service is free. When subscriptions launch:",
+          "item1": "You will receive a 30-day free trial.",
+          "item2": "Fees are charged in advance, monthly or annually.",
+          "item3": "Cancel at any time — service ends at the end of the current billing cycle.",
+          "item4": "Refunds: within the first 7 days of a new billing cycle if usage was minimal."
+        },
+        "s6": {
+          "title": "6. Intellectual Property",
+          "body": "AdsLab (including code, design, AI prompts, brand) belongs to us. Data and content you upload or generate through AdsLab remain yours — we only process it to provide the service."
+        },
+        "s7": {
+          "title": "7. Limitation of Liability",
+          "item1": "AdsLab is provided \"as-is\" with no guarantee of profit or marketing results.",
+          "item2": "We are not liable for indirect damages (e.g., losses from decisions based on AI suggestions).",
+          "item3": "Maximum liability is capped at fees paid by you in the prior 12 months."
+        },
+        "s8": {
+          "title": "8. Termination / Suspension",
+          "body": "We reserve the right to suspend or terminate accounts that violate these Terms. You may cancel your own account at any time in Settings. See <deletionLink>Data Deletion</deletionLink> for data removal."
+        },
+        "s9": {
+          "title": "9. Governing Law",
+          "body": "These Terms are governed by the laws of Thailand. Disputes will be resolved in Thai courts."
+        },
+        "s10": {
+          "title": "10. Changes to These Terms",
+          "body": "We may update these Terms from time to time. We will notify you via email at least 14 days before changes take effect."
+        },
+        "s11": {
+          "title": "11. Contact",
+          "emailLabel": "Email:"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Acceptance of Terms",
+          "body": "By signing up for and using AdsLab, you agree to these Terms and our <privacyLink>Privacy Policy</privacyLink>. If you do not agree, please discontinue use."
+        },
+        "s2": {
+          "title": "2. Service Description",
+          "body": "AdsLab is a digital advertising campaign management platform including dashboards, AI reports, and AI optimization. We are a <strong>tool</strong> — not a guarantor of marketing results. Final decisions remain with the user."
+        },
+        "s3": {
+          "title": "3. User Accounts",
+          "item1": "You must be 20+ years old, or have parental/guardian consent",
+          "item2": "You are responsible for password security",
+          "item3": "Do not share accounts (use Team / Workspace features instead)",
+          "item4": "Provide accurate and up-to-date information"
+        },
+        "s4": {
+          "title": "4. Acceptable Use",
+          "intro": "You agree not to:",
+          "item1": "Use AdsLab for illegal activity or in violation of Meta's policies",
+          "item2": "Attempt to access other users' data without authorization",
+          "item3": "Scrape, reverse-engineer, or bypass rate limits",
+          "item4": "Send spam, malware, or copyright-infringing content",
+          "item5": "Use AI features to systematically generate misleading content"
+        },
+        "s5": {
+          "title": "5. Payment (Phase 2 — currently free)",
+          "intro": "During MVP / Beta the service is free. When subscriptions launch:",
+          "item1": "You will receive a 30-day free trial",
+          "item2": "Fees are charged in advance, monthly or annually",
+          "item3": "Cancel at any time — service ends at the end of the current billing cycle",
+          "item4": "Refunds: within the first 7 days of a new billing cycle if usage was minimal"
+        },
+        "s6": {
+          "title": "6. Intellectual Property",
+          "body": "AdsLab (including code, design, AI prompts, brand) belongs to us. Data and content you upload or generate through AdsLab remains yours — we only process it to provide the service."
+        },
+        "s7": {
+          "title": "7. Limitation of Liability",
+          "item1": "AdsLab is provided \"as-is\" with no guarantee of profit or marketing results",
+          "item2": "We are not liable for indirect damages (e.g. losses from decisions based on AI suggestions)",
+          "item3": "Maximum liability is capped at fees paid by you in the prior 12 months"
+        },
+        "s8": {
+          "title": "8. Termination / Suspension",
+          "body": "We reserve the right to suspend or terminate accounts that violate these Terms. You may cancel your own account at any time in Settings. See <deletionLink>Data Deletion</deletionLink> for data removal."
+        },
+        "s9": {
+          "title": "9. Governing Law",
+          "body": "These Terms are governed by the laws of Thailand. Disputes will be resolved in Thai courts."
+        },
+        "s10": {
+          "title": "10. Changes to These Terms",
+          "body": "We may update these Terms from time to time. We will notify you via email at least 14 days before changes take effect."
+        },
+        "s11": {
+          "title": "11. Contact",
+          "emailLabel": "Email:"
+        }
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "refund": "Refund Policy",
+        "deletion": "Data Deletion",
+        "home": "AdsLab"
+      }
+    },
+    "privacy": {
+      "metaTitle": "Privacy Policy · AdsLab",
+      "metaDescription": "How AdsLab collects, uses, and protects your data.",
+      "backHome": "← AdsLab",
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: {date}",
+      "thaiHeading": "ภาษาไทย",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. Introduction",
+          "body": "AdsLab (\"we\", \"our\") is a SaaS platform for media buyers and digital marketing agencies. This policy explains how we collect, use, and protect your data in compliance with Thailand's Personal Data Protection Act (PDPA, 2019) and international standards (GDPR)."
+        },
+        "s2": {
+          "title": "2. Information We Collect",
+          "item1": "<strong>Account info:</strong> email, name, password (stored as hash)",
+          "item2": "<strong>Workspace info:</strong> agency name, team members, role of each member",
+          "item3": "<strong>Meta advertising data:</strong> when you click \"Connect Meta\" we fetch ad accounts, campaigns, and insights via Meta Marketing API based on permissions you grant",
+          "item4": "<strong>Usage data:</strong> login logs, API calls, error events",
+          "item5": "<strong>Cookies:</strong> session cookie only (authentication). No tracking cookies."
+        },
+        "s3": {
+          "title": "3. How We Use Your Information",
+          "item1": "Provide the platform (dashboard, AI report, optimization)",
+          "item2": "Send required emails (verification, password reset, reports)",
+          "item3": "Generate AI insights via OpenRouter (Claude, Gemini) — your campaign data is sent for processing and is NOT retained by AI providers",
+          "item4": "Improve service quality (aggregated, anonymized data)",
+          "doNot": "<strong>We do NOT:</strong> sell, share with advertisers, or use your data to train AI models."
+        },
+        "s4": {
+          "title": "4. Third-Party Service Providers",
+          "item1": "<strong>Meta Platforms</strong> — advertising data source (via Marketing API)",
+          "item2": "<strong>OpenRouter / Anthropic / Google</strong> — AI processing",
+          "item3": "<strong>Resend</strong> — email delivery",
+          "item4": "<strong>Vercel</strong> — hosting (edge network nearest the user)",
+          "item5": "<strong>Neon</strong> — database (Singapore region)",
+          "item6": "<strong>Omise</strong> (Phase 2) — payment processing"
+        },
+        "s5": {
+          "title": "5. Data Retention",
+          "item1": "Account data: while your account is active + 90 days after deletion",
+          "item2": "Cached ad data: up to 90 days for historical reporting",
+          "item3": "Logs: 30 days",
+          "item4": "After the retention window, data is permanently purged from backups"
+        },
+        "s6": {
+          "title": "6. Your Rights (PDPA / GDPR)",
+          "intro": "You have the right to:",
+          "item1": "Access and download your data",
+          "item2": "Correct inaccurate information",
+          "item3": "Delete your account and all data (see <deletionLink>Data Deletion</deletionLink>)",
+          "item4": "Withdraw consent (disconnect Meta at any time)",
+          "item5": "Data portability",
+          "item6": "Lodge a complaint with the Personal Data Protection Committee (PDPC) if you believe we have violated your rights",
+          "contactLabel": "Contact:"
+        },
+        "s7": {
+          "title": "7. Security",
+          "item1": "All data in transit is encrypted with TLS (HTTPS)",
+          "item2": "Passwords are stored as bcrypt hashes (irreversible)",
+          "item3": "Meta access tokens are encrypted at rest with AES-256-GCM",
+          "item4": "Session cookies are httpOnly, secure, sameSite=lax"
+        },
+        "s8": {
+          "title": "8. Changes to This Policy",
+          "body": "We may update this policy from time to time. Material changes will be communicated via email at least 14 days before they take effect."
+        },
+        "s9": {
+          "title": "9. Contact Us",
+          "emailLabel": "Email:"
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Introduction",
+          "body": "AdsLab (\"we\", \"our\") is a SaaS platform for media buyers and digital marketing agencies. This policy explains how we collect, use, and protect your data in compliance with Thailand's Personal Data Protection Act (PDPA, 2019) and international standards including GDPR."
+        },
+        "s2": {
+          "title": "2. Information We Collect",
+          "item1": "<strong>Account info:</strong> email, name, password (stored as bcrypt hash)",
+          "item2": "<strong>Workspace info:</strong> agency name, team members, roles",
+          "item3": "<strong>Meta advertising data:</strong> when you click \"Connect Meta\" we fetch your ad accounts, campaigns, and insights via Meta Marketing API based on permissions you grant",
+          "item4": "<strong>Usage data:</strong> login logs, API call logs, error events",
+          "item5": "<strong>Cookies:</strong> session cookie only (authentication). No tracking cookies."
+        },
+        "s3": {
+          "title": "3. How We Use Your Information",
+          "item1": "Provide the platform (dashboard, AI report, optimization)",
+          "item2": "Send required emails (verification, password reset, reports)",
+          "item3": "Generate AI insights via OpenRouter (Claude, Gemini) — your campaign data is sent for processing and is NOT retained by the AI providers",
+          "item4": "Improve service quality (aggregated, anonymized data)",
+          "doNot": "<strong>We do NOT:</strong> sell your data, share with advertisers, or use your data to train AI models."
+        },
+        "s4": {
+          "title": "4. Third-Party Service Providers",
+          "item1": "<strong>Meta Platforms</strong> — advertising data source (via Marketing API)",
+          "item2": "<strong>OpenRouter / Anthropic / Google</strong> — AI processing",
+          "item3": "<strong>Resend</strong> — email delivery",
+          "item4": "<strong>Vercel</strong> — hosting (edge network)",
+          "item5": "<strong>Neon</strong> — database (Singapore region)",
+          "item6": "<strong>Omise</strong> (Phase 2) — payment processing"
+        },
+        "s5": {
+          "title": "5. Data Retention",
+          "item1": "Account data: while your account is active + 90 days after deletion",
+          "item2": "Cached advertising data: up to 90 days for historical reporting",
+          "item3": "Logs: 30 days",
+          "item4": "Data is permanently purged from backups after the retention period"
+        },
+        "s6": {
+          "title": "6. Your Rights (PDPA / GDPR)",
+          "intro": "You have the right to:",
+          "item1": "Access and download your data",
+          "item2": "Correct inaccurate information",
+          "item3": "Delete your account and all data (see <deletionLink>Data Deletion</deletionLink>)",
+          "item4": "Withdraw consent (disconnect Meta at any time)",
+          "item5": "Data portability",
+          "item6": "Lodge a complaint with the Personal Data Protection Committee (PDPC) if you believe we have violated your rights",
+          "contactLabel": "Contact:"
+        },
+        "s7": {
+          "title": "7. Security",
+          "item1": "All data in transit is encrypted with TLS (HTTPS)",
+          "item2": "Passwords are stored as bcrypt hashes (irreversible)",
+          "item3": "Meta access tokens are encrypted at rest using AES-256-GCM",
+          "item4": "Session cookies are httpOnly, secure, sameSite=lax"
+        },
+        "s8": {
+          "title": "8. Changes to This Policy",
+          "body": "We may update this policy from time to time. We will notify you via email of material changes at least 14 days before they take effect."
+        },
+        "s9": {
+          "title": "9. Contact Us",
+          "emailLabel": "Email:"
+        }
+      },
+      "footer": {
+        "terms": "Terms of Service",
+        "refund": "Refund Policy",
+        "deletion": "Data Deletion",
+        "home": "AdsLab"
+      }
+    },
+    "dataDeletion": {
+      "metaTitle": "Data Deletion · AdsLab",
+      "metaDescription": "How to request deletion of your data from AdsLab.",
+      "backHome": "← AdsLab",
+      "title": "Data Deletion",
+      "intro": "Sorry to see you go — we keep only the data we need and delete it on request.",
+      "thaiHeading": "ภาษาไทย",
+      "englishHeading": "English",
+      "th": {
+        "s1": {
+          "title": "1. Delete via the App (Recommended)",
+          "intro": "Fastest method:",
+          "step1": "Log in to AdsLab",
+          "step2": "Go to <strong>Settings → Account</strong>",
+          "step3": "Click <strong>\"Delete my account\"</strong>",
+          "step4": "Confirm with your password",
+          "timing": "Deletion completes within 30 days (including from backups)",
+          "note": "Note: in-app account deletion will be available in Phase 2 — for now please use method 2 below."
+        },
+        "s2": {
+          "title": "2. Delete via Email",
+          "intro": "Send an email to <email>email</email> with:",
+          "item1": "The email you used to sign up for AdsLab",
+          "item2": "Your full name",
+          "item3": "Reason (optional)",
+          "ack": "We will acknowledge your request within 3 business days and complete deletion within 30 days."
+        },
+        "s3": {
+          "title": "3. Deletion via Facebook",
+          "body": "If you revoke permission from Facebook (Settings → Apps and Websites → AdsLab → Remove), Meta will notify us and we will delete your Meta connection within 7 days. (Your AdsLab account will remain — use method 1 or 2 if you want to fully delete the account.)"
+        },
+        "s4": {
+          "title": "4. What Data Will Be Deleted",
+          "item1": "Account (email, name, password hash)",
+          "item2": "Workspace / Tenant where you are sole Owner (no other members)",
+          "item3": "Meta access token + cached ad accounts",
+          "item4": "Cached campaign insights and AI reports",
+          "item5": "All activity logs",
+          "retained": "<strong>Data that may be retained:</strong> Invoices / receipts as required by Thai tax law (5 years)."
+        }
+      },
+      "en": {
+        "s1": {
+          "title": "1. Delete via the App (Recommended)",
+          "intro": "Fastest method:",
+          "step1": "Log in to AdsLab",
+          "step2": "Go to <strong>Settings → Account</strong>",
+          "step3": "Click <strong>\"Delete my account\"</strong>",
+          "step4": "Confirm with your password",
+          "timing": "Deletion completes within 30 days (including from backups)",
+          "note": "Note: in-app account deletion will be available in Phase 2 — for now please use method 2 below."
+        },
+        "s2": {
+          "title": "2. Delete via Email",
+          "intro": "Send an email to <email>email</email> with:",
+          "item1": "The email you used to sign up",
+          "item2": "Your full name",
+          "item3": "Reason (optional)",
+          "ack": "We will acknowledge your request within 3 business days and complete deletion within 30 days."
+        },
+        "s3": {
+          "title": "3. Deletion via Facebook",
+          "body": "If you revoke permission from Facebook (Settings → Apps and Websites → AdsLab → Remove), Meta will notify us and we will delete your Meta connection within 7 days. (Your AdsLab account will remain — use method 1 or 2 if you want to fully delete the account.)"
+        },
+        "s4": {
+          "title": "4. What Data Will Be Deleted",
+          "item1": "Account (email, name, password hash)",
+          "item2": "Workspace / Tenant where you are the sole Owner",
+          "item3": "Meta access token + cached ad accounts",
+          "item4": "Cached campaign insights and AI reports",
+          "item5": "Activity logs",
+          "retained": "<strong>Data that may be retained:</strong> Invoices / receipts as required by Thai tax law (5 years)."
+        }
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "refund": "Refund Policy",
+        "home": "AdsLab"
+      }
+    },
+    "aiCampaignBuilder": {
+      "title": "AI Campaign Builder",
+      "subtitle": "Build smart campaigns with AI in minutes",
+      "steps": {
+        "setup": "Set up campaign",
+        "aiPlan": "AI builds plan",
+        "reviewPublish": "Review and publish"
+      },
+      "objective": {
+        "awareness": "Awareness",
+        "traffic": "Traffic",
+        "engagement": "Engagement",
+        "leads": "Leads",
+        "conversions": "Conversions",
+        "sales": "Sales"
+      },
+      "form": {
+        "section1Title": "Tell AI about your business",
+        "section2Title": "Additional details (optional)",
+        "productLabel": "What are you selling?",
+        "productPlaceholder": "e.g. brightening sunscreen SPF50 PA+++",
+        "websiteLabel": "Website / product link",
+        "objectiveLabel": "Campaign objective",
+        "dailyBudgetLabel": "Daily budget (THB)",
+        "durationLabel": "Duration (days)",
+        "primaryAudienceLabel": "Primary audience",
+        "primaryAudiencePlaceholder": "e.g. women aged 18-34 interested in skincare, beauty, lifestyle",
+        "secondaryAudienceLabel": "Secondary audience (optional)",
+        "secondaryAudiencePlaceholder": "e.g. men aged 20-35 into fitness and skin care",
+        "placementsLabel": "Placements",
+        "languageLabel": "Language",
+        "languageThai": "Thai",
+        "languageMixed": "Mixed (Thai + English)",
+        "featuresLabel": "Product highlights",
+        "featuresPlaceholder": "Type and press Enter",
+        "messageLabel": "Message you want to communicate",
+        "messagePlaceholder": "e.g. brightening sunscreen, non-greasy, sweat-proof, water-resistant, everyday use"
+      },
+      "button": {
+        "generate": "Generate campaign plan with AI",
+        "generating": "AI is generating plan...",
+        "customize": "Customize plan",
+        "save": "Save and create campaign"
+      },
+      "toast": {
+        "needProduct": "Enter product info before generating a plan",
+        "generateFailed": "AI failed to generate plan",
+        "generateSuccess": "AI generated campaign plan successfully",
+        "savedCreating": "Saved — creating campaign in Meta..."
+      },
+      "preview": {
+        "analyzing": "AI is analyzing...",
+        "analyzingDesc": "Generating campaign + ad sets + creatives that fit your business",
+        "waiting": "Waiting for AI to generate the plan",
+        "waitingDesc": "Fill in your business info on the left, then click “Generate campaign plan with AI”",
+        "planTitle": "AI generated a campaign plan for you",
+        "predicted": "Predicted outcome",
+        "salesLabel": "Sales",
+        "veryGood": "Very good",
+        "adsTotal": "Ads — {count} total (recommended by AI)",
+        "ctrExpected": "Expected CTR {ctr}%",
+        "perDayBudget": "฿{amount}/day ({percent}%)"
+      }
+    },
+    "rules": {
+      "header": {
+        "summary": "{count} {unit} · active {active}/{cap}",
+        "subtitle": "Toggle to activate · click name to edit · click ⋯ for history",
+        "unitOne": "rule",
+        "unitMany": "rules",
+        "askAi": "Ask AI for suggestions",
+        "addRule": "Add rule",
+        "atCapTooltip": "Plan limit reached"
+      },
+      "empty": {
+        "title": "No rules yet",
+        "description": "Set a rule so AdsLab can pause ad sets or notify you automatically when KPIs go bad"
+      },
+      "row": {
+        "inWindow": "in {hours}h at {scope}",
+        "checkEvery": "check {interval}",
+        "lastFired": "last fired {date}",
+        "testTooltip": "Test rule now",
+        "historyTooltip": "View history",
+        "deleteTooltip": "Delete"
+      },
+      "action": {
+        "pauseAdset": "Pause Ad Set",
+        "pauseCampaign": "Pause Campaign",
+        "notifyEmail": "Send email to OWNER",
+        "notifyInApp": "Show in-app notification"
+      },
+      "interval": {
+        "every1h": "Every 1 hr.",
+        "every6h": "Every 6 hr.",
+        "every12h": "Every 12 hr.",
+        "every24h": "Every 24 hr."
+      },
+      "metric": {
+        "cpv": "CPV (฿/view)",
+        "roas": "ROAS",
+        "spend": "Spend (฿)",
+        "frequency": "Frequency",
+        "ctr": "CTR"
+      },
+      "form": {
+        "createTitle": "Create a new rule",
+        "editTitle": "Edit rule",
+        "nameLabel": "Rule name",
+        "namePlaceholder": "e.g. pause adset if CPV exceeds ฿5 within 2 hr.",
+        "scopeLabel": "Scope",
+        "scopeAdset": "Ad Set",
+        "scopeCampaign": "Campaign",
+        "metricLabel": "Metric",
+        "operatorLabel": "Operator",
+        "valueLabel": "Value",
+        "windowLabel": "Window",
+        "actionLabel": "Action",
+        "intervalLabel": "Check frequency (min interval)",
+        "targetLabelCampaign": "Select specific campaigns (none selected = all)",
+        "targetLabelAdSet": "Select specific ad sets (none selected = all)",
+        "noTargets": "No options",
+        "enableNow": "Enable immediately (counts toward tier cap)",
+        "cancel": "Cancel",
+        "save": "Save",
+        "createBtn": "Create rule"
+      },
+      "toast": {
+        "updateFailed": "Update failed: {message}",
+        "confirmDelete": "Delete this rule? RuleRun history will be deleted too",
+        "deleteSuccess": "Deleted",
+        "deleteFailed": "Delete failed: {message}",
+        "needName": "Enter a rule name",
+        "saveSuccessCreated": "Created",
+        "saveSuccessEdited": "Edited",
+        "saveFailed": "Save failed: {message}",
+        "testFailed": "Test failed: {message}"
+      },
+      "history": {
+        "title": "History · {ruleName}",
+        "loading": "Loading...",
+        "empty": "No evaluations yet — enable the rule then wait for a cron tick or press Test"
+      },
+      "suggest": {
+        "title": "AI rule suggestions",
+        "intro": "Let AI look at your pause patterns over the last 30 days and suggest rules that may fit",
+        "askThree": "Ask AI for 3 suggestions",
+        "thinking": "AI is thinking...",
+        "noCandidates": "No AI candidates — may be too little data; create a rule yourself",
+        "addBtn": "Add (disabled)",
+        "addSuccess": "Added: {name} (disabled — enable from the list)",
+        "addFailed": "Add failed: {message}",
+        "aiError": "AI error: {message}",
+        "inWindow": "in {hours}h at {scope}"
+      },
+      "upsell": {
+        "title": "Auto-rules are on a paid plan",
+        "currentPlan": "Current plan:",
+        "trialOrNone": "trial / not selected",
+        "upgradeNote": "— upgrade to unlock rules",
+        "upgradeBtn": "Upgrade plan"
+      },
+      "modal": {
+        "closeAria": "Close"
+      },
+      "page": {
+        "title": "Automation rules",
+        "subtitle": "Set if-then conditions for AdsLab to pause or alert on campaigns",
+        "subtitleWithUsage": "Set if-then conditions for AdsLab to pause or alert on campaigns · using {used}/{cap} of your plan",
+        "needMetaConnection": "You need to connect Meta before using automation rules",
+        "goToSettings": "Go to Settings"
+      }
+    },
+    "campaignsV1": {
+      "stats": {
+        "totalLabel": "Total:",
+        "activeLabel": "Active:",
+        "pausedLabel": "Paused:",
+        "otherLabel": "Other:"
+      },
+      "filters": {
+        "searchPlaceholder": "Search campaign or ad account...",
+        "allStatuses": "All statuses",
+        "statusOther": "Other",
+        "allAccounts": "All accounts",
+        "showing": "Showing {filtered} / {total}"
+      },
+      "list": {
+        "empty": "No campaigns match the filter",
+        "accountCampaignsCount": "· {count} campaigns"
+      },
+      "action": {
+        "verbPause": "Pause",
+        "verbResume": "Resume",
+        "confirm": "{verb} campaign \"{name}\"?",
+        "pendingPrefix": "{verb}ing...",
+        "successPrefix": "{verb}d",
+        "duplicating": "Duplicating...",
+        "duplicated": "duplicate → \"{name}\"",
+        "duplicateFail": "Failed to duplicate",
+        "genericFail": "Failed",
+        "savingBudget": "Saving budget...",
+        "savingEndDate": "Saving end date...",
+        "saved": "Saved"
+      },
+      "row": {
+        "justCreated": "Just created",
+        "adsetBudget": "ad-set budget",
+        "pauseTooltip": "Pause",
+        "resumeTooltip": "Resume",
+        "budgetTooltipEditable": "Edit budget",
+        "budgetTooltipDisabled": "Budget is set at the ad-set level — edit it in Meta Ads Manager",
+        "endDateTooltip": "Edit end date",
+        "duplicateTooltip": "Duplicate campaign"
+      },
+      "budgetModal": {
+        "title": "Edit Budget",
+        "dailyLabel": "Daily Budget (THB)",
+        "lifetimeLabel": "Lifetime Budget (THB)",
+        "current": "Currently: ฿{thb}",
+        "errors": {
+          "tooLow": "Budget is below the ฿20 minimum",
+          "tooHigh": "Budget exceeds the ฿1,000,000 ceiling — double-check the number"
+        },
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "endDateModal": {
+        "title": "Edit End Date",
+        "label": "End Date / Time",
+        "currentLabel": "Currently:",
+        "notSet": "Not set",
+        "endNow": "End now",
+        "add7Days": "+7 days",
+        "add30Days": "+30 days",
+        "errors": {
+          "invalid": "Invalid date/time",
+          "past": "end_time cannot be in the past"
+        },
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "duplicateModal": {
+        "title": "Duplicate Campaign",
+        "newNameLabel": "New campaign name",
+        "budgetLabelDaily": "Budget (daily) — current ฿{thb}",
+        "budgetLabelLifetime": "Budget (lifetime) — current ฿{thb}",
+        "modes": {
+          "same": "Same as original",
+          "multiplier": "×multiplier",
+          "absolute": "Enter amount"
+        },
+        "multiplierResult": "Result: ฿{thb}",
+        "adsetBudgetNote": "This campaign uses ad-set budgets — duplicate will copy the same budgets from the ad sets",
+        "initialStatusLabel": "Initial status",
+        "statusPaused": "PAUSED (safe)",
+        "statusActive": "ACTIVE (go live)",
+        "errors": {
+          "name": "Please enter a new campaign name",
+          "multiplier": "Multiplier must be between 0 and 10",
+          "budgetTooLow": "Budget is below the ฿20 minimum",
+          "budgetTooHigh": "Budget exceeds the ฿1,000,000 ceiling"
+        },
+        "cancel": "Cancel",
+        "duplicateBtn": "Duplicate"
+      }
+    },
+    "naming": {
+      "templates": {
+        "header": {
+          "title": "Naming Standards",
+          "badge": "Templates",
+          "intro": "Define campaign-name standards — Campaign Builder will auto-suggest names from your template (e.g. <code>Sale_{example}</code> → Sale_0626)"
+        },
+        "placeholderHints": {
+          "MM": "2-digit month",
+          "YY": "2-digit year",
+          "YYYY": "4-digit year",
+          "DD": "2-digit day",
+          "Month": "Month (Jan/Feb/..)",
+          "Custom": "Custom value"
+        },
+        "previewFallback": "<fill in>",
+        "templatesCount": "Templates:",
+        "actions": {
+          "aiAnalyze": "AI analyze names",
+          "addTemplate": "Add template"
+        },
+        "loading": "Loading...",
+        "empty": "No templates yet — add a template or use AI to analyze existing names",
+        "deleteTooltip": "Delete template",
+        "suggestBadge": "Suggest",
+        "previewWord": "Preview",
+        "previewNow": "Current preview:",
+        "patternWord": "Pattern",
+        "toast": {
+          "confirmDelete": "Delete this template?",
+          "deleteFail": "Failed to delete",
+          "deleted": "Deleted"
+        },
+        "create": {
+          "title": "Add naming template",
+          "subtitle": "Insert placeholders from the list below — Campaign Builder will substitute the values for you",
+          "nameLabel": "Template name",
+          "namePlaceholder": "e.g. Sale Campaign",
+          "patternLabel": "Pattern",
+          "patternPlaceholder": "e.g. Sale_{MM}{YY}",
+          "descriptionLabel": "Description (optional)",
+          "descriptionPlaceholder": "e.g. Use for monthly discount campaigns",
+          "cancel": "Cancel",
+          "createBtn": "Create",
+          "errors": {
+            "nameAndPattern": "Name and pattern must not be empty",
+            "createFail": "Failed to create",
+            "generic": "Failed"
+          },
+          "success": "Template added"
+        },
+        "aiModal": {
+          "title": "AI analyze campaign names",
+          "subtitle": "Read existing campaign names → suggest the patterns you use most",
+          "loading": "AI is analyzing...",
+          "analyzedSummary": "Analyzed {analyzed} campaign names — got {count} suggestions",
+          "useBtn": "+ Use",
+          "noPatterns": "AI couldn't find a clear pattern — feel free to create a template yourself",
+          "closeBtn": "Close",
+          "doneBtn": "Done",
+          "errors": {
+            "aiFail": "AI analysis failed",
+            "addFail": "Failed to add",
+            "generic": "Failed"
+          },
+          "addedToast": "Added \"{name}\""
+        }
+      },
+      "rules": {
+        "errors": {
+          "enterPattern": "Enter a pattern first",
+          "createFail": "Failed to add",
+          "deleteFail": "Delete failed",
+          "priorityFail": "Failed to adjust priority"
+        },
+        "toasts": {
+          "creating": "Adding rule...",
+          "created": "Rule added",
+          "deleting": "Deleting...",
+          "deleted": "Deleted",
+          "confirmDelete": "Delete this rule?"
+        },
+        "form": {
+          "heading": "Add a new rule",
+          "patternLabel": "Pattern (substring or regex)",
+          "patternPlaceholderText": "awareness",
+          "patternPlaceholderRegex": "^awareness_|^aw_",
+          "objectiveLabel": "Objective",
+          "priorityLabel": "Priority",
+          "useRegex": "Use regex",
+          "addBtn": "Add rule"
+        },
+        "list": {
+          "header": "Active rules ({count}) — sorted by priority, high to low",
+          "empty": "No rules yet — add your first one above",
+          "deleteTooltip": "Delete rule"
+        },
+        "preview": {
+          "heading": "Match preview",
+          "promptToType": "Type a pattern on the left — matching campaigns will appear here",
+          "noMatch": "No campaigns in the 100-sample preview match this pattern",
+          "andMore": "... and {n} more"
+        }
+      },
+      "page": {
+        "title": "Campaign Naming Rules",
+        "subtitle": "Use keywords in campaign names (e.g. \"awareness\", \"sale\") so the system can auto-classify them into the chosen objective — runs before the Meta objective but after manual override",
+        "backToGoals": "Back to Goals",
+        "needMetaConnection": "You need to connect Meta before using this",
+        "goToSettings": "Go to Settings"
+      }
+    },
+    "competitorSpy": {
+      "title": "Competitor Ads Spy",
+      "subtitle": "Track and analyze competitor ads in your industry",
+      "beta": {
+        "label": "Beta ·",
+        "note": "Currently using mock data — soon we'll pull from the real Meta Ad Library + TikTok Creative Center"
+      },
+      "search": {
+        "placeholder": "Search competitors or brand names..."
+      },
+      "platforms": {
+        "all": "All"
+      },
+      "filter": {
+        "industryLabel": "Industry",
+        "countryLabel": "Country",
+        "allOption": "All",
+        "industries": {
+          "all": "All",
+          "ecom": "E-commerce",
+          "beauty": "Beauty",
+          "food": "Food",
+          "travel": "Travel"
+        },
+        "countries": {
+          "th": "Thailand",
+          "sg": "Singapore",
+          "my": "Malaysia",
+          "vn": "Vietnam"
+        },
+        "labelAllFormat": "{label}: All",
+        "labelValueFormat": "{label}: {value}"
+      },
+      "actions": {
+        "export": "Export data",
+        "viewAll": "View all",
+        "viewAllInsights": "View all insights"
+      },
+      "competitors": {
+        "heading": "Competitors you follow",
+        "adsUnit": "{count} ads"
+      },
+      "chart": {
+        "xAxisDay": "Day {n}"
+      },
+      "overview": {
+        "heading": "Ad activity overview",
+        "subtitle": "All ads from the competitors you follow",
+        "totalAds": "Total ads",
+        "deltaSuffix7d": "vs the last 7 days",
+        "metaLabel": "Meta",
+        "metaCaption": "of total",
+        "industryLabel": "E-commerce",
+        "industryCaption": "industry",
+        "videoLabel": "Video",
+        "videoCaption": "format"
+      },
+      "trend": {
+        "heading": "Ad spend trend",
+        "subtitle": "Last 30 days"
+      },
+      "creatives": {
+        "heading": "Trending creatives",
+        "items": {
+          "discount70": "Up to 70% off — today only!",
+          "newCream": "New! Rich-formula skincare cream",
+          "buyOneFreeShip": "Buy 1 get 1 free, free shipping",
+          "homeMakeover": "Make your home beautiful in 3 steps"
+        }
+      },
+      "insights": {
+        "heading": "AI insights",
+        "brandSurge": {
+          "title": "Brand A increased ads by +35%",
+          "subtitle": "Over the last 7 days"
+        },
+        "shortVideo": {
+          "title": "Short videos (15-30 seconds)",
+          "subtitle": "Currently the most popular format"
+        },
+        "discountStrategy": {
+          "title": "Discount promotions",
+          "subtitle": "Still the dominant strategy in use"
+        }
+      }
+    },
+    "setupBilling": {
+      "recommended": "Recommended",
+      "month": "month",
+      "year": "year",
+      "monthlyToggle": "Monthly",
+      "yearlyToggle": "Yearly",
+      "yearlySavings": "−17%",
+      "plans": {
+        "starter": {
+          "description": "Great for beginners with ad spend < ฿10,000/month",
+          "bullets": {
+            "adAccounts": "1 ad account",
+            "aiMessages": "30 AI messages/day",
+            "dashboard": "Dashboard + AI Master",
+            "customerJourney": "Customer Journey"
+          }
+        },
+        "growth": {
+          "description": "Ad spend ฿10k–฿30k/month",
+          "bullets": {
+            "adAccounts": "3 ad accounts",
+            "aiMessages": "100 AI messages/day",
+            "allStarter": "All Starter features",
+            "customConversions": "Custom Conversions"
+          }
+        },
+        "pro": {
+          "description": "Ad spend ฿30k–฿100k/month",
+          "bullets": {
+            "adAccounts": "10 ad accounts",
+            "aiMessages": "300 AI messages/day",
+            "allGrowth": "All Growth features",
+            "audienceManagement": "Audience Management"
+          }
+        },
+        "scale": {
+          "description": "Ad spend ฿100k–฿500k/month",
+          "bullets": {
+            "adAccounts": "25 ad accounts",
+            "aiUnlimited": "Unlimited AI",
+            "whiteLabel": "Free White-label Reports",
+            "prioritySupport": "Priority Support"
+          }
+        }
+      },
+      "cardForm": {
+        "heading": "Credit card details",
+        "cardName": "Name on card",
+        "cardNumber": "Card number",
+        "expMonth": "Month",
+        "expYear": "Year (4 digits)",
+        "cvv": "CVV"
+      },
+      "errors": {
+        "omiseNotLoaded": "Omise script has not loaded yet",
+        "noPaymentKey": "Payment system is not configured yet — please contact support",
+        "mustAcceptTerms": "Please accept the Terms of Service and Refund Policy before subscribing",
+        "invalidCard": "Invalid credit card",
+        "generic": "An error occurred"
+      },
+      "terms": {
+        "iAccept": "I accept the",
+        "tos": "Terms of Service",
+        "and": "and",
+        "refundPolicy": "Refund Policy",
+        "adsLab": "of AdsLab",
+        "bullet1": "• 7-day free trial — no charge during the trial period",
+        "bullet2": "• Automatic billing starts on day 8 if not cancelled",
+        "bullet3": "• Refund available within the first 7 days of the billing cycle (pro-rated by remaining days)",
+        "bullet4": "• Cancel renewal anytime from Settings → Billing"
+      },
+      "summary": {
+        "totalPerPeriod": "Total per billing cycle (VAT 7% included)",
+        "trialNote": "7-day free trial • billing begins after it ends"
+      },
+      "submit": {
+        "saving": "Saving",
+        "startTrial": "Start 7-day free trial"
+      },
+      "footerNote": "Payments processed by Omise (PCI DSS Level 1 secure) · charged in THB",
+      "page": {
+        "heading": "Choose the plan that fits you",
+        "subheading": "7-day free trial • card charged automatically when trial ends • cancel anytime",
+        "expiredNotice": "Your subscription has expired — please choose a plan to continue",
+        "suspendedNotice": "Account suspended — please update your payment method"
+      }
+    },
+    "integrations": {
+      "title": "Settings",
+      "subtitle": "Configure scope, naming convention, and integrations for this tenant",
+      "needMetaForScope": "Connect Meta before configuring scope — go to the Integrations tab",
+      "needMetaForNaming": "Connect Meta before configuring naming standards — go to the Integrations tab",
+      "metaSubtitle": "Connect Facebook Business Manager",
+      "googleDesc": "Connect Google Ads — in development",
+      "tiktokDesc": "Connect TikTok Ads — in development"
+    },
+    "tiktokAds": {
+      "title": "TikTok Ads",
+      "subtitle": "Coming soon — TikTok Ads in AdsLab with a dashboard, AI optimization, and custom audiences just like Meta",
+      "cardDescription": "Drop your email and we will let you know when TikTok Ads opens — for now we are nailing the Meta phase first"
+    },
+    "googleAds": {
+      "title": "Google Ads",
+      "subtitle": "Coming soon — Google Ads in AdsLab with a dashboard, AI optimization, and custom audiences just like Meta",
+      "cardDescription": "Drop your email and we will let you know when Google Ads opens — for now we are nailing the Meta phase first"
+    },
+    "journey": {
+      "title": "Customer Journey",
+      "subtitle": "Customer journey map from ad → engagement → conversion"
+    },
+    "settings": {
+      "heading": "Settings",
+      "eyebrow": "Settings",
+      "comingSoon": "Soon"
     }
   },
   "optimizationEngine": {
@@ -249,5 +3145,143 @@
       "reasonLowFrequency": "Low frequency — likely saturating the current audience",
       "impact": "Reach +35-60%"
     }
+  },
+  "emails": {
+    "shell": {
+      "tagline": "Run ads faster, sharper, scalable",
+      "signoff": "— AdsLab"
+    },
+    "verifyEmail": {
+      "subject": "Verify your email - AdsLab",
+      "greeting": "Hi {name}",
+      "body": "Thanks for signing up for AdsLab! To activate your account, please verify your email by clicking the button below.",
+      "cta": "Verify email",
+      "linkHint": "Or copy and paste this link into your browser:",
+      "expiry": "This link expires in 24 hours",
+      "ignoreNotice": "If you didn't sign up for AdsLab, you can safely ignore this email.",
+      "text": {
+        "greeting": "Hi {name}",
+        "body": "Thanks for signing up for AdsLab! To activate your account, please verify your email by visiting this link:"
+      }
+    },
+    "dailyReport": {
+      "header": "Daily Report",
+      "greeting": "Hi {name}",
+      "subtitle": "Report for <strong>{tenantName}</strong> · {dateLabel}",
+      "cta": "Open in AdsLab →",
+      "footerNotice": "Sent by AdsLab every morning at 09:00 Bangkok time.<br />To stop receiving these, turn them off in Settings inside AdsLab.",
+      "text": {
+        "greeting": "Hi {name}",
+        "subtitle": "Daily report for {tenantName} ({dateLabel})",
+        "readOnWeb": "Read on the web: {url}",
+        "signoff": "— AdsLab Daily Report"
+      }
+    },
+    "billing": {
+      "trialReminder2d": {
+        "subject": "2 days until billing starts — AdsLab",
+        "title": "2 days until billing starts",
+        "greeting": "Hi {name}",
+        "body": "Your AdsLab trial expires in <b>2 days</b>. After that, we'll charge the <b>{planName}</b> plan ({price} THB/month) to the card you saved.",
+        "manageHint": "To change plan, cancel, or use a different card, head to Settings → Billing.",
+        "cta": "Go to Settings",
+        "text": {
+          "greeting": "Hi {name}",
+          "body": "Your AdsLab trial expires in 2 days. After that, we'll charge the {planName} plan ({price} THB/month).",
+          "manageHint": "To change plan or cancel, go to:"
+        }
+      },
+      "trialReminder1d": {
+        "subject": "Billing starts tomorrow — AdsLab",
+        "title": "Billing starts tomorrow",
+        "greeting": "Hi {name}",
+        "body": "Your AdsLab trial expires within <b>24 hours</b>. We'll charge <b>{price} THB</b> for the {planName} plan.",
+        "cta": "Manage account",
+        "text": {
+          "greeting": "Hi {name}",
+          "body": "Your AdsLab trial expires within 24 hours. We'll charge {price} THB for the {planName} plan."
+        }
+      },
+      "invoicePaid": {
+        "subject": "Receipt for {amount} THB — AdsLab",
+        "title": "Payment successful",
+        "greeting": "Hi {name},",
+        "body": "Thanks for using AdsLab! We've received your payment.",
+        "rowPlan": "Plan",
+        "rowBase": "Subtotal (before VAT)",
+        "rowVat": "VAT 7%",
+        "rowTotal": "Total",
+        "amountUnit": "{amount} THB",
+        "cta": "View receipt",
+        "text": {
+          "greeting": "Hi {name},",
+          "body": "Thanks! We've received your payment of {amount} THB for the {planName} plan."
+        }
+      },
+      "invoiceFailed": {
+        "subject": "Payment failed — please check your card — AdsLab",
+        "title": "Payment failed",
+        "greeting": "Hi {name},",
+        "body": "We tried to charge <b>{amount} THB</b> but the payment failed.",
+        "reasonLabel": "Reason: {reason}",
+        "graceNotice": "You have 3 days to update your payment method. After that, your account will be suspended.",
+        "cta": "Update card",
+        "text": {
+          "greeting": "Hi {name},",
+          "body": "We tried to charge {amount} THB but the payment failed.",
+          "reasonLabel": "Reason: {reason}",
+          "graceNotice": "You have 3 days to update your payment method."
+        }
+      },
+      "subscriptionCancelled": {
+        "subject": "Subscription cancelled — AdsLab",
+        "title": "Subscription cancelled",
+        "greeting": "Hi {name},",
+        "body": "We've cancelled your AdsLab subscription. You'll keep access until <b>{accessUntil}</b>.",
+        "resubscribeNotice": "If you change your mind, you can resubscribe anytime — all your data will still be here.",
+        "cta": "Resubscribe",
+        "text": {
+          "greeting": "Hi {name},",
+          "body": "We've cancelled your AdsLab subscription. You'll keep access until {accessUntil}."
+        }
+      }
+    }
+  },
+  "banners": {
+    "unverified": {
+      "message": "Please verify your email to unlock all features",
+      "resend": "Resend email",
+      "sending": "Sending...",
+      "resendSuccess": "Verification email sent. Please check your inbox.",
+      "resendFailed": "Failed to resend",
+      "connectionError": "Cannot connect to server"
+    },
+    "tierLimit": {
+      "pastDueMessage": "Latest payment failed — please update your card within 3 days",
+      "pastDueAction": "Update card",
+      "trialEndingSoon": "<b>{days}</b> days left in trial — billing starts {dateStr} on the <b>{planName}</b> plan",
+      "manage": "Manage",
+      "trialInProgress": "You are on the AdsLab trial — {days} days left",
+      "viewPlans": "View plans →"
+    },
+    "scopePrompt": {
+      "title": "Set Tenant Scope to focus on the accounts/campaigns you use",
+      "description": "Right now you see every ad account in the connected Business Manager — set a scope so Dashboard, Reports, and AI Report only analyze the scope you choose",
+      "setupNow": "Set up now",
+      "hide": "Hide"
+    }
+  },
+  "themeToggle": {
+    "label": "Change theme"
+  },
+  "mobileNav": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "tenantSwitcher": {
+    "notFound": "(workspace not found)"
+  },
+  "topbar": {
+    "notifications": "Notifications"
   }
 }

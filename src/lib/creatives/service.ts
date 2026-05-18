@@ -5,8 +5,10 @@
  * (auto-injected by Vercel when Blob is enabled on the project).
  */
 import { put, del } from "@vercel/blob";
+import { getTranslations } from "next-intl/server";
 
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/i18n/locales";
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const ALLOWED_IMAGE = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
@@ -20,6 +22,8 @@ export type UploadInput = {
   name?: string;
   source?: "upload" | "ai-gen";
   createdById?: string;
+  /** Locale used to format user-facing validation errors. */
+  locale: Locale;
 };
 
 export type UploadResult =
@@ -27,16 +31,20 @@ export type UploadResult =
   | { ok: false; error: string };
 
 export async function uploadCreative(input: UploadInput): Promise<UploadResult> {
-  const { file, tenantId } = input;
+  const { file, tenantId, locale } = input;
+  const t = await getTranslations({ locale, namespace: "api.creatives" });
 
   if (file.size > MAX_SIZE_BYTES) {
-    return { ok: false, error: `ไฟล์ใหญ่เกินไป (เกิน ${MAX_SIZE_BYTES / 1024 / 1024}MB)` };
+    return {
+      ok: false,
+      error: t("fileTooLarge", { maxMb: MAX_SIZE_BYTES / 1024 / 1024 }),
+    };
   }
 
   let kind: CreativeKind;
   if (ALLOWED_IMAGE.has(file.type)) kind = "image";
   else if (ALLOWED_VIDEO.has(file.type)) kind = "video";
-  else return { ok: false, error: `ประเภทไฟล์ไม่รองรับ: ${file.type}` };
+  else return { ok: false, error: t("unsupportedType", { type: file.type }) };
 
   // Path includes tenantId so different tenants can't collide; random
   // suffix prevents same-name uploads from overwriting each other.

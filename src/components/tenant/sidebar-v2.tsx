@@ -24,8 +24,8 @@ import { SIDEBAR_NAV_ITEMS, isPathActive } from "./sidebar-nav-items";
  * Sections (top → bottom):
  *   1. AdsLab logo
  *   2. 8 nav items (gradient active state)
- *   3. "เชื่อมต่อบัญชี" — 4 platform icons (Meta active, others coming soon)
- *   4. "อัปเกรด AdsLab" promo card (hidden for Scale+)
+ *   3. "Connected accounts" — 4 platform icons (Meta active, others coming soon)
+ *   4. "Upgrade AdsLab" promo card (hidden for Scale+)
  *   5. User profile with role + dropdown chevron
  *
  * Active state: indigo→violet→pink gradient bg + white text + soft shadow.
@@ -45,7 +45,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
   const tUpgrade = useTranslations("sidebar.upgrade");
   const tProfile = useTranslations("sidebar.profile.menu");
   const items = SIDEBAR_NAV_ITEMS.map((item) => ({
-    label: tNav(item.labelKey),
+    label: tNav(item.labelKey as Parameters<typeof tNav>[0]),
     href: item.href(tenantSlug),
     icon: item.icon,
   }));

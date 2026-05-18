@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, XCircle, Clock, AlertTriangle, Trash2, Info, Target } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import type { OutcomeBadge } from "@/lib/reports/enrich-suggestions";
@@ -20,31 +21,32 @@ function fmtPercent(p: number): string {
 }
 
 export function OutcomeBadgeView({ badge }: { badge: OutcomeBadge }) {
+  const t = useTranslations("pages.reports.badges");
   if (badge.kind === "pending") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-        <Clock className="size-3" /> รอผล
+        <Clock className="size-3" /> {t("pending")}
       </span>
     );
   }
   if (badge.kind === "ignored") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-        <XCircle className="size-3" /> ไม่ได้ทำ
+        <XCircle className="size-3" /> {t("ignored")}
       </span>
     );
   }
   if (badge.kind === "target_deleted") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-        <Trash2 className="size-3" /> เป้าหมายถูกลบ
+        <Trash2 className="size-3" /> {t("targetDeleted")}
       </span>
     );
   }
   if (badge.kind === "no_data") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-        <Info className="size-3" /> ไม่มีข้อมูล
+        <Info className="size-3" /> {t("noData")}
       </span>
     );
   }
@@ -58,20 +60,20 @@ export function OutcomeBadgeView({ badge }: { badge: OutcomeBadge }) {
   if (badge.kind === "followed-positive") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-        <CheckCircle2 className="size-3" /> ทำตาม {delta}
+        <CheckCircle2 className="size-3" /> {t("followed")} {delta}
       </span>
     );
   }
   if (badge.kind === "followed-negative") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-        <AlertTriangle className="size-3" /> ทำตาม {delta}
+        <AlertTriangle className="size-3" /> {t("followed")} {delta}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
-      <CheckCircle2 className="size-3" /> ทำตาม {delta}
+      <CheckCircle2 className="size-3" /> {t("followed")} {delta}
     </span>
   );
 }
@@ -83,6 +85,7 @@ export function ConfidenceBadgeView({
   result: ConfidenceResult | null;
   className?: string;
 }) {
+  const t = useTranslations("pages.reports.badges");
   if (!result) return null;
   const tone =
     result.percent >= 70
@@ -97,10 +100,10 @@ export function ConfidenceBadgeView({
         tone,
         className,
       )}
-      title={`30 วัน: ทำตาม ${result.successful}/${result.total} ครั้ง สำเร็จ ${result.percent}%`}
+      title={t("confidenceTooltip", { successful: result.successful, total: result.total, percent: result.percent })}
     >
       <Target className="size-3" />
-      เคยแนะนำ {result.total} ครั้ง · สำเร็จ {result.percent}%
+      {t("confidenceLabel", { total: result.total, percent: result.percent })}
     </span>
   );
 }

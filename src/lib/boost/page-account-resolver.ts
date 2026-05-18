@@ -25,7 +25,7 @@ export async function resolvePageToAccount(args: {
   if (wanted.size === 0) return new Map();
 
   // Only consider ACTIVE accounts — Meta rejects ad creation on disabled ones
-  // with "เฉพาะบัญชีที่ใช้งานได้เท่านั้นที่จะสามารถสร้างหรือแก้ไขโฆษณาได้"
+  // with "Only active accounts can create or edit ads"
   const accounts = await prisma.metaAdAccount.findMany({
     where: { metaConnectionId, accountStatus: 1 },
     select: { metaAccountId: true, name: true },

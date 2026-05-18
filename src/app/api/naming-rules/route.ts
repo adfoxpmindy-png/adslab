@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
+import { requireSession } from "@/lib/auth/session";
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
+import { resolveUserLocale } from "@/lib/i18n/server";
 
 const GOAL_OBJECTIVES = [
   "AWARENESS",
@@ -74,6 +77,7 @@ export async function POST(request: Request) {
   if (!tenantSlug) {
     return NextResponse.json({ error: "tenantSlug required" }, { status: 400 });
   }
+  const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug, ["OWNER", "MEDIA_BUYER"]);
   const body = await request.json().catch(() => ({}));
   const parsed = createSchema.safeParse(body);
@@ -102,8 +106,10 @@ export async function POST(request: Request) {
   } catch (e) {
     const msg = (e as Error).message;
     if (msg.includes("Unique constraint")) {
+      const locale = await resolveUserLocale(session.userId);
+      const t = await getTranslations({ locale, namespace: "api.namingRules" });
       return NextResponse.json(
-        { error: "มีกฎสำหรับ pattern นี้แล้ว" },
+        { error: t("patternExists") },
         { status: 409 },
       );
     }

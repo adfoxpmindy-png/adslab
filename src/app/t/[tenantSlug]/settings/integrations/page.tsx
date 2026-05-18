@@ -79,6 +79,7 @@ export default async function IntegrationsPage({
 
   const tenantScope = await getTenantScope(tenant.id);
   const tSettings = await getTranslations("settings.pageMgmt");
+  const t = await getTranslations("pages.integrations");
   const activeAccounts = connection
     ? connection.adAccounts.filter((a) => a.accountStatus === 1)
     : [];
@@ -122,8 +123,8 @@ export default async function IntegrationsPage({
   return (
     <>
       <SetPageTitle
-        title="การตั้งค่า"
-        subtitle="ตั้งค่า scope, naming convention, และ integrations ของ tenant"
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <SettingsTabs active={tab} />
@@ -148,7 +149,7 @@ export default async function IntegrationsPage({
           />
         ) : (
           <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            ต้องเชื่อม Meta ก่อนถึงตั้ง scope ได้ — ไปที่ tab Integrations
+            {t("needMetaForScope")}
           </p>
         )
       )}
@@ -158,7 +159,7 @@ export default async function IntegrationsPage({
           <NamingTemplatesCard tenantSlug={tenantSlug} canEdit={canEditScope} />
         ) : (
           <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            ต้องเชื่อม Meta ก่อนถึงตั้ง naming standards ได้ — ไปที่ tab Integrations
+            {t("needMetaForNaming")}
           </p>
         )
       )}
@@ -177,7 +178,7 @@ export default async function IntegrationsPage({
               <div>
                 <h2 className="text-xl font-semibold tracking-tight">Meta Ads</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  เชื่อมต่อ Facebook Business Manager
+                  {t("metaSubtitle")}
                 </p>
               </div>
             </header>
@@ -221,14 +222,14 @@ export default async function IntegrationsPage({
             platform="google"
             tenantSlug={tenantSlug}
             title="Google Ads"
-            description="เชื่อม Google Ads — กำลังพัฒนา"
+            description={t("googleDesc")}
           />
 
           <ComingSoonCard
             platform="tiktok"
             tenantSlug={tenantSlug}
             title="TikTok Ads"
-            description="เชื่อม TikTok Ads — กำลังพัฒนา"
+            description={t("tiktokDesc")}
           />
         </div>
       )}

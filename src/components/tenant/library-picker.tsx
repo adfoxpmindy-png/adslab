@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Image as ImageIcon, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import type { CreativeListItem } from "./creatives-client";
@@ -21,6 +22,7 @@ type Props = {
  * row so subsequent picks of the same item skip the Meta upload.
  */
 export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPicked }: Props) {
+  const t = useTranslations("pages.creatives.libraryPicker");
   const [items, setItems] = useState<CreativeListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [preparing, setPreparing] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPick
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     const params = new URLSearchParams({ tenantSlug, kind: "image", limit: "60" });
     fetch(`/api/creatives?${params.toString()}`)
@@ -39,7 +42,7 @@ export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPick
         if (!cancelled) setItems(data.items);
       })
       .catch((err: unknown) => {
-        if (!cancelled) toast.error(`โหลดคลังไม่สำเร็จ: ${(err as Error).message}`);
+        if (!cancelled) toast.error(t("loadFailed", { message: (err as Error).message }));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -47,7 +50,7 @@ export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPick
     return () => {
       cancelled = true;
     };
-  }, [open, tenantSlug]);
+  }, [open, tenantSlug, t]);
 
   async function handlePick(item: CreativeListItem) {
     setPreparing(item.id);
@@ -65,7 +68,7 @@ export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPick
       onPicked({ creativeId: item.id, url: data.url, hash: data.hash });
       onClose();
     } catch (err) {
-      toast.error(`เตรียมรูปไม่สำเร็จ: ${(err as Error).message}`);
+      toast.error(t("prepareFailed", { message: (err as Error).message }));
     } finally {
       setPreparing(null);
     }
@@ -83,16 +86,14 @@ export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPick
       <div className="fixed left-1/2 top-1/2 z-50 flex h-[80vh] w-[92vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-border bg-card shadow-2xl">
         <div className="flex items-start justify-between border-b border-border px-5 py-4">
           <div>
-            <h2 className="text-lg font-bold">เลือกจากคลัง creative</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              เลือก image creative ที่อัปโหลดไว้ — ระบบจะส่งให้ Meta อัตโนมัติ
-            </p>
+            <h2 className="text-lg font-bold">{t("title")}</h2>
+            <p className="mt-1 text-xs text-muted-foreground">{t("subtitle")}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={preparing !== null}
-            aria-label="ปิด"
+            aria-label={t("close")}
             className="-mr-2 -mt-1 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent disabled:opacity-50"
           >
             <X className="size-4" />
@@ -103,15 +104,13 @@ export function LibraryPicker({ tenantSlug, metaAccountId, open, onClose, onPick
           {loading ? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               <Loader2 className="mr-2 size-4 animate-spin" />
-              กำลังโหลด...
+              {t("loading")}
             </div>
           ) : items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
               <ImageIcon className="size-10 text-muted-foreground" />
-              <p className="text-sm font-medium">คลังว่างเปล่า</p>
-              <p className="text-xs text-muted-foreground">
-                อัปโหลด creative ก่อนที่หน้า &quot;ครีเอทีฟ&quot;
-              </p>
+              <p className="text-sm font-medium">{t("emptyTitle")}</p>
+              <p className="text-xs text-muted-foreground">{t("emptyDescription")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">

@@ -2,12 +2,16 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { CalendarClock, Copy, DollarSign, Pause, Play, Search, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import { formatDateTime, formatNumber } from "@/lib/i18n/format";
+import type { Locale } from "@/i18n/locales";
 import { cn } from "@/lib/utils";
 
 type Campaign = {
@@ -58,6 +62,7 @@ type ModalState =
   | null;
 
 export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }: Props) {
+  const t = useTranslations("pages.campaignsV1");
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -141,9 +146,14 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
 
   async function performAction(campaign: Campaign, action: "PAUSE" | "RESUME") {
     if (busy.has(campaign.id)) return;
-    const verb = action === "PAUSE" ? "หยุด" : "เปิด";
-    if (!confirm(`${verb} campaign "${campaign.name}"?`)) return;
-    await postAction(campaign, { action }, `กำลัง${verb}...`, `✓ ${verb}แล้ว`);
+    const verb = action === "PAUSE" ? t("action.verbPause") : t("action.verbResume");
+    if (!confirm(t("action.confirm", { verb, name: campaign.name }))) return;
+    await postAction(
+      campaign,
+      { action },
+      t("action.pendingPrefix", { verb }),
+      t("action.successPrefix", { verb }),
+    );
   }
 
   async function duplicateCampaign(
@@ -159,7 +169,7 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
   ) {
     if (busy.has(campaign.id)) return;
     setBusy((prev) => new Set(prev).add(campaign.id));
-    const toastId = toast.loading("กำลัง duplicate...");
+    const toastId = toast.loading(t("action.duplicating"));
     try {
       const res = await fetch(`/api/meta/campaigns/duplicate?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -168,13 +178,13 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "Duplicate ไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : t("action.duplicateFail"));
       }
-      toast.success(`✓ duplicate → "${data.name}"`, { id: toastId, duration: 3000 });
+      toast.success(t("action.duplicated", { name: data.name }), { id: toastId, duration: 3000 });
       setModal(null);
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Duplicate ไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : t("action.duplicateFail"), {
         id: toastId,
         duration: 5000,
       });
@@ -204,13 +214,13 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "ไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : t("action.genericFail"));
       }
       toast.success(successMsg, { id: toastId, duration: 2500 });
       setModal(null);
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : t("action.genericFail"), {
         id: toastId,
         duration: 5000,
       });
@@ -228,20 +238,20 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
       {/* Stats */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1 rounded-xl border border-border/60 bg-card/40 px-4 py-3 text-sm">
         <span>
-          <span className="text-muted-foreground">รวม:</span>{" "}
+          <span className="text-muted-foreground">{t("stats.totalLabel")}</span>{" "}
           <span className="font-semibold tabular-nums">{stats.total}</span>
         </span>
         <span className="text-emerald-700 dark:text-emerald-300">
-          <span className="text-muted-foreground">Active:</span>{" "}
+          <span className="text-muted-foreground">{t("stats.activeLabel")}</span>{" "}
           <span className="font-semibold tabular-nums">{stats.active}</span>
         </span>
         <span className="text-amber-700 dark:text-amber-300">
-          <span className="text-muted-foreground">Paused:</span>{" "}
+          <span className="text-muted-foreground">{t("stats.pausedLabel")}</span>{" "}
           <span className="font-semibold tabular-nums">{stats.paused}</span>
         </span>
         {stats.other > 0 && (
           <span className="text-muted-foreground">
-            อื่นๆ: <span className="font-semibold tabular-nums">{stats.other}</span>
+            {t("stats.otherLabel")} <span className="font-semibold tabular-nums">{stats.other}</span>
           </span>
         )}
       </div>
@@ -253,7 +263,7 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="ค้นหา campaign หรือ ad account..."
+            placeholder={t("filters.searchPlaceholder")}
             className="pl-8"
           />
         </div>
@@ -262,17 +272,17 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
           onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="ALL">ทุกสถานะ</option>
+          <option value="ALL">{t("filters.allStatuses")}</option>
           <option value="ACTIVE">Active</option>
           <option value="PAUSED">Paused</option>
-          <option value="OTHER">อื่นๆ</option>
+          <option value="OTHER">{t("filters.statusOther")}</option>
         </select>
         <select
           value={accountFilter}
           onChange={(e) => setAccountFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="ALL">ทุก account</option>
+          <option value="ALL">{t("filters.allAccounts")}</option>
           {accountOptions.map((a) => (
             <option key={a.id} value={a.id}>
               {a.name}
@@ -280,14 +290,14 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
           ))}
         </select>
         <span className="ml-auto text-xs text-muted-foreground">
-          แสดง {filtered.length} / {campaigns.length}
+          {t("filters.showing", { filtered: filtered.length, total: campaigns.length })}
         </span>
       </div>
 
       {/* List */}
       {grouped.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ไม่พบ campaign ที่ตรงเงื่อนไข</p>
+          <p className="text-sm font-medium">{t("list.empty")}</p>
         </Card>
       ) : (
         <Card className="p-0">
@@ -297,7 +307,7 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
                 <div className="bg-muted/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {acc.name}
                   <span className="ml-2 font-normal normal-case text-muted-foreground/70">
-                    · {acc.rows.length} campaigns
+                    {t("list.accountCampaignsCount", { count: acc.rows.length })}
                   </span>
                 </div>
                 {acc.rows.map((c) => (
@@ -330,7 +340,7 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
             const body: Record<string, unknown> = { action: "SET_BUDGET" };
             if (dailyBudget !== undefined) body.dailyBudget = dailyBudget;
             if (lifetimeBudget !== undefined) body.lifetimeBudget = lifetimeBudget;
-            postAction(modal.campaign, body, "กำลังบันทึก budget...", "✓ บันทึกแล้ว");
+            postAction(modal.campaign, body, t("action.savingBudget"), t("action.saved"));
           }}
         />
       )}
@@ -343,8 +353,8 @@ export function CampaignsClient({ tenantSlug, canEdit, campaigns, highlightId }:
             postAction(
               modal.campaign,
               { action: "SET_END_DATE", endTime: endTime.toISOString() },
-              "กำลังบันทึก end date...",
-              "✓ บันทึกแล้ว",
+              t("action.savingEndDate"),
+              t("action.saved"),
             );
           }}
         />
@@ -367,9 +377,9 @@ function isCbo(c: Campaign): boolean {
   return c.dailyBudget !== null || c.lifetimeBudget !== null;
 }
 
-function formatBudgetThb(minor: number | null): string {
+function formatBudgetThb(minor: number | null, locale: Locale | string): string {
   if (minor === null) return "—";
-  return `฿${(minor / 100).toLocaleString("th-TH")}`;
+  return `฿${formatNumber(minor / 100, locale)}`;
 }
 
 // ----- Row --------------------------------------------------------------
@@ -395,15 +405,17 @@ function CampaignRow({
   onEditEndDate: () => void;
   onDuplicate: () => void;
 }) {
+  const t = useTranslations("pages.campaignsV1");
+  const locale = useLocale();
   const dot = STATUS_DOT[campaign.effectiveStatus] ?? "bg-zinc-400";
   const isActive = STATUS_BUCKET[campaign.effectiveStatus] === "ACTIVE";
   const isPaused = STATUS_BUCKET[campaign.effectiveStatus] === "PAUSED";
   const cbo = isCbo(campaign);
   const budgetLabel = campaign.dailyBudget
-    ? `${formatBudgetThb(campaign.dailyBudget)}/day`
+    ? `${formatBudgetThb(campaign.dailyBudget, locale)}/day`
     : campaign.lifetimeBudget
-      ? `${formatBudgetThb(campaign.lifetimeBudget)}/lifetime`
-      : "ad-set budget";
+      ? `${formatBudgetThb(campaign.lifetimeBudget, locale)}/lifetime`
+      : t("row.adsetBudget");
 
   return (
     <div
@@ -415,7 +427,7 @@ function CampaignRow({
     >
       {highlighted && (
         <span className="rounded-md bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase text-primary-foreground">
-          ✨ เพิ่งสร้าง
+          {t("row.justCreated")}
         </span>
       )}
       <div className="flex flex-1 items-center gap-2 min-w-0">
@@ -436,12 +448,12 @@ function CampaignRow({
       {canEdit && (
         <div className="flex items-center gap-1">
           {isActive && (
-            <Button size="sm" variant="outline" disabled={busy} onClick={onPause} className="gap-1.5" title="Pause">
+            <Button size="sm" variant="outline" disabled={busy} onClick={onPause} className="gap-1.5" title={t("row.pauseTooltip")}>
               <Pause className="size-3" />
             </Button>
           )}
           {isPaused && (
-            <Button size="sm" disabled={busy} onClick={onResume} className="gap-1.5" title="Resume">
+            <Button size="sm" disabled={busy} onClick={onResume} className="gap-1.5" title={t("row.resumeTooltip")}>
               <Play className="size-3" />
             </Button>
           )}
@@ -451,7 +463,7 @@ function CampaignRow({
             disabled={busy || !cbo}
             onClick={onEditBudget}
             className="gap-1.5"
-            title={cbo ? "แก้ budget" : "Budget อยู่ที่ระดับ ad set — แก้ใน Meta Ads Manager"}
+            title={cbo ? t("row.budgetTooltipEditable") : t("row.budgetTooltipDisabled")}
           >
             <DollarSign className="size-3" />
           </Button>
@@ -461,7 +473,7 @@ function CampaignRow({
             disabled={busy}
             onClick={onEditEndDate}
             className="gap-1.5"
-            title="แก้ end date"
+            title={t("row.endDateTooltip")}
           >
             <CalendarClock className="size-3" />
           </Button>
@@ -471,7 +483,7 @@ function CampaignRow({
             disabled={busy}
             onClick={onDuplicate}
             className="gap-1.5"
-            title="Duplicate campaign"
+            title={t("row.duplicateTooltip")}
           >
             <Copy className="size-3" />
           </Button>
@@ -494,6 +506,8 @@ function BudgetModal({
   onClose: () => void;
   onSave: (dailyBudget: number | undefined, lifetimeBudget: number | undefined) => void;
 }) {
+  const t = useTranslations("pages.campaignsV1");
+  const locale = useLocale();
   const isDailyMode = campaign.dailyBudget !== null;
   const currentMinor = isDailyMode ? campaign.dailyBudget : campaign.lifetimeBudget;
   const currentThb = currentMinor !== null ? currentMinor / 100 : 0;
@@ -503,11 +517,11 @@ function BudgetModal({
     e.preventDefault();
     const n = Number(thb);
     if (!Number.isFinite(n) || n < 20) {
-      toast.error("Budget ต่ำกว่าขั้นต่ำ ฿20");
+      toast.error(t("budgetModal.errors.tooLow"));
       return;
     }
     if (n > 1_000_000) {
-      toast.error("Budget เกินเพดาน ฿1,000,000 — ตรวจดูตัวเลข");
+      toast.error(t("budgetModal.errors.tooHigh"));
       return;
     }
     if (isDailyMode) onSave(n, undefined);
@@ -515,14 +529,14 @@ function BudgetModal({
   }
 
   return (
-    <ModalShell title="แก้ Budget" onClose={onClose} subtitle={campaign.name}>
+    <ModalShell title={t("budgetModal.title")} onClose={onClose} subtitle={campaign.name}>
       <form onSubmit={submit} className="space-y-4">
         <div className="space-y-1">
           <label className="block text-xs font-medium text-muted-foreground">
-            {isDailyMode ? "Daily Budget (THB)" : "Lifetime Budget (THB)"}
+            {isDailyMode ? t("budgetModal.dailyLabel") : t("budgetModal.lifetimeLabel")}
           </label>
           <p className="text-[11px] text-muted-foreground">
-            ปัจจุบัน: ฿{currentThb.toLocaleString("th-TH")}
+            {t("budgetModal.current", { thb: formatNumber(currentThb, locale) })}
           </p>
           <Input
             type="number"
@@ -535,10 +549,10 @@ function BudgetModal({
         </div>
         <div className="flex justify-end gap-2">
           <Button type="button" size="sm" variant="ghost" onClick={onClose}>
-            ยกเลิก
+            {t("budgetModal.cancel")}
           </Button>
           <Button type="submit" size="sm" disabled={busy}>
-            บันทึก
+            {t("budgetModal.save")}
           </Button>
         </div>
       </form>
@@ -557,12 +571,16 @@ function EndDateModal({
   onClose: () => void;
   onSave: (endTime: Date) => void;
 }) {
-  // Default to existing end_time or +7 days from now.
-  const defaultDate = campaign.endTime
-    ? new Date(campaign.endTime)
-    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const t = useTranslations("pages.campaignsV1");
+  const locale = useLocale();
   // For datetime-local input we need YYYY-MM-DDTHH:mm (no seconds, no Z).
-  const [dt, setDt] = useState(() => toDatetimeLocalValue(defaultDate));
+  // Default to existing end_time or +7 days from now.
+  const [dt, setDt] = useState(() => {
+    const defaultDate = campaign.endTime
+      ? new Date(campaign.endTime)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    return toDatetimeLocalValue(defaultDate);
+  });
 
   function quickSet(deltaMs: number) {
     setDt(toDatetimeLocalValue(new Date(Date.now() + deltaMs)));
@@ -575,53 +593,52 @@ function EndDateModal({
     e.preventDefault();
     const d = new Date(dt);
     if (Number.isNaN(d.getTime())) {
-      toast.error("วันเวลาไม่ถูกต้อง");
+      toast.error(t("endDateModal.errors.invalid"));
       return;
     }
     if (d.getTime() < Date.now() - 60_000) {
-      toast.error("end_time ต้องไม่ใช่อดีต");
+      toast.error(t("endDateModal.errors.past"));
       return;
     }
     onSave(d);
   }
 
   return (
-    <ModalShell title="แก้ End Date" onClose={onClose} subtitle={campaign.name}>
+    <ModalShell title={t("endDateModal.title")} onClose={onClose} subtitle={campaign.name}>
       <form onSubmit={submit} className="space-y-4">
         <div className="space-y-1">
           <label className="block text-xs font-medium text-muted-foreground">
-            End Date / Time
+            {t("endDateModal.label")}
           </label>
           <p className="text-[11px] text-muted-foreground">
-            ปัจจุบัน:{" "}
+            {t("endDateModal.currentLabel")}{" "}
             {campaign.endTime
-              ? new Date(campaign.endTime).toLocaleString("th-TH")
-              : "ไม่ได้ตั้งไว้"}
+              ? formatDateTime(campaign.endTime, locale)
+              : t("endDateModal.notSet")}
           </p>
-          <Input
-            type="datetime-local"
+          <DatePicker
             value={dt}
-            onChange={(e) => setDt(e.target.value)}
-            autoFocus
+            onChange={(next) => setDt(next)}
+            showTime
           />
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="xs" variant="outline" onClick={endNow}>
-            End now
+            {t("endDateModal.endNow")}
           </Button>
           <Button type="button" size="xs" variant="outline" onClick={() => quickSet(7 * 86_400_000)}>
-            +7 วัน
+            {t("endDateModal.add7Days")}
           </Button>
           <Button type="button" size="xs" variant="outline" onClick={() => quickSet(30 * 86_400_000)}>
-            +30 วัน
+            {t("endDateModal.add30Days")}
           </Button>
         </div>
         <div className="flex justify-end gap-2">
           <Button type="button" size="sm" variant="ghost" onClick={onClose}>
-            ยกเลิก
+            {t("endDateModal.cancel")}
           </Button>
           <Button type="submit" size="sm" disabled={busy}>
-            บันทึก
+            {t("endDateModal.save")}
           </Button>
         </div>
       </form>
@@ -664,6 +681,8 @@ function DuplicateModal({
   onClose: () => void;
   onSave: (overrides: DuplicateOverrides) => void;
 }) {
+  const t = useTranslations("pages.campaignsV1");
+  const locale = useLocale();
   const cbo = isCbo(campaign);
   const isDailyMode = campaign.dailyBudget !== null;
   const currentBudgetMinor = isDailyMode ? campaign.dailyBudget : campaign.lifetimeBudget;
@@ -678,7 +697,7 @@ function DuplicateModal({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("ใส่ชื่อ campaign ใหม่");
+      toast.error(t("duplicateModal.errors.name"));
       return;
     }
     const overrides: DuplicateOverrides = {
@@ -688,7 +707,7 @@ function DuplicateModal({
     if (cbo && budgetMode !== "same") {
       if (budgetMode === "multiplier") {
         if (!Number.isFinite(multiplier) || multiplier <= 0 || multiplier > 10) {
-          toast.error("Multiplier ต้องอยู่ระหว่าง 0 ถึง 10");
+          toast.error(t("duplicateModal.errors.multiplier"));
           return;
         }
         if (isDailyMode) overrides.dailyBudgetMultiplier = multiplier;
@@ -696,11 +715,11 @@ function DuplicateModal({
       } else {
         const n = Number(absoluteThb);
         if (!Number.isFinite(n) || n < 20) {
-          toast.error("Budget ต่ำกว่าขั้นต่ำ ฿20");
+          toast.error(t("duplicateModal.errors.budgetTooLow"));
           return;
         }
         if (n > 1_000_000) {
-          toast.error("Budget เกินเพดาน ฿1,000,000");
+          toast.error(t("duplicateModal.errors.budgetTooHigh"));
           return;
         }
         if (isDailyMode) overrides.dailyBudget = n;
@@ -710,12 +729,16 @@ function DuplicateModal({
     onSave(overrides);
   }
 
+  const budgetLabel = isDailyMode
+    ? t("duplicateModal.budgetLabelDaily", { thb: formatNumber(currentBudgetThb, locale) })
+    : t("duplicateModal.budgetLabelLifetime", { thb: formatNumber(currentBudgetThb, locale) });
+
   return (
-    <ModalShell title="Duplicate Campaign" onClose={onClose} subtitle={campaign.name}>
+    <ModalShell title={t("duplicateModal.title")} onClose={onClose} subtitle={campaign.name}>
       <form onSubmit={submit} className="space-y-4">
         <div className="space-y-1">
           <label className="block text-xs font-medium text-muted-foreground">
-            ชื่อ campaign ใหม่
+            {t("duplicateModal.newNameLabel")}
           </label>
           <Input
             value={name}
@@ -728,23 +751,23 @@ function DuplicateModal({
         {cbo && (
           <div className="space-y-2">
             <label className="block text-xs font-medium text-muted-foreground">
-              Budget {isDailyMode ? "(daily)" : "(lifetime)"} — current ฿{currentBudgetThb.toLocaleString("th-TH")}
+              {budgetLabel}
             </label>
             <div className="flex flex-wrap gap-2">
               <RadioPill
                 checked={budgetMode === "same"}
                 onClick={() => setBudgetMode("same")}
-                label="เหมือนเดิม"
+                label={t("duplicateModal.modes.same")}
               />
               <RadioPill
                 checked={budgetMode === "multiplier"}
                 onClick={() => setBudgetMode("multiplier")}
-                label="×multiplier"
+                label={t("duplicateModal.modes.multiplier")}
               />
               <RadioPill
                 checked={budgetMode === "absolute"}
                 onClick={() => setBudgetMode("absolute")}
-                label="ใส่เลขเอง"
+                label={t("duplicateModal.modes.absolute")}
               />
             </div>
             {budgetMode === "multiplier" && (
@@ -771,7 +794,7 @@ function DuplicateModal({
                   onChange={(e) => setMultiplier(Number(e.target.value))}
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  จะได้: ฿{(currentBudgetThb * multiplier).toLocaleString("th-TH", { maximumFractionDigits: 0 })}
+                  {t("duplicateModal.multiplierResult", { thb: (currentBudgetThb * multiplier).toLocaleString("th-TH", { maximumFractionDigits: 0 }) })}
                 </p>
               </div>
             )}
@@ -788,34 +811,34 @@ function DuplicateModal({
         )}
         {!cbo && (
           <p className="text-xs text-muted-foreground">
-            Campaign นี้ใช้ ad-set budget — duplicate จะ copy budget เหมือนเดิมจาก ad sets
+            {t("duplicateModal.adsetBudgetNote")}
           </p>
         )}
 
         <div className="space-y-2">
           <label className="block text-xs font-medium text-muted-foreground">
-            สถานะตอนสร้าง
+            {t("duplicateModal.initialStatusLabel")}
           </label>
           <div className="flex gap-2">
             <RadioPill
               checked={initialStatus === "PAUSED"}
               onClick={() => setInitialStatus("PAUSED")}
-              label="PAUSED (ปลอดภัย)"
+              label={t("duplicateModal.statusPaused")}
             />
             <RadioPill
               checked={initialStatus === "ACTIVE"}
               onClick={() => setInitialStatus("ACTIVE")}
-              label="ACTIVE (ยิงเลย)"
+              label={t("duplicateModal.statusActive")}
             />
           </div>
         </div>
 
         <div className="flex justify-end gap-2">
           <Button type="button" size="sm" variant="ghost" onClick={onClose}>
-            ยกเลิก
+            {t("duplicateModal.cancel")}
           </Button>
           <Button type="submit" size="sm" disabled={busy}>
-            Duplicate
+            {t("duplicateModal.duplicateBtn")}
           </Button>
         </div>
       </form>

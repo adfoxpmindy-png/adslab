@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,8 @@ type TenantSwitcherProps = {
 
 export function TenantSwitcher({ currentSlug, tenants }: TenantSwitcherProps) {
   const router = useRouter();
-  const current = tenants.find((t) => t.slug === currentSlug) ?? tenants[0];
+  const t = useTranslations("tenantSwitcher");
+  const current = tenants.find((x) => x.slug === currentSlug) ?? tenants[0];
 
   return (
     <DropdownMenu>
@@ -31,7 +33,7 @@ export function TenantSwitcher({ currentSlug, tenants }: TenantSwitcherProps) {
           <Button variant="ghost" size="sm" className="gap-1.5 max-w-[200px] justify-between" />
         }
       >
-        <span className="truncate font-medium">{current?.name ?? "(ไม่พบ workspace)"}</span>
+        <span className="truncate font-medium">{current?.name ?? t("notFound")}</span>
         <ChevronsUpDown className="size-3.5 text-muted-foreground shrink-0" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">

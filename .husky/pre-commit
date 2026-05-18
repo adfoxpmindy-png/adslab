@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+# AdsLab pre-commit verification — runs the fast subset of the 7-check
+# matrix on every commit. Slow checks (full build, Playwright smoke) live
+# in CI / `npm run verify` for manual runs.
+#
+# Bypass only as a last resort: `git commit --no-verify`. Bypassing is
+# tracked — explain why in the commit message.
+
+echo "→ audit:i18n (missing-key + emoji scans)"
+python scripts/audit-missing-keys-v3.py | tail -5
+MISSING=$(python -c "
+import subprocess, sys
+r = subprocess.run(['python', 'scripts/audit-missing-keys-v3.py'], capture_output=True, text=True)
+print(r.stdout.split('MISSING translation keys:')[1].split('\n')[0].strip() if 'MISSING translation keys:' in r.stdout else '?')
+")
+if [ "$MISSING" != "0 ===" ] && [ "$MISSING" != "0" ]; then
+  echo "✗ Missing translation keys: $MISSING — fix before commit (or --no-verify if intentional)"
+  exit 1
+fi
+
+echo "→ audit:emojis"
+EMOJIS=$(python -c "
+import subprocess
+r = subprocess.run(['python', 'scripts/audit-emojis.py'], capture_output=True, text=True)
+for line in r.stdout.splitlines():
+  if 'JSON total' in line:
+    print(line.split(':')[1].strip()); break
+")
+if [ -n "$EMOJIS" ] && [ "$EMOJIS" != "0" ]; then
+  echo "✗ Emojis found in messages JSON: $EMOJIS — strip before commit"
+  exit 1
+fi
+
+echo "→ tsc --noEmit (typed messages catch static missing keys)"
+npx tsc --noEmit
+if [ $? -ne 0 ]; then
+  echo "✗ TypeScript errors above — fix before commit"
+  exit 1
+fi
+
+echo "✓ pre-commit checks passed"

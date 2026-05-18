@@ -14,7 +14,9 @@ import {
   type NodeProps,
 } from "@xyflow/react";
 import { Target, TrendingUp, Sparkles } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
+import { formatNumber } from "@/lib/i18n/format";
 import type { CampaignRow } from "./campaigns-v2-client";
 import { prettyObjective, bucketStatus } from "./campaigns-v2-client";
 
@@ -43,12 +45,13 @@ const HUB_COLORS = [
 ] as const;
 
 export function CampaignsStructureMindmap({ rows }: Props) {
+  const t = useTranslations("pages.campaigns.mindmap");
   const { nodes, edges } = useMemo(() => buildGraph(rows), [rows]);
 
   if (rows.length === 0) {
     return (
       <div className="grid h-[600px] place-items-center rounded-2xl border border-border bg-card shadow-card">
-        <div className="text-sm text-muted-foreground">ไม่มีแคมเปญในขณะนี้</div>
+        <div className="text-sm text-muted-foreground">{t("empty")}</div>
       </div>
     );
   }
@@ -99,7 +102,7 @@ export function CampaignsStructureMindmap({ rows }: Props) {
 // =============================================================================
 
 function buildGraph(rows: CampaignRow[]): { nodes: Node[]; edges: Edge[] } {
-  // Group campaigns by objective. Campaigns with null objective land in "อื่นๆ" hub.
+  // Group campaigns by objective. Campaigns with null objective land in an "Other" hub.
   const byObjective = new Map<string, CampaignRow[]>();
   for (const c of rows) {
     const key = c.metaObjective ?? "UNKNOWN";
@@ -171,6 +174,7 @@ type HubData = {
 };
 
 function HubNode({ data }: NodeProps) {
+  const t = useTranslations("pages.campaigns.mindmap");
   const d = data as unknown as HubData;
   return (
     <>
@@ -181,7 +185,7 @@ function HubNode({ data }: NodeProps) {
       >
         <Target className="size-5" />
         <p className="mt-1.5 text-sm font-bold tracking-tight">{d.label}</p>
-        <p className="text-[10px] opacity-80">{d.count} แคมเปญ</p>
+        <p className="text-[10px] opacity-80">{d.count} {t("campaignsCountUnit")}</p>
       </div>
     </>
   );
@@ -192,6 +196,8 @@ type CampaignNodeData = {
 };
 
 function CampaignNode({ data }: NodeProps) {
+  const t = useTranslations("pages.campaigns.mindmap");
+  const locale = useLocale();
   const d = data as unknown as CampaignNodeData;
   const c = d.campaign;
   const isActive = bucketStatus(c.effectiveStatus) === "ACTIVE";
@@ -208,7 +214,7 @@ function CampaignNode({ data }: NodeProps) {
         <div className="flex items-center gap-1.5">
           <Sparkles className="size-3 text-violet-500" />
           <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-            แคมเปญ
+            {t("campaignLabel")}
           </span>
         </div>
         <p
@@ -223,7 +229,7 @@ function CampaignNode({ data }: NodeProps) {
             {c.metrics.roas > 0 ? `ROAS ${c.metrics.roas.toFixed(1)}x` : "no spend"}
           </span>
           <span className="text-[10px] font-medium tabular-nums text-foreground">
-            ฿{Math.round(c.metrics.spend).toLocaleString("th-TH")}
+            ฿{formatNumber(Math.round(c.metrics.spend), locale)}
           </span>
         </div>
       </div>

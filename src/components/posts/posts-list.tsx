@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Clock, AlertTriangle, XCircle, Trash2, Loader2 } from "lucide-react";
+import { CheckCircle2, Clock, AlertTriangle, XCircle, Trash2, Loader2, Video } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 
@@ -36,7 +36,7 @@ function StatusBadge({
   tStatus,
 }: {
   status: PostRow["status"];
-  tStatus: (k: string) => string;
+  tStatus: ReturnType<typeof useTranslations<"posts.status">>;
 }) {
   switch (status) {
     case "SCHEDULED":
@@ -139,7 +139,7 @@ export function PostsList({ tenantSlug, rows, canEdit }: Props) {
                   />
                 ) : (
                   <div className="flex size-20 items-center justify-center rounded-md bg-muted text-[10px] text-muted-foreground">
-                    {p.postKind === "VIDEO" ? "🎬" : p.postKind}
+                    {p.postKind === "VIDEO" ? <Video className="size-6" /> : p.postKind}
                   </div>
                 )}
               </div>
@@ -168,8 +168,9 @@ export function PostsList({ tenantSlug, rows, canEdit }: Props) {
                   {p.caption}
                 </p>
                 {p.errorMessage && (
-                  <p className="mt-1 text-[11px] text-rose-600 dark:text-rose-300">
-                    ⚠ {p.errorMessage}
+                  <p className="mt-1 flex items-center gap-1 text-[11px] text-rose-600 dark:text-rose-300">
+                    <AlertTriangle className="size-3 shrink-0" />
+                    <span>{p.errorMessage}</span>
                   </p>
                 )}
               </div>

@@ -24,11 +24,11 @@ export const searchKnowledgeTool = defineTool({
     required: ["query"],
     additionalProperties: false,
   },
-  summarize: (input) => `ค้นความรู้: "${input.query.slice(0, 60)}"`,
+  summarize: (input) => `Search knowledge: "${input.query.slice(0, 60)}"`,
   async handler(input, ctx) {
     const chunks = await searchKnowledge(ctx.tenantId, input.query, input.k ?? 5);
     if (chunks.length === 0) {
-      return { results: [], note: "ไม่พบเนื้อหาที่เกี่ยวข้อง" };
+      return { results: [], note: "No relevant content found" };
     }
     // Intentionally NOT returning source metadata (channel/url/title)
     // so the AI cannot inadvertently cite external sources to the user.

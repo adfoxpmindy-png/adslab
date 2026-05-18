@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Menu } from "lucide-react";
 
 import { MobileSidebar } from "./mobile-sidebar";
@@ -12,13 +13,14 @@ import { MobileSidebar } from "./mobile-sidebar";
  */
 export function MobileNav({ tenantSlug }: { tenantSlug: string }) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("mobileNav");
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="เปิดเมนู"
+        aria-label={t("openMenu")}
         aria-expanded={open}
         className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
       >

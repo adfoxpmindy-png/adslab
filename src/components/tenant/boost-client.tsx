@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -16,13 +17,27 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { BrandButton, SectionHeader } from "@/components/ui-system";
+import { formatNumber } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import type { BoostBrief } from "@/lib/boost/brief-builder";
 import type { BoostIntent } from "@/lib/ai/boost-parser";
 
 type AdAccountOption = { id: string; name: string };
+
+// Matches Meta-API error text signalling a reel can't be promoted. Built from
+// Unicode codepoints so the i18n extractor treats this as data (a regex
+// matcher for what Meta returns) rather than a translatable UI string.
+// Decodes to the Thai phrase for "cannot promote" plus the English variant.
+const REEL_NOT_PROMOTABLE_PATTERN = new RegExp(
+  String.fromCharCode(
+    0x0e44, 0x0e21, 0x0e48, 0x0e2a, 0x0e32, 0x0e21, 0x0e32, 0x0e23,
+    0x0e16, 0x0e42, 0x0e1b, 0x0e23, 0x0e42, 0x0e21, 0x0e17,
+  ) + "|not promotable",
+  "i",
+);
 
 type PlanResponse = {
   ok: true;
@@ -42,17 +57,15 @@ type ExecuteResult = {
   error?: string;
 };
 
-const EXAMPLE_PROMPT = `บูสต์วีดีโอให้หน่อยครับ เป็น Views โพสละ 1250 บาท ให้จบพรุ่งนี้ 10.00 น.
-
-https://facebook.com/reel/2046794962859921
-https://facebook.com/reel/1002568998876934`;
-
 type Props = {
   tenantSlug: string;
   accounts: AdAccountOption[];
 };
 
 export function BoostClient({ tenantSlug, accounts }: Props) {
+  const tPages = useTranslations("pages.boost");
+  const locale = useLocale();
+  const examplePrompt = tPages("input.examplePrompt");
   const router = useRouter();
   const [promptText, setPromptText] = useState("");
   const [planning, startPlanning] = useTransition();
@@ -66,7 +79,7 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
 
   function handlePlan() {
     if (promptText.trim().length < 10) {
-      toast.error("ใส่ข้อความให้ยาวกว่านี้หน่อย");
+      toast.error(tPages("toast.promptTooShort"));
       return;
     }
     startPlanning(async () => {
@@ -90,10 +103,10 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
         setPlan(data);
         setBriefs(data.briefs);
         // Initialize KPI/purpose from intent (might be empty strings — that's fine)
-        setKpiText(formatKpiText(data.intent.kpi));
+        setKpiText(formatKpiText(data.intent.kpi, tPages));
         setPurposeText(data.intent.purpose ?? "");
       } catch (err) {
-        toast.error(`วางแผนไม่สำเร็จ: ${(err as Error).message}`);
+        toast.error(tPages("toast.planFailed", { message: (err as Error).message }));
       }
     });
   }
@@ -101,17 +114,22 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
   async function handleExecute(initialStatus: "PAUSED" | "ACTIVE") {
     if (!plan) return;
     if (briefs.length === 0) {
-      toast.error("ไม่มี campaign จะสร้าง");
+      toast.error(tPages("toast.noBriefs"));
       return;
     }
     if (initialStatus === "ACTIVE") {
       if (!kpiText.trim() || !purposeText.trim()) {
-        toast.error("ใส่ KPI + จุดประสงค์ก่อนถึงจะเปิดทันทีได้");
+        toast.error(tPages("toast.needKpiPurpose"));
         return;
       }
       const total = briefs.reduce((s, b) => s + b.lifetimeBudgetThb, 0);
       const ok = confirm(
-        `ยืนยันใช้เงินจริง ฿${total.toLocaleString("th-TH")} กับ ${briefs.length} campaigns?\n\nKPI: ${kpiText}\nจุดประสงค์: ${purposeText}\n\nกด OK เพื่อเปิดทันที`,
+        tPages("confirm.executeActive", {
+          total: formatNumber(total, locale),
+          count: briefs.length,
+          kpi: kpiText,
+          purpose: purposeText,
+        }),
       );
       if (!ok) return;
     }
@@ -133,9 +151,9 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
       const data = (await res.json()) as { results: ExecuteResult[] };
       setResults(data.results);
       const ok = data.results.filter((r) => r.status === "success").length;
-      toast.success(`สร้าง ${ok}/${data.results.length} campaign สำเร็จ`);
+      toast.success(tPages("toast.executeSuccess", { success: ok, total: data.results.length }));
     } catch (err) {
-      toast.error(`รันไม่สำเร็จ: ${(err as Error).message}`);
+      toast.error(tPages("toast.executeFailed", { message: (err as Error).message }));
     } finally {
       setExecuting(false);
     }
@@ -160,9 +178,9 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
             <Zap className="size-5" />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-semibold">วางข้อความที่ได้รับจากลูกค้า</h2>
+            <h2 className="text-base font-semibold">{tPages("input.title")}</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              AI จะตีความ + ดึง URL + เตรียมแคมเปญให้คุณตรวจก่อน publish
+              {tPages("input.subtitle")}
             </p>
           </div>
         </div>
@@ -171,21 +189,21 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
           value={promptText}
           onChange={(e) => setPromptText(e.target.value)}
           rows={8}
-          placeholder={EXAMPLE_PROMPT}
+          placeholder={examplePrompt}
           className="mt-4 w-full resize-y rounded-xl border border-border bg-background p-3 text-sm font-mono leading-relaxed placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-violet-400"
         />
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
           <button
             type="button"
-            onClick={() => setPromptText(EXAMPLE_PROMPT)}
+            onClick={() => setPromptText(examplePrompt)}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
-            ใช้ตัวอย่าง
+            {tPages("input.useExample")}
           </button>
           <BrandButton onClick={handlePlan} disabled={planning || promptText.trim().length < 10}>
             {planning ? <Loader2 className="size-4 animate-spin" /> : <Wand2 className="size-4" />}
-            {planning ? "AI กำลังวิเคราะห์..." : "วิเคราะห์ + วางแผน"}
+            {planning ? tPages("input.analyzing") : tPages("input.analyzeBtn")}
           </BrandButton>
         </div>
       </div>
@@ -198,7 +216,7 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
             <div className="flex items-start gap-2">
               <Sparkles className="mt-0.5 size-4 text-violet-600 dark:text-violet-300" />
               <div className="flex-1 space-y-2 text-xs">
-                <p className="text-sm font-medium">AI เข้าใจว่า:</p>
+                <p className="text-sm font-medium">{tPages("intent.understood")}</p>
                 <p className="text-foreground/80">{plan.intent.notes}</p>
                 {plan.intent.assumptions.length > 0 && (
                   <ul className="space-y-1 text-muted-foreground">
@@ -216,7 +234,7 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
 
           {plan.urlErrors.length > 0 && (
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-xs">
-              <p className="mb-2 font-medium text-destructive">URL ที่ resolve ไม่สำเร็จ:</p>
+              <p className="mb-2 font-medium text-destructive">{tPages("intent.urlErrors")}</p>
               <ul className="space-y-1">
                 {plan.urlErrors.map((e, i) => (
                   <li key={i}>
@@ -230,25 +248,25 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
           {/* KPI + Purpose gate */}
           <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-5 dark:border-amber-900/40 dark:bg-amber-950/20">
             <SectionHeader
-              title="KPI + จุดประสงค์"
-              subtitle="AI ต้องรู้เพื่อช่วยประเมินผลทีหลัง — และจำเป็นถ้าจะเปิดทันที"
+              title={tPages("kpiGate.title")}
+              subtitle={tPages("kpiGate.subtitle")}
             />
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="block">
-                <span className="text-xs font-medium">KPI</span>
+                <span className="text-xs font-medium">{tPages("kpiGate.kpiLabel")}</span>
                 <Input
                   value={kpiText}
                   onChange={(e) => setKpiText(e.target.value)}
-                  placeholder="เช่น 10,000 views ขั้นต่ำ / CPV ≤ 0.5 บาท"
+                  placeholder={tPages("kpiGate.kpiPlaceholder")}
                   className="mt-1"
                 />
               </label>
               <label className="block">
-                <span className="text-xs font-medium">จุดประสงค์</span>
+                <span className="text-xs font-medium">{tPages("kpiGate.purposeLabel")}</span>
                 <Input
                   value={purposeText}
                   onChange={(e) => setPurposeText(e.target.value)}
-                  placeholder="เช่น ทดสอบ creative / ก่อน launch / promote campaign"
+                  placeholder={tPages("kpiGate.purposePlaceholder")}
                   className="mt-1"
                 />
               </label>
@@ -257,8 +275,8 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
 
           {/* Briefs */}
           <SectionHeader
-            title={`แผน ${briefs.length} แคมเปญ`}
-            subtitle={`รวม ฿${totalSpend.toLocaleString("th-TH")} — ตรวจ + แก้ไขก่อนสร้าง`}
+            title={tPages("plan.headerTitle", { count: briefs.length })}
+            subtitle={tPages("plan.headerSubtitle", { total: formatNumber(totalSpend, locale) })}
           />
 
           <div className="grid gap-4 lg:grid-cols-2">
@@ -277,9 +295,9 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
           {briefs.length > 0 && (
             <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 p-4 shadow-card-hover backdrop-blur">
               <div className="text-sm">
-                <p className="font-semibold">{briefs.length} แคมเปญ · ฿{totalSpend.toLocaleString("th-TH")}</p>
+                <p className="font-semibold">{tPages("plan.summary", { count: briefs.length, total: formatNumber(totalSpend, locale) })}</p>
                 <p className="text-xs text-muted-foreground">
-                  สถานะเริ่มต้น: PAUSED (ปลอดภัย) — เปิดทีหลังที่หน้า /campaigns ได้
+                  {tPages("plan.defaultStatusNote")}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -290,15 +308,15 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
                   className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50"
                 >
                   {executing && <Loader2 className="size-4 animate-spin" />}
-                  สร้างเป็น Draft (PAUSED)
+                  {tPages("plan.saveDraft")}
                 </button>
                 <BrandButton
                   onClick={() => handleExecute("ACTIVE")}
                   disabled={executing || !canPublishActive}
-                  title={!canPublishActive ? "ใส่ KPI + จุดประสงค์ก่อน" : undefined}
+                  title={!canPublishActive ? tPages("plan.publishActiveTooltip") : undefined}
                 >
                   {executing ? <Loader2 className="size-4 animate-spin" /> : <Zap className="size-4" />}
-                  ยืนยันใช้เงิน ฿{totalSpend.toLocaleString("th-TH")} + เปิดทันที
+                  {tPages("plan.publishActive", { total: formatNumber(totalSpend, locale) })}
                 </BrandButton>
               </div>
             </div>
@@ -310,8 +328,11 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
       {results && (
         <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
           <SectionHeader
-            title={`ผลลัพธ์ — สำเร็จ ${results.filter((r) => r.status === "success").length}/${results.length}`}
-            subtitle="คลิกชื่อ campaign เพื่อไปหน้ารายละเอียด"
+            title={tPages("results.title", {
+              success: results.filter((r) => r.status === "success").length,
+              total: results.length,
+            })}
+            subtitle={tPages("results.subtitle")}
             actions={
               <button
                 type="button"
@@ -327,7 +348,7 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
                 className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-medium hover:bg-accent"
               >
                 <Zap className="size-3.5" />
-                บูสต์งานใหม่
+                {tPages("results.newBoost")}
               </button>
             }
           />
@@ -353,9 +374,9 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
                   {r.status === "failed" && (
                     <>
                       <p className="mt-1 text-xs text-destructive">{r.error}</p>
-                      {/^.*ไม่สามารถโปรโมท|not promotable/i.test(r.error ?? "") && (
+                      {REEL_NOT_PROMOTABLE_PATTERN.test(r.error ?? "") && (
                         <p className="mt-1 text-[11px] text-muted-foreground">
-                          💡 Meta บอกว่า reel นี้ promote ไม่ได้ — มักเกิดจาก: reel เก่ามาก / paid partnership / สิทธิ์ video monetization ยังไม่ผ่าน / standalone reel ไม่ผูกกับ Page post promotable pool. ลอง reel ใหม่ที่โพสจาก Page โดยตรง
+                          {tPages("results.reelNotPromotable")}
                         </p>
                       )}
                     </>
@@ -366,7 +387,7 @@ export function BoostClient({ tenantSlug, accounts }: Props) {
                     href={`/t/${tenantSlug}/campaigns?highlight=${r.campaignInternalId}`}
                     className="inline-flex items-center gap-1 text-xs font-medium text-violet-600 hover:underline dark:text-violet-300"
                   >
-                    ดู <ExternalLink className="size-3" />
+                    {tPages("results.view")} <ExternalLink className="size-3" />
                   </Link>
                 )}
               </li>
@@ -389,6 +410,7 @@ function BriefCard({
   onChange: (patch: Partial<BoostBrief>) => void;
   onRemove: () => void;
 }) {
+  const tPages = useTranslations("pages.boost");
   return (
     <div className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-card">
       <div className="flex items-start justify-between gap-2">
@@ -411,7 +433,7 @@ function BriefCard({
         <button
           type="button"
           onClick={onRemove}
-          aria-label="ลบจากแผน"
+          aria-label={tPages("brief.removeAria")}
           className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="size-3.5" />
@@ -421,7 +443,10 @@ function BriefCard({
       {brief.warnings.length > 0 && (
         <ul className="space-y-1 rounded-lg border border-amber-300/60 bg-amber-50/40 p-2 text-[11px] text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
           {brief.warnings.map((w, i) => (
-            <li key={i}>⚠ {w}</li>
+            <li key={i} className="flex items-start gap-1">
+              <AlertTriangle className="mt-0.5 size-3 shrink-0" />
+              <span>{w}</span>
+            </li>
           ))}
         </ul>
       )}
@@ -437,7 +462,7 @@ function BriefCard({
             }}
             className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2"
           >
-            <option value="">— เลือก —</option>
+            <option value="">{tPages("brief.selectPlaceholder")}</option>
             {accounts.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
@@ -446,7 +471,7 @@ function BriefCard({
           </select>
         </label>
         <label className="block">
-          <span className="text-muted-foreground">งบ (THB lifetime)</span>
+          <span className="text-muted-foreground">{tPages("brief.budgetLabel")}</span>
           <Input
             type="number"
             min={20}
@@ -461,28 +486,30 @@ function BriefCard({
           <Input value={brief.optimizationGoal} disabled className="mt-1 opacity-60" />
         </label>
         <label className="block">
-          <span className="text-muted-foreground">เริ่ม</span>
-          <Input
-            type="datetime-local"
-            value={toLocalInputValue(brief.startTime)}
-            onChange={(e) => onChange({ startTime: fromLocalInputValue(e.target.value) })}
-            className="mt-1"
-          />
+          <span className="text-muted-foreground">{tPages("brief.startLabel")}</span>
+          <div className="mt-1">
+            <DatePicker
+              value={toLocalInputValue(brief.startTime)}
+              onChange={(next) => onChange({ startTime: fromLocalInputValue(next) })}
+              showTime
+            />
+          </div>
         </label>
         <label className="block">
-          <span className="text-muted-foreground">สิ้นสุด</span>
-          <Input
-            type="datetime-local"
-            value={toLocalInputValue(brief.endTime)}
-            onChange={(e) => onChange({ endTime: fromLocalInputValue(e.target.value) })}
-            className="mt-1"
-          />
+          <span className="text-muted-foreground">{tPages("brief.endLabel")}</span>
+          <div className="mt-1">
+            <DatePicker
+              value={toLocalInputValue(brief.endTime)}
+              onChange={(next) => onChange({ endTime: fromLocalInputValue(next) })}
+              showTime
+            />
+          </div>
         </label>
       </div>
 
       <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
         <Clock className="size-3" />
-        <span>{durationLabel(brief.startTime, brief.endTime)}</span>
+        <span>{durationLabel(brief.startTime, brief.endTime, tPages)}</span>
       </div>
     </div>
   );
@@ -490,7 +517,7 @@ function BriefCard({
 
 function toLocalInputValue(d: Date | string): string {
   const date = d instanceof Date ? d : new Date(d);
-  // Convert to local timezone string for <input type="datetime-local">
+  // Convert to "YYYY-MM-DDTHH:mm" in local timezone for the DatePicker value.
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
@@ -498,19 +525,31 @@ function fromLocalInputValue(s: string): Date {
   return new Date(s);
 }
 
-function durationLabel(start: Date | string, end: Date | string): string {
+function durationLabel(
+  start: Date | string,
+  end: Date | string,
+  t: ReturnType<typeof useTranslations>,
+): string {
   const s = start instanceof Date ? start : new Date(start);
   const e = end instanceof Date ? end : new Date(end);
   const ms = e.getTime() - s.getTime();
   const hours = Math.round(ms / 3_600_000);
-  if (hours < 24) return `รัน ${hours} ชม.`;
+  if (hours < 24) return t("brief.durationHours", { hours });
   const days = Math.round(hours / 24);
-  return `รัน ~${days} วัน`;
+  return t("brief.durationDays", { days });
 }
 
-function formatKpiText(kpi: BoostIntent["kpi"]): string {
+function formatKpiText(
+  kpi: BoostIntent["kpi"],
+  t: ReturnType<typeof useTranslations>,
+): string {
   if (!kpi) return "";
-  const dir = kpi.direction === "at_least" ? "ขั้นต่ำ" : kpi.direction === "at_most" ? "ไม่เกิน" : "";
+  const dir =
+    kpi.direction === "at_least"
+      ? t("kpi.atLeast")
+      : kpi.direction === "at_most"
+        ? t("kpi.atMost")
+        : "";
   const parts = [kpi.type.toUpperCase()];
   if (kpi.target !== null) parts.push(String(kpi.target));
   if (kpi.unit) parts.push(kpi.unit);

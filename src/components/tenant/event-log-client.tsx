@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, RefreshCw, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { formatDateTime } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 
 type EventLog = {
@@ -26,6 +28,8 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export function EventLogClient({ tenantSlug }: { tenantSlug: string }) {
+  const t = useTranslations("pages.events.log");
+  const locale = useLocale();
   const [logs, setLogs] = useState<EventLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -52,6 +56,7 @@ export function EventLogClient({ tenantSlug }: { tenantSlug: string }) {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- load() runs async fetch then setState; intentional reload on filter changes
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenantSlug, eventFilter, statusFilter]);
@@ -73,7 +78,7 @@ export function EventLogClient({ tenantSlug }: { tenantSlug: string }) {
           onChange={(e) => setEventFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="">ทุก event</option>
+          <option value="">{t("allEvents")}</option>
           {uniqueEvents.map((e) => (
             <option key={e} value={e}>
               {e}
@@ -85,7 +90,7 @@ export function EventLogClient({ tenantSlug }: { tenantSlug: string }) {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="">ทุก status</option>
+          <option value="">{t("allStatuses")}</option>
           <option value="success">success</option>
           <option value="pending">pending</option>
           <option value="failed">failed</option>
@@ -117,11 +122,11 @@ export function EventLogClient({ tenantSlug }: { tenantSlug: string }) {
       {loading ? (
         <div className="flex items-center justify-center gap-2 py-12">
           <Loader2 className="size-4 animate-spin text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+          <span className="text-sm text-muted-foreground">{t("loading")}</span>
         </div>
       ) : logs.length === 0 ? (
         <div className="py-12 text-center text-sm text-muted-foreground">
-          ยังไม่มี event log — ติด SDK บนเว็บแล้ว rule จะเริ่มยิง events เข้ามาที่นี่
+          {t("empty")}
         </div>
       ) : (
         <ul className="divide-y divide-border">
@@ -141,7 +146,7 @@ export function EventLogClient({ tenantSlug }: { tenantSlug: string }) {
               </span>
               <span className="text-sm font-medium">{l.eventName}</span>
               <span className="text-[11px] text-muted-foreground">
-                {new Date(l.firedAt).toLocaleString("th-TH")}
+                {formatDateTime(l.firedAt, locale)}
               </span>
               <span className="ml-auto truncate text-[11px] text-muted-foreground">
                 {((l.browserContext?.sourceUrl as string) ?? "").slice(0, 60)}
@@ -165,6 +170,7 @@ function EventDetailDrawer({
   log: EventLog;
   onClose: () => void;
 }) {
+  const locale = useLocale();
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-end bg-black/40"
@@ -178,7 +184,7 @@ function EventDetailDrawer({
           <div>
             <h3 className="text-base font-semibold">{log.eventName}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {new Date(log.firedAt).toLocaleString("th-TH")} ·{" "}
+              {formatDateTime(log.firedAt, locale)} ·{" "}
               <span className="font-medium">{log.capiStatus}</span>
             </p>
           </div>

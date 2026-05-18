@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Check,
   ChevronRight,
@@ -39,22 +40,17 @@ type Form = {
   language: "th" | "en" | "mixed";
 };
 
-const STEPS = [
-  { num: 1, label: "ตั้งค่าแคมเปญ" },
-  { num: 2, label: "AI สร้างแผน" },
-  { num: 3, label: "ตรวจสอบและเผยแพร่" },
-] as const;
-
-const OBJECTIVE_OPTIONS = [
-  { value: "awareness", label: "Awareness" },
-  { value: "traffic", label: "Traffic" },
-  { value: "engagement", label: "Engagement" },
-  { value: "leads", label: "Leads" },
-  { value: "conversions", label: "Conversions" },
-  { value: "sales", label: "Sales" },
+const OBJECTIVE_VALUES = [
+  "awareness",
+  "traffic",
+  "engagement",
+  "leads",
+  "conversions",
+  "sales",
 ] as const;
 
 export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) {
+  const tPages = useTranslations("pages.aiCampaignBuilder");
   const [step, setStep] = useState<Step>(1);
   const [form, setForm] = useState<Form>({
     product: "",
@@ -74,7 +70,7 @@ export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) 
 
   async function handleGenerate() {
     if (form.product.trim().length < 3) {
-      toast.error("กรอกข้อมูลสินค้าก่อนสร้างแผน");
+      toast.error(tPages("toast.needProduct"));
       return;
     }
     setGenerating(true);
@@ -87,12 +83,12 @@ export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) 
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.message ?? "AI สร้างแผนไม่สำเร็จ");
+        toast.error(data.message ?? tPages("toast.generateFailed"));
         setStep(1);
         return;
       }
       setPlan(data.plan);
-      toast.success("AI สร้างแผนแคมเปญสำเร็จ");
+      toast.success(tPages("toast.generateSuccess"));
     } catch (err) {
       toast.error((err as Error).message);
       setStep(1);
@@ -103,7 +99,7 @@ export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) 
 
   function handleSaveCampaign() {
     setStep(3);
-    toast.success("บันทึกแล้ว — กำลังสร้างแคมเปญใน Meta...");
+    toast.success(tPages("toast.savedCreating"));
     // TODO Phase B-4.5: wire to /api/meta/campaigns/create with the plan structure
     // For now, redirect to existing manual builder pre-filled with form data.
     setTimeout(() => {
@@ -111,12 +107,18 @@ export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) 
     }, 1500);
   }
 
+  const steps: ReadonlyArray<{ num: Step; label: string }> = [
+    { num: 1, label: tPages("steps.setup") },
+    { num: 2, label: tPages("steps.aiPlan") },
+    { num: 3, label: tPages("steps.reviewPublish") },
+  ];
+
   return (
     <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
       {/* Step indicator */}
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-6 py-4 shadow-card">
         <div className="flex items-center gap-4 sm:gap-8">
-          {STEPS.map((s, i) => {
+          {steps.map((s, i) => {
             const isActive = step === s.num;
             const isDone = step > s.num;
             return (
@@ -141,7 +143,7 @@ export function AICampaignBuilderClient({ tenantSlug }: { tenantSlug: string }) 
                 >
                   {s.label}
                 </span>
-                {i < STEPS.length - 1 && (
+                {i < steps.length - 1 && (
                   <ChevronRight className="ml-2 size-4 text-muted-foreground" />
                 )}
               </div>
@@ -181,6 +183,7 @@ function BuilderForm({
   onGenerate: () => void;
   generating: boolean;
 }) {
+  const tPages = useTranslations("pages.aiCampaignBuilder");
   const [tagInput, setTagInput] = useState("");
 
   function addFeature(text: string) {
@@ -202,22 +205,22 @@ function BuilderForm({
           <div className="flex size-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
             <Sparkles className="size-4" />
           </div>
-          <h2 className="text-base font-semibold">บอก AI เกี่ยวกับธุรกิจของคุณ</h2>
+          <h2 className="text-base font-semibold">{tPages("form.section1Title")}</h2>
         </div>
 
         <FieldWithCount
           id="product"
-          label="คุณกำลังขายอะไร?"
+          label={tPages("form.productLabel")}
           required
           max={500}
           value={form.product}
           onChange={(v) => onChange({ ...form, product: v })}
-          placeholder="เช่น ครีมกันแดดหน้าใส SPF50 PA+++"
+          placeholder={tPages("form.productPlaceholder")}
           textarea
         />
 
         <div>
-          <Label htmlFor="websiteUrl">ลิงก์เว็บไซต์ / สินค้า</Label>
+          <Label htmlFor="websiteUrl">{tPages("form.websiteLabel")}</Label>
           <Input
             id="websiteUrl"
             value={form.websiteUrl}
@@ -227,16 +230,16 @@ function BuilderForm({
         </div>
 
         <div>
-          <Label htmlFor="objective">เป้าหมายแคมเปญ</Label>
+          <Label htmlFor="objective">{tPages("form.objectiveLabel")}</Label>
           <select
             id="objective"
             value={form.objective}
             onChange={(e) => onChange({ ...form, objective: e.target.value as Form["objective"] })}
             className="mt-1 flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            {OBJECTIVE_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
+            {OBJECTIVE_VALUES.map((v) => (
+              <option key={v} value={v}>
+                {tPages(`objective.${v}`)}
               </option>
             ))}
           </select>
@@ -244,7 +247,7 @@ function BuilderForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="dailyBudget">งบประมาณต่อวัน (THB)</Label>
+            <Label htmlFor="dailyBudget">{tPages("form.dailyBudgetLabel")}</Label>
             <Input
               id="dailyBudget"
               type="number"
@@ -255,7 +258,7 @@ function BuilderForm({
             />
           </div>
           <div>
-            <Label htmlFor="duration">ระยะเวลา (วัน)</Label>
+            <Label htmlFor="duration">{tPages("form.durationLabel")}</Label>
             <Input
               id="duration"
               type="number"
@@ -269,26 +272,26 @@ function BuilderForm({
 
         <FieldWithCount
           id="primaryAudience"
-          label="กลุ่มเป้าหมายหลัก"
+          label={tPages("form.primaryAudienceLabel")}
           max={200}
           value={form.primaryAudience}
           onChange={(v) => onChange({ ...form, primaryAudience: v })}
-          placeholder="เช่น ผู้หญิง อายุ 18-34 สนใจสกินแคร์ ความงาม ไลฟ์สไตล์"
+          placeholder={tPages("form.primaryAudiencePlaceholder")}
           textarea
         />
 
         <FieldWithCount
           id="secondaryAudience"
-          label="กลุ่มเป้าหมายเพิ่มเติม (ไม่บังคับ)"
+          label={tPages("form.secondaryAudienceLabel")}
           max={200}
           value={form.secondaryAudience}
           onChange={(v) => onChange({ ...form, secondaryAudience: v })}
-          placeholder="เช่น ผู้ชาย อายุ 20-35 ออกกำลังกาย ดูแลผิว"
+          placeholder={tPages("form.secondaryAudiencePlaceholder")}
           textarea
         />
 
         <div>
-          <Label>ตำแหน่งการแสดงผล</Label>
+          <Label>{tPages("form.placementsLabel")}</Label>
           <div className="mt-1.5 grid grid-cols-2 gap-2">
             <PlacementChip
               label="Facebook"
@@ -299,21 +302,21 @@ function BuilderForm({
             />
             <PlacementChip
               label="Instagram"
-              icon="◉"
+              icon="i"
               color="#E4405F"
               checked={form.placements.instagram}
               onChange={(v) => onChange({ ...form, placements: { ...form.placements, instagram: v } })}
             />
             <PlacementChip
               label="TikTok"
-              icon="♪"
+              icon="t"
               color="#000"
               checked={form.placements.tiktok}
               onChange={(v) => onChange({ ...form, placements: { ...form.placements, tiktok: v } })}
             />
             <PlacementChip
               label="Audience Network"
-              icon="◈"
+              icon="a"
               color="#4A90E2"
               checked={form.placements.audienceNetwork}
               onChange={(v) => onChange({ ...form, placements: { ...form.placements, audienceNetwork: v } })}
@@ -322,16 +325,16 @@ function BuilderForm({
         </div>
 
         <div>
-          <Label htmlFor="language">ภาษาที่ใช้</Label>
+          <Label htmlFor="language">{tPages("form.languageLabel")}</Label>
           <select
             id="language"
             value={form.language}
             onChange={(e) => onChange({ ...form, language: e.target.value as Form["language"] })}
             className="mt-1 flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
-            <option value="th">ภาษาไทย</option>
+            <option value="th">{tPages("form.languageThai")}</option>
             <option value="en">English</option>
-            <option value="mixed">ผสม (Thai + English)</option>
+            <option value="mixed">{tPages("form.languageMixed")}</option>
           </select>
         </div>
       </section>
@@ -340,11 +343,11 @@ function BuilderForm({
       <section className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card">
         <div className="flex items-center gap-2">
           <Settings2 className="size-4 text-muted-foreground" />
-          <h2 className="text-base font-semibold">ข้อมูลเพิ่มเติม (ไม่บังคับ)</h2>
+          <h2 className="text-base font-semibold">{tPages("form.section2Title")}</h2>
         </div>
 
         <div>
-          <Label htmlFor="features">จุดเด่นสินค้า</Label>
+          <Label htmlFor="features">{tPages("form.featuresLabel")}</Label>
           <div className="mt-1 flex flex-wrap items-center gap-2 rounded-md border border-input bg-card px-3 py-2 min-h-10">
             {form.features.map((f) => (
               <span
@@ -371,18 +374,18 @@ function BuilderForm({
                 }
               }}
               className="min-w-[120px] flex-1 bg-transparent text-xs focus:outline-none"
-              placeholder="พิมพ์แล้วกด Enter"
+              placeholder={tPages("form.featuresPlaceholder")}
             />
           </div>
         </div>
 
         <FieldWithCount
           id="message"
-          label="ข้อความที่ต้องการสื่อ"
+          label={tPages("form.messageLabel")}
           max={500}
           value={form.message}
           onChange={(v) => onChange({ ...form, message: v })}
-          placeholder="เช่น กันแดดหน้าใส ไม่วอก ไม่มัน กันน้ำ กันเหงื่อ ใช้ได้ทุกวัน"
+          placeholder={tPages("form.messagePlaceholder")}
           textarea
         />
       </section>
@@ -395,11 +398,11 @@ function BuilderForm({
       >
         {generating ? (
           <>
-            <Loader2 className="size-5 animate-spin" /> AI กำลังสร้างแผน...
+            <Loader2 className="size-5 animate-spin" /> {tPages("button.generating")}
           </>
         ) : (
           <>
-            <Sparkles className="size-5" /> สร้างแผนแคมเปญด้วย AI
+            <Sparkles className="size-5" /> {tPages("button.generate")}
           </>
         )}
       </button>
@@ -503,6 +506,7 @@ function PlanPreview({
   generating: boolean;
   onSave: () => void;
 }) {
+  const tPages = useTranslations("pages.aiCampaignBuilder");
   if (generating) {
     return (
       <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-border bg-card p-12 text-center shadow-card">
@@ -512,9 +516,9 @@ function PlanPreview({
             <Sparkles className="size-8 text-white" />
           </div>
         </div>
-        <p className="mt-6 text-base font-semibold">AI กำลังวิเคราะห์...</p>
+        <p className="mt-6 text-base font-semibold">{tPages("preview.analyzing")}</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          กำลังสร้างแคมเปญ + ad sets + creative ที่เหมาะกับธุรกิจของคุณ
+          {tPages("preview.analyzingDesc")}
         </p>
       </div>
     );
@@ -526,9 +530,9 @@ function PlanPreview({
         <div className="flex size-14 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-300">
           <Sparkles className="size-6" />
         </div>
-        <p className="mt-4 text-base font-semibold">รอ AI สร้างแผน</p>
+        <p className="mt-4 text-base font-semibold">{tPages("preview.waiting")}</p>
         <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-          กรอกข้อมูลธุรกิจของคุณด้านซ้าย แล้วคลิก &ldquo;สร้างแผนแคมเปญด้วย AI&rdquo;
+          {tPages("preview.waitingDesc")}
         </p>
       </div>
     );
@@ -539,12 +543,12 @@ function PlanPreview({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold">AI สร้างแผนแคมเปญให้คุณ</h2>
+          <h2 className="text-base font-semibold">{tPages("preview.planTitle")}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">{plan.campaignName}</p>
         </div>
         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
           <Check className="size-3" />
-          คาดการณ์ผลลัพธ์
+          {tPages("preview.predicted")}
         </span>
       </div>
 
@@ -553,7 +557,7 @@ function PlanPreview({
         <PredictCard label="ROAS" value={`${plan.predictions.roas.toFixed(2)}x`} good={plan.predictions.roas >= 3} />
         <PredictCard label="CPA" value={`฿${Math.round(plan.predictions.cpaTHB).toLocaleString()}`} good={plan.predictions.cpaTHB <= 300} />
         <PredictCard label="Conversion" value={plan.predictions.conversions.toString()} good />
-        <PredictCard label="ยอดขาย" value={`฿${plan.predictions.salesTHB.toLocaleString()}`} good />
+        <PredictCard label={tPages("preview.salesLabel")} value={`฿${plan.predictions.salesTHB.toLocaleString()}`} good />
       </div>
 
       {/* Campaign hierarchy */}
@@ -582,7 +586,13 @@ function PlanPreview({
               )}
               <div className="mt-2 flex items-center justify-between text-[11px]">
                 <span className="rounded-full bg-violet-50 px-2 py-0.5 font-medium text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
-                  ฿{Math.round(s.budgetPercent / 100 * (plan.predictions.salesTHB / plan.predictions.roas / 30))}/วัน ({s.budgetPercent}%)
+                  {tPages("preview.perDayBudget", {
+                    amount: Math.round(
+                      (s.budgetPercent / 100) *
+                        (plan.predictions.salesTHB / plan.predictions.roas / 30),
+                    ).toLocaleString(),
+                    percent: s.budgetPercent,
+                  })}
                 </span>
                 <span className="text-muted-foreground">
                   ROAS {s.expectedRoas.toFixed(2)}x · CPA ฿{s.expectedCpaTHB}
@@ -597,7 +607,7 @@ function PlanPreview({
       <div>
         <div className="mb-2 flex items-center gap-2">
           <ImageIcon className="size-4 text-violet-600" />
-          <h3 className="text-sm font-semibold">Ads &mdash; รวม {plan.creatives.length} โฆษณา (แนะนำโดย AI)</h3>
+          <h3 className="text-sm font-semibold">{tPages("preview.adsTotal", { count: plan.creatives.length })}</h3>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {plan.creatives.map((c, i) => {
@@ -631,7 +641,7 @@ function PlanPreview({
                   {c.headline}
                 </p>
                 <p className="mt-1 text-[10px] text-muted-foreground">
-                  CTR คาด {c.expectedCtr.toFixed(2)}%
+                  {tPages("preview.ctrExpected", { ctr: c.expectedCtr.toFixed(2) })}
                 </p>
               </div>
             );
@@ -642,14 +652,14 @@ function PlanPreview({
       {/* CTAs */}
       <div className="flex gap-2 border-t border-border pt-4">
         <button type="button" className="flex-1 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent">
-          ปรับแต่งแผน
+          {tPages("button.customize")}
         </button>
         <button
           type="button"
           onClick={onSave}
           className={cn(brandButton({ size: "md" }), "flex-1")}
         >
-          บันทึกและสร้างแคมเปญ
+          {tPages("button.save")}
         </button>
       </div>
     </div>
@@ -657,6 +667,7 @@ function PlanPreview({
 }
 
 function PredictCard({ label, value, good }: { label: string; value: string; good: boolean }) {
+  const tPages = useTranslations("pages.aiCampaignBuilder");
   return (
     <div className="rounded-lg border border-border bg-muted/30 p-3">
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -664,7 +675,7 @@ function PredictCard({ label, value, good }: { label: string; value: string; goo
       {good && (
         <span className="mt-1 inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
           <TrendingUp className="size-2.5" />
-          ดีมาก
+          {tPages("preview.veryGood")}
         </span>
       )}
     </div>

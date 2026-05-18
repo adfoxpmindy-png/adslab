@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
 /**
- * Thai-first date picker, custom built (no library).
+ * Locale-aware date picker, custom built (no library).
  *
  * Why custom: native `<input type="date">` UX is browser-default and
  * inconsistent across Windows / Mac / mobile. Date libraries (react-day-
@@ -32,22 +33,6 @@ type Props = {
   showTime?: boolean;
 };
 
-const THAI_WEEKDAYS = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
-const THAI_MONTHS = [
-  "มกราคม",
-  "กุมภาพันธ์",
-  "มีนาคม",
-  "เมษายน",
-  "พฤษภาคม",
-  "มิถุนายน",
-  "กรกฎาคม",
-  "สิงหาคม",
-  "กันยายน",
-  "ตุลาคม",
-  "พฤศจิกายน",
-  "ธันวาคม",
-];
-
 function pad(n: number): string {
   return String(n).padStart(2, "0");
 }
@@ -63,7 +48,7 @@ function dateFromIso(iso: string): Date | null {
   return new Date(y, m - 1, d);
 }
 
-/** Build a 6×7 grid of dates covering the month view (including spillover) */
+/** Build a 6x7 grid of dates covering the month view (including spillover) */
 function monthGrid(year: number, month: number): Date[] {
   // first cell = Sunday before/on the 1st of the month
   const first = new Date(year, month, 1);
@@ -74,19 +59,6 @@ function monthGrid(year: number, month: number): Date[] {
     d.setDate(start.getDate() + i);
     return d;
   });
-}
-
-function formatThaiLabel(iso: string, showTime: boolean): string {
-  if (!iso) return "";
-  // Split datetime from date portion
-  const [datePart, timePart] = iso.split("T");
-  const d = dateFromIso(datePart);
-  if (!d) return "";
-  const dateStr = `${d.getDate()} ${THAI_MONTHS[d.getMonth()]} ${d.getFullYear() + 543}`;
-  if (showTime && timePart) {
-    return `${dateStr} · ${timePart.slice(0, 5)} น.`;
-  }
-  return dateStr;
 }
 
 function parseTimeFromIso(iso: string): { hour: number; minute: number } {
@@ -104,6 +76,25 @@ export function DatePicker({
   max,
   showTime = false,
 }: Props) {
+  const t = useTranslations("common.datePicker");
+  const months = useMemo(() => t.raw("months") as string[], [t]);
+  const weekdays = useMemo(() => t.raw("weekdays") as string[], [t]);
+  const yearOffset = useMemo(() => Number(t("yearOffset")) || 0, [t]);
+
+  const formatLabel = useMemo(() => {
+    return (iso: string, withTime: boolean): string => {
+      if (!iso) return "";
+      const [datePart, timePart] = iso.split("T");
+      const d = dateFromIso(datePart);
+      if (!d) return "";
+      const dateStr = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + yearOffset}`;
+      if (withTime && timePart) {
+        return `${dateStr} · ${timePart.slice(0, 5)}`;
+      }
+      return dateStr;
+    };
+  }, [months, yearOffset]);
+
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -111,6 +102,7 @@ export function DatePicker({
   const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard mounted-flag pattern to defer portal rendering until client
     setMounted(true);
   }, []);
 
@@ -121,7 +113,7 @@ export function DatePicker({
     year: initial.getFullYear(),
     month: initial.getMonth(),
   });
-  // Local time state — sync to value
+  // Local time state - sync to value
   const initialTime = parseTimeFromIso(value);
   const [hour, setHour] = useState<number>(initialTime.hour);
   const [minute, setMinute] = useState<number>(initialTime.minute);
@@ -129,12 +121,14 @@ export function DatePicker({
   // Sync view + time when value changes externally
   useEffect(() => {
     const d = dateFromIso(value.split("T")[0] ?? "");
+    /* eslint-disable react-hooks/set-state-in-effect -- sync internal state with external value prop changes */
     if (d) setView({ year: d.getFullYear(), month: d.getMonth() });
     if (showTime) {
       const t = parseTimeFromIso(value);
       setHour(t.hour);
       setMinute(t.minute);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [value, showTime]);
 
   /**
@@ -178,7 +172,7 @@ export function DatePicker({
     };
   }, [open]);
 
-  // Close on outside click — must check BOTH the trigger and the
+  // Close on outside click - must check BOTH the trigger and the
   // (portal-rendered) popup, since they're in different DOM subtrees.
   useEffect(() => {
     if (!open) return;
@@ -224,7 +218,7 @@ export function DatePicker({
       >
         <Calendar className="size-4 text-muted-foreground" />
         <span className={cn("flex-1 truncate", !value && "text-muted-foreground")}>
-          {value ? formatThaiLabel(value, showTime) : placeholder ?? "เลือกวันที่"}
+          {value ? formatLabel(value, showTime) : placeholder ?? t("placeholder")}
         </span>
         {value && (
           <span
@@ -257,7 +251,7 @@ export function DatePicker({
               <ChevronLeft className="size-4" />
             </button>
             <div className="text-sm font-semibold">
-              {THAI_MONTHS[view.month]} {view.year + 543}
+              {months[view.month]} {view.year + yearOffset}
             </div>
             <button
               type="button"
@@ -270,8 +264,8 @@ export function DatePicker({
 
           {/* Weekday header */}
           <div className="mb-1 grid grid-cols-7 text-center text-[10px] font-medium uppercase text-muted-foreground">
-            {THAI_WEEKDAYS.map((w) => (
-              <div key={w} className="py-1">
+            {weekdays.map((w, i) => (
+              <div key={i} className="py-1">
                 {w}
               </div>
             ))}
@@ -311,11 +305,11 @@ export function DatePicker({
             })}
           </div>
 
-          {/* Time picker — shown only in datetime mode */}
+          {/* Time picker - shown only in datetime mode */}
           {showTime && (
             <div className="mt-2 flex items-center gap-2 border-t border-border pt-2">
               <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                เวลา
+                {t("time")}
               </span>
               <select
                 value={hour}
@@ -351,7 +345,7 @@ export function DatePicker({
                   </option>
                 ))}
               </select>
-              <span className="ml-auto text-[11px] text-muted-foreground">น. (UTC+7)</span>
+              <span className="ml-auto text-[11px] text-muted-foreground">{t("timezone")}</span>
             </div>
           )}
 
@@ -362,7 +356,7 @@ export function DatePicker({
               onClick={() => emit("")}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              ล้าง
+              {t("clear")}
             </button>
             {showTime ? (
               <button
@@ -370,7 +364,7 @@ export function DatePicker({
                 onClick={() => setOpen(false)}
                 className="text-xs text-primary hover:underline"
               >
-                ตกลง
+                {t("ok")}
               </button>
             ) : (
               <button
@@ -381,7 +375,7 @@ export function DatePicker({
                 }}
                 className="text-xs text-primary hover:underline"
               >
-                วันนี้
+                {t("today")}
               </button>
             )}
           </div>

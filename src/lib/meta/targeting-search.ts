@@ -35,7 +35,7 @@ type RawMatch = {
 
 /**
  * Like Facebook Ads Manager's "Suggestions" section — given seed interests,
- * return related ones. Powers the "ความสนใจที่เกี่ยวข้อง" row in the
+ * return related ones. Powers the "related interests" row in the
  * InterestPicker so users don't have to brainstorm every keyword.
  *
  * Meta endpoint: /search?type=adinterestsuggestion

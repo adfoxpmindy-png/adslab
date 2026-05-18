@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -7,35 +8,30 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { requireSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
+import { formatDateTime, formatNumber } from "@/lib/i18n/format";
+import type { Locale } from "@/i18n/locales";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope } from "@/lib/tenant-scope";
 
 const PAGE_SIZE = 30;
-
-const ACTION_LABEL: Record<string, string> = {
-  PAUSE: "Pause",
-  RESUME: "Resume",
-  SET_BUDGET: "แก้ Budget",
-  SET_END_DATE: "แก้ End Date",
-};
 
 const RESULT_STYLE: Record<string, string> = {
   SUCCESS: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
   FAILED: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
 };
 
-function formatValue(action: string, value: unknown): string {
+function formatValue(action: string, value: unknown, locale: Locale | string): string {
   if (!value || typeof value !== "object") return "—";
   const v = value as Record<string, unknown>;
   if (action === "SET_BUDGET") {
     const daily = v.dailyBudget as number | null;
     const lifetime = v.lifetimeBudget as number | null;
-    if (daily) return `Daily ฿${(daily / 100).toLocaleString("th-TH")}`;
-    if (lifetime) return `Lifetime ฿${(lifetime / 100).toLocaleString("th-TH")}`;
+    if (daily) return `Daily ฿${formatNumber(daily / 100, locale)}`;
+    if (lifetime) return `Lifetime ฿${formatNumber(lifetime / 100, locale)}`;
     return "—";
   }
   if (action === "SET_END_DATE") {
-    return v.endTime ? new Date(v.endTime as string).toLocaleString("th-TH") : "—";
+    return v.endTime ? formatDateTime(v.endTime as string, locale) : "—";
   }
   return JSON.stringify(v);
 }
@@ -57,6 +53,15 @@ export default async function CampaignHistoryPage({
   const session = await requireSession();
   const { tenant } = await requireTenantMember(tenantSlug);
   const scope = await getEffectiveScope(session.userId, tenant.id);
+  const t = await getTranslations("pages.campaignsHistory");
+  const locale = await getLocale();
+
+  const actionLabelMap: Record<string, string> = {
+    PAUSE: t("action.pause"),
+    RESUME: t("action.resume"),
+    SET_BUDGET: t("action.setBudget"),
+    SET_END_DATE: t("action.setEndDate"),
+  };
 
   const page = Math.max(1, Number(sp.page) || 1);
   const skip = (page - 1) * PAGE_SIZE;
@@ -140,8 +145,8 @@ export default async function CampaignHistoryPage({
   return (
     <>
       <SetPageTitle
-        title="ประวัติ Action"
-        subtitle="ทุก action ที่ทำผ่าน AdsLab — ใคร / เมื่อไหร่ / กับ campaign ไหน / before → after"
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <Link
@@ -149,13 +154,13 @@ export default async function CampaignHistoryPage({
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
-          กลับไปหน้า Campaigns
+          {t("backLink")}
         </Link>
 
         {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-card/40 px-3 py-2">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Filter
+          {t("filterLabel")}
         </span>
         <form method="GET" className="flex flex-wrap items-center gap-2">
           <select
@@ -163,9 +168,9 @@ export default async function CampaignHistoryPage({
             defaultValue={sp.action ?? "ALL"}
             className="h-8 rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="ALL">ทุก action</option>
-            <option value="PAUSE">Pause</option>
-            <option value="RESUME">Resume</option>
+            <option value="ALL">{t("action.all")}</option>
+            <option value="PAUSE">{t("action.pause")}</option>
+            <option value="RESUME">{t("action.resume")}</option>
             <option value="SET_BUDGET">SET_BUDGET</option>
             <option value="SET_END_DATE">SET_END_DATE</option>
           </select>
@@ -174,16 +179,16 @@ export default async function CampaignHistoryPage({
             defaultValue={sp.result ?? "ALL"}
             className="h-8 rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="ALL">ทุกผลลัพธ์</option>
-            <option value="SUCCESS">สำเร็จ</option>
-            <option value="FAILED">ล้มเหลว</option>
+            <option value="ALL">{t("result.all")}</option>
+            <option value="SUCCESS">{t("result.success")}</option>
+            <option value="FAILED">{t("result.failed")}</option>
           </select>
           <select
             name="userId"
             defaultValue={sp.userId ?? "ALL"}
             className="h-8 rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="ALL">ทุก user</option>
+            <option value="ALL">{t("userAll")}</option>
             {users.map((m) => (
               <option key={m.user.id} value={m.user.id}>
                 {m.user.name}
@@ -194,28 +199,28 @@ export default async function CampaignHistoryPage({
             type="submit"
             className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
           >
-            กรอง
+            {t("filterSubmit")}
           </button>
           {(sp.action || sp.result || sp.userId) && (
             <Link
               href={`/t/${tenantSlug}/campaigns/history`}
               className={cn(buttonVariants({ size: "sm", variant: "ghost" }))}
             >
-              ล้าง
+              {t("filterClear")}
             </Link>
           )}
         </form>
         <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-          {total} รายการ
+          {t("totalSuffix", { count: total })}
         </span>
       </div>
 
       {/* Log table */}
       {logs.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ยังไม่มีประวัติ action</p>
+          <p className="text-sm font-medium">{t("empty.title")}</p>
           <p className="text-xs text-muted-foreground">
-            กด Pause/Resume หรือแก้ budget ในหน้า Campaigns เพื่อสร้าง audit log แรก
+            {t("empty.body")}
           </p>
         </Card>
       ) : (
@@ -225,19 +230,19 @@ export default async function CampaignHistoryPage({
               const userName = userById.get(l.userId) ?? "—";
               const campaignName = campaignById.get(l.campaignId) ?? `(deleted: ${l.metaCampaignId})`;
               const resultStyle = RESULT_STYLE[l.result] ?? "";
-              const actionLabel = ACTION_LABEL[l.action] ?? l.action;
+              const actionLabel = actionLabelMap[l.action] ?? l.action;
               const before =
                 l.action === "PAUSE" || l.action === "RESUME"
                   ? l.beforeStatus
-                  : formatValue(l.action, l.beforeValue);
+                  : formatValue(l.action, l.beforeValue, locale);
               const after =
                 l.action === "PAUSE" || l.action === "RESUME"
                   ? l.afterStatus
-                  : formatValue(l.action, l.afterValue);
+                  : formatValue(l.action, l.afterValue, locale);
               return (
                 <div key={l.id} className="grid grid-cols-1 gap-3 px-4 py-3 sm:grid-cols-[180px_120px_1fr_auto]">
                   <div className="text-xs text-muted-foreground tabular-nums">
-                    {l.createdAt.toLocaleString("th-TH")}
+                    {formatDateTime(l.createdAt, locale)}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-medium">{actionLabel}</span>
@@ -253,8 +258,9 @@ export default async function CampaignHistoryPage({
                       <span className="font-medium">{userName}</span>: {before ?? "—"} → {after ?? "—"}
                     </p>
                     {l.errorMessage && (
-                      <p className="text-[11px] text-rose-600 dark:text-rose-300">
-                        ⚠ {l.errorMessage}
+                      <p className="flex items-center gap-1 text-[11px] text-rose-600 dark:text-rose-300">
+                        <AlertTriangle className="size-3 shrink-0" />
+                        <span>{l.errorMessage}</span>
                       </p>
                     )}
                   </div>
@@ -273,18 +279,18 @@ export default async function CampaignHistoryPage({
                 href={buildHref({ page: String(page - 1) })}
                 className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
               >
-                ก่อนหน้า
+                {t("prev")}
               </Link>
             )}
             <span className="text-xs text-muted-foreground tabular-nums">
-              หน้า {page} / {totalPages}
+              {t("pageIndicator", { page, total: totalPages })}
             </span>
             {page < totalPages && (
               <Link
                 href={buildHref({ page: String(page + 1) })}
                 className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
               >
-                ถัดไป
+                {t("next")}
               </Link>
             )}
           </div>

@@ -57,7 +57,7 @@ export function CreativeAnalysisPanel({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-medium text-muted-foreground">{tAds("panelHook")}</p>
-          <p className="font-medium leading-snug">🎯 {analysis.hook}</p>
+          <p className="font-medium leading-snug">{analysis.hook}</p>
         </div>
         {cachedLabel && (
           <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">

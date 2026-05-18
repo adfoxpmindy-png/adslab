@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 import { requireSession } from "@/lib/auth/session";
@@ -90,8 +91,9 @@ export async function POST(request: Request) {
   });
   const names = campaigns.map((c) => c.name).filter(Boolean);
   if (names.length === 0) {
+    const t = await getTranslations({ locale, namespace: "api.namingTemplates" });
     return NextResponse.json(
-      { error: "ไม่มี campaign ใน tenant นี้สำหรับวิเคราะห์" },
+      { error: t("noCampaigns") },
       { status: 400 },
     );
   }

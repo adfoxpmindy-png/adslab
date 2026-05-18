@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
 
 export function ResendButton() {
+  const t = useTranslations("pages.verifyEmail.resend");
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
 
@@ -16,15 +19,15 @@ export function ResendButton() {
       const res = await fetch("/api/auth/resend-verification", { method: "POST" });
       const data = await res.json();
       if (!res.ok) {
-        setFeedback({ kind: "error", text: data.error ?? "ส่งเมลใหม่ไม่สำเร็จ" });
+        setFeedback({ kind: "error", text: data.error ?? t("failedMsg") });
       } else {
         setFeedback({
           kind: "ok",
-          text: "ส่งเมลใหม่เรียบร้อย กรุณาตรวจสอบกล่องจดหมาย",
+          text: t("successMsg"),
         });
       }
     } catch {
-      setFeedback({ kind: "error", text: "เชื่อมต่อ server ไม่ได้" });
+      setFeedback({ kind: "error", text: t("connectionError") });
     } finally {
       setPending(false);
     }
@@ -33,7 +36,7 @@ export function ResendButton() {
   return (
     <div className="space-y-3">
       <Button onClick={handleClick} disabled={pending} variant="outline" className="w-full">
-        {pending ? "กำลังส่ง..." : "ส่งเมลยืนยันใหม่"}
+        {pending ? t("sending") : t("send")}
       </Button>
       {feedback && (
         <p

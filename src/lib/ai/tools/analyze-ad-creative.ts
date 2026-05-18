@@ -72,7 +72,7 @@ export const analyzeAdCreativeTool = defineTool({
     required: ["adId"],
     additionalProperties: false,
   },
-  summarize: (input) => `วิเคราะห์ creative ad ${input.adId}`,
+  summarize: (input) => `Analyze creative for ad ${input.adId}`,
   async handler(input, ctx) {
     // 1. Cache check — look up the ad row in our DB.
     const adRow = await prisma.metaAd.findUnique({
@@ -112,8 +112,8 @@ export const analyzeAdCreativeTool = defineTool({
       return {
         error: "quota_exceeded",
         limit: DAILY_QUOTA,
-        resetsAt: "00:00 UTC พรุ่งนี้",
-        message: "Tenant ใช้ vision call ครบ quota วันนี้แล้ว — ให้ AI วิเคราะห์จาก metrics + คำถามผู้ใช้แทน",
+        resetsAt: "00:00 UTC next day",
+        message: "Tenant has used the daily vision-call quota — fall back to analyzing metrics and user prompt instead",
       };
     }
 
@@ -155,7 +155,7 @@ export const analyzeAdCreativeTool = defineTool({
     if (!imageUrl) {
       return {
         error: "no_visual_asset",
-        message: "ad นี้ไม่มี image_url / thumbnail_url / video thumbnail",
+        message: "This ad has no image_url, thumbnail_url, or video thumbnail",
       };
     }
 

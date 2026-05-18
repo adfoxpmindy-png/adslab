@@ -11,6 +11,9 @@
  *   - https://facebook.com/{page_id_or_handle}/videos/{video_id}
  *   - https://fb.watch/{shortcode}/                    (must follow redirect)
  */
+import { getTranslations } from "next-intl/server";
+
+import type { Locale } from "@/i18n/locales";
 import { graphFetch } from "./graph-api";
 
 export type ResolvedFbUrl = {
@@ -51,8 +54,12 @@ function normalize(url: string): string {
   }
 }
 
+type UrlResolverT = Awaited<
+  ReturnType<typeof getTranslations<"meta.urlResolver">>
+>;
+
 /** Follow HTTP redirects until we land on a canonical FB URL. */
-async function followRedirect(url: string): Promise<string> {
+async function followRedirect(url: string, t: UrlResolverT): Promise<string> {
   // Some FB share endpoints serve HTML with a meta-refresh OR JS-redirect;
   // most simple ones do a 302. Try fetch with redirect:"manual" to read
   // Location header; if none, fall back to redirect:"follow" + read URL.
@@ -60,7 +67,7 @@ async function followRedirect(url: string): Promise<string> {
     const res = await fetch(url, { redirect: "follow" });
     return res.url || url;
   } catch (err) {
-    throw new Error(`ตามลิงก์ไม่ได้: ${(err as Error).message}`);
+    throw new Error(t("redirectFailed", { message: (err as Error).message }));
   }
 }
 
@@ -88,14 +95,20 @@ type RawNode = {
 export async function resolveFbUrl(args: {
   url: string;
   accessToken: string;
+  locale: Locale;
 }): Promise<ResolvedFbUrl> {
+  const t = await getTranslations({
+    locale: args.locale,
+    namespace: "meta.urlResolver",
+  });
+
   const original = args.url.trim();
-  if (!original) throw new Error("ลิงก์ว่างเปล่า");
+  if (!original) throw new Error(t("emptyUrl"));
 
   // Step 1: if it's a share/watch link, follow redirect first.
   let canonical = normalize(original);
   if (SHARE_RE.test(canonical) || FB_WATCH_RE.test(canonical)) {
-    canonical = normalize(await followRedirect(original));
+    canonical = normalize(await followRedirect(original, t));
   }
 
   // Step 2: extract a content id from the canonical URL.
@@ -115,7 +128,7 @@ export async function resolveFbUrl(args: {
     assumedType = "video";
   }
   if (!rawContentId) {
-    throw new Error(`รูปแบบ URL ไม่รองรับ: ${canonical}`);
+    throw new Error(t("unsupportedUrl", { url: canonical }));
   }
 
   // Step 3: query Meta for owner + permalink.
@@ -130,10 +143,10 @@ export async function resolveFbUrl(args: {
     });
   } catch (err) {
     const msg = (err as Error).message;
-    throw new Error(`Meta ไม่รู้จัก content นี้ (${rawContentId}): ${msg}`);
+    throw new Error(t("metaUnknown", { id: rawContentId, message: msg }));
   }
   if (!node.from?.id) {
-    throw new Error(`ไม่พบ Page เจ้าของ post นี้ — อาจเป็น user post ที่ boost ไม่ได้`);
+    throw new Error(t("noOwnerPage"));
   }
 
   const pageId = node.from.id;
@@ -142,8 +155,8 @@ export async function resolveFbUrl(args: {
   // Step 4: build canonical boostable post id.
   // CRITICAL: For Reels, the number in the URL is the video_id, NOT the
   // post_id Meta expects in object_story_id. Sending pageId_videoId
-  // triggers Meta's "ไม่สามารถโปรโมทโพสต์นี้ได้" (error_subcode 2446187)
-  // — verified across 6+ E2E runs. Real post_id must be resolved via
+  // triggers Meta error_subcode 2446187 (cannot promote post) — verified
+  // across 6+ E2E runs. Real post_id must be resolved via
   // /PAGE_ID/video_reels?fields=id,post_id which Meta only exposes with
   // a Page-level access token, not the user token.
   let postId: string;
@@ -157,7 +170,7 @@ export async function resolveFbUrl(args: {
     });
     if (!realPostId) {
       throw new Error(
-        `หา post_id ของ reel ${rawContentId} ไม่เจอ — อาจ reel ใหม่เกินไป หรือคุณไม่ใช่ admin ของ Page ${pageName}`,
+        t("reelPostIdNotFound", { videoId: rawContentId, pageName }),
       );
     }
     postId = `${pageId}_${realPostId}`;
@@ -240,9 +253,12 @@ async function resolveReelPostId(args: {
 export async function resolveAllUrls(args: {
   urls: string[];
   accessToken: string;
+  locale: Locale;
 }): Promise<{ resolved: ResolvedFbUrl[]; errors: ResolveError[] }> {
   const settled = await Promise.allSettled(
-    args.urls.map((url) => resolveFbUrl({ url, accessToken: args.accessToken })),
+    args.urls.map((url) =>
+      resolveFbUrl({ url, accessToken: args.accessToken, locale: args.locale }),
+    ),
   );
   const resolved: ResolvedFbUrl[] = [];
   const errors: ResolveError[] = [];

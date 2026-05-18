@@ -1,9 +1,17 @@
+import { getTranslations } from "next-intl/server";
+
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/i18n/locales";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { getFreshAccessToken } from "./client";
 import { graphFetch } from "./graph-api";
 import { getPageAccessToken } from "./pages";
 import { invalidateDashboardCache } from "./dashboard-service";
 import { thbToMinorUnits } from "./campaign-actions";
+
+type CampaignCreateT = Awaited<
+  ReturnType<typeof getTranslations<"meta.campaignCreate">>
+>;
 
 /**
  * Create a Campaign → Ad Set → Ad tree in Meta from a wizard payload,
@@ -23,6 +31,12 @@ import { thbToMinorUnits } from "./campaign-actions";
 export type CreateInput = {
   tenantId: string;
   userId: string;
+  /**
+   * Optional locale override. When omitted, falls back to
+   * `resolveUserLocale(userId)` so error messages return in the
+   * caller's preferred language.
+   */
+  locale?: Locale;
 
   // Campaign-level
   metaAccountId: string; // "act_xxx"
@@ -139,15 +153,26 @@ export type CreateResult =
 const MIN_BUDGET_THB = 20;
 const MAX_BUDGET_THB = 1_000_000;
 
-function validateBudget(thb: number | undefined, name: string): string | null {
+function validateBudget(
+  thb: number | undefined,
+  name: string,
+  t: CampaignCreateT,
+): string | null {
   if (thb === undefined) return null;
-  if (!Number.isFinite(thb)) return `${name} ต้องเป็นตัวเลข`;
-  if (thb < MIN_BUDGET_THB) return `${name} ต่ำกว่าขั้นต่ำ ฿${MIN_BUDGET_THB}`;
-  if (thb > MAX_BUDGET_THB) return `${name} เกินเพดาน ฿${MAX_BUDGET_THB.toLocaleString()}`;
+  if (!Number.isFinite(thb)) return t("budgetNotNumber", { name });
+  if (thb < MIN_BUDGET_THB) return t("budgetBelowMin", { name, min: MIN_BUDGET_THB });
+  if (thb > MAX_BUDGET_THB)
+    return t("budgetAboveMax", { name, max: MAX_BUDGET_THB.toLocaleString() });
   return null;
 }
 
 export async function createCampaignTree(input: CreateInput): Promise<CreateResult> {
+  const locale = input.locale ?? (await resolveUserLocale(input.userId));
+  const t = await getTranslations({
+    locale,
+    namespace: "meta.campaignCreate",
+  });
+
   // ---- 0. Pre-flight validation ----
   for (const [thb, label] of [
     [input.campaignDailyBudget, "Campaign daily budget"],
@@ -155,16 +180,16 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
     [input.adSetDailyBudget, "Ad set daily budget"],
     [input.adSetLifetimeBudget, "Ad set lifetime budget"],
   ] as const) {
-    const err = validateBudget(thb, label);
+    const err = validateBudget(thb, label, t);
     if (err) return logFailureNoMeta(input, "campaign", err);
   }
 
   if (input.budgetMode === "CBO") {
     const has = input.campaignDailyBudget !== undefined || input.campaignLifetimeBudget !== undefined;
-    if (!has) return logFailureNoMeta(input, "campaign", "CBO ต้องระบุ budget ระดับ campaign");
+    if (!has) return logFailureNoMeta(input, "campaign", t("cboBudgetRequired"));
   } else {
     const has = input.adSetDailyBudget !== undefined || input.adSetLifetimeBudget !== undefined;
-    if (!has) return logFailureNoMeta(input, "campaign", "ABO ต้องระบุ budget ระดับ ad set");
+    if (!has) return logFailureNoMeta(input, "campaign", t("aboBudgetRequired"));
   }
 
   // ---- 1. Verify Meta connection + ownership of ad account ----
@@ -182,16 +207,20 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
       lastSyncedAt: true,
     },
   });
-  if (!connection) return logFailureNoMeta(input, "campaign", "ไม่พบ Meta connection");
+  if (!connection) return logFailureNoMeta(input, "campaign", t("connectionNotFound"));
   if (connection.status !== "ACTIVE")
-    return logFailureNoMeta(input, "campaign", `Connection ${connection.status} — เชื่อมใหม่ก่อน`);
+    return logFailureNoMeta(
+      input,
+      "campaign",
+      t("connectionInactive", { status: connection.status }),
+    );
 
   const ownsAccount = await prisma.metaAdAccount.findFirst({
     where: { metaConnectionId: connection.id, metaAccountId: input.metaAccountId },
     select: { id: true },
   });
   if (!ownsAccount)
-    return logFailureNoMeta(input, "campaign", "Ad account นี้ไม่อยู่ใน Meta connection ของ tenant");
+    return logFailureNoMeta(input, "campaign", t("adAccountNotInTenant"));
 
   const accessToken = await getFreshAccessToken(connection);
 
@@ -265,8 +294,8 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
   if (promoted) adSetBody.promoted_object = promoted;
 
   // destination_type is REQUIRED for most ODAX objective + optimization
-  // pairs. Without it, Meta rejects with "performance goal ไม่เข้ากับ
-  // objective" because it can't infer where to send the user.
+  // pairs. Without it, Meta rejects with a "performance goal does not
+  // match objective" error because it can't infer where to send the user.
   const destinationType = buildDestinationType(input.objective, input.optimizationGoal);
   if (destinationType) adSetBody.destination_type = destinationType;
   if (input.budgetMode === "ABO") {
@@ -310,7 +339,7 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
         return await logFailure(
           input,
           "creative",
-          `แปลง pfbid post id ไม่สำเร็จ: ${(err as Error).message}`,
+          t("pfbidResolveFailed", { message: (err as Error).message }),
           { campaignMetaId, adSetMetaId },
         );
       }
@@ -339,7 +368,7 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
       return logFailure(
         input,
         "creative",
-        `ดึง thumbnail ของ reel ไม่สำเร็จ: ${(err as Error).message}`,
+        t("reelThumbnailFailed", { message: (err as Error).message }),
         { campaignMetaId, adSetMetaId },
         accessToken,
       );
@@ -348,7 +377,7 @@ export async function createCampaignTree(input: CreateInput): Promise<CreateResu
       return logFailure(
         input,
         "creative",
-        "reel ไม่มี thumbnail",
+        t("reelNoThumbnail"),
         { campaignMetaId, adSetMetaId },
         accessToken,
       );

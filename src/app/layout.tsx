@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, IBM_Plex_Sans_Thai } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -19,22 +19,25 @@ const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "AdsLab",
-  description: "ยิงแอดให้เร็ว แม่น scale ได้ — Thai-first SaaS สำหรับ media buyer",
-  icons: {
-    icon: [
-      { url: "/adslab-logo.png", type: "image/png" },
-    ],
-    apple: "/adslab-logo.png",
-  },
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("rootMetadata");
+  return {
     title: "AdsLab",
-    description: "ยิงแอดให้เร็ว แม่น scale ได้",
-    images: ["/adslab-logo.png"],
-    type: "website",
-  },
-};
+    description: t("description"),
+    icons: {
+      icon: [
+        { url: "/adslab-logo.png", type: "image/png" },
+      ],
+      apple: "/adslab-logo.png",
+    },
+    openGraph: {
+      title: "AdsLab",
+      description: t("ogDescription"),
+      images: ["/adslab-logo.png"],
+      type: "website",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

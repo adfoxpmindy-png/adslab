@@ -93,7 +93,7 @@ async function notifyEmail(
 function renderEmailBody(ctx: ActionContext): string {
   return `
     <div style="font-family: -apple-system, sans-serif; max-width: 600px; padding: 20px;">
-      <h2 style="color: #6d28d9; margin: 0 0 12px;">⚡ AdsLab Rule Triggered</h2>
+      <h2 style="color: #6d28d9; margin: 0 0 12px;">AdsLab Rule Triggered</h2>
       <p style="font-size: 14px; color: #555;">
         Rule <strong>${escapeHtml(ctx.ruleName)}</strong> matched and would have
         fired its notify action.

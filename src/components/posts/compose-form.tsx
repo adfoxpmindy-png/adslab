@@ -2,13 +2,13 @@
 
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, X, Calendar, Loader2 } from "lucide-react";
+import { Upload, X, Calendar, Loader2, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +58,7 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
   if (pages.length === 0) {
     return (
       <Card className="border-dashed p-6 text-center text-sm text-muted-foreground">
-        ยังไม่มีเพจที่จัดการได้ — sync ใหม่ในหน้า Settings → Page Management
+        {t("noPagesEmpty")}
       </Card>
     );
   }
@@ -169,8 +169,8 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
           {media.map((m, idx) => (
             <div key={idx} className="group relative">
               {m.isVideo ? (
-                <div className="flex aspect-square items-center justify-center rounded-md bg-muted text-2xl">
-                  🎬
+                <div className="flex aspect-square items-center justify-center rounded-md bg-muted text-muted-foreground">
+                  <Video className="size-6" />
                 </div>
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -229,15 +229,14 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="scheduled-at" className="flex items-center gap-1.5">
+        <Label className="flex items-center gap-1.5">
           <Calendar className="size-3.5" />
           {t("scheduleLabel")}
         </Label>
-        <Input
-          id="scheduled-at"
-          type="datetime-local"
+        <DatePicker
           value={scheduledAtLocal}
-          onChange={(e) => setScheduledAtLocal(e.target.value)}
+          onChange={(next) => setScheduledAtLocal(next)}
+          showTime
         />
         <p className="text-[11px] text-muted-foreground">{t("scheduleHint")}</p>
       </div>

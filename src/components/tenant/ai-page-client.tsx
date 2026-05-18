@@ -8,6 +8,7 @@ import {
   Send,
   Sparkles,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-import { MessageBubble, SAMPLE_PROMPTS, type Message } from "./ai-chat";
+import { MessageBubble, useSamplePrompts, type Message } from "./ai-chat";
 
 /**
  * Full-page AI experience: conversation list on the left, full-width
@@ -44,6 +45,7 @@ export function AIPageClient({
   initialConversationId: string | null;
   initialPrompt?: string | null;
 }) {
+  const t = useTranslations("pages.ai");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(initialConversationId);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -70,7 +72,7 @@ export function AIPageClient({
           const id = await createConversation();
           if (id && !cancelled) {
             setActiveId(id);
-            setConversations([{ id, title: "New conversation", updatedAt: new Date().toISOString() }]);
+            setConversations([{ id, title: t("newDefaultTitle"), updatedAt: new Date().toISOString() }]);
           }
         }
       }
@@ -84,6 +86,7 @@ export function AIPageClient({
   // Load messages when active conversation changes
   useEffect(() => {
     if (!activeId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset messages when no active conversation is selected
       setMessages([]);
       return;
     }
@@ -117,6 +120,7 @@ export function AIPageClient({
   // Used by "Diagnose with AI" deep-links from /campaigns and /reports.
   useEffect(() => {
     if (!prefillConsumed && initialPrompt && activeId && !sending && !loadingThread) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot guard to prevent re-firing prefill prompt
       setPrefillConsumed(true);
       // Small delay lets the input render with the prefill before we fire send,
       // so the user sees their question appear before AI responds.
@@ -155,13 +159,13 @@ export function AIPageClient({
   async function startNew() {
     const id = await createConversation();
     if (!id) {
-      toast.error("สร้าง conversation ใหม่ไม่ได้");
+      toast.error(t("toast.createFailed"));
       return;
     }
     setActiveId(id);
     setMessages([]);
     setConversations((prev) => [
-      { id, title: "New conversation", updatedAt: new Date().toISOString() },
+      { id, title: t("newDefaultTitle"), updatedAt: new Date().toISOString() },
       ...prev,
     ]);
   }
@@ -193,13 +197,13 @@ export function AIPageClient({
         },
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ส่งไม่สำเร็จ");
+      if (!res.ok) throw new Error(data.error ?? t("toast.sendFailed"));
       await reloadThread();
       // Refresh list ordering (touched timestamp)
       const list = await fetchList();
       setConversations(list);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ส่งไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : t("toast.sendFailed"));
     } finally {
       setSending(false);
     }
@@ -250,7 +254,7 @@ export function AIPageClient({
             className="w-full gap-1.5"
           >
             <MessageSquarePlus className="size-3.5" />
-            New conversation
+            {t("newConversation")}
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-1">
@@ -260,7 +264,7 @@ export function AIPageClient({
             </div>
           ) : conversations.length === 0 ? (
             <p className="px-3 py-6 text-center text-xs text-muted-foreground">
-              ยังไม่มี conversation
+              {t("noConversations")}
             </p>
           ) : (
             <ul className="space-y-0.5">
@@ -268,26 +272,11 @@ export function AIPageClient({
                 const active = c.id === activeId;
                 return (
                   <li key={c.id}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveId(c.id)}
-                      className={cn(
-                        "w-full rounded-md px-2.5 py-2 text-left text-xs transition-colors",
-                        active
-                          ? "bg-primary/10 text-foreground"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      )}
-                    >
-                      <p className="line-clamp-1 font-medium">
-                        {c.title || "Untitled"}
-                      </p>
-                      <p className="mt-0.5 text-[10px] text-muted-foreground">
-                        {c._count?.messages
-                          ? `${c._count.messages} messages · `
-                          : ""}
-                        {formatRelative(c.updatedAt)}
-                      </p>
-                    </button>
+                    <ConversationItem
+                      conversation={c}
+                      active={active}
+                      onSelect={() => setActiveId(c.id)}
+                    />
                   </li>
                 );
               })}
@@ -306,7 +295,7 @@ export function AIPageClient({
           {!activeId || loadingThread ? (
             <div className="flex items-center justify-center gap-2 py-10">
               <Loader2 className="size-4 animate-spin text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+              <span className="text-sm text-muted-foreground">{t("loadingThread")}</span>
             </div>
           ) : messages.length === 0 ? (
             <EmptyChat onPick={(p) => setInput(p)} />
@@ -324,7 +313,7 @@ export function AIPageClient({
           {sending && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="size-3 animate-spin" />
-              AI กำลังคิด...
+              {t("thinking")}
             </div>
           )}
         </div>
@@ -341,7 +330,7 @@ export function AIPageClient({
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="พิมพ์คำถามหรือสั่งงาน — เช่น 'ROAS ของ campaign ไหนต่ำสุดในสัปดาห์นี้'"
+              placeholder={t("inputPlaceholder")}
               disabled={sending || !activeId}
               className="flex-1"
             />
@@ -358,8 +347,7 @@ export function AIPageClient({
             </Button>
           </form>
           <p className="mt-1.5 text-[11px] text-muted-foreground">
-            AI ใช้ tools (listCampaigns, getCampaignInsights, searchKnowledge,
-            pause/resume/setBudget) ค้นข้อมูลจริงและสั่งงาน
+            {t("toolsHint")}
           </p>
         </div>
       </Card>
@@ -367,23 +355,74 @@ export function AIPageClient({
   );
 }
 
+function ConversationItem({
+  conversation,
+  active,
+  onSelect,
+}: {
+  conversation: Conversation;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const t = useTranslations("pages.ai");
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "w-full rounded-md px-2.5 py-2 text-left text-xs transition-colors",
+        active
+          ? "bg-primary/10 text-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+      )}
+    >
+      <p className="line-clamp-1 font-medium">
+        {conversation.title || t("untitled")}
+      </p>
+      <p className="mt-0.5 text-[10px] text-muted-foreground">
+        {conversation._count?.messages
+          ? `${t("messagesCount", { count: conversation._count.messages })} · `
+          : ""}
+        <RelativeTime iso={conversation.updatedAt} />
+      </p>
+    </button>
+  );
+}
+
+function RelativeTime({ iso }: { iso: string }) {
+  const t = useTranslations("pages.ai.relative");
+  const then = new Date(iso).getTime();
+  if (!Number.isFinite(then)) return <>{t("unknown")}</>;
+  // eslint-disable-next-line react-hooks/purity -- relative time display intentionally depends on Date.now(); component re-renders on parent updates
+  const diffMs = Date.now() - then;
+  const min = Math.floor(diffMs / 60_000);
+  if (min < 1) return <>{t("justNow")}</>;
+  if (min < 60) return <>{t("minutes", { value: min })}</>;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return <>{t("hours", { value: hr })}</>;
+  const days = Math.floor(hr / 24);
+  return <>{t("days", { value: days })}</>;
+}
+
 function EmptyChat({ onPick }: { onPick: (prompt: string) => void }) {
+  const t = useTranslations("pages.ai.empty");
+  const samplePrompts = useSamplePrompts();
   return (
     <div className="flex flex-col items-center gap-3 py-12 text-center">
       <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
         <Bot className="size-6 text-primary" />
       </div>
       <div>
-        <p className="text-sm font-semibold">AI Master พร้อมรับคำสั่ง</p>
+        <p className="text-sm font-semibold">{t("headline")}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          คุยภาษาคนได้ — สั่งหยุด/เปิด/แก้ budget หรือถามข้อมูลจาก campaign จริง
+          {t("subtitle")}
         </p>
       </div>
       <div className="flex flex-col gap-1.5 pt-2">
         <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-          ลองถาม
+          {t("tryAsking")}
         </p>
-        {SAMPLE_PROMPTS.map((p) => (
+        {samplePrompts.map((p) => (
           <button
             key={p}
             type="button"
@@ -397,17 +436,4 @@ function EmptyChat({ onPick }: { onPick: (prompt: string) => void }) {
       </div>
     </div>
   );
-}
-
-function formatRelative(iso: string): string {
-  const then = new Date(iso).getTime();
-  if (!Number.isFinite(then)) return "—";
-  const diffMs = Date.now() - then;
-  const min = Math.floor(diffMs / 60_000);
-  if (min < 1) return "เพิ่งใช้";
-  if (min < 60) return `${min}m ที่แล้ว`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ที่แล้ว`;
-  const days = Math.floor(hr / 24);
-  return `${days}d ที่แล้ว`;
 }

@@ -9,7 +9,11 @@
  *
  * Tenant ownership is verified through ad-set → campaign → connection.
  */
+import { getTranslations } from "next-intl/server";
+
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/i18n/locales";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import { getFreshAccessToken } from "./client";
 import { graphFetch } from "./graph-api";
 import { invalidateDashboardCache } from "./dashboard-service";
@@ -35,6 +39,12 @@ export type PerformAdSetActionInput = {
   /** Either internal MetaAdSet.id OR the Meta digit id — caller can pass either; we resolve. */
   adSetId: string;
   action: AdSetActionInput;
+  /**
+   * Optional locale override. When omitted, the user's stored
+   * preferred locale (via `resolveUserLocale(userId)`) is used so
+   * error messages return in the caller's language.
+   */
+  locale?: Locale;
 };
 
 export type PerformAdSetActionResult =
@@ -52,6 +62,9 @@ export type PerformAdSetActionResult =
 export async function performAdSetAction(
   input: PerformAdSetActionInput,
 ): Promise<PerformAdSetActionResult> {
+  const locale = input.locale ?? (await resolveUserLocale(input.userId));
+  const t = await getTranslations({ locale, namespace: "meta.adsetActions" });
+
   // 1. Resolve ad set + verify tenant ownership through the parent chain.
   const adset = await prisma.metaAdSet.findFirst({
     where: {
@@ -74,7 +87,7 @@ export async function performAdSetAction(
     },
   });
   if (!adset) {
-    return { ok: false, error: `Ad set ${input.adSetId} ไม่พบใน tenant นี้` };
+    return { ok: false, error: t("adSetNotFound", { id: input.adSetId }) };
   }
 
   // 2. Validate + build the Meta body.
@@ -93,37 +106,25 @@ export async function performAdSetAction(
     const isDaily = a.dailyBudget !== undefined;
     const isLifetime = a.lifetimeBudget !== undefined;
     if (isDaily === isLifetime) {
-      return {
-        ok: false,
-        error: "ต้องระบุอย่างใดอย่างหนึ่ง: dailyBudget หรือ lifetimeBudget",
-      };
+      return { ok: false, error: t("budgetEitherOr") };
     }
     if (adset.dailyBudget === null && adset.lifetimeBudget === null) {
-      return {
-        ok: false,
-        error: "Ad set นี้ไม่มี budget ของตัวเอง — แก้ที่ campaign แทน (CBO)",
-      };
+      return { ok: false, error: t("noOwnBudget") };
     }
     if (isDaily && adset.dailyBudget === null) {
-      return {
-        ok: false,
-        error: "Ad set นี้ใช้ lifetime budget อยู่ — แก้แบบ lifetime แทน",
-      };
+      return { ok: false, error: t("useLifetimeInstead") };
     }
     if (isLifetime && adset.lifetimeBudget === null) {
-      return {
-        ok: false,
-        error: "Ad set นี้ใช้ daily budget อยู่ — แก้แบบ daily แทน",
-      };
+      return { ok: false, error: t("useDailyInstead") };
     }
     const thb = (isDaily ? a.dailyBudget : a.lifetimeBudget) as number;
     if (thb < MIN_BUDGET_THB) {
-      return { ok: false, error: `Budget ต่ำกว่าขั้นต่ำ ฿${MIN_BUDGET_THB}` };
+      return { ok: false, error: t("budgetBelowMin", { min: MIN_BUDGET_THB }) };
     }
     if (thb > MAX_BUDGET_THB) {
       return {
         ok: false,
-        error: `Budget เกินเพดาน ฿${MAX_BUDGET_THB.toLocaleString()} — ตรวจสอบว่าใส่ตัวเลขถูกหรือไม่`,
+        error: t("budgetAboveMax", { max: MAX_BUDGET_THB.toLocaleString() }),
       };
     }
     const minor = thbToMinorUnits(thb);

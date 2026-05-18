@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { ExternalLink, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { formatNumber } from "@/lib/i18n/format";
 import type { JourneyNode } from "@/lib/journey/types";
 
 export function JourneyDetailDrawer({
@@ -51,6 +53,7 @@ function PostDetail({
   tenantSlug: string;
   node: Extract<JourneyNode, { kind: "post" }>;
 }) {
+  const t = useTranslations("common.journey");
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-2 text-sm">
@@ -70,7 +73,7 @@ function PostDetail({
           href={`/t/${tenantSlug}/campaigns?highlight=${node.campaignIds[0] ?? ""}`}
           className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
         >
-          เปิดใน Campaigns
+          {t("openInCampaigns")}
           <ExternalLink className="size-3" />
         </Link>
       </div>
@@ -129,11 +132,13 @@ function CampaignDetail({
   node: Extract<JourneyNode, { kind: "campaign" }>;
   tenantSlug: string;
 }) {
+  const t = useTranslations("common.journey");
+  const locale = useLocale();
   return (
     <div className="space-y-3">
       <Stat
         label="Spend"
-        value={`฿${Intl.NumberFormat("th-TH").format(Math.round(node.spend))}`}
+        value={`฿${formatNumber(Math.round(node.spend), locale)}`}
       />
       <div className="text-sm">
         <p className="text-muted-foreground">Objective</p>
@@ -143,7 +148,7 @@ function CampaignDetail({
         href={`/t/${tenantSlug}/campaigns?highlight=${node.metaCampaignId}`}
         className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
       >
-        เปิดใน Campaigns
+        {t("openInCampaigns")}
         <ExternalLink className="size-3" />
       </Link>
     </div>

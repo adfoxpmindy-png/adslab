@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   CalendarClock,
   Check,
   ChevronDown,
@@ -14,6 +15,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -65,37 +67,19 @@ const ACTION_ICON: Record<Suggestion["action"], React.ComponentType<{ className?
   DUPLICATE: Copy,
 };
 
-const ACTION_LABEL: Record<Suggestion["action"], string> = {
-  PAUSE: "หยุด",
-  RESUME: "เปิด",
-  SET_BUDGET: "ปรับ budget",
-  SET_END_DATE: "ตั้ง end date",
-  DUPLICATE: "Duplicate",
+const ACTION_LABEL_KEY: Record<Suggestion["action"], string> = {
+  PAUSE: "actionPause",
+  RESUME: "actionResume",
+  SET_BUDGET: "actionSetBudget",
+  SET_END_DATE: "actionSetEndDate",
+  DUPLICATE: "actionDuplicate",
 };
 
-function describeParams(s: Suggestion): string {
-  if (s.action === "SET_BUDGET") {
-    if (s.params?.dailyBudget !== undefined) {
-      return `เป็น ฿${s.params.dailyBudget.toLocaleString("th-TH")}/day`;
-    }
-    if (s.params?.lifetimeBudget !== undefined) {
-      return `เป็น ฿${s.params.lifetimeBudget.toLocaleString("th-TH")} lifetime`;
-    }
-  }
-  if (s.action === "SET_END_DATE" && s.params?.endTime) {
-    return `เป็น ${new Date(s.params.endTime).toLocaleString("th-TH")}`;
-  }
-  if (s.action === "DUPLICATE") {
-    const bits: string[] = [];
-    if (s.params?.dailyBudgetMultiplier) bits.push(`×${s.params.dailyBudgetMultiplier} budget`);
-    if (s.params?.lifetimeBudgetMultiplier) bits.push(`×${s.params.lifetimeBudgetMultiplier} lifetime budget`);
-    if (s.params?.dailyBudget) bits.push(`฿${s.params.dailyBudget}/day`);
-    if (s.params?.lifetimeBudget) bits.push(`฿${s.params.lifetimeBudget} lifetime`);
-    if (s.params?.initialStatus === "ACTIVE") bits.push("ACTIVE ทันที");
-    return bits.length > 0 ? `(${bits.join(", ")})` : "";
-  }
-  return "";
-}
+const LOCALE_MAP: Record<string, string> = {
+  th: "th-TH",
+  en: "en-US",
+  lo: "lo-LA",
+};
 
 export function ReportActionsPanel({
   tenantSlug,
@@ -103,6 +87,9 @@ export function ReportActionsPanel({
   suggestions: initial,
   canApply,
 }: Props) {
+  const t = useTranslations("pages.reports.actionsPanel");
+  const locale = useLocale();
+  const intlLocale = LOCALE_MAP[locale] ?? "en-US";
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [suggestions, setSuggestions] = useState<Suggestion[]>(initial);
@@ -113,10 +100,34 @@ export function ReportActionsPanel({
   const applied = suggestions.filter((s) => s.status === "applied");
   const dismissed = suggestions.filter((s) => s.status === "dismissed");
 
+  function describeParams(s: Suggestion): string {
+    if (s.action === "SET_BUDGET") {
+      if (s.params?.dailyBudget !== undefined) {
+        return t("paramSetBudgetDaily", { amount: s.params.dailyBudget.toLocaleString(intlLocale) });
+      }
+      if (s.params?.lifetimeBudget !== undefined) {
+        return t("paramSetBudgetLifetime", { amount: s.params.lifetimeBudget.toLocaleString(intlLocale) });
+      }
+    }
+    if (s.action === "SET_END_DATE" && s.params?.endTime) {
+      return t("paramSetEndDate", { when: new Date(s.params.endTime).toLocaleString(intlLocale) });
+    }
+    if (s.action === "DUPLICATE") {
+      const bits: string[] = [];
+      if (s.params?.dailyBudgetMultiplier) bits.push(t("paramDailyBudgetMultiplier", { value: s.params.dailyBudgetMultiplier }));
+      if (s.params?.lifetimeBudgetMultiplier) bits.push(t("paramLifetimeBudgetMultiplier", { value: s.params.lifetimeBudgetMultiplier }));
+      if (s.params?.dailyBudget) bits.push(`฿${s.params.dailyBudget}/day`);
+      if (s.params?.lifetimeBudget) bits.push(`฿${s.params.lifetimeBudget} lifetime`);
+      if (s.params?.initialStatus === "ACTIVE") bits.push(t("paramActiveImmediately"));
+      return bits.length > 0 ? `(${bits.join(", ")})` : "";
+    }
+    return "";
+  }
+
   async function callApi(suggestionId: string, decision: "apply" | "dismiss") {
     if (busy.has(suggestionId)) return;
     setBusy((prev) => new Set(prev).add(suggestionId));
-    const toastId = toast.loading(decision === "apply" ? "กำลังทำ..." : "กำลังข้าม...");
+    const toastId = toast.loading(decision === "apply" ? t("doing") : t("skipping"));
     try {
       const res = await fetch(`/api/reports/suggestion?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -131,18 +142,18 @@ export function ReportActionsPanel({
             prev.map((s) => (s.id === suggestionId ? (data.suggestion as Suggestion) : s)),
           );
         }
-        throw new Error(typeof data.error === "string" ? data.error : "ไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : t("failed"));
       }
       setSuggestions((prev) =>
         prev.map((s) => (s.id === suggestionId ? (data.suggestion as Suggestion) : s)),
       );
-      toast.success(decision === "apply" ? "✓ ทำแล้ว" : "✓ ข้ามแล้ว", {
+      toast.success(decision === "apply" ? t("done") : t("skipped"), {
         id: toastId,
         duration: 2500,
       });
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : t("failed"), {
         id: toastId,
         duration: 5000,
       });
@@ -156,7 +167,7 @@ export function ReportActionsPanel({
   }
 
   async function applyOne(s: Suggestion) {
-    if (!confirm(`${ACTION_LABEL[s.action]} campaign "${s.campaignName}"?`)) return;
+    if (!confirm(t("confirmAction", { action: t(ACTION_LABEL_KEY[s.action] as Parameters<typeof t>[0]), name: s.campaignName }))) return;
     await callApi(s.id, "apply");
   }
 
@@ -169,9 +180,9 @@ export function ReportActionsPanel({
       >
         <Sparkles className="size-4 text-primary" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold">AI แนะนำให้ทำ</p>
+          <p className="text-sm font-semibold">{t("title")}</p>
           <p className="text-xs text-muted-foreground">
-            {pending.length} รอ · {applied.length} ทำแล้ว · {dismissed.length} ข้าม
+            {t("stats", { pending: pending.length, applied: applied.length, dismissed: dismissed.length })}
           </p>
         </div>
         {collapsed ? <ChevronDown className="size-4" /> : <ChevronUp className="size-4" />}
@@ -197,16 +208,16 @@ export function ReportActionsPanel({
                 <div className="flex flex-wrap items-center gap-2">
                   <Icon className="size-4 text-primary" />
                   <span className="text-xs font-medium uppercase tracking-wide">
-                    {ACTION_LABEL[s.action]}
+                    {t(ACTION_LABEL_KEY[s.action] as Parameters<typeof t>[0])}
                   </span>
                   {isApplied && (
                     <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] uppercase text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                      ทำแล้ว
+                      {t("applied")}
                     </span>
                   )}
                   {isDismissed && (
                     <span className="rounded-md bg-zinc-200 px-1.5 py-0.5 text-[10px] uppercase text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                      ข้าม
+                      {t("dismissed")}
                     </span>
                   )}
                   {s.outcomeBadge && <OutcomeBadgeView badge={s.outcomeBadge} />}
@@ -222,8 +233,9 @@ export function ReportActionsPanel({
                   </p>
                   <p className="text-xs text-muted-foreground">{s.reason}</p>
                   {s.errorMessage && (
-                    <p className="mt-0.5 text-xs text-rose-600 dark:text-rose-300">
-                      ⚠ {s.errorMessage}
+                    <p className="mt-0.5 flex items-center gap-1 text-xs text-rose-600 dark:text-rose-300">
+                      <AlertTriangle className="size-3 shrink-0" />
+                      <span>{s.errorMessage}</span>
                     </p>
                   )}
                 </div>
@@ -232,7 +244,7 @@ export function ReportActionsPanel({
                   <div className="flex gap-1">
                     <Button size="sm" disabled={isBusy} onClick={() => applyOne(s)} className="gap-1.5">
                       <Check className="size-3" />
-                      {ACTION_LABEL[s.action]}
+                      {t(ACTION_LABEL_KEY[s.action] as Parameters<typeof t>[0])}
                     </Button>
                     <Button
                       size="sm"
@@ -242,7 +254,7 @@ export function ReportActionsPanel({
                       className="gap-1.5"
                     >
                       <X className="size-3" />
-                      ข้าม
+                      {t("dismiss")}
                     </Button>
                   </div>
                 )}

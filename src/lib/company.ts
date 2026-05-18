@@ -2,9 +2,14 @@
  * Business identity — single source of truth for legal info displayed
  * in footer, refund policy, terms, and KYC documents.
  *
- * Supports both individual (บุคคลธรรมดา) and juristic (นิติบุคคล)
+ * Supports both individual (sole proprietor) and juristic (company)
  * registration. Toggle `entityType` when upgrading from sole
  * proprietorship to company.
+ *
+ * Localized values (legal name, address, entity label) live in
+ * messages/{th,en,lo}.json under the `company` namespace and are
+ * resolved per-request. This file holds only locale-independent data
+ * (tax id, support email, phone, etc.).
  *
  * **YOU MUST EDIT THESE VALUES** before submitting Omise KYC.
  * The legal name on your site must match the name on your Omise
@@ -13,20 +18,17 @@
  * After editing, redeploy via `git push`.
  */
 
+import { getTranslations } from "next-intl/server";
+
+import type { Locale } from "@/i18n/locales";
+
 export const COMPANY = {
   /**
-   * INDIVIDUAL = sole proprietor / บุคคลธรรมดา (Omise KYC submits ID card)
-   * JURISTIC   = company / นิติบุคคล (Omise KYC submits DBD + ภพ.20)
+   * INDIVIDUAL = sole proprietor (Omise KYC submits ID card)
+   * JURISTIC   = company (Omise KYC submits DBD + VAT certificate)
    * Currently set for INDIVIDUAL — switch to JURISTIC after incorporating.
    */
   entityType: "INDIVIDUAL" as "INDIVIDUAL" | "JURISTIC",
-
-  /**
-   * Legal name as submitted to Omise. Used internally (receipts, KYC
-   * records) — NOT shown publicly unless `showLegalNamePublicly` = true.
-   */
-  legalNameTh: "นภดล รัตนน้ำอ้อม",
-  legalNameEn: "Nopphadon Rattananam-om",
 
   /**
    * If true, the footer + refund-policy page display the legal name.
@@ -41,18 +43,14 @@ export const COMPANY = {
   brandName: "AdsLab",
 
   /**
-   * 13-digit ID (เลขบัตรประชาชน for individuals, เลขผู้เสียภาษี for
-   * juristic). Keep `showTaxIdPublicly = false` for individuals — Omise
-   * doesn't require this in the public site, and showing your personal
-   * ID number is uncomfortable. If you later register as a company,
-   * flip this to true.
+   * 13-digit ID (citizen ID for individuals, tax ID for juristic).
+   * Keep `showTaxIdPublicly = false` for individuals — Omise doesn't
+   * require this in the public site, and showing your personal ID
+   * number is uncomfortable. If you later register as a company, flip
+   * this to true.
    */
   taxId: "0000000000000",
   showTaxIdPublicly: false,
-
-  /** Registered / operating address — shown in footer for trust */
-  addressTh: "8/26 ถนนวิภาวดีรังสิต ซอยวิภาวดีรังสิต 22 แขวงจอมพล เขตจตุจักร กรุงเทพฯ 10900",
-  addressEn: "8/26 Vibhavadi Rangsit Rd., Soi Vibhavadi Rangsit 22, Chom Phon, Chatuchak, Bangkok 10900",
 
   /** Customer-facing support contact */
   supportEmail: "support@ads-lab.xyz",
@@ -65,9 +63,22 @@ export const COMPANY = {
   vatRegistered: false,
 } as const;
 
-/** Footer label that adapts to entity type */
-export function entityLabelTh(): string {
-  return COMPANY.entityType === "JURISTIC" ? "ดำเนินการโดย" : "ผู้ให้บริการ";
+/** Footer label that adapts to entity type. Resolves per-locale. */
+export async function getEntityLabel(locale: Locale): Promise<string> {
+  const t = await getTranslations({ locale, namespace: "company.entityLabel" });
+  return COMPANY.entityType === "JURISTIC" ? t("juristic") : t("individual");
+}
+
+/** Localized legal name (proper noun, transliterated per script). */
+export async function getLegalName(locale: Locale): Promise<string> {
+  const t = await getTranslations({ locale, namespace: "company" });
+  return t("legalName");
+}
+
+/** Localized registered/operating address (used in footer for trust). */
+export async function getCompanyAddress(locale: Locale): Promise<string> {
+  const t = await getTranslations({ locale, namespace: "company" });
+  return t("address");
 }
 
 /** True if taxId is a real value AND user opted to display it publicly */

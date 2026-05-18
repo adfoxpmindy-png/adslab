@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export function BillingActions({ tenantSlug, currentAddOns, cancelAtPeriodEnd, planKey }: Props) {
+  const t = useTranslations("pages.settingsBilling.actions");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyAddon, setBusyAddon] = useState<AddOnKey | null>(null);
@@ -32,10 +34,10 @@ export function BillingActions({ tenantSlug, currentAddOns, cancelAtPeriodEnd, p
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "ดำเนินการไม่สำเร็จ");
+        toast.error(data.error ?? t("actionFailed"));
         return;
       }
-      toast.success(action === "add" ? "เปิด add-on แล้ว" : "ปิด add-on แล้ว");
+      toast.success(action === "add" ? t("addonEnabled") : t("addonDisabled"));
       router.refresh();
     } finally {
       setBusyAddon(null);
@@ -43,7 +45,7 @@ export function BillingActions({ tenantSlug, currentAddOns, cancelAtPeriodEnd, p
   }
 
   function handleCancel() {
-    if (!confirm("ยืนยันยกเลิกการสมัคร? คุณยังใช้งานได้จนถึงสิ้นรอบบิลปัจจุบัน")) return;
+    if (!confirm(t("cancelConfirm"))) return;
     startTransition(async () => {
       const res = await fetch("/api/billing/cancel", {
         method: "POST",
@@ -51,10 +53,10 @@ export function BillingActions({ tenantSlug, currentAddOns, cancelAtPeriodEnd, p
         body: JSON.stringify({ tenantSlug }),
       });
       if (!res.ok) {
-        toast.error("ยกเลิกไม่สำเร็จ");
+        toast.error(t("cancelFailed"));
         return;
       }
-      toast.success("ยกเลิกการสมัครเรียบร้อย");
+      toast.success(t("cancelSuccess"));
       router.refresh();
     });
   }
@@ -78,7 +80,11 @@ export function BillingActions({ tenantSlug, currentAddOns, cancelAtPeriodEnd, p
               disabled={busyAddon === k}
               onClick={() => toggleAddon(k)}
             >
-              {busyAddon === k ? "..." : (active ? `ปิด ${labels[k]}` : `เปิด ${labels[k]}`)}
+              {busyAddon === k
+                ? "..."
+                : active
+                  ? t("addonOff", { label: labels[k] })
+                  : t("addonOn", { label: labels[k] })}
             </Button>
           );
         })}
@@ -92,7 +98,7 @@ export function BillingActions({ tenantSlug, currentAddOns, cancelAtPeriodEnd, p
             onClick={handleCancel}
             className="text-red-600 hover:bg-red-50 hover:text-red-700"
           >
-            ยกเลิกการสมัคร
+            {t("cancel")}
           </Button>
         )}
       </div>

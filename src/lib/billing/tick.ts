@@ -25,6 +25,8 @@ import {
   invoiceFailedTemplate,
   subscriptionCancelledTemplate,
 } from "@/lib/email/templates/billing";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/i18n/locales";
+import { formatDate } from "@/lib/i18n/format";
 import { type PlanKey } from "./plans";
 
 type TickStats = {
@@ -63,13 +65,16 @@ export async function runBillingTick(opts: {
       const owner = sub.tenant.members[0]?.user;
       if (!owner) continue;
       const dashUrl = `${opts.appUrl}/t/${sub.tenant.slug}/settings/billing`;
+      const locale: Locale = isLocale(owner.preferredLocale)
+        ? owner.preferredLocale
+        : DEFAULT_LOCALE;
 
       if (sub.status === "TRIALING" && sub.trialEndsAt) {
         const daysToEnd = daysBetween(now, sub.trialEndsAt);
 
         if (daysToEnd === 2) {
           if (await sendReminderOnce(sub.tenantId, "TRIAL_REMINDER_2D")) {
-            const t = trialReminder2dTemplate({
+            const t = await trialReminder2dTemplate({
               name: owner.name,
               planName: sub.plan.name,
               priceThb:
@@ -77,13 +82,14 @@ export async function runBillingTick(opts: {
                   ? sub.plan.priceMonthly
                   : sub.plan.priceYearly,
               dashboardUrl: dashUrl,
+              locale,
             });
             await sendEmail({ to: owner.email, ...t });
             stats.remindersSent++;
           }
         } else if (daysToEnd === 1) {
           if (await sendReminderOnce(sub.tenantId, "TRIAL_REMINDER_1D")) {
-            const t = trialReminder1dTemplate({
+            const t = await trialReminder1dTemplate({
               name: owner.name,
               planName: sub.plan.name,
               priceThb:
@@ -91,6 +97,7 @@ export async function runBillingTick(opts: {
                   ? sub.plan.priceMonthly
                   : sub.plan.priceYearly,
               dashboardUrl: dashUrl,
+              locale,
             });
             await sendEmail({ to: owner.email, ...t });
             stats.remindersSent++;
@@ -120,14 +127,15 @@ export async function runBillingTick(opts: {
             const { base, vat } = splitVat(result.charge.amount);
             await sendEmail({
               to: owner.email,
-              ...invoicePaidTemplate({
+              ...(await invoicePaidTemplate({
                 name: owner.name,
                 amountThb: result.charge.amount,
                 vatThb: vat,
                 baseThb: base,
                 planName: sub.plan.name,
                 invoiceUrl: dashUrl,
-              }),
+                locale,
+              })),
             });
             stats.charged++;
           } else if (result.kind === "failed") {
@@ -137,12 +145,13 @@ export async function runBillingTick(opts: {
             });
             await sendEmail({
               to: owner.email,
-              ...invoiceFailedTemplate({
+              ...(await invoiceFailedTemplate({
                 name: owner.name,
                 amountThb: 0,
                 reason: result.failureMessage,
                 retryUrl: dashUrl,
-              }),
+                locale,
+              })),
             });
             stats.failed++;
           }
@@ -157,11 +166,12 @@ export async function runBillingTick(opts: {
             });
             await sendEmail({
               to: owner.email,
-              ...subscriptionCancelledTemplate({
+              ...(await subscriptionCancelledTemplate({
                 name: owner.name,
-                accessUntil: sub.currentPeriodEnd.toLocaleDateString("th-TH"),
+                accessUntil: formatDate(sub.currentPeriodEnd, locale),
                 resubscribeUrl: dashUrl,
-              }),
+                locale,
+              })),
             });
             stats.cancelled++;
           } else {

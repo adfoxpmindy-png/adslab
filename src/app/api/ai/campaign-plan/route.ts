@@ -55,15 +55,15 @@ export type CampaignPlanResponse = {
   }>;
 };
 
-const SYSTEM_PROMPT_BASE = `คุณคือ AI media buyer ที่ช่วยวางแผนแคมเปญ Meta ads. ต้องตอบเป็น JSON เท่านั้น (no markdown, no commentary).
+const SYSTEM_PROMPT_BASE = `You are an AI media buyer that helps plan Meta ads campaigns. Respond with JSON only (no markdown, no commentary).
 
 {{LOCALE_DIRECTIVE}}
 
-ภาษาที่ใช้ใน field ค่าๆ: ตามภาษาที่ระบุข้างต้น ยกเว้น metric numbers
+Language for string field values: follow the language specified above, except for metric numbers.
 
-Output schema (ห้ามเปลี่ยน key หรือ shape):
+Output schema (do NOT change keys or shape):
 {
-  "campaignName": "ชื่อแคมเปญ (ภาษาไทย ใส่ objective ต่อท้าย เช่น Sunscreen Brightening - Conversions)",
+  "campaignName": "Campaign name (in the user's language; append the objective, e.g. Sunscreen Brightening - Conversions)",
   "predictions": {
     "roas": 4.3, // float
     "cpaTHB": 245, // int
@@ -71,28 +71,28 @@ Output schema (ห้ามเปลี่ยน key หรือ shape):
     "salesTHB": 32580 // int
   },
   "adSets": [3-5 ad sets] each: {
-    "name": "ชื่อ Ad Set",
-    "audienceLabel": "เช่น ผู้หญิง 18-24 ปี - ความงาม",
-    "audienceDesc": "ผู้หญิง 18-24",
-    "interests": ["สนใจ: สกินแคร์", "ความงาม", "ทำเล็บ"],
+    "name": "Ad Set name",
+    "audienceLabel": "e.g. Women 18-24 - Beauty",
+    "audienceDesc": "Women 18-24",
+    "interests": ["Interest: skincare", "beauty", "nail care"],
     "budgetPercent": 40, // % of total daily budget
     "expectedRoas": 4.85,
     "expectedCpaTHB": 210
   },
   "creatives": [3-6 creatives] each: {
-    "headline": "ข้อความสั้น 5-10 คำ",
-    "description": "concept สั้นๆ ของภาพ/วิดีโอ",
+    "headline": "Short copy, 5-10 words",
+    "description": "Brief concept for the image/video",
     "type": "image" | "video",
     "expectedCtr": 2.45 // %
   }
 }
 
-หลักการ:
-- predictions ต้องสมเหตุสมผลกับ budget + objective
-- adSets ต้องแบ่ง budgetPercent รวมเป็น 100
-- adSets ควรครอบคลุม audience หลายกลุ่ม (อย่าทับซ้อนกันมาก)
-- creatives ควรหลากหลาย (อย่างน้อย 1 video, 1 image)
-- คำพูดต้องเป็นภาษาธรรมชาติของผู้ใช้ (ตาม locale directive ด้านบน) ไม่แปลตรงๆ`;
+Rules:
+- predictions must be realistic given the budget + objective
+- adSets budgetPercent values must sum to 100
+- adSets should cover multiple audience segments (avoid heavy overlap)
+- creatives should be varied (at least 1 video and 1 image)
+- copy must sound natural in the user's language (per the locale directive above), not a literal translation`;
 
 export async function POST(req: Request) {
   const session = await requireSession();
@@ -149,31 +149,31 @@ export async function POST(req: Request) {
 
 function buildUserPrompt(input: z.infer<typeof RequestSchema>): string {
   const lines = [
-    `สินค้า/บริการที่ขาย: ${input.product}`,
-    input.websiteUrl ? `ลิงก์: ${input.websiteUrl}` : null,
-    `เป้าหมายแคมเปญ: ${objectiveLabel(input.objective)}`,
-    `งบประมาณต่อวัน: ${input.dailyBudgetThb.toLocaleString("th-TH")} บาท`,
-    `ระยะเวลาแคมเปญ: ${input.durationDays} วัน`,
-    input.features?.length ? `จุดเด่นสินค้า: ${input.features.join(", ")}` : null,
-    input.message ? `ข้อความที่ต้องการสื่อ: ${input.message}` : null,
+    `Product/service sold: ${input.product}`,
+    input.websiteUrl ? `Link: ${input.websiteUrl}` : null,
+    `Campaign objective: ${objectiveLabel(input.objective)}`,
+    `Daily budget: ${input.dailyBudgetThb.toLocaleString("en-US")} THB`,
+    `Campaign duration: ${input.durationDays} days`,
+    input.features?.length ? `Product highlights: ${input.features.join(", ")}` : null,
+    input.message ? `Message to convey: ${input.message}` : null,
   ].filter(Boolean);
   return [
-    "ช่วยวางแผนแคมเปญ Meta ads สำหรับธุรกิจนี้:",
+    "Help plan a Meta ads campaign for this business:",
     "",
     ...lines,
     "",
-    "ตอบกลับเป็น JSON เท่านั้นตาม schema ที่กำหนดใน system prompt",
+    "Respond with JSON only, following the schema defined in the system prompt.",
   ].join("\n");
 }
 
 function objectiveLabel(obj: string): string {
   const labels: Record<string, string> = {
-    awareness: "Brand Awareness (สร้างการรับรู้)",
-    traffic: "Traffic (เพิ่ม traffic ไปยังเว็บไซต์)",
-    engagement: "Engagement (เพิ่ม interaction)",
-    leads: "Lead Generation (เก็บ leads)",
-    conversions: "Conversions (เพิ่ม conversion ในเว็บไซต์)",
-    sales: "Sales (เพิ่มยอดขาย)",
+    awareness: "Brand Awareness (build recognition)",
+    traffic: "Traffic (drive traffic to the website)",
+    engagement: "Engagement (increase interactions)",
+    leads: "Lead Generation (collect leads)",
+    conversions: "Conversions (drive on-site conversions)",
+    sales: "Sales (drive purchases)",
   };
   return labels[obj] ?? obj;
 }

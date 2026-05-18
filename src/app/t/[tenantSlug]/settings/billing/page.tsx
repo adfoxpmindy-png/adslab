@@ -1,9 +1,11 @@
 import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { getPlan, type PlanKey } from "@/lib/billing/plans";
 import { splitVat } from "@/lib/billing/tier-rules";
+import { formatDate, formatNumber } from "@/lib/i18n/format";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 
 import { BillingActions } from "./billing-actions";
@@ -15,6 +17,8 @@ export default async function BillingPage({
 }) {
   const { tenantSlug } = await params;
   const { tenant, role } = await requireTenantMember(tenantSlug);
+  const t = await getTranslations("pages.settingsBilling");
+  const locale = await getLocale();
 
   const subscription = await prisma.tenantSubscription.findUnique({
     where: { tenantId: tenant.id },
@@ -28,7 +32,7 @@ export default async function BillingPage({
 
   if (!subscription) {
     // Shouldn't happen — gate would have redirected to /setup-billing.
-    return <p className="text-muted-foreground">ไม่พบข้อมูลการสมัคร</p>;
+    return <p className="text-muted-foreground">{t("noSubscription")}</p>;
   }
 
   const plan = subscription.plan;
@@ -39,30 +43,33 @@ export default async function BillingPage({
       : plan.priceYearly;
 
   const statusLabel: Record<typeof subscription.status, { label: string; color: string; icon: React.ElementType }> = {
-    TRIALING: { label: "กำลังทดลองใช้", color: "text-cyan-700 bg-cyan-50 dark:bg-cyan-950/30 dark:text-cyan-300", icon: Clock },
-    ACTIVE: { label: "ใช้งานอยู่", color: "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-300", icon: CheckCircle2 },
-    PAST_DUE: { label: "ค้างชำระ", color: "text-red-700 bg-red-50 dark:bg-red-950/30 dark:text-red-300", icon: AlertCircle },
-    SUSPENDED: { label: "ถูกระงับ", color: "text-red-700 bg-red-50 dark:bg-red-950/30 dark:text-red-300", icon: AlertCircle },
-    CANCELLED: { label: "ยกเลิกแล้ว", color: "text-muted-foreground bg-muted", icon: AlertCircle },
+    TRIALING: { label: t("status.trialing"), color: "text-cyan-700 bg-cyan-50 dark:bg-cyan-950/30 dark:text-cyan-300", icon: Clock },
+    ACTIVE: { label: t("status.active"), color: "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 dark:text-emerald-300", icon: CheckCircle2 },
+    PAST_DUE: { label: t("status.pastDue"), color: "text-red-700 bg-red-50 dark:bg-red-950/30 dark:text-red-300", icon: AlertCircle },
+    SUSPENDED: { label: t("status.suspended"), color: "text-red-700 bg-red-50 dark:bg-red-950/30 dark:text-red-300", icon: AlertCircle },
+    CANCELLED: { label: t("status.cancelled"), color: "text-muted-foreground bg-muted", icon: AlertCircle },
   };
   const sLabel = statusLabel[subscription.status];
   const Icon = sLabel.icon;
 
+  const periodLabel =
+    subscription.interval === "MONTHLY" ? t("periodMonth") : t("periodYear");
+
   return (
     <>
       <SetPageTitle
-        title="การเรียกเก็บเงิน"
-        subtitle="ดูแผนปัจจุบัน + ประวัติการชำระเงิน + จัดการ subscription"
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
       {/* Current plan card */}
       <section className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">แพ็กเกจปัจจุบัน</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{t("currentPlan")}</p>
             <h2 className="mt-1 text-2xl font-bold tracking-tight">{plan.name}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              ฿{periodPrice.toLocaleString("th-TH")} / {subscription.interval === "MONTHLY" ? "เดือน" : "ปี"} (VAT รวมแล้ว)
+              {t("pricePeriod", { price: formatNumber(periodPrice, locale), periodLabel })}
             </p>
           </div>
           <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${sLabel.color}`}>
@@ -84,27 +91,27 @@ export default async function BillingPage({
             </dd>
           </div>
           <div>
-            <dt className="text-muted-foreground">AI message/วัน</dt>
+            <dt className="text-muted-foreground">{t("aiMsgPerDay")}</dt>
             <dd className="mt-0.5 font-medium">
-              {planDef.aiMsgPerDay ?? "ไม่จำกัด"}
+              {planDef.aiMsgPerDay ?? t("unlimited")}
             </dd>
           </div>
           {subscription.status === "TRIALING" && subscription.trialEndsAt && (
             <div className="col-span-2">
-              <dt className="text-muted-foreground">ทดลองใช้จนถึง</dt>
+              <dt className="text-muted-foreground">{t("trialUntil")}</dt>
               <dd className="mt-0.5 font-medium">
-                {new Date(subscription.trialEndsAt).toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}
+                {formatDate(new Date(subscription.trialEndsAt), locale, { day: "numeric", month: "long", year: "numeric" })}
               </dd>
             </div>
           )}
           {subscription.status === "ACTIVE" && (
             <div className="col-span-2">
-              <dt className="text-muted-foreground">รอบบิลถัดไป</dt>
+              <dt className="text-muted-foreground">{t("nextBilling")}</dt>
               <dd className="mt-0.5 font-medium">
-                {new Date(subscription.currentPeriodEnd).toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}
+                {formatDate(new Date(subscription.currentPeriodEnd), locale, { day: "numeric", month: "long", year: "numeric" })}
                 {subscription.cancelAtPeriodEnd && (
                   <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800">
-                    จะยกเลิกในวันนี้
+                    {t("willCancelToday")}
                   </span>
                 )}
               </dd>
@@ -125,8 +132,8 @@ export default async function BillingPage({
                   <div>
                     <p className="font-medium">{a.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      ฿{a.priceMonthly.toLocaleString("th-TH")}/เดือน
-                      {freeFromPlan && <span className="ml-1 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">รวมในแผน</span>}
+                      {t("perMonth", { price: formatNumber(a.priceMonthly, locale) })}
+                      {freeFromPlan && <span className="ml-1 rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800">{t("includedInPlan")}</span>}
                     </p>
                   </div>
                   <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${
@@ -134,7 +141,7 @@ export default async function BillingPage({
                       ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
                       : "bg-muted text-muted-foreground"
                   }`}>
-                    {active || freeFromPlan ? "เปิดอยู่" : "ปิดอยู่"}
+                    {active || freeFromPlan ? t("addOnOn") : t("addOnOff")}
                   </span>
                 </li>
               );
@@ -154,17 +161,17 @@ export default async function BillingPage({
 
       {/* Invoices */}
       <section className="rounded-xl border border-border bg-card p-6">
-        <h3 className="text-lg font-semibold">ประวัติการชำระเงิน</h3>
+        <h3 className="text-lg font-semibold">{t("invoicesHeading")}</h3>
         {invoices.length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">ยังไม่มีรายการ</p>
+          <p className="mt-3 text-sm text-muted-foreground">{t("noInvoices")}</p>
         ) : (
           <table className="mt-4 w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
-                <th className="pb-2 font-medium">วันที่</th>
-                <th className="pb-2 font-medium">จำนวนเงิน</th>
-                <th className="pb-2 font-medium">สถานะ</th>
-                <th className="pb-2 font-medium">VAT</th>
+                <th className="pb-2 font-medium">{t("tableDate")}</th>
+                <th className="pb-2 font-medium">{t("tableAmount")}</th>
+                <th className="pb-2 font-medium">{t("tableStatus")}</th>
+                <th className="pb-2 font-medium">{t("tableVat")}</th>
               </tr>
             </thead>
             <tbody>
@@ -173,16 +180,16 @@ export default async function BillingPage({
                 return (
                   <tr key={inv.id} className="border-b border-border/50">
                     <td className="py-2.5">
-                      {new Date(inv.createdAt).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}
+                      {formatDate(new Date(inv.createdAt), locale, { day: "numeric", month: "short", year: "numeric" })}
                     </td>
                     <td className="py-2.5 font-medium tabular-nums">
-                      ฿{inv.amount.toLocaleString("th-TH")}
+                      ฿{formatNumber(inv.amount, locale)}
                     </td>
                     <td className="py-2.5">
                       <InvoiceStatusBadge status={inv.status} />
                     </td>
                     <td className="py-2.5 text-xs text-muted-foreground">
-                      ฿{base.toLocaleString("th-TH")} + ฿{vat.toLocaleString("th-TH")} VAT
+                      {t("vatSplit", { base: formatNumber(base, locale), vat: formatNumber(vat, locale) })}
                     </td>
                   </tr>
                 );
@@ -196,7 +203,8 @@ export default async function BillingPage({
   );
 }
 
-function InvoiceStatusBadge({ status }: { status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" }) {
+async function InvoiceStatusBadge({ status }: { status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" }) {
+  const t = await getTranslations("pages.settingsBilling.invoiceStatus");
   const styles: Record<typeof status, string> = {
     PENDING: "bg-amber-100 text-amber-800",
     PAID: "bg-emerald-100 text-emerald-800",
@@ -204,10 +212,10 @@ function InvoiceStatusBadge({ status }: { status: "PENDING" | "PAID" | "FAILED" 
     REFUNDED: "bg-blue-100 text-blue-800",
   };
   const labels: Record<typeof status, string> = {
-    PENDING: "รอชำระ",
-    PAID: "ชำระแล้ว",
-    FAILED: "ไม่สำเร็จ",
-    REFUNDED: "คืนเงินแล้ว",
+    PENDING: t("pending"),
+    PAID: t("paid"),
+    FAILED: t("failed"),
+    REFUNDED: t("refunded"),
   };
   return (
     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${styles[status]}`}>

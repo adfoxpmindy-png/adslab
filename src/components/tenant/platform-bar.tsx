@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Check, ChevronDown, Layers, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -167,6 +168,7 @@ function AccountPicker({
   totalAccounts: number;
   tenantScopeApplied: boolean;
 }) {
+  const t = useTranslations("platformBar");
   // `null`     = follow tenant default (no personal override)
   // `string[]` = explicit personal narrowing within tenant scope
   const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
@@ -225,7 +227,7 @@ function AccountPicker({
   }
 
   function selectNone() {
-    // "ล้าง" semantics: reset to tenant default (null), not an explicit
+    // "Clear" semantics: reset to tenant default (null), not an explicit
     // empty list. An empty user override would create "0 effective
     // accounts" which is almost never what users actually want.
     persist(null);
@@ -241,15 +243,15 @@ function AccountPicker({
   // When tenant scope is active and user is following it, surface that.
   let label: string;
   if (!loaded) {
-    label = "Loading...";
+    label = t("loading");
   } else if (isFollowingTenant) {
     // Following tenant default → show "X in scope" if scope is set,
     // otherwise "all Y"
     label = tenantScopeApplied
-      ? `Accounts: ${accounts.length}/${totalAccounts} (scope)`
-      : `Accounts: ทั้งหมด (${accounts.length})`;
+      ? t("accountsLabelScope", { count: accounts.length, total: totalAccounts })
+      : t("accountsLabelAll", { count: accounts.length });
   } else {
-    label = `Accounts: ${effectiveIds.length}/${accounts.length}`;
+    label = t("accountsLabelPartial", { count: effectiveIds.length, total: accounts.length });
   }
 
   return (
@@ -266,7 +268,7 @@ function AccountPicker({
           {isFollowingTenant
             ? tenantScopeApplied
               ? `${accounts.length}/${totalAccounts}`
-              : `ทั้งหมด`
+              : t("accountsLabelShort")
             : `${effectiveIds.length}/${accounts.length}`}
         </span>
         <ChevronDown className="size-3.5 text-muted-foreground" />
@@ -285,7 +287,7 @@ function AccountPicker({
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="ค้นหา ad account..."
+                placeholder={t("searchPlaceholder")}
                 className="h-8 flex-1 rounded-md border border-border bg-background px-2 text-sm"
               />
             </div>
@@ -294,19 +296,19 @@ function AccountPicker({
                 onClick={selectAll}
                 className="font-medium hover:text-foreground"
               >
-                เลือกทั้งหมด
+                {t("selectAll")}
               </button>
               <button
                 onClick={selectNone}
                 className="font-medium hover:text-foreground"
               >
-                ล้างทั้งหมด
+                {t("clearAll")}
               </button>
             </div>
             <ul className="max-h-72 overflow-auto">
               {filtered.length === 0 ? (
                 <li className="px-2 py-3 text-center text-xs text-muted-foreground">
-                  ไม่พบ account
+                  {t("notFound")}
                 </li>
               ) : (
                 filtered.map((a) => {

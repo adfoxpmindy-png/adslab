@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   Activity,
   Check,
@@ -51,33 +52,34 @@ type Props = {
 };
 
 // Subtype display + icon mapping. We collapse Meta's many subtypes into
-// 3 user-facing buckets that match the modal's choices.
+// 3 user-facing buckets that match the modal's choices. `labelKey` points
+// at a translation key under `pages.audiences.subtype.*`.
 const SUBTYPE_STYLE: Record<
   string,
-  { label: string; tone: string; icon: React.ComponentType<{ className?: string }> }
+  { labelKey: string; tone: string; icon: React.ComponentType<{ className?: string }> }
 > = {
   CUSTOM: {
-    label: "Customer list",
+    labelKey: "customer",
     tone: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
     icon: Users,
   },
   WEBSITE: {
-    label: "Pixel (website)",
+    labelKey: "pixel",
     tone: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300",
     icon: Globe,
   },
   LOOKALIKE: {
-    label: "Lookalike",
+    labelKey: "lookalike",
     tone: "bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300",
     icon: Layers,
   },
   ENGAGEMENT: {
-    label: "Engagement",
+    labelKey: "engagement",
     tone: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
     icon: Hash,
   },
   APP: {
-    label: "App activity",
+    labelKey: "app",
     tone: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
     icon: Hash,
   },
@@ -93,6 +95,7 @@ function formatCount(n: number | null): string {
 type Tab = "audiences" | "pixels" | "conversions" | "events";
 
 export function AudiencesClient({ tenantSlug, canEdit, accounts, audiences }: Props) {
+  const tPages = useTranslations("pages.audiences");
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [tab, setTab] = useState<Tab>("audiences");
@@ -121,9 +124,9 @@ export function AudiencesClient({ tenantSlug, canEdit, accounts, audiences }: Pr
   }, [audiences]);
 
   async function deleteAudience(a: Audience) {
-    if (!confirm(`ลบ audience "${a.name}"? (ทำใน Meta จริง — ยกเลิกไม่ได้)`)) return;
+    if (!confirm(tPages("list.deleteConfirm", { name: a.name }))) return;
     setBusy((prev) => new Set(prev).add(a.id));
-    const toastId = toast.loading("กำลังลบ...");
+    const toastId = toast.loading(tPages("list.deleting"));
     try {
       const res = await fetch(
         `/api/meta/audiences/${a.id}?tenantSlug=${tenantSlug}&metaAccountId=${a.accountId}`,
@@ -131,12 +134,12 @@ export function AudiencesClient({ tenantSlug, canEdit, accounts, audiences }: Pr
       );
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "ลบไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("list.deleteFail"));
       }
-      toast.success("✓ ลบแล้ว", { id: toastId, duration: 2500 });
+      toast.success(tPages("list.deleted"), { id: toastId, duration: 2500 });
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ลบไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("list.deleteFail"), {
         id: toastId,
         duration: 5000,
       });
@@ -155,24 +158,24 @@ export function AudiencesClient({ tenantSlug, canEdit, accounts, audiences }: Pr
       <div className="flex items-center gap-1 border-b border-border">
         <TabButton active={tab === "audiences"} onClick={() => setTab("audiences")}>
           <Users className="size-3.5" />
-          Audiences
+          {tPages("tabs.audiences")}
           <span className="ml-1 rounded bg-muted px-1.5 text-[10px] tabular-nums">
             {audiences.length}
           </span>
         </TabButton>
         <TabButton active={tab === "pixels"} onClick={() => setTab("pixels")}>
           <Zap className="size-3.5" />
-          Pixels
+          {tPages("tabs.pixels")}
         </TabButton>
         <TabButton active={tab === "conversions"} onClick={() => setTab("conversions")}>
           <Target className="size-3.5" />
-          Custom Conversions
+          {tPages("tabs.conversions")}
         </TabButton>
         <TabButton active={tab === "events"} onClick={() => setTab("events")}>
           <Activity className="size-3.5" />
-          Events (SDK)
+          {tPages("tabs.events")}
           <span className="ml-1 rounded bg-emerald-100 px-1.5 text-[9px] font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-            NEW
+            {tPages("tabs.new")}
           </span>
         </TabButton>
       </div>
@@ -275,26 +278,30 @@ function AudiencesTab({
   deleteAudience: (a: Audience) => void;
   onCreate: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
+  const subtypeLabel = (sub: string): string => {
+    const style = SUBTYPE_STYLE[sub];
+    return style ? tPages(`subtype.${style.labelKey}` as Parameters<typeof tPages>[0]) : sub;
+  };
   return (
     <div className="space-y-4">
       {/* Stats + create button */}
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-4 py-3">
         <span className="text-sm">
-          <span className="text-muted-foreground">รวม:</span>{" "}
-          <span className="font-semibold tabular-nums">{stats.total}</span> audiences
+          <span className="text-muted-foreground">{tPages("filter.totalLabel")}</span>{" "}
+          <span className="font-semibold tabular-nums">{stats.total}</span> {tPages("filter.audiencesUnit")}
         </span>
         {Array.from(stats.counts.entries()).map(([subtype, count]) => {
-          const style = SUBTYPE_STYLE[subtype] ?? { label: subtype, tone: "", icon: Hash };
           return (
             <span key={subtype} className="text-xs text-muted-foreground">
-              {style.label}: <span className="font-semibold tabular-nums">{count}</span>
+              {subtypeLabel(subtype)}: <span className="font-semibold tabular-nums">{count}</span>
             </span>
           );
         })}
         {canEdit && (
           <Button size="sm" onClick={onCreate} className="ml-auto gap-1.5">
             <Plus className="size-3.5" />
-            สร้าง Audience
+            {tPages("actions.create")}
           </Button>
         )}
       </div>
@@ -306,7 +313,7 @@ function AudiencesTab({
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="ค้นหาชื่อ audience..."
+            placeholder={tPages("search.placeholder")}
             className="pl-8"
           />
         </div>
@@ -315,11 +322,11 @@ function AudiencesTab({
           onChange={(e) => setSubtypeFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="ALL">ทุก type</option>
-          <option value="CUSTOM">Customer list</option>
+          <option value="ALL">{tPages("filter.allTypes")}</option>
+          <option value="CUSTOM">{tPages("subtype.customer")}</option>
           <option value="WEBSITE">Pixel</option>
-          <option value="LOOKALIKE">Lookalike</option>
-          <option value="ENGAGEMENT">Engagement</option>
+          <option value="LOOKALIKE">{tPages("subtype.lookalike")}</option>
+          <option value="ENGAGEMENT">{tPages("subtype.engagement")}</option>
           <option value="APP">App</option>
         </select>
         <select
@@ -327,7 +334,7 @@ function AudiencesTab({
           onChange={(e) => setAccountFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="ALL">ทุก account</option>
+          <option value="ALL">{tPages("filter.allAccounts")}</option>
           {accounts.map((a) => (
             <option key={a.id} value={a.id}>
               {a.name}
@@ -335,7 +342,7 @@ function AudiencesTab({
           ))}
         </select>
         <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-          แสดง {filtered.length} / {audiences.length}
+          {tPages("filter.showing", { filtered: filtered.length, total: audiences.length })}
         </span>
       </div>
 
@@ -345,20 +352,19 @@ function AudiencesTab({
           <Users className="size-6 text-muted-foreground" />
           {audiences.length === 0 ? (
             <>
-              <p className="text-sm font-medium">ยังไม่มี audience</p>
+              <p className="text-sm font-medium">{tPages("list.emptyTitle")}</p>
               <p className="max-w-md text-xs text-muted-foreground">
-                สร้าง audience จาก customer list (อีเมล/เบอร์โทร), Lookalike,
-                หรือ Pixel — ใช้ใน Campaign Builder ได้ทันที
+                {tPages("list.emptyDescription")}
               </p>
               {canEdit && (
                 <Button size="sm" onClick={onCreate} className="gap-1.5">
                   <Plus className="size-3.5" />
-                  สร้าง Audience ตัวแรก
+                  {tPages("actions.createFirst")}
                 </Button>
               )}
             </>
           ) : (
-            <p className="text-sm">ไม่พบ audience ที่ตรงเงื่อนไข</p>
+            <p className="text-sm">{tPages("list.emptyFiltered")}</p>
           )}
         </Card>
       ) : (
@@ -366,7 +372,7 @@ function AudiencesTab({
           <ul className="divide-y divide-border">
             {filtered.map((a) => {
               const style = SUBTYPE_STYLE[a.subtype] ?? {
-                label: a.subtype,
+                labelKey: "",
                 tone: "bg-muted text-muted-foreground",
                 icon: Hash,
               };
@@ -392,7 +398,7 @@ function AudiencesTab({
                       style.tone,
                     )}
                   >
-                    {style.label}
+                    {subtypeLabel(a.subtype)}
                   </span>
                   <span className="text-xs tabular-nums text-muted-foreground">
                     ~{formatCount(a.approximateCount)}
@@ -403,7 +409,7 @@ function AudiencesTab({
                       variant="ghost"
                       disabled={busy.has(a.id)}
                       onClick={() => deleteAudience(a)}
-                      title="ลบ audience"
+                      title={tPages("list.deleteTitle")}
                       className="text-destructive"
                     >
                       {busy.has(a.id) ? (
@@ -453,6 +459,8 @@ function PixelsTab({
   canEdit: boolean;
   accounts: Account[];
 }) {
+  const tPages = useTranslations("pages.audiences");
+  const formatRelativeTime = useFormatRelativeTime();
   const [rawPixels, setRawPixels] = useState<PixelWithAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -463,6 +471,7 @@ function PixelsTab({
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     Promise.all(
       accounts.map(async (acc) => {
@@ -532,7 +541,7 @@ function PixelsTab({
     const m = new Map<string, { id: string; name: string; count: number }>();
     for (const p of grouped) {
       const key = p.ownerBusiness?.id ?? "__none__";
-      const name = p.ownerBusiness?.name ?? "(ไม่มี BM)";
+      const name = p.ownerBusiness?.name ?? tPages("pixels.noBM");
       const existing = m.get(key);
       if (existing) existing.count++;
       else m.set(key, { id: key, name, count: 1 });
@@ -555,23 +564,17 @@ function PixelsTab({
     <div className="space-y-4">
       {/* Educational banner — explains BM Pixel cap + share workflow */}
       <Card className="space-y-1 border-blue-200 bg-blue-50/60 p-3 text-xs text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
-        <p className="font-medium">💡 ทำไม Pixel สร้างได้แค่ไม่กี่ตัว?</p>
+        <p className="font-medium">{tPages("pixels.bannerTitle")}</p>
         <ul className="ml-4 list-disc space-y-0.5 text-[11px] leading-relaxed">
-          <li>
-            Meta limit <strong>5 Pixels ต่อ Business Manager</strong> (ถ้า BM ไม่ verify) —
-            ถ้า verify BM แล้วจะได้สูงสุด 100 Pixels
-          </li>
-          <li>
-            แต่ <strong>1 Pixel ใช้กับหลาย ad accounts ได้</strong> ใน BM เดียวกัน — กดปุ่ม
-            &ldquo;Share&rdquo; เพื่อขยาย Pixel ไปยัง ad accounts อื่น
-          </li>
-          <li>Pixel แต่ละตัว = 1 เว็บไซต์ / 1 ลูกค้า ไม่ใช่ 1 ad account</li>
+          <li dangerouslySetInnerHTML={{ __html: tPages("pixels.bannerLimit") }} />
+          <li dangerouslySetInnerHTML={{ __html: tPages("pixels.bannerShare") }} />
+          <li>{tPages("pixels.bannerScope")}</li>
         </ul>
       </Card>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-4 py-3">
         <span className="text-sm">
-          <span className="text-muted-foreground">Pixels ทั้งหมด:</span>{" "}
+          <span className="text-muted-foreground">{tPages("pixels.totalLabel")}</span>{" "}
           <span className="font-semibold tabular-nums">{grouped.length}</span>
         </span>
         {bmGroups.map((bm) => (
@@ -585,7 +588,7 @@ function PixelsTab({
           onChange={(e) => setBmFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="ALL">ทุก Business</option>
+          <option value="ALL">{tPages("filter.allBusinesses")}</option>
           {bmGroups.map((bm) => (
             <option key={bm.id} value={bm.id}>
               {bm.name} ({bm.count})
@@ -595,7 +598,7 @@ function PixelsTab({
         {canEdit && (
           <Button size="sm" onClick={() => setCreateOpen(true)} className="ml-auto gap-1.5">
             <Plus className="size-3.5" />
-            สร้าง Pixel
+            {tPages("actions.createPixel")}
           </Button>
         )}
       </div>
@@ -603,20 +606,19 @@ function PixelsTab({
       {loading ? (
         <Card className="flex items-center justify-center gap-2 border-dashed py-12">
           <Loader2 className="size-4 animate-spin text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">กำลังโหลด Pixels...</span>
+          <span className="text-sm text-muted-foreground">{tPages("pixels.loading")}</span>
         </Card>
       ) : filtered.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
           <Zap className="size-6 text-muted-foreground" />
-          <p className="text-sm font-medium">ยังไม่มี Pixel</p>
+          <p className="text-sm font-medium">{tPages("pixels.emptyTitle")}</p>
           <p className="max-w-md text-xs text-muted-foreground">
-            สร้าง Pixel เพื่อติด tracking code บนเว็บไซต์ — แล้วจึงสร้าง Website Custom Audience
-            จากคนที่เข้าเว็บได้
+            {tPages("pixels.emptyDescription")}
           </p>
           {canEdit && (
             <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
               <Plus className="size-3.5" />
-              สร้าง Pixel ตัวแรก
+              {tPages("actions.createPixelFirst")}
             </Button>
           )}
         </Card>
@@ -640,25 +642,28 @@ function PixelsTab({
                       {p.name}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      ID {p.id}
-                      {p.ownerBusiness && ` · BM: ${p.ownerBusiness.name}`}
-                      {p.lastFiredTime && ` · ยิงล่าสุด ${formatRelativeTime(p.lastFiredTime)}`}
+                      {tPages("pixels.idPrefix")} {p.id}
+                      {p.ownerBusiness && ` · ${tPages("pixels.bmPrefix")} ${p.ownerBusiness.name}`}
+                      {p.lastFiredTime && ` · ${tPages("pixels.firedAt", { when: formatRelativeTime(p.lastFiredTime) })}`}
                     </p>
                     <p className="mt-1 text-[11px]">
                       <span className="text-muted-foreground">
-                        ใช้กับ {p.linkedAccounts.length} ad account
-                        {p.linkedAccounts.length > 1 ? "s" : ""}:
+                        {tPages("pixels.usedWith", {
+                          count: p.linkedAccounts.length,
+                          plural: p.linkedAccounts.length > 1 ? "s" : "",
+                        })}
+                        :
                       </span>{" "}
                       <span className="text-foreground">
                         {p.linkedAccounts.slice(0, 3).map((a) => a.name).join(", ")}
                         {p.linkedAccounts.length > 3 &&
-                          ` +${p.linkedAccounts.length - 3} อื่นๆ`}
+                          tPages("pixels.andOthers", { count: p.linkedAccounts.length - 3 })}
                       </span>
                     </p>
                   </div>
                   {p.isUnavailable && (
                     <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-                      unavailable
+                      {tPages("pixels.unavailable")}
                     </span>
                   )}
                   <div className="flex flex-wrap items-center gap-2">
@@ -667,10 +672,10 @@ function PixelsTab({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      title="เปิดใน Events Manager (Facebook)"
+                      title={tPages("pixels.openEventsManager")}
                     >
                       <ExternalLink className="size-3.5" />
-                      Events Manager
+                      {tPages("pixels.eventsManager")}
                     </a>
                     {canEdit && (
                       <Button
@@ -678,10 +683,10 @@ function PixelsTab({
                         variant="outline"
                         onClick={() => setShareFor(p)}
                         className="gap-1.5"
-                        title="ใช้ Pixel นี้กับ ad account อื่นใน BM เดียวกัน"
+                        title={tPages("pixels.shareTitle")}
                       >
                         <Plus className="size-3.5" />
-                        Share
+                        {tPages("pixels.share")}
                       </Button>
                     )}
                     <Button
@@ -691,7 +696,7 @@ function PixelsTab({
                       className="gap-1.5"
                     >
                       <Copy className="size-3.5" />
-                      Copy code
+                      {tPages("pixels.copyCode")}
                     </Button>
                   </div>
                 </li>
@@ -745,6 +750,7 @@ function SharePixelModal({
   onClose: () => void;
   onShared: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   // Only ad accounts in the SAME BM as the Pixel can receive it. Filter
   // out accounts already linked + ones from a different BM.
   const linkedIds = new Set(pixel.linkedAccounts.map((a) => a.id));
@@ -760,9 +766,9 @@ function SharePixelModal({
   const [submitting, setSubmitting] = useState(false);
 
   async function submit() {
-    if (!targetAdAccountId) return toast.error("เลือก ad account");
+    if (!targetAdAccountId) return toast.error(tPages("sharePixel.pickAccount"));
     setSubmitting(true);
-    const toastId = toast.loading("กำลัง share Pixel...");
+    const toastId = toast.loading(tPages("sharePixel.loading"));
     try {
       const res = await fetch(
         `/api/meta/pixels/${pixel.id}/share?tenantSlug=${tenantSlug}`,
@@ -774,15 +780,15 @@ function SharePixelModal({
       );
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "Share ไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("sharePixel.fail"));
       }
-      toast.success(`✓ Share Pixel ไป "${data.sharedTo.name}"`, {
+      toast.success(`${tPages("sharePixel.successPrefix")} "${data.sharedTo.name}"`, {
         id: toastId,
         duration: 3000,
       });
       onShared();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Share ไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("sharePixel.fail"), {
         id: toastId,
         duration: 6000,
       });
@@ -802,16 +808,14 @@ function SharePixelModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">Share Pixel</h3>
+            <h3 className="text-base font-semibold">{tPages("sharePixel.title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              ขยาย <span className="font-medium text-foreground">{pixel.name}</span>{" "}
-              ไปยัง ad account อื่นใน BM เดียวกัน
-              {pixel.ownerBusiness && (
-                <>
-                  {" "}
-                  (<span className="text-foreground">{pixel.ownerBusiness.name}</span>)
-                </>
-              )}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: tPages("sharePixel.subtitle", { name: pixel.name }),
+                }}
+              />
+              {pixel.ownerBusiness && tPages("sharePixel.subtitleWithBM", { bm: pixel.ownerBusiness.name })}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -821,18 +825,17 @@ function SharePixelModal({
 
         {!ownerBusinessId ? (
           <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
-            Pixel นี้ไม่ได้อยู่ใน Business Manager — share ไม่ได้
+            {tPages("sharePixel.notInBM")}
           </div>
         ) : candidates.length === 0 ? (
           <div className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-            ไม่มี ad account อื่นใน BM นี้ที่ยังไม่ได้รับ Pixel แล้ว — Pixel นี้ใช้กับทุก
-            ad account ใน BM แล้วครับ
+            {tPages("sharePixel.allShared")}
           </div>
         ) : (
           <>
             <div>
               <label className="mb-1 block text-xs font-medium text-muted-foreground">
-                Target Ad Account
+                {tPages("sharePixel.targetLabel")}
               </label>
               <select
                 value={targetAdAccountId}
@@ -846,17 +849,17 @@ function SharePixelModal({
                 ))}
               </select>
               <p className="mt-1 text-[11px] text-muted-foreground">
-                แสดงเฉพาะ ad accounts ที่อยู่ใน BM เดียวกัน — Meta ไม่อนุญาตให้ share ข้าม BM
+                {tPages("sharePixel.hint")}
               </p>
             </div>
 
             <div className="flex justify-between gap-2 pt-1">
               <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-                ยกเลิก
+                {tPages("actions.cancel")}
               </Button>
               <Button size="sm" onClick={submit} disabled={submitting || !targetAdAccountId}>
                 {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-                Share Pixel
+                {tPages("sharePixel.submit")}
               </Button>
             </div>
           </>
@@ -866,18 +869,21 @@ function SharePixelModal({
   );
 }
 
-function formatRelativeTime(iso: string): string {
-  const then = new Date(iso).getTime();
-  if (!Number.isFinite(then)) return "—";
-  const diffMs = Date.now() - then;
-  const min = Math.floor(diffMs / 60_000);
-  if (min < 60) return `${min} นาทีที่แล้ว`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} ชม. ที่แล้ว`;
-  const days = Math.floor(hr / 24);
-  if (days < 30) return `${days} วันที่แล้ว`;
-  const months = Math.floor(days / 30);
-  return `${months} เดือนที่แล้ว`;
+function useFormatRelativeTime(): (iso: string) => string {
+  const tPages = useTranslations("pages.audiences");
+  return (iso: string): string => {
+    const then = new Date(iso).getTime();
+    if (!Number.isFinite(then)) return "—";
+    const diffMs = Date.now() - then;
+    const min = Math.floor(diffMs / 60_000);
+    if (min < 60) return tPages("time.minutesAgo", { n: min });
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return tPages("time.hoursAgo", { n: hr });
+    const days = Math.floor(hr / 24);
+    if (days < 30) return tPages("time.daysAgo", { n: days });
+    const months = Math.floor(days / 30);
+    return tPages("time.monthsAgo", { n: months });
+  };
 }
 
 function CreatePixelModal({
@@ -891,6 +897,7 @@ function CreatePixelModal({
   onClose: () => void;
   onCreated: (pixel: PixelWithAccount) => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [metaAccountId, setMetaAccountId] = useState(accounts[0]?.id ?? "");
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -898,9 +905,9 @@ function CreatePixelModal({
   const selectedAccount = accounts.find((a) => a.id === metaAccountId);
 
   async function submit() {
-    if (!name.trim()) return toast.error("ตั้งชื่อ Pixel");
+    if (!name.trim()) return toast.error(tPages("createPixel.nameRequired"));
     setSubmitting(true);
-    const toastId = toast.loading("กำลังสร้าง Pixel...");
+    const toastId = toast.loading(tPages("createPixel.loading"));
     try {
       const res = await fetch(`/api/meta/pixels?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -909,9 +916,9 @@ function CreatePixelModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "สร้างไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("createPixel.fail"));
       }
-      toast.success(`✓ สร้าง Pixel "${data.pixel.name}"`, { id: toastId, duration: 3000 });
+      toast.success(`${tPages("createPixel.successPrefix")} "${data.pixel.name}"`, { id: toastId, duration: 3000 });
       onCreated({
         id: data.pixel.id,
         name: data.pixel.name,
@@ -925,7 +932,7 @@ function CreatePixelModal({
         accountName: selectedAccount?.name ?? metaAccountId,
       });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("createPixel.fail"), {
         id: toastId,
         duration: 7000,
       });
@@ -945,9 +952,9 @@ function CreatePixelModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">สร้าง Pixel ใหม่</h3>
+            <h3 className="text-base font-semibold">{tPages("createPixel.title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Pixel ใช้ติด tracking code บนเว็บไซต์
+              {tPages("createPixel.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -957,7 +964,7 @@ function CreatePixelModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Ad Account
+            {tPages("createPixel.adAccountLabel")}
           </label>
           <select
             value={metaAccountId}
@@ -971,37 +978,38 @@ function CreatePixelModal({
             ))}
           </select>
           {selectedAccount?.business && (
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              Pixel จะถูกฝากไว้ใน Business Manager:{" "}
-              <span className="font-medium text-foreground">{selectedAccount.business}</span>{" "}
-              — ดูใน Events Manager หลังจากสร้าง
-            </p>
+            <p
+              className="mt-1 text-[11px] text-muted-foreground"
+              dangerouslySetInnerHTML={{
+                __html: tPages("createPixel.storageHint", { business: selectedAccount.business }),
+              }}
+            />
           )}
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ชื่อ Pixel
+            {tPages("createPixel.nameLabel")}
           </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="เช่น Main Website Pixel"
+            placeholder={tPages("createPixel.namePlaceholder")}
           />
         </div>
 
-        <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-[11px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
-          ⚠ Meta จำกัด <strong>1 Pixel ต่อ ad account</strong> — ถ้า account นี้มี Pixel
-          อยู่แล้ว ระบบจะแจ้งเตือนแทนการสร้างซ้ำ
-        </div>
+        <div
+          className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-[11px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200"
+          dangerouslySetInnerHTML={{ __html: tPages("createPixel.limitWarning") }}
+        />
 
         <div className="flex justify-between gap-2 pt-1">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            ยกเลิก
+            {tPages("actions.cancel")}
           </Button>
           <Button size="sm" onClick={submit} disabled={submitting || !name.trim()}>
             {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-            สร้าง Pixel
+            {tPages("actions.createPixel")}
           </Button>
         </div>
       </div>
@@ -1016,6 +1024,7 @@ function PixelCodeModal({
   pixel: PixelWithAccount;
   onClose: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -1023,10 +1032,10 @@ function PixelCodeModal({
     try {
       await navigator.clipboard.writeText(pixel.code);
       setCopied(true);
-      toast.success("คัดลอกแล้ว", { duration: 2000 });
+      toast.success(tPages("pixels.copied"), { duration: 2000 });
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("คัดลอกไม่สำเร็จ");
+      toast.error(tPages("pixels.copyFail"));
     }
   }
 
@@ -1041,13 +1050,13 @@ function PixelCodeModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">Install Code — {pixel.name}</h3>
+            <h3 className="text-base font-semibold">{tPages("pixelCode.title", { name: pixel.name })}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              วาง code นี้ใน &lt;head&gt; ของทุกหน้าในเว็บไซต์ (Pixel ID {pixel.id})
+              {tPages("pixelCode.subtitle", { id: pixel.id })}
             </p>
             {pixel.ownerBusiness && (
               <p className="mt-1 text-[11px] text-muted-foreground">
-                ฝากไว้ใน BM:{" "}
+                {tPages("pixelCode.storedIn")}{" "}
                 <span className="font-medium text-foreground">{pixel.ownerBusiness.name}</span>
                 {" — "}
                 <a
@@ -1056,7 +1065,7 @@ function PixelCodeModal({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
                 >
-                  เปิด Events Manager <ExternalLink className="size-3" />
+                  {tPages("pixelCode.openEventsManager")} <ExternalLink className="size-3" />
                 </a>
               </p>
             )}
@@ -1075,11 +1084,11 @@ function PixelCodeModal({
               <Button size="sm" onClick={copy} className="gap-1.5">
                 {copied ? (
                   <>
-                    <Check className="size-3.5" /> คัดลอกแล้ว
+                    <Check className="size-3.5" /> {tPages("pixels.copied")}
                   </>
                 ) : (
                   <>
-                    <Copy className="size-3.5" /> Copy code
+                    <Copy className="size-3.5" /> {tPages("pixels.copyCode")}
                   </>
                 )}
               </Button>
@@ -1087,7 +1096,7 @@ function PixelCodeModal({
           </>
         ) : (
           <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-            ยังไม่มี install code — ลอง refresh
+            {tPages("pixelCode.empty")}
           </p>
         )}
       </div>
@@ -1116,6 +1125,7 @@ function CreateAudienceModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [step, setStep] = useState<CreateStep>({ kind: "pick" });
 
   return (
@@ -1129,9 +1139,9 @@ function CreateAudienceModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">สร้าง Audience ใหม่</h3>
+            <h3 className="text-base font-semibold">{tPages("createAudience.title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              เลือกแหล่งข้อมูลที่จะใช้สร้าง audience
+              {tPages("createAudience.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -1143,22 +1153,22 @@ function CreateAudienceModal({
           <div className="space-y-2">
             <TypeOption
               icon={Users}
-              title="Customer list"
-              desc="อัพโหลดอีเมล/เบอร์โทรลูกค้าเดิม → retarget"
+              title={tPages("createAudience.customerTitle")}
+              desc={tPages("createAudience.customerDesc")}
               available
               onClick={() => setStep({ kind: "customer-list" })}
             />
             <TypeOption
               icon={Globe}
-              title="Website visitors (Pixel)"
-              desc="คนเข้าเว็บไซต์ จับโดย Pixel — retarget visitors"
+              title={tPages("createAudience.websiteTitle")}
+              desc={tPages("createAudience.websiteDesc")}
               available
               onClick={() => setStep({ kind: "website" })}
             />
             <TypeOption
               icon={Layers}
-              title="Lookalike"
-              desc="คนคล้ายกับ audience ที่มีอยู่ — expand prospecting"
+              title={tPages("createAudience.lookalikeTitle")}
+              desc={tPages("createAudience.lookalikeDesc")}
               available
               onClick={() => setStep({ kind: "lookalike" })}
             />
@@ -1210,6 +1220,7 @@ function TypeOption({
   available?: boolean;
   onClick: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   return (
     <button
       type="button"
@@ -1227,7 +1238,7 @@ function TypeOption({
           {title}
           {!available && (
             <span className="ml-2 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] uppercase text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-              soon
+              {tPages("createAudience.soon")}
             </span>
           )}
         </p>
@@ -1280,6 +1291,7 @@ function CustomerListForm({
   onBack: () => void;
   onCreated: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [metaAccountId, setMetaAccountId] = useState(accounts[0]?.id ?? "");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -1317,7 +1329,7 @@ function CustomerListForm({
       setEmails(Array.from(new Set(collectedEmails)));
       setPhones(Array.from(new Set(collectedPhones)));
     } catch (err) {
-      toast.error("Parse CSV ไม่สำเร็จ: " + (err as Error).message);
+      toast.error(tPages("customerList.parseFail", { message: (err as Error).message }));
     } finally {
       setParsing(false);
     }
@@ -1326,20 +1338,20 @@ function CustomerListForm({
   const totalRows = emails.length + phones.length;
 
   async function submit() {
-    if (!name.trim()) return toast.error("ตั้งชื่อ audience");
+    if (!name.trim()) return toast.error(tPages("customerList.errNameRequired"));
     if (totalRows < MIN_ROWS) {
-      return toast.error(`ต้องมีอย่างน้อย ${MIN_ROWS} แถว (Meta minimum) — ตอนนี้มี ${totalRows}`);
+      return toast.error(tPages("customerList.errMinRows", { min: MIN_ROWS, total: totalRows }));
     }
 
     setSubmitting(true);
     const toastId = toast.loading(
-      `กำลัง hash ${totalRows.toLocaleString()} แถว...`,
+      tPages("customerList.loadingHash", { total: totalRows.toLocaleString() }),
     );
     try {
       const hashedEmails = await Promise.all(emails.map(sha256));
       const hashedPhones = await Promise.all(phones.map(sha256));
 
-      toast.loading("กำลังสร้าง audience + อัพโหลด...", { id: toastId });
+      toast.loading(tPages("customerList.loadingUpload"), { id: toastId });
       const res = await fetch(
         `/api/meta/audiences/customer-list?tenantSlug=${tenantSlug}`,
         {
@@ -1356,15 +1368,18 @@ function CustomerListForm({
       );
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "สร้างไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("customerList.fail"));
       }
       toast.success(
-        `✓ สร้าง "${data.audience.name}" สำเร็จ — ${data.usersUploaded?.toLocaleString() ?? "?"} แถว`,
+        tPages("customerList.success", {
+          name: data.audience.name,
+          users: data.usersUploaded?.toLocaleString() ?? "?",
+        }),
         { id: toastId, duration: 4000 },
       );
       onCreated();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("customerList.fail"), {
         id: toastId,
         duration: 6000,
       });
@@ -1377,7 +1392,7 @@ function CustomerListForm({
     <div className="space-y-3">
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          Ad Account
+          {tPages("customerList.adAccountLabel")}
         </label>
         <select
           value={metaAccountId}
@@ -1394,50 +1409,53 @@ function CustomerListForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          ชื่อ Audience
+          {tPages("customerList.nameLabel")}
         </label>
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="เช่น Customers Q1 2026"
+          placeholder={tPages("customerList.namePlaceholder")}
         />
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          คำอธิบาย (optional)
+          {tPages("customerList.descLabel")}
         </label>
         <Input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="เช่น Email list จาก Shopify, ครั้งล่าสุด 1 เม.ย. 2026"
+          placeholder={tPages("customerList.descPlaceholder")}
         />
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          อัพโหลด CSV (อีเมล / เบอร์โทร)
+          {tPages("customerList.uploadLabel")}
         </label>
         <label className="flex cursor-pointer flex-col items-center gap-1.5 rounded-md border-2 border-dashed border-border p-4 hover:bg-muted/20">
           {parsing ? (
             <>
               <Loader2 className="size-5 animate-spin text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">กำลังอ่านไฟล์...</span>
+              <span className="text-xs text-muted-foreground">{tPages("customerList.parsing")}</span>
             </>
           ) : totalRows > 0 ? (
             <>
               <span className="text-sm font-medium">
-                ✓ พบ {emails.length.toLocaleString()} email + {phones.length.toLocaleString()} เบอร์โทร
+                {tPages("customerList.found", {
+                  emails: emails.length.toLocaleString(),
+                  phones: phones.length.toLocaleString(),
+                })}
               </span>
               <span className="text-[11px] text-muted-foreground">
-                กดเพื่อเปลี่ยนไฟล์
+                {tPages("customerList.changeFile")}
               </span>
             </>
           ) : (
             <>
               <Upload className="size-5 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">
-                เลือก CSV / TXT — column ไหนก็ได้ (email หรือ phone)
+                {tPages("customerList.dropHint")}
               </span>
             </>
           )}
@@ -1453,23 +1471,23 @@ function CustomerListForm({
         </label>
         {totalRows > 0 && totalRows < MIN_ROWS && (
           <p className="mt-1 text-[11px] text-rose-600 dark:text-rose-300">
-            ⚠ Meta ต้องการอย่างน้อย {MIN_ROWS} แถว — ตอนนี้มี {totalRows}
+            {tPages("customerList.minWarning", { min: MIN_ROWS, total: totalRows })}
           </p>
         )}
         {totalRows >= MIN_ROWS && (
           <p className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-300">
-            ✓ พร้อมส่ง — PII จะถูก hash ด้วย SHA-256 ในเบราว์เซอร์ (server ไม่เห็น raw data)
+            {tPages("customerList.readyHint")}
           </p>
         )}
       </div>
 
       <div className="flex justify-between gap-2 pt-2">
         <Button variant="ghost" size="sm" onClick={onBack} disabled={submitting}>
-          ← กลับ
+          {tPages("actions.back")}
         </Button>
         <Button size="sm" onClick={submit} disabled={submitting || totalRows < MIN_ROWS}>
           {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-          สร้าง Audience
+          {tPages("customerList.submit")}
         </Button>
       </div>
     </div>
@@ -1478,11 +1496,11 @@ function CustomerListForm({
 
 // ====== Lookalike form ============================================
 
-const LOOKALIKE_RATIOS = [
-  { label: "1%", value: 0.01, hint: "ใกล้เคียงที่สุด (~แคบ)" },
-  { label: "3%", value: 0.03, hint: "ใกล้เคียง" },
-  { label: "5%", value: 0.05, hint: "ผสมๆ" },
-  { label: "10%", value: 0.1, hint: "กว้างที่สุด" },
+const LOOKALIKE_RATIOS: { label: string; value: number; hintKey: string }[] = [
+  { label: "1%", value: 0.01, hintKey: "ratioClosest" },
+  { label: "3%", value: 0.03, hintKey: "ratioClose" },
+  { label: "5%", value: 0.05, hintKey: "ratioMixed" },
+  { label: "10%", value: 0.1, hintKey: "ratioWidest" },
 ];
 
 function LookalikeForm({
@@ -1498,6 +1516,7 @@ function LookalikeForm({
   onBack: () => void;
   onCreated: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [metaAccountId, setMetaAccountId] = useState(accounts[0]?.id ?? "");
   const [name, setName] = useState("");
   const [sourceAudienceId, setSourceAudienceId] = useState("");
@@ -1515,11 +1534,11 @@ function LookalikeForm({
   );
 
   async function submit() {
-    if (!name.trim()) return toast.error("ตั้งชื่อ Lookalike");
-    if (!sourceAudienceId) return toast.error("เลือก source audience");
+    if (!name.trim()) return toast.error(tPages("lookalike.errNameRequired"));
+    if (!sourceAudienceId) return toast.error(tPages("lookalike.errSourceRequired"));
 
     setSubmitting(true);
-    const toastId = toast.loading("กำลังสร้าง Lookalike...");
+    const toastId = toast.loading(tPages("lookalike.loading"));
     try {
       const res = await fetch(
         `/api/meta/audiences/lookalike?tenantSlug=${tenantSlug}`,
@@ -1537,15 +1556,15 @@ function LookalikeForm({
       );
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "สร้างไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("lookalike.fail"));
       }
-      toast.success(`✓ สร้าง Lookalike "${data.audience.name}" สำเร็จ — Meta คำนวณภายใน ~6 ชม.`, {
+      toast.success(tPages("lookalike.success", { name: data.audience.name }), {
         id: toastId,
         duration: 6000,
       });
       onCreated();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("lookalike.fail"), {
         id: toastId,
         duration: 5000,
       });
@@ -1558,7 +1577,7 @@ function LookalikeForm({
     <div className="space-y-3">
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          Ad Account
+          {tPages("lookalike.adAccountLabel")}
         </label>
         <select
           value={metaAccountId}
@@ -1578,12 +1597,11 @@ function LookalikeForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          Source Audience (audience ต้นแบบ)
+          {tPages("lookalike.sourceLabel")}
         </label>
         {sources.length === 0 ? (
           <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-            ไม่มี source audience ที่ใช้ได้ใน account นี้ — ต้องมี Custom/Website audience
-            ขนาด ≥ 100 ก่อน
+            {tPages("lookalike.sourceEmpty")}
           </p>
         ) : (
           <select
@@ -1591,7 +1609,7 @@ function LookalikeForm({
             onChange={(e) => setSourceAudienceId(e.target.value)}
             className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="">-- เลือก source --</option>
+            <option value="">{tPages("lookalike.sourcePlaceholder")}</option>
             {sources.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name} (~{formatCount(a.approximateCount)})
@@ -1603,19 +1621,19 @@ function LookalikeForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          ชื่อ Lookalike
+          {tPages("lookalike.nameLabel")}
         </label>
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="เช่น Lookalike Customers TH 1%"
+          placeholder={tPages("lookalike.namePlaceholder")}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ประเทศ (ISO code)
+            {tPages("lookalike.countryLabel")}
           </label>
           <Input
             value={country}
@@ -1625,7 +1643,7 @@ function LookalikeForm({
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Similarity
+            {tPages("lookalike.similarityLabel")}
           </label>
           <select
             value={ratio}
@@ -1634,7 +1652,7 @@ function LookalikeForm({
           >
             {LOOKALIKE_RATIOS.map((r) => (
               <option key={r.value} value={r.value}>
-                {r.label} — {r.hint}
+                {r.label} — {tPages(`lookalike.${r.hintKey}` as Parameters<typeof tPages>[0])}
               </option>
             ))}
           </select>
@@ -1642,16 +1660,16 @@ function LookalikeForm({
       </div>
 
       <p className="text-[11px] text-muted-foreground">
-        Lookalike จะใช้เวลา ~6 ชม. ในการประมวลผล — ขนาดจะเริ่มที่ 0 แล้วเพิ่มขึ้น
+        {tPages("lookalike.processingHint")}
       </p>
 
       <div className="flex justify-between gap-2 pt-2">
         <Button variant="ghost" size="sm" onClick={onBack} disabled={submitting}>
-          ← กลับ
+          {tPages("actions.back")}
         </Button>
         <Button size="sm" onClick={submit} disabled={submitting || !sourceAudienceId}>
           {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-          สร้าง Lookalike
+          {tPages("lookalike.submit")}
         </Button>
       </div>
     </div>
@@ -1673,6 +1691,7 @@ function WebsiteForm({
   onBack: () => void;
   onCreated: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [metaAccountId, setMetaAccountId] = useState(accounts[0]?.id ?? "");
   const [name, setName] = useState("");
   const [pixels, setPixels] = useState<PixelOption[]>([]);
@@ -1687,6 +1706,7 @@ function WebsiteForm({
   useEffect(() => {
     if (!metaAccountId) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset + standard fetch-then-setState pattern, guarded with cancelled flag
     setLoadingPixels(true);
     setPixelId("");
     fetch(`/api/meta/pixels?tenantSlug=${tenantSlug}&metaAccountId=${metaAccountId}`)
@@ -1706,14 +1726,14 @@ function WebsiteForm({
   }, [tenantSlug, metaAccountId]);
 
   async function submit() {
-    if (!name.trim()) return toast.error("ตั้งชื่อ audience");
-    if (!pixelId) return toast.error("เลือก Pixel");
+    if (!name.trim()) return toast.error(tPages("website.errNameRequired"));
+    if (!pixelId) return toast.error(tPages("website.errPixelRequired"));
     if (ruleKind !== "all-visitors" && !ruleValue.trim()) {
-      return toast.error("กรอกค่าเงื่อนไข");
+      return toast.error(tPages("website.errRuleValueRequired"));
     }
 
     setSubmitting(true);
-    const toastId = toast.loading("กำลังสร้าง audience...");
+    const toastId = toast.loading(tPages("website.loading"));
     try {
       const rule =
         ruleKind === "all-visitors"
@@ -1735,12 +1755,12 @@ function WebsiteForm({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "สร้างไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("website.fail"));
       }
-      toast.success(`✓ สร้าง "${data.audience.name}"`, { id: toastId, duration: 3000 });
+      toast.success(tPages("website.success", { name: data.audience.name }), { id: toastId, duration: 3000 });
       onCreated();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("website.fail"), {
         id: toastId,
         duration: 5000,
       });
@@ -1752,7 +1772,7 @@ function WebsiteForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="mb-1 block text-xs font-medium text-muted-foreground">Ad Account</label>
+        <label className="mb-1 block text-xs font-medium text-muted-foreground">{tPages("website.adAccountLabel")}</label>
         <select
           value={metaAccountId}
           onChange={(e) => setMetaAccountId(e.target.value)}
@@ -1768,11 +1788,11 @@ function WebsiteForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          Pixel {loadingPixels && "(loading...)"}
+          {tPages("website.pixelLabel")} {loadingPixels && tPages("website.loadingSuffix")}
         </label>
         {pixels.length === 0 && !loadingPixels ? (
           <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-            ไม่มี Pixel ใน account นี้ — สร้าง Pixel ก่อน (Tab &ldquo;Pixels&rdquo;)
+            {tPages("website.noPixel")}
           </p>
         ) : (
           <select
@@ -1780,7 +1800,7 @@ function WebsiteForm({
             onChange={(e) => setPixelId(e.target.value)}
             className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="">-- เลือก Pixel --</option>
+            <option value="">{tPages("website.pixelPlaceholder")}</option>
             {pixels.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -1792,33 +1812,33 @@ function WebsiteForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          ชื่อ Audience
+          {tPages("website.nameLabel")}
         </label>
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="เช่น Website visitors 30d"
+          placeholder={tPages("website.namePlaceholder")}
         />
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          เงื่อนไข
+          {tPages("website.ruleLabel")}
         </label>
         <select
           value={ruleKind}
           onChange={(e) => setRuleKind(e.target.value as typeof ruleKind)}
           className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="all-visitors">ทุกคนที่เข้าเว็บ</option>
-          <option value="url-contains">URL ที่มีคำว่า...</option>
-          <option value="event">Pixel event = ...</option>
+          <option value="all-visitors">{tPages("website.ruleAll")}</option>
+          <option value="url-contains">{tPages("website.ruleUrlContains")}</option>
+          <option value="event">{tPages("website.ruleEvent")}</option>
         </select>
         {ruleKind === "url-contains" && (
           <Input
             value={ruleValue}
             onChange={(e) => setRuleValue(e.target.value)}
-            placeholder="เช่น /product หรือ /thank-you"
+            placeholder={tPages("website.ruleUrlPlaceholder")}
             className="mt-1"
           />
         )}
@@ -1826,7 +1846,7 @@ function WebsiteForm({
           <Input
             value={ruleValue}
             onChange={(e) => setRuleValue(e.target.value)}
-            placeholder="เช่น Purchase, AddToCart, Lead"
+            placeholder={tPages("website.ruleEventPlaceholder")}
             className="mt-1"
           />
         )}
@@ -1834,7 +1854,7 @@ function WebsiteForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          เก็บข้อมูล (วัน)
+          {tPages("website.retentionLabel")}
         </label>
         <select
           value={retentionDays}
@@ -1843,7 +1863,7 @@ function WebsiteForm({
         >
           {[7, 14, 30, 60, 90, 180].map((d) => (
             <option key={d} value={d}>
-              {d} วัน
+              {tPages("website.retentionUnit", { days: d })}
             </option>
           ))}
         </select>
@@ -1851,11 +1871,11 @@ function WebsiteForm({
 
       <div className="flex justify-between gap-2 pt-2">
         <Button variant="ghost" size="sm" onClick={onBack} disabled={submitting}>
-          ← กลับ
+          {tPages("actions.back")}
         </Button>
         <Button size="sm" onClick={submit} disabled={submitting || !pixelId}>
           {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-          สร้าง Audience
+          {tPages("website.submit")}
         </Button>
       </div>
     </div>
@@ -1876,25 +1896,25 @@ type ConversionEventType =
   | "FIND_LOCATION" | "DONATE" | "SCHEDULE" | "START_TRIAL"
   | "SUBMIT_APPLICATION" | "CUSTOMIZE_PRODUCT" | "OTHER";
 
-const CONVERSION_EVENT_TYPES: { value: ConversionEventType; label: string }[] = [
-  { value: "PURCHASE", label: "Purchase — ซื้อสำเร็จ" },
-  { value: "ADD_TO_CART", label: "Add to Cart — ใส่ตะกร้า" },
-  { value: "INITIATE_CHECKOUT", label: "Initiate Checkout — เริ่ม checkout" },
-  { value: "LEAD", label: "Lead — กรอกฟอร์ม" },
-  { value: "COMPLETE_REGISTRATION", label: "Complete Registration — สมัครสมาชิก" },
-  { value: "ADD_PAYMENT_INFO", label: "Add Payment Info — กรอกข้อมูลจ่าย" },
-  { value: "VIEW_CONTENT", label: "View Content — ดูสินค้า" },
-  { value: "SEARCH", label: "Search — ค้นหา" },
-  { value: "SUBSCRIBE", label: "Subscribe — สมัครรับข้อมูล" },
-  { value: "CONTACT", label: "Contact — ติดต่อ" },
-  { value: "ADD_TO_WISHLIST", label: "Add to Wishlist" },
-  { value: "FIND_LOCATION", label: "Find Location" },
-  { value: "DONATE", label: "Donate" },
-  { value: "SCHEDULE", label: "Schedule" },
-  { value: "START_TRIAL", label: "Start Trial" },
-  { value: "SUBMIT_APPLICATION", label: "Submit Application" },
-  { value: "CUSTOMIZE_PRODUCT", label: "Customize Product" },
-  { value: "OTHER", label: "Other — กำหนดเอง" },
+const CONVERSION_EVENT_TYPES: { value: ConversionEventType; labelKey: string }[] = [
+  { value: "PURCHASE", labelKey: "eventPurchase" },
+  { value: "ADD_TO_CART", labelKey: "eventAddToCart" },
+  { value: "INITIATE_CHECKOUT", labelKey: "eventInitiateCheckout" },
+  { value: "LEAD", labelKey: "eventLead" },
+  { value: "COMPLETE_REGISTRATION", labelKey: "eventCompleteRegistration" },
+  { value: "ADD_PAYMENT_INFO", labelKey: "eventAddPaymentInfo" },
+  { value: "VIEW_CONTENT", labelKey: "eventViewContent" },
+  { value: "SEARCH", labelKey: "eventSearch" },
+  { value: "SUBSCRIBE", labelKey: "eventSubscribe" },
+  { value: "CONTACT", labelKey: "eventContact" },
+  { value: "ADD_TO_WISHLIST", labelKey: "eventAddToWishlist" },
+  { value: "FIND_LOCATION", labelKey: "eventFindLocation" },
+  { value: "DONATE", labelKey: "eventDonate" },
+  { value: "SCHEDULE", labelKey: "eventSchedule" },
+  { value: "START_TRIAL", labelKey: "eventStartTrial" },
+  { value: "SUBMIT_APPLICATION", labelKey: "eventSubmitApplication" },
+  { value: "CUSTOMIZE_PRODUCT", labelKey: "eventCustomizeProduct" },
+  { value: "OTHER", labelKey: "eventOther" },
 ];
 
 type CustomConversion = {
@@ -1923,6 +1943,7 @@ function ConversionsTab({
   canEdit: boolean;
   accounts: Account[];
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [conversions, setConversions] = useState<ConversionWithAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -1932,6 +1953,7 @@ function ConversionsTab({
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     Promise.all(
       accounts.map(async (acc) => {
@@ -1971,11 +1993,11 @@ function ConversionsTab({
   );
 
   async function deleteConversion(c: ConversionWithAccount) {
-    if (!confirm(`ลบ Custom Conversion "${c.name}"? (ทำใน Meta จริง — ยกเลิกไม่ได้)`)) {
+    if (!confirm(tPages("conversions.deleteConfirm", { name: c.name }))) {
       return;
     }
     setBusy((prev) => new Set(prev).add(c.id));
-    const toastId = toast.loading("กำลังลบ...");
+    const toastId = toast.loading(tPages("conversions.deleting"));
     try {
       const res = await fetch(
         `/api/meta/custom-conversions/${c.id}?tenantSlug=${tenantSlug}`,
@@ -1983,12 +2005,12 @@ function ConversionsTab({
       );
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "ลบไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("conversions.deleteFail"));
       }
-      toast.success("✓ ลบแล้ว", { id: toastId, duration: 2500 });
+      toast.success(tPages("conversions.deleted"), { id: toastId, duration: 2500 });
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ลบไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("conversions.deleteFail"), {
         id: toastId,
         duration: 5000,
       });
@@ -2004,31 +2026,26 @@ function ConversionsTab({
   return (
     <div className="space-y-4">
       <Card className="space-y-1 border-emerald-200 bg-emerald-50/60 p-3 text-xs text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
-        <p className="font-medium">✨ Custom Conversion คืออะไร?</p>
+        <p className="font-medium">{tPages("conversions.bannerTitle")}</p>
         <ul className="ml-4 list-disc space-y-0.5 text-[11px] leading-relaxed">
-          <li>
-            กำหนด URL pattern → conversion event โดยไม่ต้องเขียน code event บนเว็บ
-          </li>
-          <li>
-            เช่น &ldquo;URL ที่มีคำว่า <code>/thank-you</code>&rdquo; = Purchase event
-            (Meta จะนับให้อัตโนมัติ)
-          </li>
-          <li>เหมาะกับเว็บที่ติด Pixel basic แล้ว แต่ไม่มี dev มา map events</li>
+          <li>{tPages("conversions.bannerItem1")}</li>
+          <li dangerouslySetInnerHTML={{ __html: tPages("conversions.bannerItem2") }} />
+          <li>{tPages("conversions.bannerItem3")}</li>
         </ul>
       </Card>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-4 py-3">
         <span className="text-sm">
-          <span className="text-muted-foreground">รวม:</span>{" "}
-          <span className="font-semibold tabular-nums">{conversions.length}</span> custom
-          conversions
+          <span className="text-muted-foreground">{tPages("filter.totalLabel")}</span>{" "}
+          <span className="font-semibold tabular-nums">{conversions.length}</span>{" "}
+          {tPages("filter.conversionsUnit")}
         </span>
         <select
           value={accountFilter}
           onChange={(e) => setAccountFilter(e.target.value)}
           className="h-8 rounded-md border border-border bg-background px-2 text-sm"
         >
-          <option value="ALL">ทุก account</option>
+          <option value="ALL">{tPages("filter.allAccounts")}</option>
           {accounts.map((a) => (
             <option key={a.id} value={a.id}>
               {a.name}
@@ -2038,7 +2055,7 @@ function ConversionsTab({
         {canEdit && (
           <Button size="sm" onClick={() => setCreateOpen(true)} className="ml-auto gap-1.5">
             <Plus className="size-3.5" />
-            สร้าง Custom Conversion
+            {tPages("actions.createConversion")}
           </Button>
         )}
       </div>
@@ -2046,20 +2063,19 @@ function ConversionsTab({
       {loading ? (
         <Card className="flex items-center justify-center gap-2 border-dashed py-12">
           <Loader2 className="size-4 animate-spin text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+          <span className="text-sm text-muted-foreground">{tPages("conversions.loading")}</span>
         </Card>
       ) : filtered.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
           <Target className="size-6 text-muted-foreground" />
-          <p className="text-sm font-medium">ยังไม่มี Custom Conversion</p>
+          <p className="text-sm font-medium">{tPages("conversions.emptyTitle")}</p>
           <p className="max-w-md text-xs text-muted-foreground">
-            สร้าง Custom Conversion เพื่อ map URL → conversion event โดยไม่ต้องเขียน
-            event code บนเว็บ
+            {tPages("conversions.emptyDescription")}
           </p>
           {canEdit && (
             <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
               <Plus className="size-3.5" />
-              สร้าง Custom Conversion ตัวแรก
+              {tPages("actions.createConversionFirst")}
             </Button>
           )}
         </Card>
@@ -2075,12 +2091,12 @@ function ConversionsTab({
                   </p>
                   <p className="text-[11px] text-muted-foreground">
                     {c.accountName}
-                    {c.pixelName && ` · Pixel: ${c.pixelName}`}
-                    {c.customEventType && ` · Category: ${c.customEventType}`}
+                    {c.pixelName && ` · ${tPages("conversions.pixelPrefix")} ${c.pixelName}`}
+                    {c.customEventType && ` · ${tPages("conversions.categoryPrefix")} ${c.customEventType}`}
                   </p>
                   {c.rule && (
                     <p className="mt-0.5 truncate text-[11px] text-muted-foreground/80">
-                      Rule: <code className="text-foreground">{formatRule(c.rule)}</code>
+                      {tPages("conversions.rulePrefix")} <code className="text-foreground">{formatRule(c.rule)}</code>
                     </p>
                   )}
                 </div>
@@ -2090,7 +2106,7 @@ function ConversionsTab({
                     variant="ghost"
                     disabled={busy.has(c.id)}
                     onClick={() => deleteConversion(c)}
-                    title="ลบ Custom Conversion"
+                    title={tPages("conversions.deleteTitle")}
                     className="text-destructive"
                   >
                     {busy.has(c.id) ? (
@@ -2153,6 +2169,7 @@ function CreateConversionModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [metaAccountId, setMetaAccountId] = useState(accounts[0]?.id ?? "");
   const [name, setName] = useState("");
   const [pixels, setPixels] = useState<{ id: string; name: string }[]>([]);
@@ -2168,6 +2185,7 @@ function CreateConversionModal({
   useEffect(() => {
     if (!metaAccountId) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset + standard fetch-then-setState pattern, guarded with cancelled flag
     setLoadingPixels(true);
     setPixelId("");
     fetch(`/api/meta/pixels?tenantSlug=${tenantSlug}&metaAccountId=${metaAccountId}`)
@@ -2190,12 +2208,12 @@ function CreateConversionModal({
   }, [tenantSlug, metaAccountId]);
 
   async function submit() {
-    if (!name.trim()) return toast.error("ตั้งชื่อ");
-    if (!pixelId) return toast.error("เลือก Pixel");
-    if (!ruleValue.trim()) return toast.error("กรอก URL pattern");
+    if (!name.trim()) return toast.error(tPages("createConversion.errNameRequired"));
+    if (!pixelId) return toast.error(tPages("createConversion.errPixelRequired"));
+    if (!ruleValue.trim()) return toast.error(tPages("createConversion.errUrlRequired"));
 
     setSubmitting(true);
-    const toastId = toast.loading("กำลังสร้าง Custom Conversion...");
+    const toastId = toast.loading(tPages("createConversion.loading"));
     try {
       const res = await fetch(`/api/meta/custom-conversions?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -2211,15 +2229,15 @@ function CreateConversionModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "สร้างไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("createConversion.fail"));
       }
-      toast.success(`✓ สร้าง "${data.conversion.name}" สำเร็จ`, {
+      toast.success(tPages("createConversion.success", { name: data.conversion.name }), {
         id: toastId,
         duration: 3000,
       });
       onCreated();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("createConversion.fail"), {
         id: toastId,
         duration: 6000,
       });
@@ -2239,9 +2257,9 @@ function CreateConversionModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">สร้าง Custom Conversion</h3>
+            <h3 className="text-base font-semibold">{tPages("createConversion.title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              map URL pattern → conversion event โดยไม่ต้องเขียน code event บนเว็บ
+              {tPages("createConversion.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -2251,7 +2269,7 @@ function CreateConversionModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Ad Account
+            {tPages("createConversion.adAccountLabel")}
           </label>
           <select
             value={metaAccountId}
@@ -2268,11 +2286,11 @@ function CreateConversionModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Pixel {loadingPixels && "(loading...)"}
+            {tPages("createConversion.pixelLabel")} {loadingPixels && tPages("createConversion.loadingSuffix")}
           </label>
           {pixels.length === 0 && !loadingPixels ? (
             <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-              ไม่มี Pixel ใน account นี้ — สร้าง Pixel ก่อน (tab &ldquo;Pixels&rdquo;)
+              {tPages("createConversion.noPixel")}
             </p>
           ) : (
             <select
@@ -2280,7 +2298,7 @@ function CreateConversionModal({
               onChange={(e) => setPixelId(e.target.value)}
               className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
             >
-              <option value="">-- เลือก Pixel --</option>
+              <option value="">{tPages("createConversion.pixelPlaceholder")}</option>
               {pixels.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -2292,18 +2310,18 @@ function CreateConversionModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ชื่อ Conversion
+            {tPages("createConversion.nameLabel")}
           </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="เช่น Order Complete, Lead Form Submit"
+            placeholder={tPages("createConversion.namePlaceholder")}
           />
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            กฎ URL
+            {tPages("createConversion.urlRuleLabel")}
           </label>
           <div className="grid grid-cols-3 gap-2">
             <select
@@ -2311,25 +2329,25 @@ function CreateConversionModal({
               onChange={(e) => setRuleKind(e.target.value as typeof ruleKind)}
               className="h-9 rounded-md border border-border bg-background px-2 text-sm"
             >
-              <option value="url-contains">URL contains</option>
-              <option value="url-equals">URL equals</option>
-              <option value="url-not-contains">URL NOT contains</option>
+              <option value="url-contains">{tPages("createConversion.urlContains")}</option>
+              <option value="url-equals">{tPages("createConversion.urlEquals")}</option>
+              <option value="url-not-contains">{tPages("createConversion.urlNotContains")}</option>
             </select>
             <Input
               value={ruleValue}
               onChange={(e) => setRuleValue(e.target.value)}
-              placeholder="เช่น /thank-you หรือ /checkout/complete"
+              placeholder={tPages("createConversion.valuePlaceholder")}
               className="col-span-2"
             />
           </div>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            Meta จะ match กับ URL ของ PageView ที่ Pixel นี้ยิงในเว็บ
+            {tPages("createConversion.matchHint")}
           </p>
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Category (สำหรับ Meta optimization)
+            {tPages("createConversion.categoryLabel")}
           </label>
           <select
             value={customEventType}
@@ -2338,18 +2356,18 @@ function CreateConversionModal({
           >
             {CONVERSION_EVENT_TYPES.map((ev) => (
               <option key={ev.value} value={ev.value}>
-                {ev.label}
+                {tPages(`createConversion.${ev.labelKey}` as Parameters<typeof tPages>[0])}
               </option>
             ))}
           </select>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            ใช้บอก Meta ว่า conversion นี้คล้าย event มาตรฐานตัวไหน — มีผลกับ optimization
+            {tPages("createConversion.categoryHint")}
           </p>
         </div>
 
         <div className="flex justify-between gap-2 pt-2">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            ยกเลิก
+            {tPages("actions.cancel")}
           </Button>
           <Button
             size="sm"
@@ -2357,7 +2375,7 @@ function CreateConversionModal({
             disabled={submitting || !pixelId || !name.trim() || !ruleValue.trim()}
           >
             {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-            สร้าง
+            {tPages("actions.create2")}
           </Button>
         </div>
       </div>
@@ -2418,6 +2436,8 @@ function EventsTab({
   canEdit: boolean;
   accounts: Account[];
 }) {
+  const tPages = useTranslations("pages.audiences");
+  const formatRelativeTime = useFormatRelativeTime();
   const [rules, setRules] = useState<EventRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -2432,6 +2452,7 @@ function EventsTab({
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern, guarded with cancelled flag
     setLoading(true);
     Promise.all([
       fetch(`/api/event-rules?tenantSlug=${tenantSlug}`).then((r) => r.json()),
@@ -2487,11 +2508,11 @@ function EventsTab({
         body: JSON.stringify({ enabled: !rule.enabled }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "อัพเดทไม่สำเร็จ");
+      if (!res.ok) throw new Error(data.error ?? tPages("events.updateFail"));
       // Visual state changes immediately on the row — toast would be noise.
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "อัพเดทไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : tPages("events.updateFail"));
     } finally {
       setBusy((p) => {
         const n = new Set(p);
@@ -2502,18 +2523,18 @@ function EventsTab({
   }
 
   async function deleteRule(rule: EventRule) {
-    if (!confirm(`ลบ rule "${rule.name}"?`)) return;
+    if (!confirm(tPages("events.deleteConfirm", { name: rule.name }))) return;
     setBusy((p) => new Set(p).add(rule.id));
     try {
       const res = await fetch(`/api/event-rules/${rule.id}?tenantSlug=${tenantSlug}`, {
         method: "DELETE",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ลบไม่สำเร็จ");
-      toast.success("ลบแล้ว", { duration: 2000 });
+      if (!res.ok) throw new Error(data.error ?? tPages("events.deleteFail"));
+      toast.success(tPages("events.deleted"), { duration: 2000 });
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ลบไม่สำเร็จ");
+      toast.error(err instanceof Error ? err.message : tPages("events.deleteFail"));
     } finally {
       setBusy((p) => {
         const n = new Set(p);
@@ -2537,31 +2558,20 @@ function EventsTab({
   return (
     <div className="space-y-4">
       <Card className="space-y-1 border-emerald-200 bg-emerald-50/60 p-3 text-xs text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
-        <p className="font-medium">⚡ Events SDK — track event ทันทีโดยไม่ต้องเขียน code</p>
+        <p className="font-medium">{tPages("events.bannerTitle")}</p>
         <ul className="ml-4 list-disc space-y-0.5 text-[11px] leading-relaxed">
-          <li>
-            ติด <strong>1 script tag</strong> บนเว็บ → SDK ของเรา fire Meta Pixel events ตาม
-            rule ที่ตั้งไว้ที่นี่
-          </li>
-          <li>
-            Triggers: URL match, click selector, form submit, scroll %, time on page
-          </li>
-          <li>
-            ส่งทั้ง <strong>browser Pixel + server CAPI</strong> (ปลอด ad blocker / iOS 14)
-          </li>
+          <li dangerouslySetInnerHTML={{ __html: tPages("events.bannerItem1") }} />
+          <li>{tPages("events.bannerItem2")}</li>
+          <li dangerouslySetInnerHTML={{ __html: tPages("events.bannerItem3") }} />
         </ul>
       </Card>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-4 py-3">
         <span className="text-sm">
-          <span className="text-muted-foreground">Rules ทั้งหมด:</span>{" "}
+          <span className="text-muted-foreground">{tPages("events.totalLabel")}</span>{" "}
           <span className="font-semibold tabular-nums">{rules.length}</span>
           <span className="ml-2 text-muted-foreground">
-            (เปิดอยู่{" "}
-            <span className="font-semibold tabular-nums text-foreground">
-              {rules.filter((r) => r.enabled).length}
-            </span>
-            )
+            {tPages("events.enabledLabel", { count: rules.filter((r) => r.enabled).length })}
           </span>
         </span>
         <a
@@ -2569,7 +2579,7 @@ function EventsTab({
           className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-background px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <Activity className="size-3.5" />
-          ดู Event Log
+          {tPages("events.viewLog")}
         </a>
         {canEdit && pixelOptions.length > 0 && (
           <>
@@ -2580,11 +2590,11 @@ function EventsTab({
               className="gap-1.5"
             >
               <Code className="size-3.5" />
-              SDK Install Code
+              {tPages("events.sdkInstallCode")}
             </Button>
             <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
               <Plus className="size-3.5" />
-              สร้าง Rule
+              {tPages("actions.createRule")}
             </Button>
           </>
         )}
@@ -2593,15 +2603,14 @@ function EventsTab({
       {loading ? (
         <Card className="flex items-center justify-center gap-2 border-dashed py-12">
           <Loader2 className="size-4 animate-spin text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">กำลังโหลด...</span>
+          <span className="text-sm text-muted-foreground">{tPages("events.loading")}</span>
         </Card>
       ) : rules.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
           <Activity className="size-6 text-muted-foreground" />
-          <p className="text-sm font-medium">ยังไม่มี Event Rule</p>
+          <p className="text-sm font-medium">{tPages("events.emptyTitle")}</p>
           <p className="max-w-md text-xs text-muted-foreground">
-            สร้าง rule เพื่อให้ SDK ของเรา auto-fire Meta Pixel events บนเว็บลูกค้า —
-            ไม่ต้องเขียน event code เอง
+            {tPages("events.emptyDescription")}
           </p>
           {canEdit && pixelOptions.length > 0 && (
             <div className="flex gap-2">
@@ -2612,17 +2621,17 @@ function EventsTab({
                 className="gap-1.5"
               >
                 <Code className="size-3.5" />
-                ติด SDK ก่อน
+                {tPages("events.installSdkFirst")}
               </Button>
               <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
                 <Plus className="size-3.5" />
-                สร้าง Rule ตัวแรก
+                {tPages("actions.createRuleFirst")}
               </Button>
             </div>
           )}
           {pixelOptions.length === 0 && (
             <p className="text-[11px] text-muted-foreground">
-              ต้องสร้าง Pixel ก่อนใน tab Pixels
+              {tPages("events.needPixel")}
             </p>
           )}
         </Card>
@@ -2641,7 +2650,7 @@ function EventsTab({
                     <span className="text-muted-foreground">· {pixel.accountName}</span>
                   )}
                   <span className="ml-auto text-muted-foreground">
-                    {ruleList.length} rule{ruleList.length > 1 ? "s" : ""}
+                    {ruleList.length} {ruleList.length > 1 ? tPages("events.rulesUnitPlural") : tPages("events.rulesUnit")}
                   </span>
                   <Button
                     size="sm"
@@ -2650,7 +2659,7 @@ function EventsTab({
                     className="h-6 gap-1 text-[11px]"
                   >
                     <Code className="size-3" />
-                    Install code
+                    {tPages("events.installCode")}
                   </Button>
                 </div>
                 <ul className="divide-y divide-border">
@@ -2670,22 +2679,22 @@ function EventsTab({
                             {r.name}
                           </p>
                           <p className="text-[11px] text-muted-foreground">
-                            {tr?.label}: {formatRuleCondition(r)} · fires{" "}
+                            {tr?.label}: {formatRuleCondition(r, tPages)} · fires{" "}
                             <span className="font-medium text-foreground">{r.eventName}</span>
                             {r.totalFires > 0 && (
                               <>
                                 {" · "}
-                                <span className="tabular-nums">{r.totalFires}</span> fires
+                                <span className="tabular-nums">{r.totalFires}</span> {tPages("events.firesUnit")}
                               </>
                             )}
                             {r.lastFiredAt && (
-                              <> · last {formatRelativeTime(r.lastFiredAt)}</>
+                              <> · {tPages("events.lastFiredPrefix")} {formatRelativeTime(r.lastFiredAt)}</>
                             )}
                           </p>
                         </div>
                         {!r.enabled && (
                           <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                            disabled
+                            {tPages("events.disabled")}
                           </span>
                         )}
                         {canEdit && (
@@ -2695,7 +2704,7 @@ function EventsTab({
                               variant="ghost"
                               disabled={busy.has(r.id)}
                               onClick={() => toggleEnabled(r)}
-                              title={r.enabled ? "ปิด rule" : "เปิด rule"}
+                              title={r.enabled ? tPages("events.disableTitle") : tPages("events.enableTitle")}
                             >
                               {busy.has(r.id) ? (
                                 <Loader2 className="size-3.5 animate-spin" />
@@ -2713,7 +2722,7 @@ function EventsTab({
                               variant="ghost"
                               disabled={busy.has(r.id)}
                               onClick={() => deleteRule(r)}
-                              title="ลบ rule"
+                              title={tPages("events.deleteTitle")}
                               className="text-destructive"
                             >
                               <Trash2 className="size-3.5" />
@@ -2753,17 +2762,22 @@ function EventsTab({
   );
 }
 
-function formatRuleCondition(r: EventRule): string {
+function formatRuleCondition(
+  r: EventRule,
+  t: ReturnType<typeof useTranslations>,
+): string {
   const c = r.conditions as Record<string, unknown>;
   switch (r.triggerType) {
     case "url": {
       const op = String(c.op ?? "contains");
-      return `URL ${op} "${String(c.value ?? "")}"`;
+      return t("ruleCondition.urlOp", { op, value: String(c.value ?? "") });
     }
     case "click":
-      return `selector "${String(c.selector ?? "")}"`;
+      return t("ruleCondition.selector", { value: String(c.selector ?? "") });
     case "form_submit":
-      return c.selector ? `form "${String(c.selector)}"` : "any form";
+      return c.selector
+        ? t("ruleCondition.formSelector", { value: String(c.selector) })
+        : t("ruleCondition.anyForm");
     case "scroll":
       return `${c.percent ?? 50}%`;
     case "time_on_page":
@@ -2786,6 +2800,7 @@ function CreateEventRuleModal({
   onClose: () => void;
   onCreated: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [pixelId, setPixelId] = useState(pixelOptions[0]?.id ?? "");
   const [name, setName] = useState("");
   const [eventName, setEventName] = useState<(typeof STANDARD_EVENT_NAMES)[number]>("Purchase");
@@ -2824,13 +2839,13 @@ function CreateEventRuleModal({
   }
 
   async function submit() {
-    if (!name.trim()) return toast.error("ตั้งชื่อ rule");
-    if (!pixelId) return toast.error("เลือก Pixel");
+    if (!name.trim()) return toast.error(tPages("createRule.errNameRequired"));
+    if (!pixelId) return toast.error(tPages("createRule.errPixelRequired"));
     const conditions = buildConditions();
-    if (!conditions) return toast.error("กรอกข้อมูล trigger ให้ครบ");
+    if (!conditions) return toast.error(tPages("createRule.errTriggerIncomplete"));
 
     setSubmitting(true);
-    const toastId = toast.loading("กำลังสร้าง rule...");
+    const toastId = toast.loading(tPages("createRule.loading"));
     try {
       const res = await fetch(`/api/event-rules?tenantSlug=${tenantSlug}`, {
         method: "POST",
@@ -2845,12 +2860,12 @@ function CreateEventRuleModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(typeof data.error === "string" ? data.error : "สร้างไม่สำเร็จ");
+        throw new Error(typeof data.error === "string" ? data.error : tPages("createRule.fail"));
       }
-      toast.success(`✓ สร้าง "${data.rule.name}" สำเร็จ`, { id: toastId, duration: 3000 });
+      toast.success(tPages("createRule.success", { name: data.rule.name }), { id: toastId, duration: 3000 });
       onCreated();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "สร้างไม่สำเร็จ", {
+      toast.error(err instanceof Error ? err.message : tPages("createRule.fail"), {
         id: toastId,
         duration: 6000,
       });
@@ -2870,9 +2885,9 @@ function CreateEventRuleModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">สร้าง Event Rule</h3>
+            <h3 className="text-base font-semibold">{tPages("createRule.title")}</h3>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              เมื่อ trigger match → SDK fire Meta Pixel event + ส่ง CAPI
+              {tPages("createRule.subtitle")}
             </p>
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -2881,13 +2896,13 @@ function CreateEventRuleModal({
         </div>
 
         <div>
-          <label className="mb-1 block text-xs font-medium text-muted-foreground">Pixel</label>
+          <label className="mb-1 block text-xs font-medium text-muted-foreground">{tPages("createRule.pixelLabel")}</label>
           <select
             value={pixelId}
             onChange={(e) => setPixelId(e.target.value)}
             className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           >
-            {pixelOptions.length === 0 && <option value="">ไม่มี Pixel</option>}
+            {pixelOptions.length === 0 && <option value="">{tPages("createRule.noPixel")}</option>}
             {pixelOptions.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -2898,18 +2913,18 @@ function CreateEventRuleModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            ชื่อ Rule
+            {tPages("createRule.nameLabel")}
           </label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="เช่น Track Purchase on Thank-You Page"
+            placeholder={tPages("createRule.namePlaceholder")}
           />
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Event Name (Meta standard)
+            {tPages("createRule.eventLabel")}
           </label>
           <select
             value={eventName}
@@ -2926,19 +2941,19 @@ function CreateEventRuleModal({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            Trigger
+            {tPages("createRule.triggerLabel")}
           </label>
           <select
             value={triggerType}
             onChange={(e) => setTriggerType(e.target.value as TriggerType)}
             className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
           >
-            <option value="url">URL match</option>
-            <option value="click">Click on selector</option>
-            <option value="form_submit">Form submit</option>
-            <option value="scroll">Scroll percentage</option>
-            <option value="time_on_page">Time on page</option>
-            <option value="custom_js">Custom window event</option>
+            <option value="url">{tPages("createRule.trigUrl")}</option>
+            <option value="click">{tPages("createRule.trigClick")}</option>
+            <option value="form_submit">{tPages("createRule.trigForm")}</option>
+            <option value="scroll">{tPages("createRule.trigScroll")}</option>
+            <option value="time_on_page">{tPages("createRule.trigTime")}</option>
+            <option value="custom_js">{tPages("createRule.trigCustom")}</option>
           </select>
         </div>
 
@@ -2950,16 +2965,16 @@ function CreateEventRuleModal({
                 onChange={(e) => setUrlOp(e.target.value as typeof urlOp)}
                 className="h-9 rounded-md border border-border bg-background px-2 text-sm"
               >
-                <option value="contains">contains</option>
-                <option value="equals">equals</option>
-                <option value="not_contains">not contains</option>
-                <option value="starts_with">starts with</option>
-                <option value="regex">regex</option>
+                <option value="contains">{tPages("createRule.opContains")}</option>
+                <option value="equals">{tPages("createRule.opEquals")}</option>
+                <option value="not_contains">{tPages("createRule.opNotContains")}</option>
+                <option value="starts_with">{tPages("createRule.opStartsWith")}</option>
+                <option value="regex">{tPages("createRule.opRegex")}</option>
               </select>
               <Input
                 value={urlValue}
                 onChange={(e) => setUrlValue(e.target.value)}
-                placeholder="/thank-you"
+                placeholder={tPages("createRule.urlPlaceholder")}
                 className="col-span-2"
               />
             </div>
@@ -2969,7 +2984,7 @@ function CreateEventRuleModal({
                 checked={urlFireOnce}
                 onChange={(e) => setUrlFireOnce(e.target.checked)}
               />
-              ยิงครั้งเดียวต่อ session
+              {tPages("createRule.fireOncePerSession")}
             </label>
           </div>
         )}
@@ -2978,7 +2993,7 @@ function CreateEventRuleModal({
           <Input
             value={clickSelector}
             onChange={(e) => setClickSelector(e.target.value)}
-            placeholder=".add-to-cart-button หรือ #checkout-btn"
+            placeholder={tPages("createRule.clickPlaceholder")}
           />
         )}
 
@@ -2986,7 +3001,7 @@ function CreateEventRuleModal({
           <Input
             value={formSelector}
             onChange={(e) => setFormSelector(e.target.value)}
-            placeholder='ว่างไว้ = form ใดก็ได้ หรือ "form.lead-form"'
+            placeholder={tPages("createRule.formPlaceholder")}
           />
         )}
 
@@ -3013,7 +3028,7 @@ function CreateEventRuleModal({
               onChange={(e) => setTimeSeconds(Number(e.target.value))}
               className="w-24"
             />
-            <span className="text-xs text-muted-foreground">วินาที</span>
+            <span className="text-xs text-muted-foreground">{tPages("createRule.secondsUnit")}</span>
           </div>
         )}
 
@@ -3021,17 +3036,17 @@ function CreateEventRuleModal({
           <Input
             value={customEventName}
             onChange={(e) => setCustomEventName(e.target.value)}
-            placeholder="ชื่อ window event เช่น myAppPurchase"
+            placeholder={tPages("createRule.customPlaceholder")}
           />
         )}
 
         <div className="flex justify-between gap-2 pt-1">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            ยกเลิก
+            {tPages("actions.cancel")}
           </Button>
           <Button size="sm" onClick={submit} disabled={submitting || !pixelId || !name.trim()}>
             {submitting ? <Loader2 className="mr-1.5 size-3.5 animate-spin" /> : null}
-            สร้าง Rule
+            {tPages("actions.createRule")}
           </Button>
         </div>
       </div>
@@ -3048,12 +3063,14 @@ function SdkInstallModal({
   pixel: { id: string; name: string; accountId: string; accountName: string } | undefined;
   onClose: () => void;
 }) {
+  const tPages = useTranslations("pages.audiences");
   const [snippet, setSnippet] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!pixel) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard fetch-then-setState pattern
     setLoading(true);
     fetch(
       `/api/event-sdk/install-code?tenantSlug=${tenantSlug}&metaAccountId=${pixel.accountId}&pixelId=${pixel.id}`,
@@ -3069,10 +3086,10 @@ function SdkInstallModal({
     try {
       await navigator.clipboard.writeText(snippet);
       setCopied(true);
-      toast.success("คัดลอกแล้ว", { duration: 2000 });
+      toast.success(tPages("pixels.copied"), { duration: 2000 });
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("คัดลอกไม่สำเร็จ");
+      toast.error(tPages("pixels.copyFail"));
     }
   }
 
@@ -3087,12 +3104,14 @@ function SdkInstallModal({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-base font-semibold">SDK Install Code</h3>
+            <h3 className="text-base font-semibold">{tPages("sdkInstall.title")}</h3>
             {pixel && (
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                สำหรับ Pixel: <span className="font-medium text-foreground">{pixel.name}</span>{" "}
-                · วาง snippet นี้ใน &lt;head&gt; ของทุกหน้าในเว็บไซต์
-              </p>
+              <p
+                className="mt-0.5 text-xs text-muted-foreground"
+                dangerouslySetInnerHTML={{
+                  __html: tPages("sdkInstall.subtitle", { name: pixel.name }),
+                }}
+              />
             )}
           </div>
           <Button size="icon-sm" variant="ghost" onClick={onClose}>
@@ -3101,8 +3120,7 @@ function SdkInstallModal({
         </div>
 
         <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-[11px] text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-200">
-          ⚠ ใช้แทน Meta Pixel basic code เดิม — SDK ของเรา inject Pixel เอง ห้ามติด 2
-          ที่ในหน้าเดียวกัน (จะนับ event ซ้ำ)
+          {tPages("sdkInstall.warning")}
         </div>
 
         {loading ? (
@@ -3118,11 +3136,11 @@ function SdkInstallModal({
               <Button size="sm" onClick={copy} className="gap-1.5">
                 {copied ? (
                   <>
-                    <Check className="size-3.5" /> คัดลอกแล้ว
+                    <Check className="size-3.5" /> {tPages("pixels.copied")}
                   </>
                 ) : (
                   <>
-                    <Copy className="size-3.5" /> Copy code
+                    <Copy className="size-3.5" /> {tPages("pixels.copyCode")}
                   </>
                 )}
               </Button>
@@ -3130,7 +3148,7 @@ function SdkInstallModal({
           </>
         ) : (
           <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-            โหลด install code ไม่สำเร็จ — ลอง refresh
+            {tPages("sdkInstall.empty")}
           </p>
         )}
       </div>
