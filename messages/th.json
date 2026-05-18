@@ -1,0 +1,64 @@
+{
+  "sidebar": {
+    "nav": {
+      "overview": "ภาพรวม",
+      "boost": "บูสต์ด่วน",
+      "rules": "กฎอัตโนมัติ",
+      "campaigns": "แคมเปญ",
+      "ads": "โฆษณา",
+      "audiences": "กลุ่มเป้าหมาย",
+      "creatives": "ครีเอทีฟ",
+      "posts": "โพสต์เพจ",
+      "reports": "รายงาน",
+      "analyze": "วิเคราะห์",
+      "memory": "ความจำ AI",
+      "tools": "เครื่องมือ",
+      "settings": "การตั้งค่า"
+    },
+    "section": {
+      "connectAccounts": "เชื่อมต่อบัญชี"
+    },
+    "upgrade": {
+      "title": "อัปเกรด AdsLab",
+      "description": "ปลดล็อกฟีเจอร์ขั้นสูง",
+      "cta": "อัปเกรดตอนนี้"
+    },
+    "profile": {
+      "menu": {
+        "profile": "โปรไฟล์ + บัญชี",
+        "settings": "ตั้งค่า",
+        "language": "ภาษา",
+        "logout": "ออกจากระบบ"
+      }
+    }
+  },
+  "language": {
+    "th": "ไทย",
+    "en": "English",
+    "lo": "ລາວ (beta)"
+  },
+  "common": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "create": "สร้าง",
+    "loading": "กำลังโหลด...",
+    "saving": "กำลังบันทึก...",
+    "error": "เกิดข้อผิดพลาด",
+    "success": "สำเร็จ",
+    "back": "กลับ",
+    "next": "ถัดไป",
+    "close": "ปิด"
+  },
+  "status": {
+    "active": "กำลังรัน",
+    "paused": "หยุด",
+    "scheduled": "รอลง",
+    "published": "ลงแล้ว",
+    "cancelled": "ยกเลิก",
+    "failed": "ล้มเหลว",
+    "pending": "รอดำเนินการ"
+  }
+}

@@ -4,6 +4,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/auth/password";
 import { getSession } from "@/lib/auth/session";
+import { DEFAULT_LOCALE, isLocale } from "@/i18n/locales";
+import { COOKIE_NAME as LOCALE_COOKIE } from "@/i18n/request";
 
 const loginSchema = z.object({
   email: z.email("รูปแบบอีเมลไม่ถูกต้อง"),
@@ -41,6 +43,7 @@ export async function POST(request: NextRequest) {
       name: true,
       passwordHash: true,
       emailVerifiedAt: true,
+      preferredLocale: true,
       memberships: {
         orderBy: { createdAt: "asc" },
         take: 1,
@@ -68,7 +71,8 @@ export async function POST(request: NextRequest) {
   const firstTenantSlug = user.memberships[0]?.tenant.slug ?? null;
   const redirectTo = firstTenantSlug ? `/t/${firstTenantSlug}/dashboard` : "/";
 
-  return NextResponse.json({
+  const userLocale = isLocale(user.preferredLocale) ? user.preferredLocale : DEFAULT_LOCALE;
+  const res = NextResponse.json({
     ok: true,
     user: {
       id: user.id,
@@ -78,4 +82,11 @@ export async function POST(request: NextRequest) {
     },
     redirectTo,
   });
+  // 1 year — same lifetime as the session itself; user can change anytime.
+  res.cookies.set(LOCALE_COOKIE, userLocale, {
+    maxAge: 365 * 24 * 60 * 60,
+    path: "/",
+    sameSite: "lax",
+  });
+  return res;
 }

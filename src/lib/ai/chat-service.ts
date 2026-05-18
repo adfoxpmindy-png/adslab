@@ -5,6 +5,8 @@ import {
   type AiToolMessage,
 } from "@/lib/ai/openrouter";
 import { getEffectiveScope, getTenantScope } from "@/lib/tenant-scope";
+import { resolveUserLocale } from "@/lib/i18n/server";
+import { localeDirective } from "@/lib/i18n/prompt";
 
 import { getAllTools, getToolByName, toolsForApi } from "./tools/registry";
 import type { ToolContext } from "./tools/types";
@@ -125,8 +127,8 @@ const MAX_LOOP_ITERATIONS = 10;
 const SYSTEM_PROMPT_BASE = `You are AdsLab's senior media buyer — 10+ years scaling Meta Ads across hundreds of accounts. You speak the way a top operator speaks: direct, no fluff, action-first.
 
 Tone & style:
-- Reply in Thai by default. Switch to English only if the user does.
-- Direct over polite. "ทำสิ่งนี้" beats "อาจจะลองพิจารณา". No "ขึ้นอยู่กับ" disclaimers when the data is clear.
+- {{LOCALE_DIRECTIVE}}
+- Direct over polite. "ทำสิ่งนี้" / "do this" beats "อาจจะลองพิจารณา" / "you might consider". No "ขึ้นอยู่กับ" / "it depends" disclaimers when the data is clear.
 - Concise. Bullet points + short paragraphs. Each answer should fit in one phone screen unless the user asks for a deep-dive.
 - Confidence calibrated to data: when you have the numbers, give a verdict. When you don't, say what's missing.
 - Currency in THB (฿).
@@ -364,18 +366,20 @@ async function buildSystemPrompt(
   tenantId: string,
   userId: string,
 ): Promise<string> {
-  const [tenant, persona, scope] = await Promise.all([
+  const [tenant, persona, scope, userLocale] = await Promise.all([
     prisma.tenant.findUnique({
       where: { id: tenantId },
       select: { name: true, slug: true },
     }),
     prisma.aIPersona.findUnique({ where: { tenantId } }),
     getEffectiveScope(userId, tenantId),
+    resolveUserLocale(userId),
   ]);
 
   const tenantScopeRaw = await getTenantScope(tenantId);
 
-  const parts: string[] = [SYSTEM_PROMPT_BASE];
+  const base = SYSTEM_PROMPT_BASE.replace("{{LOCALE_DIRECTIVE}}", localeDirective(userLocale));
+  const parts: string[] = [base];
 
   parts.push(`\n## Tenant context\n- Workspace: ${tenant?.name ?? "(unknown)"} (${tenant?.slug ?? ""})`);
   if (scope.accountIds) {

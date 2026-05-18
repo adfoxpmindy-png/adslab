@@ -1,0 +1,64 @@
+{
+  "sidebar": {
+    "nav": {
+      "overview": "Overview",
+      "boost": "Quick Boost",
+      "rules": "Auto-rules",
+      "campaigns": "Campaigns",
+      "ads": "Ads",
+      "audiences": "Audiences",
+      "creatives": "Creatives",
+      "posts": "Page Posts",
+      "reports": "Reports",
+      "analyze": "Analyze",
+      "memory": "AI Memory",
+      "tools": "Tools",
+      "settings": "Settings"
+    },
+    "section": {
+      "connectAccounts": "Connected accounts"
+    },
+    "upgrade": {
+      "title": "Upgrade AdsLab",
+      "description": "Unlock advanced features",
+      "cta": "Upgrade now"
+    },
+    "profile": {
+      "menu": {
+        "profile": "Profile + account",
+        "settings": "Settings",
+        "language": "Language",
+        "logout": "Log out"
+      }
+    }
+  },
+  "language": {
+    "th": "ไทย",
+    "en": "English",
+    "lo": "ລາວ (beta)"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "error": "Something went wrong",
+    "success": "Done",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close"
+  },
+  "status": {
+    "active": "Active",
+    "paused": "Paused",
+    "scheduled": "Scheduled",
+    "published": "Published",
+    "cancelled": "Cancelled",
+    "failed": "Failed",
+    "pending": "Pending"
+  }
+}

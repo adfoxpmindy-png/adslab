@@ -14,6 +14,8 @@ import { prisma } from "@/lib/prisma";
 import { graphFetch } from "@/lib/meta/graph-api";
 import { getConnection, getFreshAccessToken } from "@/lib/meta/client";
 import { getAiModel } from "@/lib/ai/openrouter";
+import { resolveUserLocale } from "@/lib/i18n/server";
+import { localeDirective } from "@/lib/i18n/prompt";
 
 import { defineTool } from "./types";
 
@@ -24,22 +26,26 @@ const inputSchema = z.object({
   adId: z.string().min(1).describe("Meta numeric ad id (digit string)."),
 });
 
-const VISION_SYSTEM_PROMPT = `You analyze Facebook/Instagram ad creatives for a Thai media-buying platform. The user is Thai — every string field in your output MUST be in Thai (ภาษาไทย). English brand names ("Reels", "ROAS", "CTA", "Instagram") may stay in English when they're proper nouns; everything else must read naturally in Thai.
+function buildVisionSystemPrompt(localeInstruction: string): string {
+  return `You analyze Facebook/Instagram ad creatives for an SE-Asia media-buying platform.
+
+${localeInstruction}
 
 Return ONLY a valid JSON object (no prose, no fences) with this shape:
 
 {
-  "hook": string,              // จุดที่สะดุดตา/ดึงดูดในประโยคเดียว (ไทย)
-  "visualHierarchy": 1-5,      // ความชัดของจุดโฟกัส (5 = ชัดสุด)
-  "textLegibility": 1-5,       // ตัวหนังสืออ่านง่ายบนมือถือ (5 = ง่ายสุด)
-  "emotionalTone": string,     // ไทย: เช่น "หรูหรา / น่าเชื่อถือ", "ผ่อนคลาย", "เร่งด่วน", "อบอุ่น"
-  "dominantColor": string,     // ไทย: เช่น "ส้มอบอุ่น", "ฟ้าเข้ม", "ชมพูพาสเทล"
-  "strengths": string[],       // 2-4 จุดเด่น (ไทย ประโยคสั้นๆ)
-  "weaknesses": string[],      // 1-3 ปัญหาที่ต้องแก้ (ไทย เฉพาะเจาะจง)
-  "suggestedFixes": string[]   // 2-3 วิธีแก้ที่ทำได้จริง (ไทย เฉพาะเจาะจง — ห้ามใช้ "อาจจะลอง..." แบบนุ่มนวล)
+  "hook": string,              // 1-sentence summary of the visual/text hook
+  "visualHierarchy": 1-5,      // Focal-point clarity (5 = crisp)
+  "textLegibility": 1-5,       // On-screen text mobile readability (5 = easy)
+  "emotionalTone": string,     // e.g. luxurious/trustworthy, calm, urgent, warm
+  "dominantColor": string,     // e.g. warm orange, deep blue, pastel pink
+  "strengths": string[],       // 2-4 short bullets
+  "weaknesses": string[],      // 1-3 specific issues
+  "suggestedFixes": string[]   // 2-3 concrete actionable rewrites — avoid soft hedges
 }
 
-โทนการเขียน: ตรงไปตรงมา · ใช้ภาษาที่ media buyer มืออาชีพใช้กัน · เฉพาะเจาะจง > คำแนะนำกว้างๆ`;
+Style: direct, professional media-buyer voice, specific > generic.`;
+}
 
 type VisionResult = {
   hook: string;
@@ -166,11 +172,12 @@ export const analyzeAdCreativeTool = defineTool({
         baseURL: "https://openrouter.ai/api/v1",
       });
       const model = getAiModel("analysis");
+      const locale = await resolveUserLocale(ctx.userId);
       const completion = await client.chat.completions.create({
         model,
         max_tokens: 800,
         messages: [
-          { role: "system", content: VISION_SYSTEM_PROMPT },
+          { role: "system", content: buildVisionSystemPrompt(localeDirective(locale)) },
           {
             role: "user",
             content: [

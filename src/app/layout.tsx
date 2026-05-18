@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Inter, IBM_Plex_Sans_Thai } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -34,26 +36,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Dogfood our own SDK on AdsLab itself so we have real tracking data +
-  // can verify Phase 5 end-to-end in prod. Only loads when the env var
-  // is set, so local dev / preview deployments stay quiet by default.
   const adsLabSiteKey = process.env.NEXT_PUBLIC_ADSLAB_SITE_KEY;
+  // next-intl: resolve the active locale + dictionary server-side. The
+  // <html lang> attribute matches so screen readers + browser hints are
+  // accurate. NextIntlClientProvider hydrates client components.
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
     <html
-      lang="th"
+      lang={locale}
       suppressHydrationWarning
       className={`${inter.variable} ${ibmPlexSansThai.variable} h-full bg-background text-foreground antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider>
-          {children}
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+          </ThemeProvider>
+        </NextIntlClientProvider>
         {adsLabSiteKey && (
           <Script
             id="adslab-sdk-bootstrap"

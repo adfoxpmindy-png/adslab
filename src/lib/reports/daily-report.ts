@@ -19,6 +19,25 @@ import {
   renderOutcomesForPrompt,
   type RecommendationActionType,
 } from "@/lib/ai/recommendations";
+import { localeDirective } from "@/lib/i18n/prompt";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/i18n/locales";
+
+/**
+ * Resolve the locale a daily report should be written in. Uses the
+ * tenant's primary OWNER's preferredLocale; falls back to the first
+ * member's; finally to Thai. Picked at generation time — readers later
+ * see the snapshot in that locale regardless of their own preference.
+ */
+async function resolveTenantPrimaryLocale(tenantId: string): Promise<Locale> {
+  const owner = await prisma.tenantMember.findFirst({
+    where: { tenantId, role: "OWNER" },
+    orderBy: { createdAt: "asc" },
+    select: { user: { select: { preferredLocale: true } } },
+  });
+  const raw = owner?.user?.preferredLocale;
+  if (isLocale(raw)) return raw;
+  return DEFAULT_LOCALE;
+}
 
 /**
  * Convert a JS Date to the Bangkok-local YYYY-MM-DD date string.
@@ -269,9 +288,15 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       }
     }
 
+    const locale = await resolveTenantPrimaryLocale(input.tenantId);
+    const systemPrompt = DAILY_REPORT_SYSTEM_PROMPT.replace(
+      "{{LOCALE_DIRECTIVE}}",
+      localeDirective(locale),
+    );
+
     const result = await aiChat({
       role: "analysis",
-      system: DAILY_REPORT_SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
       cacheSystem: true,
       // 4000 covers full-tenant reports (~3K tokens of structured Thai

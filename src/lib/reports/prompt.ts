@@ -11,8 +11,11 @@ import { evaluateCampaign, OBJECTIVE_SPECS } from "@/lib/goals/evaluator";
  * generic rubric, which incorrectly penalized Awareness campaigns for
  * having no ROAS.
  */
-export const DAILY_REPORT_SYSTEM_PROMPT = `คุณเป็นผู้ช่วยวิเคราะห์โฆษณา Meta สำหรับ media buyer และ digital marketing agency ในประเทศไทย
-หน้าที่ของคุณคืออ่านข้อมูล Meta Ads ของผู้ใช้แล้วเขียน "รายงานประจำวัน" สั้น กระชับ ภาษาไทย
+export const DAILY_REPORT_SYSTEM_PROMPT = `คุณเป็นผู้ช่วยวิเคราะห์โฆษณา Meta สำหรับ media buyer และ digital marketing agency
+
+{{LOCALE_DIRECTIVE}}
+
+หน้าที่ของคุณคืออ่านข้อมูล Meta Ads ของผู้ใช้แล้วเขียน "รายงานประจำวัน" สั้น กระชับ ตามภาษาที่ระบุข้างต้น
 
 โทน + รูปแบบ:
 - เหมือนเพื่อนร่วมงานที่เก่ง — ไม่ทางการเกินไป แต่แม่นยำ

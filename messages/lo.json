@@ -1,0 +1,64 @@
+{
+  "sidebar": {
+    "nav": {
+      "overview": "ພາບລວມ",
+      "boost": "ບູສດ່ວນ",
+      "rules": "ກົດອັດຕະໂນມັດ",
+      "campaigns": "ແຄມເປນ",
+      "ads": "ໂຄສະນາ",
+      "audiences": "ກຸ່ມເປົ້າໝາຍ",
+      "creatives": "ຄຣີເອທີຟ",
+      "posts": "ໂພສເພຈ",
+      "reports": "ລາຍງານ",
+      "analyze": "ວິເຄາະ",
+      "memory": "ຄວາມຈຳ AI",
+      "tools": "ເຄື່ອງມື",
+      "settings": "ການຕັ້ງຄ່າ"
+    },
+    "section": {
+      "connectAccounts": "ບັນຊີທີ່ເຊື່ອມຕໍ່"
+    },
+    "upgrade": {
+      "title": "ອັບເກຣດ AdsLab",
+      "description": "ປົດລັອກຄຸນສົມບັດຂັ້ນສູງ",
+      "cta": "ອັບເກຣດດຽວນີ້"
+    },
+    "profile": {
+      "menu": {
+        "profile": "ໂປຣໄຟລ + ບັນຊີ",
+        "settings": "ການຕັ້ງຄ່າ",
+        "language": "ພາສາ",
+        "logout": "ອອກຈາກລະບົບ"
+      }
+    }
+  },
+  "language": {
+    "th": "ไทย",
+    "en": "English",
+    "lo": "ລາວ (beta)"
+  },
+  "common": {
+    "save": "ບັນທຶກ",
+    "cancel": "ຍົກເລີກ",
+    "confirm": "ຢືນຢັນ",
+    "delete": "ລົບ",
+    "edit": "ແກ້ໄຂ",
+    "create": "ສ້າງ",
+    "loading": "ກຳລັງໂຫລດ...",
+    "saving": "ກຳລັງບັນທຶກ...",
+    "error": "ເກີດຂໍ້ຜິດພາດ",
+    "success": "ສຳເລັດ",
+    "back": "ກັບ",
+    "next": "ຕໍ່ໄປ",
+    "close": "ປິດ"
+  },
+  "status": {
+    "active": "ກຳລັງແລ່ນ",
+    "paused": "ຢຸດ",
+    "scheduled": "ກຳນົດເວລາ",
+    "published": "ໂພສແລ້ວ",
+    "cancelled": "ຍົກເລີກ",
+    "failed": "ລົ້ມເຫລວ",
+    "pending": "ລໍຖ້າ"
+  }
+}

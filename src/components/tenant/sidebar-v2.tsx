@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ChevronDown, Crown, Settings, LogOut, User as UserIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LanguageSwitcher } from "./language-switcher";
 import { SIDEBAR_NAV_ITEMS, isPathActive } from "./sidebar-nav-items";
 
 /**
@@ -38,8 +40,12 @@ type SidebarV2Props = {
 export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const tNav = useTranslations("sidebar.nav");
+  const tSection = useTranslations("sidebar.section");
+  const tUpgrade = useTranslations("sidebar.upgrade");
+  const tProfile = useTranslations("sidebar.profile.menu");
   const items = SIDEBAR_NAV_ITEMS.map((item) => ({
-    label: item.label,
+    label: tNav(item.labelKey),
     href: item.href(tenantSlug),
     icon: item.icon,
   }));
@@ -99,7 +105,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
 
       {/* Connect accounts section */}
       <div className="mt-2 border-t border-border px-5 py-4">
-        <p className="text-[11px] font-medium text-muted-foreground">เชื่อมต่อบัญชี</p>
+        <p className="text-[11px] font-medium text-muted-foreground">{tSection("connectAccounts")}</p>
         <div className="mt-2.5 flex items-center gap-1.5">
           <PlatformLogo
             href={`/t/${tenantSlug}/settings/integrations`}
@@ -147,15 +153,15 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
           <div className="flex size-9 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-card">
             <Crown className="size-4" />
           </div>
-          <p className="mt-3 text-sm font-bold tracking-tight text-foreground">อัปเกรด AdsLab</p>
+          <p className="mt-3 text-sm font-bold tracking-tight text-foreground">{tUpgrade("title")}</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            ปลดล็อกฟีเจอร์ขั้นสูง
+            {tUpgrade("description")}
           </p>
           <Link
             href={`/t/${tenantSlug}/settings/billing`}
             className="mt-3 inline-flex h-8 w-full items-center justify-center rounded-lg bg-brand-gradient text-xs font-semibold text-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
           >
-            อัปเกรดตอนนี้
+            {tUpgrade("cta")}
           </Link>
         </div>
       )}
@@ -182,12 +188,13 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
               <UserIcon className="mr-2 size-4" />
-              โปรไฟล์ + บัญชี
+              {tProfile("profile")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push(`/t/${tenantSlug}/settings/integrations`)}>
               <Settings className="mr-2 size-4" />
-              ตั้งค่า
+              {tProfile("settings")}
             </DropdownMenuItem>
+            <LanguageSwitcher />
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
@@ -197,7 +204,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
               className="text-rose-600 dark:text-rose-300"
             >
               <LogOut className="mr-2 size-4" />
-              ออกจากระบบ
+              {tProfile("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

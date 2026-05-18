@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ type Props = {
  */
 export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
   const pathname = usePathname();
+  const tNav = useTranslations("sidebar.nav");
 
   // Auto-close on route change.
   useEffect(() => {
@@ -107,9 +109,10 @@ export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
             const Icon = item.icon;
             const href = item.href(tenantSlug);
             const active = isPathActive(pathname, href);
+            const label = tNav(item.labelKey);
             return (
               <Link
-                key={item.label}
+                key={item.labelKey}
                 href={href}
                 className={cn(
                   "group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all",
@@ -124,7 +127,7 @@ export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
                     active ? "text-white" : "text-muted-foreground group-hover:text-foreground",
                   )}
                 />
-                <span>{item.label}</span>
+                <span>{label}</span>
               </Link>
             );
           })}
