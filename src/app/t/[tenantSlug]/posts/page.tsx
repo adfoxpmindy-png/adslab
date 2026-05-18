@@ -26,6 +26,7 @@ export default async function PostsPage({
   });
   const isConnected = pageConnection !== null && pageConnection.status === "ACTIVE";
   const tPages = await getTranslations("pages.posts");
+  const tPostsUi = await getTranslations("posts");
 
   if (!isConnected) {
     return (
@@ -33,15 +34,15 @@ export default async function PostsPage({
         <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
-            <p className="text-sm font-medium">ยังไม่ได้เชื่อม Page Management</p>
+            <p className="text-sm font-medium">{tPostsUi("needPageConnection")}</p>
             <p className="max-w-sm text-xs text-muted-foreground">
-              ฟีเจอร์นี้ใช้แอป Meta แยกจากการเชื่อมโฆษณา ต้อง authorize ก่อนใช้งาน
+              {tPostsUi("needPageConnectionHint")}
             </p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "gap-2")}
             >
-              ไปที่ Settings → เชื่อม Page Management
+              {tPostsUi("connectPageManagementCta")}
             </Link>
           </Card>
         </div>
@@ -70,7 +71,7 @@ export default async function PostsPage({
       <div className="mx-auto w-full max-w-screen-2xl space-y-4 px-6 py-6">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">
-            เชื่อมเป็น {pageConnection.metaUserName}
+            {tPostsUi("connectedAs", { name: pageConnection.metaUserName })}
           </p>
           {canEdit && (
             <Link
@@ -78,7 +79,7 @@ export default async function PostsPage({
               className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}
             >
               <Plus className="size-3.5" />
-              เขียนโพสต์ใหม่
+              {tPostsUi("newPostCta")}
             </Link>
           )}
         </div>

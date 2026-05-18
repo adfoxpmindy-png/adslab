@@ -18,6 +18,8 @@ export default async function NewPostPage({
   const { tenantSlug } = await params;
   const { tenant } = await requireTenantMember(tenantSlug);
   const tPages = await getTranslations("pages.postsNew");
+  const tPostsUi = await getTranslations("posts");
+  const tCommon = await getTranslations("common");
 
   const pageConnection = await prisma.metaPageConnection.findUnique({
     where: { tenantId: tenant.id },
@@ -29,12 +31,12 @@ export default async function NewPostPage({
         <SetPageTitle title={tPages("title")} />
         <div className="mx-auto w-full max-w-3xl px-6 py-6">
           <Card className="border-dashed p-6 text-center">
-            <p className="text-sm">ต้องเชื่อม Page Management ก่อน</p>
+            <p className="text-sm">{tPostsUi("needPageFirst")}</p>
             <Link
               href={`/t/${tenantSlug}/settings/integrations`}
               className={cn(buttonVariants({ size: "sm" }), "mt-3")}
             >
-              ไปที่ Settings
+              {tCommon("settingsLink")}
             </Link>
           </Card>
         </div>
@@ -63,7 +65,7 @@ export default async function NewPostPage({
           className="inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline"
         >
           <ChevronLeft className="size-4" />
-          กลับไปลิสต์โพสต์
+          {tPostsUi("back")}
         </Link>
         <ComposeForm tenantSlug={tenantSlug} pages={options} />
       </div>

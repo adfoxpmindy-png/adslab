@@ -48,12 +48,108 @@
     "saving": "กำลังบันทึก...",
     "error": "เกิดข้อผิดพลาด",
     "success": "สำเร็จ",
+    "failed": "ไม่สำเร็จ",
     "back": "กลับ",
     "next": "ถัดไป",
     "close": "ปิด",
     "tryAgain": "ลองอีกครั้ง",
     "settingsLink": "ไปที่ Settings",
-    "connectMetaFirst": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน"
+    "connectMetaFirst": "ต้องเชื่อมต่อ Meta ก่อนใช้งาน",
+    "all": "ทั้งหมด"
+  },
+  "languageSwitcher": {
+    "errorChange": "เปลี่ยนภาษาไม่สำเร็จ"
+  },
+  "ads": {
+    "tab": {
+      "all": "ทั้งหมด",
+      "active": "กำลังรัน",
+      "paused": "หยุด"
+    },
+    "quotaRemaining": "เหลือ {remaining}/50 ครั้ง วิเคราะห์ภาพวันนี้",
+    "noAds": "ยังไม่มี ad ที่ตรงเงื่อนไข",
+    "noAdsHint": "ลองสลับ tab หรือ sync ข้อมูลล่าสุดจาก Meta",
+    "analyzeBtn": "วิเคราะห์ภาพด้วย AI",
+    "analyzeBtnSeen": "ดูผลวิเคราะห์",
+    "analyzeBtnClose": "ปิดผลวิเคราะห์",
+    "quotaShort": "เหลือ {remaining}/50 ครั้งวันนี้",
+    "quotaExhaustedToast": "วันนี้ใช้ครบ quota แล้ว — เริ่มใหม่ 00:00 UTC (07:00 ประเทศไทย)",
+    "errAi": "เรียก AI ไม่สำเร็จ",
+    "errQuotaExceeded": "วันนี้ใช้ครบ quota แล้ว — เริ่มใหม่ 00:00 UTC",
+    "errNoConnection": "ยังไม่ได้เชื่อมต่อ Meta",
+    "errNoVisualAsset": "ad นี้ไม่มีรูป/วิดีโอให้วิเคราะห์",
+    "errFetchCreative": "ดึงรูปจาก Meta ไม่สำเร็จ",
+    "errVisionCall": "Vision AI ตอบไม่สำเร็จ",
+    "errOpenrouterKey": "ระบบยังไม่ได้ตั้งค่า OpenRouter key",
+    "errUnknown": "เกิดข้อผิดพลาดที่ไม่รู้จัก",
+    "panelHook": "Hook",
+    "panelFocus": "จุดโฟกัสภาพ",
+    "panelReadability": "อ่านง่ายบนมือถือ",
+    "panelTone": "โทนอารมณ์",
+    "panelColor": "สีเด่น",
+    "panelStrengths": "จุดเด่น",
+    "panelWeaknesses": "ต้องแก้",
+    "panelFixes": "ลองแก้",
+    "panelSavedAt": "บันทึก {when}"
+  },
+  "posts": {
+    "needPageConnection": "ยังไม่ได้เชื่อม Page Management",
+    "needPageConnectionHint": "ฟีเจอร์นี้ใช้แอป Meta แยกจากการเชื่อมโฆษณา ต้อง authorize ก่อนใช้งาน",
+    "connectPageManagementCta": "ไปที่ Settings → เชื่อม Page Management",
+    "connectedAs": "เชื่อมเป็น {name}",
+    "newPostCta": "เขียนโพสต์ใหม่",
+    "needPageFirst": "ต้องเชื่อม Page Management ก่อน",
+    "empty": "ยังไม่มีโพสต์ที่ตั้งไว้",
+    "emptyHint": "คลิก \"เขียนโพสต์ใหม่\" เพื่อตั้งเวลาโพสต์แรก",
+    "cancelConfirm": "ยกเลิกโพสต์นี้?",
+    "cancelLoading": "กำลังยกเลิก...",
+    "cancelSuccess": "ยกเลิกแล้ว",
+    "cancelBtn": "ยกเลิก",
+    "back": "กลับไปลิสต์โพสต์",
+    "compose": {
+      "pageLabel": "เพจที่จะโพสต์",
+      "mediaLabel": "รูป / วิดีโอ",
+      "videoOnlyOne": "วิดีโอใช้ได้ทีละ 1 ไฟล์เท่านั้น (ห้ามผสมรูป)",
+      "videoExists": "ตอนนี้มีวิดีโออยู่แล้ว เพิ่มได้แค่อันเดียว",
+      "videoUploaded": "อัพโหลดวิดีโอแล้ว (1 ไฟล์)",
+      "mediaHint": "รูปได้สูงสุด 10 ใบ · วิดีโอ 1 ไฟล์ (ห้ามผสม)",
+      "captionLabel": "Caption",
+      "captionPlaceholder": "พิมพ์ caption ของโพสต์...",
+      "scheduleLabel": "เวลาที่ลงโพสต์",
+      "scheduleHint": "ห่างจากตอนนี้อย่างน้อย 10 นาที สูงสุด 6 เดือน",
+      "submit": "ตั้งโพสต์",
+      "errPickPage": "เลือกเพจก่อน",
+      "errEmptyCaption": "Caption ห้ามว่าง",
+      "errEmptyMedia": "ต้องมีรูป/วิดีโออย่างน้อย 1 ชิ้น",
+      "errSchedule": "เวลาที่ตั้งไม่ถูกต้อง",
+      "errLeadTime": "ต้องตั้งเวลาห่างจากนี้อย่างน้อย 10 นาที",
+      "loading": "กำลังตั้งโพสต์...",
+      "success": "ตั้งเวลาเสร็จแล้ว"
+    },
+    "status": {
+      "scheduled": "รอลง",
+      "published": "ลงแล้ว",
+      "pending": "รอ Meta",
+      "failed": "ล้มเหลว",
+      "cancelled": "ยกเลิก"
+    }
+  },
+  "pageConnection": {
+    "notConnected": "ยังไม่ได้เชื่อม Page Management",
+    "description": "แอป Meta แยกจากการเชื่อมโฆษณา — ต้อง authorize เพิ่มถ้าจะใช้ฟีเจอร์ตั้งเวลาโพสต์เพจ",
+    "connectCta": "เชื่อม Page Management",
+    "ownerOnly": "เฉพาะ OWNER เชื่อมต่อได้",
+    "successConnected": "เชื่อม Page Management สำเร็จ",
+    "connectedAs": "เชื่อมเป็น {name}",
+    "managedSummary": "จัดการ {count} เพจ · เชื่อมเมื่อ {when}",
+    "goToPostsCta": "ไปที่ \"โพสต์เพจ\"",
+    "reauthorize": "re-authorize"
+  },
+  "settings": {
+    "pageMgmt": {
+      "title": "Page Management",
+      "subtitle": "เขียน + ตั้งเวลาโพสต์เพจ Facebook (แยกจากการเชื่อมโฆษณา)"
+    }
   },
   "status": {
     "active": "กำลังรัน",

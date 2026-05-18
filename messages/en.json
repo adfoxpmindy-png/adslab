@@ -48,12 +48,108 @@
     "saving": "Saving...",
     "error": "Something went wrong",
     "success": "Done",
+    "failed": "Failed",
     "back": "Back",
     "next": "Next",
     "close": "Close",
     "tryAgain": "Try again",
     "settingsLink": "Go to Settings",
-    "connectMetaFirst": "Connect Meta before using this"
+    "connectMetaFirst": "Connect Meta before using this",
+    "all": "All"
+  },
+  "languageSwitcher": {
+    "errorChange": "Couldn't change language"
+  },
+  "ads": {
+    "tab": {
+      "all": "All",
+      "active": "Active",
+      "paused": "Paused"
+    },
+    "quotaRemaining": "{remaining}/50 vision analyses left today",
+    "noAds": "No ads match these filters",
+    "noAdsHint": "Try a different tab or re-sync from Meta",
+    "analyzeBtn": "Analyze creative with AI",
+    "analyzeBtnSeen": "View analysis",
+    "analyzeBtnClose": "Hide analysis",
+    "quotaShort": "{remaining}/50 left today",
+    "quotaExhaustedToast": "Daily vision quota reached — resets 00:00 UTC (07:00 Bangkok)",
+    "errAi": "AI call failed",
+    "errQuotaExceeded": "Daily quota reached — resets 00:00 UTC",
+    "errNoConnection": "Meta not connected",
+    "errNoVisualAsset": "This ad has no image/video to analyze",
+    "errFetchCreative": "Couldn't fetch the creative from Meta",
+    "errVisionCall": "Vision AI didn't respond",
+    "errOpenrouterKey": "OpenRouter key not configured",
+    "errUnknown": "Unknown error",
+    "panelHook": "Hook",
+    "panelFocus": "Visual focus",
+    "panelReadability": "Mobile readability",
+    "panelTone": "Emotional tone",
+    "panelColor": "Dominant color",
+    "panelStrengths": "Strengths",
+    "panelWeaknesses": "Needs fixing",
+    "panelFixes": "Try fixing",
+    "panelSavedAt": "Saved {when}"
+  },
+  "posts": {
+    "needPageConnection": "Page Management not connected",
+    "needPageConnectionHint": "This feature uses a separate Meta app from ads — authorize once to enable",
+    "connectPageManagementCta": "Go to Settings → connect Page Management",
+    "connectedAs": "Connected as {name}",
+    "newPostCta": "New post",
+    "needPageFirst": "Connect Page Management first",
+    "empty": "No scheduled posts yet",
+    "emptyHint": "Click \"New post\" to schedule your first one",
+    "cancelConfirm": "Cancel this post?",
+    "cancelLoading": "Cancelling...",
+    "cancelSuccess": "Cancelled",
+    "cancelBtn": "Cancel",
+    "back": "Back to posts list",
+    "compose": {
+      "pageLabel": "Post to which page",
+      "mediaLabel": "Image / video",
+      "videoOnlyOne": "Video files must be uploaded one at a time (can't mix with images)",
+      "videoExists": "Already have a video — only one allowed",
+      "videoUploaded": "Video uploaded (1 file)",
+      "mediaHint": "Up to 10 images · 1 video (cannot mix)",
+      "captionLabel": "Caption",
+      "captionPlaceholder": "Write the post caption...",
+      "scheduleLabel": "Publish time",
+      "scheduleHint": "Min 10 minutes from now, max 6 months",
+      "submit": "Schedule",
+      "errPickPage": "Pick a page first",
+      "errEmptyCaption": "Caption is required",
+      "errEmptyMedia": "At least one image or video",
+      "errSchedule": "Invalid publish time",
+      "errLeadTime": "Must be at least 10 minutes from now",
+      "loading": "Scheduling...",
+      "success": "Scheduled"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "pending": "Pending Meta",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "pageConnection": {
+    "notConnected": "Page Management not connected",
+    "description": "Separate Meta app from your ads connection — authorize once to use the scheduled-post feature",
+    "connectCta": "Connect Page Management",
+    "ownerOnly": "Owner only",
+    "successConnected": "Page Management connected",
+    "connectedAs": "Connected as {name}",
+    "managedSummary": "Manages {count} pages · connected {when}",
+    "goToPostsCta": "Go to \"Page Posts\"",
+    "reauthorize": "re-authorize"
+  },
+  "settings": {
+    "pageMgmt": {
+      "title": "Page Management",
+      "subtitle": "Compose + schedule Facebook page posts (separate from your ads connection)"
+    }
   },
   "status": {
     "active": "Active",

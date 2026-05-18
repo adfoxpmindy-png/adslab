@@ -1,6 +1,8 @@
 import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 
+import { getTranslations } from "next-intl/server";
+
 import { MetaConnectionCard, type MetaConnectionData } from "@/components/tenant/meta-connection-card";
 import {
   PageConnectionCard,
@@ -76,6 +78,7 @@ export default async function IntegrationsPage({
   });
 
   const tenantScope = await getTenantScope(tenant.id);
+  const tSettings = await getTranslations("settings.pageMgmt");
   const activeAccounts = connection
     ? connection.adAccounts.filter((a) => a.accountStatus === 1)
     : [];
@@ -192,10 +195,8 @@ export default async function IntegrationsPage({
                 <MetaIcon className="size-5" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold tracking-tight">Page Management</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  เขียน + ตั้งเวลาโพสต์เพจ Facebook (แยกจากการเชื่อมโฆษณา)
-                </p>
+                <h2 className="text-xl font-semibold tracking-tight">{tSettings("title")}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">{tSettings("subtitle")}</p>
               </div>
             </header>
             <PageConnectionCard

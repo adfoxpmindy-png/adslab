@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Camera, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ export function AnalyzeCreativeButton({
   initialAnalyzedAt,
   quotaRemaining: initialQuota,
 }: Props) {
+  const tAds = useTranslations("ads");
   const [analysis, setAnalysis] = useState<CreativeAnalysis | null>(
     initialAnalysis,
   );
@@ -42,6 +44,25 @@ export function AnalyzeCreativeButton({
   const quotaLow = quotaRemaining > 0 && quotaRemaining <= 5;
   const quotaOut = quotaRemaining <= 0;
 
+  function friendlyError(code: string, message?: string): string {
+    switch (code) {
+      case "quota_exceeded":
+        return tAds("errQuotaExceeded");
+      case "no_meta_connection":
+        return tAds("errNoConnection");
+      case "no_visual_asset":
+        return tAds("errNoVisualAsset");
+      case "fetch_creative_failed":
+        return `${tAds("errFetchCreative")}${message ? ` (${message})` : ""}`;
+      case "vision_call_failed":
+        return `${tAds("errVisionCall")}${message ? ` (${message})` : ""}`;
+      case "openrouter_key_missing":
+        return tAds("errOpenrouterKey");
+      default:
+        return message ?? tAds("errUnknown");
+    }
+  }
+
   function handleClick() {
     // Cache-hit: just toggle the panel, no API call.
     if (analysis && !pending) {
@@ -49,7 +70,7 @@ export function AnalyzeCreativeButton({
       return;
     }
     if (quotaOut) {
-      toast.info("วันนี้ใช้ครบ quota แล้ว — เริ่มใหม่ 00:00 UTC (07:00 ประเทศไทย)");
+      toast.info(tAds("quotaExhaustedToast"));
       return;
     }
     startTransition(async () => {
@@ -57,7 +78,7 @@ export function AnalyzeCreativeButton({
       try {
         result = await analyzeAdCreativeAction(tenantSlug, adId);
       } catch (err) {
-        toast.error("เรียก AI ไม่สำเร็จ", {
+        toast.error(tAds("errAi"), {
           description: (err as Error).message,
         });
         return;
@@ -92,7 +113,7 @@ export function AnalyzeCreativeButton({
           ) : (
             <Camera className="size-3.5" />
           )}
-          {analysis ? (open ? "ปิดผลวิเคราะห์" : "ดูผลวิเคราะห์") : "วิเคราะห์ภาพด้วย AI"}
+          {analysis ? (open ? tAds("analyzeBtnClose") : tAds("analyzeBtnSeen")) : tAds("analyzeBtn")}
         </Button>
         {!analysis && (
           <span
@@ -105,7 +126,7 @@ export function AnalyzeCreativeButton({
                   : "text-muted-foreground",
             )}
           >
-            เหลือ {quotaRemaining}/50 ครั้งวันนี้
+            {tAds("quotaShort", { remaining: quotaRemaining })}
           </span>
         )}
       </div>
@@ -115,23 +136,4 @@ export function AnalyzeCreativeButton({
       )}
     </div>
   );
-}
-
-function friendlyError(code: string, message?: string): string {
-  switch (code) {
-    case "quota_exceeded":
-      return "วันนี้ใช้ครบ quota แล้ว — เริ่มใหม่ 00:00 UTC";
-    case "no_meta_connection":
-      return "ยังไม่ได้เชื่อมต่อ Meta";
-    case "no_visual_asset":
-      return "ad นี้ไม่มีรูป/วิดีโอให้วิเคราะห์";
-    case "fetch_creative_failed":
-      return `ดึงรูปจาก Meta ไม่สำเร็จ${message ? ` (${message})` : ""}`;
-    case "vision_call_failed":
-      return `Vision AI ตอบไม่สำเร็จ${message ? ` (${message})` : ""}`;
-    case "openrouter_key_missing":
-      return "ระบบยังไม่ได้ตั้งค่า OpenRouter key";
-    default:
-      return message ?? "เกิดข้อผิดพลาดที่ไม่รู้จัก";
-  }
 }

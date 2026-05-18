@@ -3,11 +3,13 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Clock, AlertTriangle, XCircle, Trash2, Loader2 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { formatDateTime } from "@/lib/i18n/format";
 
 export type PostRow = {
   id: string;
@@ -29,78 +31,87 @@ type Props = {
   canEdit: boolean;
 };
 
-function StatusBadge({ status }: { status: PostRow["status"] }) {
+function StatusBadge({
+  status,
+  tStatus,
+}: {
+  status: PostRow["status"];
+  tStatus: (k: string) => string;
+}) {
   switch (status) {
     case "SCHEDULED":
       return (
         <span className="inline-flex items-center gap-1 rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
-          <Clock className="size-3" /> รอลง
+          <Clock className="size-3" /> {tStatus("scheduled")}
         </span>
       );
     case "PUBLISHED":
       return (
         <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-          <CheckCircle2 className="size-3" /> ลงแล้ว
+          <CheckCircle2 className="size-3" /> {tStatus("published")}
         </span>
       );
     case "PENDING":
       return (
         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" /> รอ Meta
+          <Loader2 className="size-3 animate-spin" /> {tStatus("pending")}
         </span>
       );
     case "FAILED":
       return (
         <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-          <AlertTriangle className="size-3" /> ล้มเหลว
+          <AlertTriangle className="size-3" /> {tStatus("failed")}
         </span>
       );
     case "CANCELLED":
       return (
         <span className="inline-flex items-center gap-1 rounded-md bg-zinc-200 px-1.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-          <XCircle className="size-3" /> ยกเลิก
+          <XCircle className="size-3" /> {tStatus("cancelled")}
         </span>
       );
   }
 }
 
-function fmtDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("th-TH", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export function PostsList({ tenantSlug, rows, canEdit }: Props) {
   const router = useRouter();
+  const tPosts = useTranslations("posts");
+  const tStatus = useTranslations("posts.status");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
   const [, startTransition] = useTransition();
   const [busy, setBusy] = useState<Set<string>>(new Set());
+
+  function fmtDateTime(iso: string): string {
+    return formatDateTime(iso, locale, {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      year: undefined,
+    });
+  }
 
   if (rows.length === 0) {
     return (
       <Card className="flex flex-col items-center justify-center gap-2 border-dashed py-12 text-center">
-        <p className="text-sm font-medium">ยังไม่มีโพสต์ที่ตั้งไว้</p>
-        <p className="text-xs text-muted-foreground">
-          คลิก &quot;เขียนโพสต์ใหม่&quot; เพื่อตั้งเวลาโพสต์แรก
-        </p>
+        <p className="text-sm font-medium">{tPosts("empty")}</p>
+        <p className="text-xs text-muted-foreground">{tPosts("emptyHint")}</p>
       </Card>
     );
   }
 
   async function cancel(id: string) {
-    if (!confirm("ยกเลิกโพสต์นี้?")) return;
+    if (!confirm(tPosts("cancelConfirm"))) return;
     setBusy((prev) => new Set(prev).add(id));
-    const toastId = toast.loading("กำลังยกเลิก...");
+    const toastId = toast.loading(tPosts("cancelLoading"));
     try {
       const r = await fetch(`/api/posts/${id}/cancel?tenantSlug=${tenantSlug}`, { method: "POST" });
       const data = await r.json();
-      if (!r.ok) throw new Error(data.error ?? "ไม่สำเร็จ");
-      toast.success("ยกเลิกแล้ว", { id: toastId });
+      if (!r.ok) throw new Error(data.error ?? tCommon("failed"));
+      toast.success(tPosts("cancelSuccess"), { id: toastId });
       startTransition(() => router.refresh());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : tCommon("failed"), { id: toastId });
     } finally {
       setBusy((prev) => {
         const next = new Set(prev);
@@ -134,7 +145,7 @@ export function PostsList({ tenantSlug, rows, canEdit }: Props) {
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <StatusBadge status={p.status} />
+                  <StatusBadge status={p.status} tStatus={tStatus} />
                   <span className="text-[11px] text-muted-foreground">
                     {p.pageName}
                   </span>
@@ -173,7 +184,7 @@ export function PostsList({ tenantSlug, rows, canEdit }: Props) {
                     className="gap-1.5 text-rose-600 dark:text-rose-300"
                   >
                     <Trash2 className="size-3.5" />
-                    ยกเลิก
+                    {tPosts("cancelBtn")}
                   </Button>
                 </div>
               )}

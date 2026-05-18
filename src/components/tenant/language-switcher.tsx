@@ -24,6 +24,7 @@ import { LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales";
 export function LanguageSwitcher() {
   const router = useRouter();
   const t = useTranslations("sidebar.profile.menu");
+  const tSwitcher = useTranslations("languageSwitcher");
   const activeLocale = useLocale();
   const [, startTransition] = useTransition();
 
@@ -38,7 +39,7 @@ export function LanguageSwitcher() {
       if (!res.ok) throw new Error("save failed");
       startTransition(() => router.refresh());
     } catch {
-      toast.error("เปลี่ยนภาษาไม่สำเร็จ");
+      toast.error(tSwitcher("errorChange"));
     }
   }
 

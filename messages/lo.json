@@ -48,12 +48,108 @@
     "saving": "ກຳລັງບັນທຶກ...",
     "error": "ເກີດຂໍ້ຜິດພາດ",
     "success": "ສຳເລັດ",
+    "failed": "ບໍ່ສຳເລັດ",
     "back": "ກັບ",
     "next": "ຕໍ່ໄປ",
     "close": "ປິດ",
     "tryAgain": "ລອງໃໝ່",
     "settingsLink": "ໄປທີ່ Settings",
-    "connectMetaFirst": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນຈິ່ງໃຊ້ໄດ້"
+    "connectMetaFirst": "ຕ້ອງເຊື່ອມຕໍ່ Meta ກ່ອນຈິ່ງໃຊ້ໄດ້",
+    "all": "ທັງໝົດ"
+  },
+  "languageSwitcher": {
+    "errorChange": "ປ່ຽນພາສາບໍ່ສຳເລັດ"
+  },
+  "ads": {
+    "tab": {
+      "all": "ທັງໝົດ",
+      "active": "ກຳລັງແລ່ນ",
+      "paused": "ຢຸດ"
+    },
+    "quotaRemaining": "ເຫຼືອ {remaining}/50 ຄັ້ງ ວິເຄາະຮູບມື້ນີ້",
+    "noAds": "ຍັງບໍ່ມີ ad ທີ່ກົງເງື່ອນໄຂ",
+    "noAdsHint": "ລອງສະຫຼັບ tab ຫຼື sync ຂໍ້ມູນລ່າສຸດຈາກ Meta",
+    "analyzeBtn": "ວິເຄາະຮູບດ້ວຍ AI",
+    "analyzeBtnSeen": "ເບິ່ງຜົນວິເຄາະ",
+    "analyzeBtnClose": "ປິດຜົນວິເຄາະ",
+    "quotaShort": "ເຫຼືອ {remaining}/50 ຄັ້ງມື້ນີ້",
+    "quotaExhaustedToast": "ມື້ນີ້ໃຊ້ຄົບ quota ແລ້ວ — ເລີ່ມໃໝ່ 00:00 UTC (07:00 ໄທ)",
+    "errAi": "ເອີ້ນ AI ບໍ່ສຳເລັດ",
+    "errQuotaExceeded": "ມື້ນີ້ໃຊ້ຄົບ quota ແລ້ວ — ເລີ່ມໃໝ່ 00:00 UTC",
+    "errNoConnection": "ຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ Meta",
+    "errNoVisualAsset": "ad ນີ້ບໍ່ມີຮູບ/ວິດີໂອໃຫ້ວິເຄາະ",
+    "errFetchCreative": "ດຶງຮູບຈາກ Meta ບໍ່ສຳເລັດ",
+    "errVisionCall": "Vision AI ບໍ່ຕອບ",
+    "errOpenrouterKey": "ລະບົບຍັງບໍ່ໄດ້ຕັ້ງຄ່າ OpenRouter key",
+    "errUnknown": "ເກີດຂໍ້ຜິດພາດທີ່ບໍ່ຮູ້ຈັກ",
+    "panelHook": "Hook",
+    "panelFocus": "ຈຸດໂຟກັດຮູບ",
+    "panelReadability": "ອ່ານງ່າຍເທິງມືຖື",
+    "panelTone": "ໂທນອາລົມ",
+    "panelColor": "ສີເດັ່ນ",
+    "panelStrengths": "ຈຸດເດັ່ນ",
+    "panelWeaknesses": "ຕ້ອງແກ້",
+    "panelFixes": "ລອງແກ້",
+    "panelSavedAt": "ບັນທຶກ {when}"
+  },
+  "posts": {
+    "needPageConnection": "ຍັງບໍ່ໄດ້ເຊື່ອມ Page Management",
+    "needPageConnectionHint": "ຟີເຈີນີ້ໃຊ້ແອັບ Meta ແຍກຈາກການເຊື່ອມໂຄສະນາ ຕ້ອງ authorize ກ່ອນຈິ່ງໃຊ້ໄດ້",
+    "connectPageManagementCta": "ໄປທີ່ Settings → ເຊື່ອມ Page Management",
+    "connectedAs": "ເຊື່ອມເປັນ {name}",
+    "newPostCta": "ຂຽນໂພສໃໝ່",
+    "needPageFirst": "ຕ້ອງເຊື່ອມ Page Management ກ່ອນ",
+    "empty": "ຍັງບໍ່ມີໂພສທີ່ຕັ້ງໄວ້",
+    "emptyHint": "ຄລິກ \"ຂຽນໂພສໃໝ່\" ເພື່ອຕັ້ງເວລາໂພສທຳອິດ",
+    "cancelConfirm": "ຍົກເລີກໂພສນີ້?",
+    "cancelLoading": "ກຳລັງຍົກເລີກ...",
+    "cancelSuccess": "ຍົກເລີກແລ້ວ",
+    "cancelBtn": "ຍົກເລີກ",
+    "back": "ກັບໄປລາຍຊື່ໂພສ",
+    "compose": {
+      "pageLabel": "ເພຈທີ່ຈະໂພສ",
+      "mediaLabel": "ຮູບ / ວິດີໂອ",
+      "videoOnlyOne": "ວິດີໂອໃຊ້ໄດ້ທີລະ 1 ໄຟລ໌ເທົ່ານັ້ນ (ຫ້າມຜະສົມຮູບ)",
+      "videoExists": "ມີວິດີໂອຢູ່ແລ້ວ ເພີ່ມໄດ້ແຄ່ອັນດຽວ",
+      "videoUploaded": "ອັບໂຫລດວິດີໂອແລ້ວ (1 ໄຟລ໌)",
+      "mediaHint": "ຮູບໄດ້ສູງສຸດ 10 ໃບ · ວິດີໂອ 1 ໄຟລ໌ (ຫ້າມຜະສົມ)",
+      "captionLabel": "Caption",
+      "captionPlaceholder": "ພິມ caption ຂອງໂພສ...",
+      "scheduleLabel": "ເວລາລົງໂພສ",
+      "scheduleHint": "ຫ່າງຈາກປັດຈຸບັນຢ່າງໜ້ອຍ 10 ນາທີ ສູງສຸດ 6 ເດືອນ",
+      "submit": "ຕັ້ງໂພສ",
+      "errPickPage": "ເລືອກເພຈກ່ອນ",
+      "errEmptyCaption": "Caption ຫ້າມວ່າງ",
+      "errEmptyMedia": "ຕ້ອງມີຮູບ/ວິດີໂອຢ່າງໜ້ອຍ 1 ຊິ້ນ",
+      "errSchedule": "ເວລາທີ່ຕັ້ງບໍ່ຖືກຕ້ອງ",
+      "errLeadTime": "ຕ້ອງຕັ້ງເວລາຫ່າງຈາກປັດຈຸບັນຢ່າງໜ້ອຍ 10 ນາທີ",
+      "loading": "ກຳລັງຕັ້ງໂພສ...",
+      "success": "ຕັ້ງເວລາສຳເລັດ"
+    },
+    "status": {
+      "scheduled": "ລໍຖ້າລົງ",
+      "published": "ລົງແລ້ວ",
+      "pending": "ລໍຖ້າ Meta",
+      "failed": "ລົ້ມເຫລວ",
+      "cancelled": "ຍົກເລີກ"
+    }
+  },
+  "pageConnection": {
+    "notConnected": "ຍັງບໍ່ໄດ້ເຊື່ອມ Page Management",
+    "description": "ແອັບ Meta ແຍກຈາກການເຊື່ອມໂຄສະນາ — ຕ້ອງ authorize ເພີ່ມຖ້າຈະໃຊ້ຟີເຈີຕັ້ງເວລາໂພສເພຈ",
+    "connectCta": "ເຊື່ອມ Page Management",
+    "ownerOnly": "ສະເພາະ OWNER",
+    "successConnected": "ເຊື່ອມ Page Management ສຳເລັດ",
+    "connectedAs": "ເຊື່ອມເປັນ {name}",
+    "managedSummary": "ຈັດການ {count} ເພຈ · ເຊື່ອມເມື່ອ {when}",
+    "goToPostsCta": "ໄປທີ່ \"ໂພສເພຈ\"",
+    "reauthorize": "re-authorize"
+  },
+  "settings": {
+    "pageMgmt": {
+      "title": "Page Management",
+      "subtitle": "ຂຽນ + ກຳນົດເວລາໂພສ Facebook page (ແຍກຈາກການເຊື່ອມໂຄສະນາ)"
+    }
   },
   "status": {
     "active": "ກຳລັງແລ່ນ",

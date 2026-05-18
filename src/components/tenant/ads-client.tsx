@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Camera } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -28,10 +29,10 @@ type Props = {
   activeStatus: string;
 };
 
-const STATUS_TABS: Array<{ value: string; label: string }> = [
-  { value: "all", label: "ทั้งหมด" },
-  { value: "active", label: "กำลังรัน" },
-  { value: "paused", label: "หยุด" },
+const STATUS_TABS = [
+  { value: "all", labelKey: "all" as const },
+  { value: "active", labelKey: "active" as const },
+  { value: "paused", labelKey: "paused" as const },
 ];
 
 function statusBadge(status: string) {
@@ -58,41 +59,40 @@ function statusBadge(status: string) {
 }
 
 export function AdsClient({ tenantSlug, ads, quotaRemaining, activeStatus }: Props) {
+  const tAds = useTranslations("ads");
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-1 rounded-lg bg-muted/40 p-1">
-          {STATUS_TABS.map((t) => (
+          {STATUS_TABS.map((tab) => (
             <Link
-              key={t.value}
+              key={tab.value}
               href={
-                t.value === "all"
+                tab.value === "all"
                   ? `/t/${tenantSlug}/ads`
-                  : `/t/${tenantSlug}/ads?status=${t.value}`
+                  : `/t/${tenantSlug}/ads?status=${tab.value}`
               }
               className={cn(
                 "rounded-md px-3 py-1 text-xs font-medium transition-colors",
-                activeStatus === t.value
+                activeStatus === tab.value
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {t.label}
+              {tAds(`tab.${tab.labelKey}`)}
             </Link>
           ))}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Camera className="size-3.5" />
-          เหลือ {quotaRemaining}/50 ครั้ง วิเคราะห์ภาพวันนี้
+          {tAds("quotaRemaining", { remaining: quotaRemaining })}
         </div>
       </div>
 
       {ads.length === 0 ? (
         <Card className="flex flex-col items-center justify-center gap-2 border-dashed py-12 text-center">
-          <p className="text-sm font-medium">ยังไม่มี ad ที่ตรงเงื่อนไข</p>
-          <p className="text-xs text-muted-foreground">
-            ลองสลับ tab หรือ sync ข้อมูลล่าสุดจาก Meta
-          </p>
+          <p className="text-sm font-medium">{tAds("noAds")}</p>
+          <p className="text-xs text-muted-foreground">{tAds("noAdsHint")}</p>
         </Card>
       ) : (
         <div className="space-y-3">

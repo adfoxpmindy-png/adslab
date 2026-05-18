@@ -3,6 +3,7 @@
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, X, Calendar, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,8 @@ function defaultScheduledAtIso(): string {
 
 export function ComposeForm({ tenantSlug, pages }: Props) {
   const router = useRouter();
+  const t = useTranslations("posts.compose");
+  const tCommon = useTranslations("common");
   const [pageId, setPageId] = useState<string>(pages[0]?.metaPageId ?? "");
   const [caption, setCaption] = useState<string>("");
   const [scheduledAtLocal, setScheduledAtLocal] = useState<string>(defaultScheduledAtIso());
@@ -71,11 +74,11 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
       for (const file of Array.from(files)) {
         const isVid = file.type.startsWith("video/");
         if (isVid && media.length > 0) {
-          toast.error("วิดีโอใช้ได้ทีละ 1 ไฟล์เท่านั้น (ห้ามผสมรูป)");
+          toast.error(t("videoOnlyOne"));
           continue;
         }
         if (hasVideo) {
-          toast.error("ตอนนี้มีวิดีโออยู่แล้ว เพิ่มได้แค่อันเดียว");
+          toast.error(t("videoExists"));
           continue;
         }
         const fd = new FormData();
@@ -108,17 +111,17 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
   }
 
   async function submit() {
-    if (!pageId) return toast.error("เลือกเพจก่อน");
-    if (caption.trim().length === 0) return toast.error("Caption ห้ามว่าง");
-    if (media.length === 0) return toast.error("ต้องมีรูป/วิดีโออย่างน้อย 1 ชิ้น");
+    if (!pageId) return toast.error(t("errPickPage"));
+    if (caption.trim().length === 0) return toast.error(t("errEmptyCaption"));
+    if (media.length === 0) return toast.error(t("errEmptyMedia"));
     const scheduledAt = new Date(scheduledAtLocal);
-    if (Number.isNaN(scheduledAt.getTime())) return toast.error("เวลาที่ตั้งไม่ถูกต้อง");
+    if (Number.isNaN(scheduledAt.getTime())) return toast.error(t("errSchedule"));
     if (scheduledAt.getTime() - Date.now() < 10 * 60_000) {
-      return toast.error("ต้องตั้งเวลาห่างจากนี้อย่างน้อย 10 นาที");
+      return toast.error(t("errLeadTime"));
     }
 
     setSubmitting(true);
-    const toastId = toast.loading("กำลังตั้งโพสต์...");
+    const toastId = toast.loading(t("loading"));
     try {
       const res = await fetch(`/api/posts/schedule`, {
         method: "POST",
@@ -132,11 +135,11 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "ตั้งโพสต์ไม่สำเร็จ");
-      toast.success("ตั้งเวลาเสร็จแล้ว", { id: toastId });
+      if (!res.ok) throw new Error(data.error ?? t("errSchedule"));
+      toast.success(t("success"), { id: toastId });
       startTransition(() => router.push(`/t/${tenantSlug}/posts`));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "ไม่สำเร็จ", { id: toastId });
+      toast.error(err instanceof Error ? err.message : tCommon("failed"), { id: toastId });
     } finally {
       setSubmitting(false);
     }
@@ -145,7 +148,7 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
   return (
     <Card className="space-y-5 p-5">
       <div className="space-y-2">
-        <Label htmlFor="page-picker">เพจที่จะโพสต์</Label>
+        <Label htmlFor="page-picker">{t("pageLabel")}</Label>
         <select
           id="page-picker"
           value={pageId}
@@ -161,7 +164,7 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label>รูป / วิดีโอ</Label>
+        <Label>{t("mediaLabel")}</Label>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
           {media.map((m, idx) => (
             <div key={idx} className="group relative">
@@ -205,14 +208,12 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
           className="hidden"
         />
         <p className="text-[11px] text-muted-foreground">
-          {hasVideo
-            ? "อัพโหลดวิดีโอแล้ว (1 ไฟล์)"
-            : `รูปได้สูงสุด 10 ใบ · วิดีโอ 1 ไฟล์ (ห้ามผสม)`}
+          {hasVideo ? t("videoUploaded") : t("mediaHint")}
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="caption">Caption</Label>
+        <Label htmlFor="caption">{t("captionLabel")}</Label>
         <textarea
           id="caption"
           value={caption}
@@ -220,7 +221,7 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
           maxLength={MAX_CAPTION}
           rows={6}
           className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-          placeholder="พิมพ์ caption ของโพสต์..."
+          placeholder={t("captionPlaceholder")}
         />
         <p className="text-right text-[11px] text-muted-foreground">
           {caption.length} / {MAX_CAPTION}
@@ -230,7 +231,7 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
       <div className="space-y-2">
         <Label htmlFor="scheduled-at" className="flex items-center gap-1.5">
           <Calendar className="size-3.5" />
-          เวลาที่ลงโพสต์
+          {t("scheduleLabel")}
         </Label>
         <Input
           id="scheduled-at"
@@ -238,15 +239,13 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
           value={scheduledAtLocal}
           onChange={(e) => setScheduledAtLocal(e.target.value)}
         />
-        <p className="text-[11px] text-muted-foreground">
-          ห่างจากตอนนี้อย่างน้อย 10 นาที สูงสุด 6 เดือน
-        </p>
+        <p className="text-[11px] text-muted-foreground">{t("scheduleHint")}</p>
       </div>
 
       <div className="flex items-center justify-end gap-2 pt-2">
         <Button type="button" disabled={submitting || uploading} onClick={submit}>
           {submitting && <Loader2 className="size-3.5 animate-spin" />}
-          ตั้งโพสต์
+          {t("submit")}
         </Button>
       </div>
     </Card>
