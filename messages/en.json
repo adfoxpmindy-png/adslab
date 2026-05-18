@@ -82,7 +82,8 @@
       "subtitle": "View and analyze each ad's creative"
     },
     "audiences": {
-      "title": "Audiences"
+      "title": "Audiences",
+      "subtitle": "Build Custom Audiences from customer lists, Pixel, or Lookalike — new audiences appear in the Campaign Builder instantly"
     },
     "creatives": {
       "title": "Creatives",
@@ -111,7 +112,8 @@
       "subtitle": "All AI tools and advanced utilities"
     },
     "goals": {
-      "title": "Campaign Goals"
+      "title": "Campaign Goals",
+      "subtitle": "Set each campaign's objective so AI can evaluate it against the right yardstick (Awareness → CPM, Sales → ROAS, etc.)"
     },
     "ai": {
       "title": "AI Master",

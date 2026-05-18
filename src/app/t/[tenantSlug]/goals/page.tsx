@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Tags } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -14,8 +15,6 @@ import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { getEffectiveScope, applyScopeFilter } from "@/lib/tenant-scope";
 import type { ParsedCampaignInsight, DashboardPayload } from "@/lib/meta/insights";
 
-const GOALS_SUBTITLE =
-  "ตั้ง objective ของแต่ละ campaign เพื่อให้ AI ประเมินด้วยเกณฑ์ที่ถูกต้อง (Awareness ใช้ CPM, Sales ใช้ ROAS เป็นต้น)";
 
 export default async function GoalsPage({
   params,
@@ -33,12 +32,13 @@ export default async function GoalsPage({
     select: { id: true, status: true },
   });
   const isConnected = connection !== null && connection.status === "ACTIVE";
+  const tPages = await getTranslations("pages.goals");
   const canEdit = role === "OWNER" || role === "MEDIA_BUYER";
 
   if (!isConnected) {
     return (
       <>
-        <SetPageTitle title="เป้าหมาย Campaign" subtitle={GOALS_SUBTITLE} />
+        <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
         <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
           <Card className="flex flex-col items-center justify-center gap-3 border-dashed py-12 text-center">
             <p className="text-sm font-medium">ต้องเชื่อมต่อ Meta ก่อนใช้งาน Goals</p>
@@ -157,7 +157,7 @@ export default async function GoalsPage({
 
   return (
     <>
-      <SetPageTitle title="เป้าหมาย Campaign" subtitle={GOALS_SUBTITLE} />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
         <div className="flex justify-end">
           <Link

@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   AlertCircle,
   Calendar,
@@ -89,6 +90,7 @@ type Props = {
 };
 
 export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
+  const tPages = useTranslations("pages.campaigns");
   const [view, setView] = useState<ViewMode>("table");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "ACTIVE" | "PAUSED" | "OTHER">("all");
@@ -117,7 +119,7 @@ export function CampaignsV2Client({ tenantSlug, canEdit, campaigns }: Props) {
 
   return (
     <>
-      <SetPageTitle title="แคมเปญ" subtitle="จัดการและวางแผนแคมเปญของคุณ" />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
 
       <div className="mx-auto w-full max-w-screen-2xl space-y-5 px-6 py-6">
         {/* Top action row */}

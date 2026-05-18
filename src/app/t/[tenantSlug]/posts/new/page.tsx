@@ -56,7 +56,7 @@ export default async function NewPostPage({
 
   return (
     <>
-      <SetPageTitle title="เขียนโพสต์ใหม่" />
+      <SetPageTitle title={tPages("title")} />
       <div className="mx-auto w-full max-w-3xl space-y-4 px-6 py-6">
         <Link
           href={`/t/${tenantSlug}/posts`}

@@ -82,7 +82,8 @@
       "subtitle": "ดู + วิเคราะห์ creative ของ ad แต่ละชิ้น"
     },
     "audiences": {
-      "title": "จัดการกลุ่มเป้าหมาย"
+      "title": "จัดการกลุ่มเป้าหมาย",
+      "subtitle": "สร้าง Custom Audience จาก customer list, Pixel, หรือ Lookalike — audiences ที่สร้างจะปรากฏใน Campaign Builder ทันที"
     },
     "creatives": {
       "title": "ครีเอทีฟ",
@@ -111,7 +112,8 @@
       "subtitle": "รวมเครื่องมือ AI + tools ขั้นสูงทั้งหมด"
     },
     "goals": {
-      "title": "เป้าหมาย Campaign"
+      "title": "เป้าหมาย Campaign",
+      "subtitle": "ตั้ง objective ของแต่ละ campaign เพื่อให้ AI ประเมินด้วยเกณฑ์ที่ถูกต้อง (Awareness ใช้ CPM, Sales ใช้ ROAS เป็นต้น)"
     },
     "ai": {
       "title": "AI Master",

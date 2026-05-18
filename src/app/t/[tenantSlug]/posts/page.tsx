@@ -66,7 +66,7 @@ export default async function PostsPage({
 
   return (
     <>
-      <SetPageTitle title="โพสต์เพจ" subtitle="เขียน + ตั้งเวลาโพสต์เพจ Facebook" />
+      <SetPageTitle title={tPages("title")} subtitle={tPages("subtitle")} />
       <div className="mx-auto w-full max-w-screen-2xl space-y-4 px-6 py-6">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">

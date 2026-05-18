@@ -82,7 +82,8 @@
       "subtitle": "ເບິ່ງ + ວິເຄາະຄຣີເອທີຟຂອງແຕ່ລະໂຄສະນາ"
     },
     "audiences": {
-      "title": "ກຸ່ມເປົ້າໝາຍ"
+      "title": "ກຸ່ມເປົ້າໝາຍ",
+      "subtitle": "ສ້າງ Custom Audience ຈາກລາຍຊື່ລູກຄ້າ, Pixel, ຫຼື Lookalike — audience ໃໝ່ຈະປະກົດໃນ Campaign Builder ທັນທີ"
     },
     "creatives": {
       "title": "ຄຣີເອທີຟ",
@@ -111,7 +112,8 @@
       "subtitle": "ເຄື່ອງມື AI + ເຄື່ອງມືຂັ້ນສູງທັງໝົດ"
     },
     "goals": {
-      "title": "ເປົ້າໝາຍ Campaign"
+      "title": "ເປົ້າໝາຍ Campaign",
+      "subtitle": "ຕັ້ງເປົ້າໝາຍຂອງແຕ່ລະ campaign ເພື່ອໃຫ້ AI ປະເມີນດ້ວຍເກນທີ່ຖືກຕ້ອງ (Awareness → CPM, Sales → ROAS ແລະອື່ນໆ)"
     },
     "ai": {
       "title": "AI Master",
