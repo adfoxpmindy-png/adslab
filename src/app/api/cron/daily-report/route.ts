@@ -6,6 +6,13 @@ import { runTickForTenant } from "@/lib/rules/runner";
 import { computeOutcomesForTenant } from "@/lib/ai/outcomes";
 import { cleanupOldPostBlobs } from "@/lib/meta/page-posts";
 
+// Allow this cron to run up to 5 minutes. Daily-report iterates every tenant
+// and calls Claude per tenant (~15-30s each); the rules engine + outcomes
+// computation also fan out per tenant inline below. Vercel Hobby caps at 10s
+// (too short), Pro at 60s (still too short past ~3 tenants), and 300s
+// requires the function-level override below to opt out of those defaults.
+export const maxDuration = 300;
+
 // Vercel will also call this with `Authorization: Bearer <CRON_SECRET>`
 // when scheduled via vercel.json. Manual invocation requires the same.
 
