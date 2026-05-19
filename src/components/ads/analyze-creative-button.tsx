@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import {
   analyzeAdCreativeAction,
   type AnalyzeCreativeActionResult,
-} from "@/app/t/[tenantSlug]/ads/_actions/analyze-creative";
+} from "@/app/[locale]/t/[tenantSlug]/ads/_actions/analyze-creative";
 import {
   CreativeAnalysisPanel,
   type CreativeAnalysis,

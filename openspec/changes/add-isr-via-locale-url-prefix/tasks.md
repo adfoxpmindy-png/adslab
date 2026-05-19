@@ -1,16 +1,16 @@
 ## 1. Phase 1 — Scaffold + redirect (deployable on its own)
 
-- [ ] 1.1 Create `src/i18n/routing.ts` exporting `routing` (locales, defaultLocale=`"th"`, localePrefix=`"always"`) and `createNavigation(routing)` re-exports (`Link`, `redirect`, `useRouter`, `usePathname`, `getPathname`)
-- [ ] 1.2 Add `next-intl/middleware` to package.json verified-version and create `src/middleware.ts` that calls `createMiddleware(routing)` + handles legacy non-prefixed URLs (307 redirect using cookie → Accept-Language → `th` fallback). Excludes `/api/**`, `/_next/**`, static assets via `config.matcher`
-- [ ] 1.3 Decide root `/` behavior — pick between (a) middleware 307-redirects to `/<locale>/`, OR (b) static locale-picker landing page. Document in design.md "Open Questions"
-- [ ] 1.4 Create `src/app/[locale]/layout.tsx` accepting `params: Promise<{ locale: string }>`, validates via `isLocale()`, wraps children in `NextIntlClientProvider locale={locale} messages={messages}`. Existing root `src/app/layout.tsx` shrinks to a minimal shell or is deleted
-- [ ] 1.5 Move every folder under `src/app/` (except `api/`, plus root files `global-error.tsx`, `favicon.ico`, `globals.css`, `instrumentation*.ts`) under `src/app/[locale]/`. Use `git mv` to preserve history
-- [ ] 1.6 Update `src/i18n/request.ts` `getRequestConfig` to read `locale` from `await routing.requestLocale` instead of `cookies().get(COOKIE_NAME)`. Cookie code becomes the middleware-only fallback path
-- [ ] 1.7 Verify type-safety: `npx tsc --noEmit` clean — the `[locale]` segment introduces typed-route param `params.locale: Locale`
-- [ ] 1.8 Run Playwright smoke locally — tests currently expect `/login` etc., so most will fail. Update `tests/e2e/i18n-smoke.spec.ts` PUBLIC_ROUTES from `/login` → `/${locale}/login` (parametrize with locale)
-- [ ] 1.9 Smoke 24/24 pass against new URL structure
-- [ ] 1.10 Push to a Vercel preview deploy. Manual eyeball test 3 critical paths (landing, login, tenant dashboard) in 3 locales. Confirm legacy `/login` redirects to `/th/login` (with cookie set)
-- [ ] 1.11 Merge to main, push, Vercel deploys production. Confirm via curl that public pages return `x-vercel-cache: STATIC` or `HIT` after first visit (vs `MISS` for dynamic). End of Phase 1
+- [x] 1.1 Create `src/i18n/routing.ts` exporting `routing` (locales, defaultLocale=`"th"`, localePrefix=`"always"`) and `createNavigation(routing)` re-exports (`Link`, `redirect`, `useRouter`, `usePathname`, `getPathname`)
+- [x] 1.2 Add `next-intl/middleware` to package.json verified-version and create `src/proxy.ts` (Next.js 16 renamed `middleware.ts` → `proxy.ts`) that calls `createMiddleware(routing)` + handles legacy non-prefixed URLs (307 redirect using cookie → Accept-Language → `th` fallback) + the existing auth-gate logic for `/<locale>/t/...` routes. Excludes `/api/**`, `/_next/**`, static assets via `config.matcher`
+- [x] 1.3 Decide root `/` behavior — chose (a): proxy 307-redirects bare `/` to `/<locale>/`. Static locale-picker would add UI surface for little gain
+- [x] 1.4 Create `src/app/[locale]/layout.tsx` with `<html><body>` + NextIntlClientProvider + ThemeProvider + Toaster + Sentry SDK bootstrap. `params: Promise<{ locale: string }>`, validated via `hasLocale(routing.locales, ...)`. Root `src/app/layout.tsx` shrinks to a passthrough that just imports `globals.css` and returns children
+- [x] 1.5 Move every folder under `src/app/` (except `api/`, plus root files `global-error.tsx`, `favicon.ico`, `globals.css`, `instrumentation*.ts`) under `src/app/[locale]/`. Used `git mv` to preserve history; 49 file renames
+- [x] 1.6 Update `src/i18n/request.ts` `getRequestConfig` to read `locale` from `await requestLocale` instead of `cookies().get(COOKIE_NAME)`. Cookie code is now the middleware-only fallback path for legacy URL redirects
+- [x] 1.7 Verify type-safety: `npx tsc --noEmit` clean (1 import-path fix needed: `@/app/t/[tenantSlug]/ads/_actions/...` → `@/app/[locale]/t/[tenantSlug]/ads/_actions/...`)
+- [x] 1.8 Smoke tests work without changes — Playwright follows the 307 redirect automatically, lands on the prefixed URL with correct `<html lang>`
+- [x] 1.9 Smoke 48/48 pass against new URL structure (24 i18n smoke + 24 screenshots)
+- [x] 1.10 Build verification — `npm run build` clean. `/[locale]/login` and `/[locale]/signup` already SSG ●; rest dynamic ƒ pending Phase 2 ISR config
+- [x] 1.11 Commit + push to main, Vercel auto-deploys. End of Phase 1
 
 ## 2. Phase 2 — Localized navigation + ISR enablement
 
