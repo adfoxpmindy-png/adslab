@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Upload, X, Calendar, Loader2, Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -173,8 +174,14 @@ export function ComposeForm({ tenantSlug, pages }: Props) {
                   <Video className="size-6" />
                 </div>
               ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={m.url} alt={m.name} className="aspect-square w-full rounded-md object-cover" />
+                <Image
+                  src={m.url}
+                  alt={m.name}
+                  width={200}
+                  height={200}
+                  unoptimized
+                  className="aspect-square w-full rounded-md object-cover"
+                />
               )}
               <button
                 type="button"

@@ -1,6 +1,7 @@
 "use client";
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import Image from "next/image";
 import { useLocale } from "next-intl";
 import { Crown, Flag, Globe, Image as ImageIcon, Megaphone, Sparkles } from "lucide-react";
 
@@ -183,8 +184,14 @@ export function BrandNode({ data }: NodeProps) {
       >
         <div className="flex size-[130px] flex-col items-center justify-center gap-1">
           {node.faviconUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={node.faviconUrl} alt="" className="size-12 rounded-lg shadow ring-1 ring-black/10" />
+            <Image
+              src={node.faviconUrl}
+              alt=""
+              width={48}
+              height={48}
+              unoptimized
+              className="size-12 rounded-lg shadow ring-1 ring-black/10"
+            />
           ) : (
             <Globe className="size-10 text-slate-500" />
           )}

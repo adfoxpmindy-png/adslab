@@ -1,17 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import {
   Download,
   Eye,
@@ -34,6 +25,20 @@ import {
   StatusBadge,
 } from "@/components/ui-system";
 import { cn } from "@/lib/utils";
+
+// Lazy-load recharts. Competitor Spy users still pay it (they're on this
+// page) but users on other pages don't ship it in their bundle anymore.
+const CompetitorTrendChart = dynamic(
+  () => import("./competitor-trend-chart").then((m) => m.CompetitorTrendChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-72 items-center justify-center rounded bg-muted/30 text-xs text-muted-foreground">
+        Loading chart…
+      </div>
+    ),
+  },
+);
 
 type Competitor = {
   id: string;
@@ -237,36 +242,11 @@ export function CompetitorSpyClient({ tenantSlug, competitors, trendData }: Prop
                 <p className="mt-0.5 text-xs text-muted-foreground">{t("trend.subtitle")}</p>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.92 0.005 280)" />
-                <XAxis
-                  dataKey="day"
-                  tick={{ fontSize: 10, fill: "oklch(0.52 0.015 270)" }}
-                  interval={4}
-                />
-                <YAxis tick={{ fontSize: 10, fill: "oklch(0.52 0.015 270)" }} />
-                <Tooltip
-                  contentStyle={{
-                    background: "white",
-                    border: "1px solid oklch(0.92 0.005 280)",
-                    borderRadius: 8,
-                    fontSize: 11,
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                {trendData.map((s, i) => (
-                  <Line
-                    key={s.brand}
-                    type="monotone"
-                    dataKey={s.brand}
-                    stroke={chartColors[i % chartColors.length]}
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
+            <CompetitorTrendChart
+              data={chartData}
+              series={trendData}
+              colors={chartColors}
+            />
           </div>
         </div>
 

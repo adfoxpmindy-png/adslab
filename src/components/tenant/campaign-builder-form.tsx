@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import {
   ChevronDown,
@@ -901,8 +902,14 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                 className="flex w-full cursor-pointer flex-col items-center gap-2 rounded-md border-2 border-dashed border-border p-5 hover:bg-muted/20"
               >
                 {imagePreviewUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={imagePreviewUrl} alt="preview" className="max-h-40 rounded" />
+                  <Image
+                    src={imagePreviewUrl}
+                    alt="preview"
+                    width={320}
+                    height={160}
+                    unoptimized
+                    className="max-h-40 rounded object-contain"
+                  />
                 ) : (
                   <ImageIcon className="size-8 text-muted-foreground" />
                 )}
@@ -934,8 +941,14 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
             <Field label={tPages("field.image")} required>
               <label className="flex cursor-pointer flex-col items-center gap-2 rounded-md border-2 border-dashed border-border p-5 hover:bg-muted/20">
                 {imagePreviewUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={imagePreviewUrl} alt="preview" className="max-h-40 rounded" />
+                  <Image
+                    src={imagePreviewUrl}
+                    alt="preview"
+                    width={320}
+                    height={160}
+                    unoptimized
+                    className="max-h-40 rounded object-contain"
+                  />
                 ) : (
                   <ImageIcon className="size-8 text-muted-foreground" />
                 )}
@@ -1034,8 +1047,14 @@ export function CampaignBuilderForm({ tenantSlug, adAccounts, pages, canEdit }: 
                           className="mt-1 size-3.5"
                         />
                         {p.thumbnailUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.thumbnailUrl} alt="" className="size-12 shrink-0 rounded object-cover" />
+                          <Image
+                            src={p.thumbnailUrl}
+                            alt=""
+                            width={48}
+                            height={48}
+                            unoptimized
+                            className="size-12 shrink-0 rounded object-cover"
+                          />
                         )}
                         <span className="line-clamp-2">{p.message || tPages("post.noText")}</span>
                       </label>
@@ -1443,8 +1462,14 @@ function PreviewModal({
               {/* Page header */}
               <div className="flex items-center gap-2 px-3 py-2">
                 {page?.pictureUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={page.pictureUrl} alt="" className="size-8 rounded-full object-cover" />
+                  <Image
+                    src={page.pictureUrl}
+                    alt=""
+                    width={32}
+                    height={32}
+                    unoptimized
+                    className="size-8 rounded-full object-cover"
+                  />
                 ) : (
                   <div className="flex size-8 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
                     {(page?.name ?? "?").charAt(0)}
@@ -1471,11 +1496,23 @@ function PreviewModal({
               )}
               {/* Image */}
               {(creativeKind === "new_image" || creativeKind === "from_library") && imagePreviewUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={imagePreviewUrl} alt="" className="aspect-square w-full bg-muted object-cover" />
+                <Image
+                  src={imagePreviewUrl}
+                  alt=""
+                  width={300}
+                  height={300}
+                  unoptimized
+                  className="aspect-square w-full bg-muted object-cover"
+                />
               ) : creativeKind === "existing_post" && existingPost?.thumbnailUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={existingPost.thumbnailUrl} alt="" className="aspect-square w-full bg-muted object-cover" />
+                <Image
+                  src={existingPost.thumbnailUrl}
+                  alt=""
+                  width={300}
+                  height={300}
+                  unoptimized
+                  className="aspect-square w-full bg-muted object-cover"
+                />
               ) : (
                 <div className="flex aspect-square w-full items-center justify-center bg-muted text-xs text-muted-foreground">
                   {creativeKind === "existing_post" ? tPages("preview.postNoImage") : tPages("preview.imageFallback")}
