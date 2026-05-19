@@ -194,7 +194,12 @@
       "analyze": "Analyze",
       "memory": "AI Memory",
       "tools": "Tools",
-      "settings": "Settings"
+      "settings": "Settings",
+      "insightsLab": "Insights Lab",
+      "launchLab": "Launch Lab",
+      "inventoryLab": "Inventory Lab",
+      "aiLab": "AI Lab",
+      "automationLab": "Automation Lab"
     },
     "section": {
       "connectAccounts": "Connected accounts"
@@ -3283,5 +3288,58 @@
   },
   "topbar": {
     "notifications": "Notifications"
+  },
+  "labs": {
+    "insights": {
+      "title": "Insights Lab",
+      "description": "Overview, reports, customer journey and competitors.",
+      "tabs": {
+        "overview": "Overview",
+        "reports": "Reports",
+        "journey": "Customer Journey",
+        "competitors": "Competitors"
+      }
+    },
+    "launch": {
+      "title": "Launch Lab",
+      "description": "Boost posts, build campaigns and review history.",
+      "tabs": {
+        "boost": "Quick Boost",
+        "campaigns": "Campaigns",
+        "new": "New",
+        "aiNew": "AI builder",
+        "history": "History"
+      }
+    },
+    "inventory": {
+      "title": "Inventory Lab",
+      "description": "Ads, audiences, creatives and page posts.",
+      "tabs": {
+        "ads": "Ads",
+        "audiences": "Audiences",
+        "creatives": "Creatives",
+        "posts": "Page posts",
+        "postsNew": "New post"
+      }
+    },
+    "ai": {
+      "title": "AI Lab",
+      "description": "AI assistant, recommendations and AI memory.",
+      "tabs": {
+        "chat": "AI Chat",
+        "recommendations": "Recommendations",
+        "memory": "AI Memory"
+      }
+    },
+    "automation": {
+      "title": "Automation Lab",
+      "description": "Auto-rules, goals, naming and events.",
+      "tabs": {
+        "rules": "Auto-rules",
+        "goals": "Goals",
+        "naming": "Naming",
+        "events": "Events"
+      }
+    }
   }
 }

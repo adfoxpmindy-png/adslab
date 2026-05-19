@@ -194,7 +194,12 @@
       "analyze": "วิเคราะห์",
       "memory": "ความจำ AI",
       "tools": "เครื่องมือ",
-      "settings": "การตั้งค่า"
+      "settings": "การตั้งค่า",
+      "insightsLab": "Insights Lab",
+      "launchLab": "Launch Lab",
+      "inventoryLab": "Inventory Lab",
+      "aiLab": "AI Lab",
+      "automationLab": "Automation Lab"
     },
     "section": {
       "connectAccounts": "เชื่อมต่อบัญชี"
@@ -3283,5 +3288,58 @@
   },
   "topbar": {
     "notifications": "การแจ้งเตือน"
+  },
+  "labs": {
+    "insights": {
+      "title": "Insights Lab",
+      "description": "ภาพรวม รายงาน เส้นทางลูกค้า และคู่แข่ง",
+      "tabs": {
+        "overview": "ภาพรวม",
+        "reports": "รายงาน",
+        "journey": "Customer Journey",
+        "competitors": "คู่แข่ง"
+      }
+    },
+    "launch": {
+      "title": "Launch Lab",
+      "description": "บูสต์โพสต์ สร้างแคมเปญ และดูประวัติ",
+      "tabs": {
+        "boost": "บูสต์ด่วน",
+        "campaigns": "แคมเปญ",
+        "new": "สร้างใหม่",
+        "aiNew": "AI สร้างให้",
+        "history": "ประวัติ"
+      }
+    },
+    "inventory": {
+      "title": "Inventory Lab",
+      "description": "คลังโฆษณา กลุ่มเป้าหมาย ครีเอทีฟ และโพสต์",
+      "tabs": {
+        "ads": "โฆษณา",
+        "audiences": "กลุ่มเป้าหมาย",
+        "creatives": "ครีเอทีฟ",
+        "posts": "โพสต์เพจ",
+        "postsNew": "โพสต์ใหม่"
+      }
+    },
+    "ai": {
+      "title": "AI Lab",
+      "description": "ผู้ช่วย AI คำแนะนำ และความจำของ AI",
+      "tabs": {
+        "chat": "AI Chat",
+        "recommendations": "คำแนะนำ",
+        "memory": "ความจำ AI"
+      }
+    },
+    "automation": {
+      "title": "Automation Lab",
+      "description": "กฎอัตโนมัติ เป้าหมาย กฎตั้งชื่อ และอีเวนต์",
+      "tabs": {
+        "rules": "กฎอัตโนมัติ",
+        "goals": "เป้าหมาย",
+        "naming": "กฎตั้งชื่อ",
+        "events": "อีเวนต์"
+      }
+    }
   }
 }

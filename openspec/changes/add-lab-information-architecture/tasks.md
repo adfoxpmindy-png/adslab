@@ -1,15 +1,15 @@
 ## 1. Phase 1 — Build Lab pages + new sidebar (deployable on its own)
 
-- [ ] 1.1 Create `src/components/ui-system/lab-page.tsx` exporting `<LabPage>` component (header with title + Lab badge + description tooltip, tab strip below header, content slot below tabs). Include keyboard-accessible tabs (arrow keys, role=tablist)
-- [ ] 1.2 Add i18n keys under `pages.insightsLab`, `pages.launchLab`, `pages.inventoryLab`, `pages.aiLab`, `pages.automationLab` in all 3 locale JSONs (each: `title`, `description`, plus `tabs.<key>` for each sub-tab name). OLD keys (`pages.dashboard.*` etc.) stay untouched
-- [ ] 1.3 Create `src/app/[locale]/insights-lab/page.tsx` (default tab = overview) + `overview/page.tsx` + `reports/page.tsx` + `reports/[reportId]/page.tsx` + `journey/page.tsx` + `competitors/page.tsx`. Each NEW page imports the corresponding existing route's default-exported page component (no content duplication; just re-export inside the LabPage wrapper)
-- [ ] 1.4 Create `src/app/[locale]/launch-lab/page.tsx` (default = boost) + `boost/page.tsx` + `campaigns/page.tsx` + `manual-new/page.tsx` + `ai-new/page.tsx` + `history/page.tsx`. Same import-and-re-export pattern
-- [ ] 1.5 Create `src/app/[locale]/inventory-lab/page.tsx` (default = ads) + `ads/page.tsx` + `audiences/page.tsx` + `creatives/page.tsx` + `posts/page.tsx` + `posts/new/page.tsx`
-- [ ] 1.6 Create `src/app/[locale]/ai-lab/page.tsx` (default = chat) + `chat/page.tsx` + `recommendations/page.tsx` + `memory/page.tsx`
-- [ ] 1.7 Create `src/app/[locale]/automation-lab/page.tsx` (default = rules) + `rules/page.tsx` + `goals/page.tsx` + `naming/page.tsx` + `events/page.tsx`
-- [ ] 1.8 Update `src/components/tenant/sidebar-nav-items.ts` to list exactly 6 items (Insights Lab, Launch Lab, Inventory Lab, AI Lab, Automation Lab, Settings) with the icon set from spec
-- [ ] 1.9 Update `src/components/tenant/sidebar-v2.tsx` and `src/components/tenant/mobile-sidebar.tsx` to render the new 6-item list (already iterates `SIDEBAR_NAV_ITEMS`; should be no-op if data source updated)
-- [ ] 1.10 `npx tsc --noEmit` clean
+- [x] 1.1 Create `src/components/ui-system/lab-page.tsx` exporting `<LabPage>` component (header with title + Lab badge + description tooltip, tab strip below header, content slot below tabs). Include keyboard-accessible tabs (arrow keys, role=tablist)
+- [x] 1.2 Add i18n keys under root `labs.{insights,launch,inventory,ai,automation}` namespace in all 3 locale JSONs (each: `title`, `description`, plus `tabs.<key>` for each sub-tab name). Lab namespace lives at root, not under `pages.*`, so legacy `pages.dashboard.*` keys stay untouched. Sidebar `nav` namespace gains 5 Lab labels alongside existing 13 entries
+- [x] 1.3 Created `src/app/[locale]/t/[tenantSlug]/insights-lab/{layout.tsx, page.tsx, reports/page.tsx, reports/[reportId]/page.tsx, journey/page.tsx, competitors/page.tsx}`. Layout owns LabPage shell; each leaf page re-exports the existing route's default export with params/searchParams forwarded. Note: Labs are tenant-scoped (under `/t/[tenantSlug]/`) — diverges from spec's bare-URL form because existing routing is tenant-scoped
+- [x] 1.4 Created `src/app/[locale]/t/[tenantSlug]/launch-lab/{layout.tsx, page.tsx (=boost), campaigns/page.tsx, new/page.tsx, ai-new/page.tsx, history/page.tsx}`. Same layout + re-export pattern
+- [x] 1.5 Created `src/app/[locale]/t/[tenantSlug]/inventory-lab/{layout.tsx, page.tsx (=ads), audiences/page.tsx, creatives/page.tsx, posts/page.tsx, posts/new/page.tsx}`
+- [x] 1.6 Created `src/app/[locale]/t/[tenantSlug]/ai-lab/{layout.tsx, page.tsx (=chat→ai), recommendations/page.tsx (→ai-optimize), memory/page.tsx (→ai/memory)}`
+- [x] 1.7 Created `src/app/[locale]/t/[tenantSlug]/automation-lab/{layout.tsx, page.tsx (=rules), goals/page.tsx, naming/page.tsx (→goals/naming), events/page.tsx}`
+- [x] 1.8 Updated `src/components/tenant/sidebar-nav-items.ts` to 6 items (Insights Lab, Launch Lab, Inventory Lab, AI Lab, Automation Lab, Settings) with FlaskConical/Rocket/Package/Brain/Workflow/Settings2 icons
+- [x] 1.9 `sidebar-v2.tsx` and `mobile-sidebar.tsx` iterate `SIDEBAR_NAV_ITEMS` — automatic pickup of the new 6-item list, no code changes needed
+- [x] 1.10 `npx tsc --noEmit` clean (0 errors)
 - [ ] 1.11 Run dev server. Manually verify sidebar shows 6 items, each Lab loads with its default tab, tab strip switches sub-tabs without full reload
 - [ ] 1.12 Deploy Phase 1. At this point old URLs (`/dashboard`, `/boost`, ...) still work AND new Lab URLs work. Sidebar points at new URLs
 

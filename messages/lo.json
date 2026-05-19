@@ -194,7 +194,12 @@
       "analyze": "ວິເຄາະ",
       "memory": "ຄວາມຈຳ AI",
       "tools": "ເຄື່ອງມື",
-      "settings": "ການຕັ້ງຄ່າ"
+      "settings": "ການຕັ້ງຄ່າ",
+      "insightsLab": "Insights Lab",
+      "launchLab": "Launch Lab",
+      "inventoryLab": "Inventory Lab",
+      "aiLab": "AI Lab",
+      "automationLab": "Automation Lab"
     },
     "section": {
       "connectAccounts": "ບັນຊີທີ່ເຊື່ອມຕໍ່"
@@ -3283,5 +3288,58 @@
   },
   "topbar": {
     "notifications": "ການແຈ້ງເຕືອນ"
+  },
+  "labs": {
+    "insights": {
+      "title": "Insights Lab",
+      "description": "ພາບລວມ ລາຍງານ ເສັ້ນທາງລູກຄ້າ ແລະຄູ່ແຂ່ງ",
+      "tabs": {
+        "overview": "ພາບລວມ",
+        "reports": "ລາຍງານ",
+        "journey": "Customer Journey",
+        "competitors": "ຄູ່ແຂ່ງ"
+      }
+    },
+    "launch": {
+      "title": "Launch Lab",
+      "description": "ບູສໂພສ ສ້າງແຄມເປນ ແລະເບິ່ງປະຫວັດ",
+      "tabs": {
+        "boost": "ບູສດ່ວນ",
+        "campaigns": "ແຄມເປນ",
+        "new": "ສ້າງໃໝ່",
+        "aiNew": "AI ສ້າງໃຫ້",
+        "history": "ປະຫວັດ"
+      }
+    },
+    "inventory": {
+      "title": "Inventory Lab",
+      "description": "ຄັງໂຄສະນາ ກຸ່ມເປົ້າໝາຍ ຄຣີເອທີຟ ແລະໂພສ",
+      "tabs": {
+        "ads": "ໂຄສະນາ",
+        "audiences": "ກຸ່ມເປົ້າໝາຍ",
+        "creatives": "ຄຣີເອທີຟ",
+        "posts": "ໂພສເພຈ",
+        "postsNew": "ໂພສໃໝ່"
+      }
+    },
+    "ai": {
+      "title": "AI Lab",
+      "description": "ຜູ້ຊ່ວຍ AI ຄຳແນະນຳ ແລະຄວາມຈຳ AI",
+      "tabs": {
+        "chat": "AI Chat",
+        "recommendations": "ຄຳແນະນຳ",
+        "memory": "ຄວາມຈຳ AI"
+      }
+    },
+    "automation": {
+      "title": "Automation Lab",
+      "description": "ກົດອັດຕະໂນມັດ ເປົ້າໝາຍ ກົດຕັ້ງຊື່ ແລະອີເວນ",
+      "tabs": {
+        "rules": "ກົດອັດຕະໂນມັດ",
+        "goals": "ເປົ້າໝາຍ",
+        "naming": "ກົດຕັ້ງຊື່",
+        "events": "ອີເວນ"
+      }
+    }
   }
 }
