@@ -1,12 +1,17 @@
 /**
- * Next.js 16 proxy (formerly `middleware`). Two responsibilities:
+ * Next.js 16 proxy (formerly `middleware`). Three responsibilities:
  *
  *   1. Locale URL-prefix enforcement via next-intl's createMiddleware.
  *      URLs not starting with /<locale>/ get 307-redirected to their
  *      prefixed equivalent. The locale chosen comes from (in order):
  *      adslab-locale cookie → Accept-Language → DEFAULT_LOCALE ("th").
  *
- *   2. Cookie-existence check (only) on tenant routes `/<locale>/t/...`.
+ *   2. Legacy tenant route → Lab route 307 redirects. The flat tenant
+ *      URLs (/dashboard, /boost, ...) were consolidated into 5 Labs
+ *      in add-lab-information-architecture. Old URLs continue to work
+ *      via 307 for ≥ 90 days so bookmarks and email CTAs survive.
+ *
+ *   3. Cookie-existence check (only) on tenant routes `/<locale>/t/...`.
  *      The actual session verification happens in `requireTenantMember`
  *      on the server-component layer. The proxy just bounces obviously
  *      logged-out users to /login before they load the heavy tenant page.
@@ -29,6 +34,53 @@ function resolveLocaleForRedirect(request: NextRequest): Locale {
   if (isLocale(cookieValue)) return cookieValue;
   const acceptLang = request.headers.get("accept-language");
   return resolveLocaleFromString(acceptLang ?? null);
+}
+
+/**
+ * Map of legacy tenant sub-paths → Lab sub-paths. Keys and values are the
+ * path AFTER `/t/<tenantSlug>` so we can rewrite both static URLs and
+ * dynamic-segment URLs (e.g. `/reports/r_123` → `/insights-lab/reports/r_123`).
+ *
+ * Order matters: longer keys must come first so `/campaigns/new` matches
+ * before `/campaigns`. We sort once at module load.
+ */
+const LAB_REDIRECTS: ReadonlyArray<readonly [string, string]> = (
+  [
+    ["/dashboard", "/insights-lab"],
+    ["/reports", "/insights-lab/reports"],
+    ["/journey", "/insights-lab/journey"],
+    ["/competitors", "/insights-lab/competitors"],
+    ["/boost", "/launch-lab"],
+    ["/campaigns/new", "/launch-lab/new"],
+    ["/campaigns/ai-new", "/launch-lab/ai-new"],
+    ["/campaigns/history", "/launch-lab/history"],
+    ["/campaigns", "/launch-lab/campaigns"],
+    ["/ads", "/inventory-lab"],
+    ["/audiences", "/inventory-lab/audiences"],
+    ["/creatives", "/inventory-lab/creatives"],
+    ["/posts/new", "/inventory-lab/posts/new"],
+    ["/posts", "/inventory-lab/posts"],
+    ["/ai/memory", "/ai-lab/memory"],
+    ["/ai-optimize", "/ai-lab/recommendations"],
+    ["/ai", "/ai-lab"],
+    ["/rules", "/automation-lab"],
+    ["/goals/naming", "/automation-lab/naming"],
+    ["/goals", "/automation-lab/goals"],
+    ["/events", "/automation-lab/events"],
+    ["/tools", "/insights-lab"],
+  ] as const
+)
+  .slice()
+  .sort(([a], [b]) => b.length - a.length);
+
+/** Tenant inner path (after `/<locale>/t/<tenantSlug>`) → Lab inner path. */
+function resolveLabRedirect(innerTenantPath: string): string | null {
+  for (const [from, to] of LAB_REDIRECTS) {
+    if (innerTenantPath === from || innerTenantPath.startsWith(`${from}/`)) {
+      return to + innerTenantPath.slice(from.length);
+    }
+  }
+  return null;
 }
 
 export function proxy(request: NextRequest) {
@@ -54,6 +106,21 @@ export function proxy(request: NextRequest) {
       loginUrl.pathname = `/${firstSegment}/login`;
       loginUrl.search = `?next=${encodeURIComponent(pathname + search)}`;
       return NextResponse.redirect(loginUrl);
+    }
+
+    // 2b. Legacy tenant routes → 307 to their Lab equivalent. Tenant path
+    // splits as ["", "t", "<slug>", ...rest]; rest joined back is the path
+    // we match against LAB_REDIRECTS.
+    const tenantParts = innerPath.split("/"); // ["", "t", "<slug>", ...rest]
+    const tenantSlug = tenantParts[3];
+    if (tenantSlug) {
+      const innerTenantPath = "/" + tenantParts.slice(4).join("/");
+      const labTarget = resolveLabRedirect(innerTenantPath);
+      if (labTarget) {
+        const labUrl = request.nextUrl.clone();
+        labUrl.pathname = `/${firstSegment}/t/${tenantSlug}${labTarget}`;
+        return NextResponse.redirect(labUrl, 307);
+      }
     }
   }
 

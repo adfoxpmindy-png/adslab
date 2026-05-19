@@ -15,7 +15,7 @@
 
 ## 2. Phase 2 — Move canonical paths + add redirects
 
-- [ ] 2.1 Extend `src/middleware.ts` with the legacy → Lab redirect map (see spec.md table). Each redirect is 307. Preserve locale prefix when redirecting (`/dashboard` → `/<locale>/insights-lab/overview`)
+- [x] 2.1 Extended `src/proxy.ts` (Next.js 16 renamed `middleware.ts`) with `LAB_REDIRECTS` map of 22 legacy → Lab pairs. Each redirect is 307, sorted by key length so `/campaigns/new` matches before `/campaigns`. Preserves locale prefix + tenant slug + any trailing dynamic segments. `/tools` redirects to `/insights-lab` (the most common destination)
 - [ ] 2.2 Move the actual page content from `src/app/[locale]/dashboard/page.tsx` INTO `src/app/[locale]/insights-lab/overview/page.tsx` (un-do the Phase 1 re-export pattern). Delete the old `dashboard/page.tsx`. Repeat for every legacy route
 - [ ] 2.3 Update `tests/e2e/i18n-smoke.spec.ts` PUBLIC_ROUTES and `tests/e2e/screenshots.spec.ts` ROUTES to use Lab URLs (e.g. `/insights-lab/overview` instead of `/dashboard`)
 - [ ] 2.4 Update `LOCALE_HOOKS` text fragments if any of the displayed text changes
