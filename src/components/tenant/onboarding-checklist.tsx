@@ -51,22 +51,26 @@ export function OnboardingChecklist({
     {
       id: "meta",
       done: metaConnected,
-      href: `/t/${tenantSlug}/settings/integrations?tab=integrations`,
+      // Settings/Integrations is now a single scrollable page (no inner
+      // tabs). All three onboarding steps live on the same URL.
+      href: `/t/${tenantSlug}/settings/integrations`,
     },
     {
       id: "scope",
       done: scopeSet,
-      href: `/t/${tenantSlug}/settings/integrations?tab=scope`,
+      href: `/t/${tenantSlug}/settings/integrations`,
     },
     {
       id: "naming",
       done: hasNamingTemplate,
-      href: `/t/${tenantSlug}/settings/integrations?tab=naming`,
+      // Naming rules live in Automation now; the templates card still
+      // appears on Settings/Integrations for users who relied on it there.
+      href: `/t/${tenantSlug}/automation/naming`,
     },
     {
       id: "campaign",
       done: hasCampaign,
-      href: `/t/${tenantSlug}/campaigns/new`,
+      href: `/t/${tenantSlug}/launch/new`,
     },
   ];
 

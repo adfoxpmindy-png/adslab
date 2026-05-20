@@ -53,7 +53,7 @@ export default function SignupPage() {
         return;
       }
 
-      router.push(`/t/${data.tenant.slug}/dashboard`);
+      router.push(`/t/${data.tenant.slug}/insights`);
       router.refresh();
     } catch (err) {
       console.error(err);

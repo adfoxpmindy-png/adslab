@@ -155,7 +155,7 @@ export function SetupBillingClient({
             setPending(false);
             return;
           }
-          router.push(`/t/${tenantSlug}/dashboard?welcome=1`);
+          router.push(`/t/${tenantSlug}/insights?welcome=1`);
         } catch (err) {
           setError((err as Error).message);
           setPending(false);

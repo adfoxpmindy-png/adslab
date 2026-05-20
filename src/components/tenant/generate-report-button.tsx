@@ -75,7 +75,7 @@ export function GenerateReportButton({ tenantSlug }: { tenantSlug: string }) {
       } else if (data.status === "completed") {
         toast.success(t("success"), { id: toastId, duration: 3000 });
       }
-      router.push(`/t/${tenantSlug}/reports/${data.reportId}`);
+      router.push(`/t/${tenantSlug}/insights/reports/${data.reportId}`);
       router.refresh();
     } catch (err) {
       clearInterval(toastInterval);

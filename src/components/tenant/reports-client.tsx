@@ -71,8 +71,8 @@ export function ReportsClient({
 
   function changeScope(newId: string | null) {
     const url = newId
-      ? `/t/${tenantSlug}/reports?scopeId=${newId}`
-      : `/t/${tenantSlug}/reports`;
+      ? `/t/${tenantSlug}/insights/reports?scopeId=${newId}`
+      : `/t/${tenantSlug}/insights/reports`;
     router.push(url);
   }
 
@@ -99,7 +99,7 @@ export function ReportsClient({
       } else {
         toast.success(t("toast.generateSuccess"), { id: toastId, duration: 3000 });
       }
-      router.push(`/t/${tenantSlug}/reports/${data.reportId}`);
+      router.push(`/t/${tenantSlug}/insights/reports/${data.reportId}`);
       router.refresh();
     } catch (err) {
       clearInterval(interval);
@@ -122,7 +122,7 @@ export function ReportsClient({
       toast.success(t("toast.deleted"));
       // If we were viewing the deleted scope, fall back to "All".
       if (selectedScopeId === scope.id) {
-        router.push(`/t/${tenantSlug}/reports`);
+        router.push(`/t/${tenantSlug}/insights/reports`);
       }
       startTransition(() => router.refresh());
     } catch {
@@ -231,7 +231,7 @@ export function ReportsClient({
               return (
                 <li key={r.id}>
                   <Link
-                    href={`/t/${tenantSlug}/reports/${r.id}`}
+                    href={`/t/${tenantSlug}/insights/reports/${r.id}`}
                     className="flex flex-wrap items-start justify-between gap-3 px-5 py-4 transition-colors hover:bg-muted/30"
                   >
                     <div className="flex-1 min-w-0">
@@ -278,7 +278,7 @@ export function ReportsClient({
           onClose={() => setScopeModalOpen(null)}
           onSaved={(savedId) => {
             setScopeModalOpen(null);
-            router.push(`/t/${tenantSlug}/reports?scopeId=${savedId}`);
+            router.push(`/t/${tenantSlug}/insights/reports?scopeId=${savedId}`);
             startTransition(() => router.refresh());
           }}
         />
