@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/crypto/aes";
 import { syncAdAccounts } from "@/lib/meta/client";
+import { resolveUserLocale } from "@/lib/i18n/server";
 import {
   exchangeCodeForToken,
   exchangeForLongLivedToken,
@@ -63,6 +64,10 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${appUrl}/login?error=oauth_unauthorized`, 307);
   }
 
+  // Resolve the locale once so all post-auth redirects emit the canonical
+  // /<locale>/... URL directly (no proxy 307 hop).
+  const locale = await resolveUserLocale(statePayload.userId);
+
   try {
     const shortLived = await exchangeCodeForToken(code);
     const longLived = await exchangeForLongLivedToken(shortLived.access_token);
@@ -102,13 +107,13 @@ export async function GET(request: Request) {
     const params = new URLSearchParams({ connected: "1" });
     if (syncFailed) params.set("sync_failed", "1");
     return NextResponse.redirect(
-      `${appUrl}/t/${tenant.slug}/settings/integrations?${params.toString()}`,
+      `${appUrl}/${locale}/t/${tenant.slug}/settings/integrations?${params.toString()}`,
       307,
     );
   } catch (err) {
     console.error("[meta/oauth/callback] token exchange failed:", err);
     return NextResponse.redirect(
-      `${appUrl}/t/${tenant.slug}/settings/integrations?error=oauth_exchange`,
+      `${appUrl}/${locale}/t/${tenant.slug}/settings/integrations?error=oauth_exchange`,
       307,
     );
   }

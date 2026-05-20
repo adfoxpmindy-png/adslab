@@ -76,7 +76,9 @@ export async function sendVerificationEmail(userId: string): Promise<
   });
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  const verifyUrl = `${appUrl}/verify-email?token=${token}`;
+  // Include the user's locale prefix so the CTA link lands on the verify
+  // page directly (no proxy redirect hop from the unprefixed URL).
+  const verifyUrl = `${appUrl}/${locale}/verify-email?token=${token}`;
   const template = await verifyEmailTemplate({ name: user.name, verifyUrl, locale });
 
   const result = await sendEmail({

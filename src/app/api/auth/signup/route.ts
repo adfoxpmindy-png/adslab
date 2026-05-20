@@ -105,8 +105,9 @@ export async function POST(request: NextRequest) {
 
   // Send verification email — best effort, don't block signup.
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  const verifyUrl = `${appUrl}/verify-email?token=${verificationToken}`;
   const locale = await resolveUserLocale(user.id);
+  // Locale prefix in the CTA URL so the link skips the proxy redirect hop.
+  const verifyUrl = `${appUrl}/${locale}/verify-email?token=${verificationToken}`;
   const template = await verifyEmailTemplate({ name, verifyUrl, locale });
   const emailResult = await sendEmail({
     to: user.email,
