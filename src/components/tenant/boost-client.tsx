@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/routing";
+import { useRouter } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertTriangle,

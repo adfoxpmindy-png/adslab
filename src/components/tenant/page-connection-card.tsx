@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { CheckCircle2, FileText } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 

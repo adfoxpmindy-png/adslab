@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/routing";
 import { useTransition } from "react";
 import { Check, Languages } from "lucide-react";
 import { toast } from "sonner";
@@ -23,6 +23,7 @@ import { LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales";
  */
 export function LanguageSwitcher() {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations("sidebar.profile.menu");
   const tSwitcher = useTranslations("languageSwitcher");
   const activeLocale = useLocale();
@@ -31,13 +32,18 @@ export function LanguageSwitcher() {
   async function switchTo(locale: Locale) {
     if (locale === activeLocale) return;
     try {
+      // Persist to DB + cookie so cross-device + legacy-URL fallback work.
+      // The URL switch below is what actually re-renders the current page.
       const res = await fetch("/api/user/locale", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale }),
       });
       if (!res.ok) throw new Error("save failed");
-      startTransition(() => router.refresh());
+      // Replace the URL with the same path under the new locale prefix.
+      // next-intl's router.replace handles the /<old>/path → /<new>/path
+      // rewrite + re-renders server components on the new request.
+      startTransition(() => router.replace(pathname, { locale }));
     } catch {
       toast.error(tSwitcher("errorChange"));
     }

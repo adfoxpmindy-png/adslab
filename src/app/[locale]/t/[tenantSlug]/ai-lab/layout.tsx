@@ -8,11 +8,11 @@ export default async function AILabLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string; tenantSlug: string }>;
+  params: Promise<{ tenantSlug: string }>;
 }) {
-  const { locale, tenantSlug } = await params;
+  const { tenantSlug } = await params;
   const t = await getTranslations("labs.ai");
-  const base = `/${locale}/t/${tenantSlug}/ai-lab`;
+  const base = `/t/${tenantSlug}/ai-lab`;
   const tabs = [
     { key: "chat", label: t("tabs.chat"), href: base },
     { key: "recommendations", label: t("tabs.recommendations"), href: `${base}/recommendations` },

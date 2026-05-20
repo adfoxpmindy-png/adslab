@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { AlertCircle, Clock, CreditCard } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 

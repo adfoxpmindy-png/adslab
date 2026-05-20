@@ -9,12 +9,12 @@ export default async function SettingsLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string; tenantSlug: string }>;
+  params: Promise<{ tenantSlug: string }>;
 }) {
-  const { locale, tenantSlug } = await params;
+  const { tenantSlug } = await params;
   await requireTenantMember(tenantSlug);
   const t = await getTranslations("labs.settings");
-  const base = `/${locale}/t/${tenantSlug}/settings`;
+  const base = `/t/${tenantSlug}/settings`;
   // Only render tabs that actually have routes. Team + Account are not
   // implemented yet — surface them in the layout when they exist.
   const tabs = [

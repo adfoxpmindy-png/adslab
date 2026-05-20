@@ -8,11 +8,13 @@ export default async function InsightsLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string; tenantSlug: string }>;
+  params: Promise<{ tenantSlug: string }>;
 }) {
-  const { locale, tenantSlug } = await params;
+  const { tenantSlug } = await params;
   const t = await getTranslations("labs.insights");
-  const base = `/${locale}/t/${tenantSlug}/insights`;
+  // Locale-less base — next-intl's <Link> (via LabPage) auto-prepends the
+  // active locale, and usePathname() returns the path without the locale.
+  const base = `/t/${tenantSlug}/insights`;
   const tabs = [
     { key: "overview", label: t("tabs.overview"), href: base },
     { key: "reports", label: t("tabs.reports"), href: `${base}/reports` },

@@ -8,11 +8,11 @@ export default async function AutomationLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string; tenantSlug: string }>;
+  params: Promise<{ tenantSlug: string }>;
 }) {
-  const { locale, tenantSlug } = await params;
+  const { tenantSlug } = await params;
   const t = await getTranslations("labs.automation");
-  const base = `/${locale}/t/${tenantSlug}/automation`;
+  const base = `/t/${tenantSlug}/automation`;
   const tabs = [
     { key: "rules", label: t("tabs.rules"), href: base },
     { key: "goals", label: t("tabs.goals"), href: `${base}/goals` },

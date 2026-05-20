@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Mail } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";

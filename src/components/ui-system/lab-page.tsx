@@ -13,9 +13,9 @@
 // a real route under /<locale>/<lab>/<tab>; clicking navigates without
 // client-side state juggling.
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
+
+import { Link, usePathname } from "@/i18n/routing";
 
 import { cn } from "@/lib/utils";
 

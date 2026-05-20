@@ -8,11 +8,11 @@ export default async function LaunchLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string; tenantSlug: string }>;
+  params: Promise<{ tenantSlug: string }>;
 }) {
-  const { locale, tenantSlug } = await params;
+  const { tenantSlug } = await params;
   const t = await getTranslations("labs.launch");
-  const base = `/${locale}/t/${tenantSlug}/launch`;
+  const base = `/t/${tenantSlug}/launch`;
   const tabs = [
     { key: "ads", label: t("tabs.ads"), href: base },
     { key: "boost", label: t("tabs.boost"), href: `${base}/boost` },

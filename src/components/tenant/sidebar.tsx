@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Bot, Compass, FileText, LayoutDashboard, Megaphone, Settings, Target, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 

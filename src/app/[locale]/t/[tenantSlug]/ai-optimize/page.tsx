@@ -1,5 +1,5 @@
 import { Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
