@@ -1,17 +1,12 @@
 /**
- * Next.js 16 proxy (formerly `middleware`). Three responsibilities:
+ * Next.js 16 proxy (formerly `middleware`). Two responsibilities:
  *
  *   1. Locale URL-prefix enforcement via next-intl's createMiddleware.
  *      URLs not starting with /<locale>/ get 307-redirected to their
  *      prefixed equivalent. The locale chosen comes from (in order):
  *      adslab-locale cookie → Accept-Language → DEFAULT_LOCALE ("th").
  *
- *   2. Legacy tenant route → Lab route 307 redirects. The flat tenant
- *      URLs (/dashboard, /boost, ...) were consolidated into 5 Labs
- *      in add-lab-information-architecture. Old URLs continue to work
- *      via 307 for ≥ 90 days so bookmarks and email CTAs survive.
- *
- *   3. Cookie-existence check (only) on tenant routes `/<locale>/t/...`.
+ *   2. Cookie-existence check (only) on tenant routes `/<locale>/t/...`.
  *      The actual session verification happens in `requireTenantMember`
  *      on the server-component layer. The proxy just bounces obviously
  *      logged-out users to /login before they load the heavy tenant page.
@@ -34,57 +29,6 @@ function resolveLocaleForRedirect(request: NextRequest): Locale {
   if (isLocale(cookieValue)) return cookieValue;
   const acceptLang = request.headers.get("accept-language");
   return resolveLocaleFromString(acceptLang ?? null);
-}
-
-/**
- * Map of legacy tenant sub-paths → Lab sub-paths. Keys and values are the
- * path AFTER `/t/<tenantSlug>` so we can rewrite both static URLs and
- * dynamic-segment URLs (e.g. `/reports/r_123` → `/insights-lab/reports/r_123`).
- *
- * Order matters: longer keys must come first so `/campaigns/new` matches
- * before `/campaigns`. We sort once at module load.
- */
-const LAB_REDIRECTS: ReadonlyArray<readonly [string, string]> = (
-  [
-    ["/dashboard", "/insights"],
-    ["/reports", "/insights/reports"],
-    ["/journey", "/insights/journey"],
-    ["/competitors", "/insights/competitors"],
-    ["/boost", "/launch/boost"],
-    ["/campaigns/new", "/launch/new"],
-    ["/campaigns/ai-new", "/launch/ai-new"],
-    ["/campaigns/history", "/launch/history"],
-    ["/campaigns", "/launch/campaigns"],
-    ["/ads", "/launch"],
-    ["/audiences", "/launch/audiences"],
-    ["/creatives", "/launch/creatives"],
-    ["/posts/new", "/launch/posts/new"],
-    ["/posts", "/launch/posts"],
-    ["/ai/memory", "/ai-lab/memory"],
-    ["/ai-optimize", "/ai-lab/recommendations"],
-    ["/ai", "/ai-lab"],
-    ["/rules", "/automation"],
-    ["/goals/naming", "/automation/naming"],
-    ["/goals", "/automation/goals"],
-    ["/events", "/automation/events"],
-    ["/tools", "/insights"],
-    ["/insights-lab", "/insights"],
-    ["/launch-lab", "/launch"],
-    ["/inventory-lab", "/launch"],
-    ["/automation-lab", "/automation"],
-  ] as const
-)
-  .slice()
-  .sort(([a], [b]) => b.length - a.length);
-
-/** Tenant inner path (after `/<locale>/t/<tenantSlug>`) → Lab inner path. */
-function resolveLabRedirect(innerTenantPath: string): string | null {
-  for (const [from, to] of LAB_REDIRECTS) {
-    if (innerTenantPath === from || innerTenantPath.startsWith(`${from}/`)) {
-      return to + innerTenantPath.slice(from.length);
-    }
-  }
-  return null;
 }
 
 export function proxy(request: NextRequest) {
@@ -110,28 +54,6 @@ export function proxy(request: NextRequest) {
       loginUrl.pathname = `/${firstSegment}/login`;
       loginUrl.search = `?next=${encodeURIComponent(pathname + search)}`;
       return NextResponse.redirect(loginUrl);
-    }
-
-    // 2b. Legacy tenant routes → 307 to their Lab equivalent.
-    //
-    // `innerPath` is `/t/<slug>/<rest>` so the split is:
-    //   tenantParts = ["", "t", "<slug>", ...rest]
-    //                  [0] [1]   [2]      [3+]
-    // Earlier this indexed slug as [3] and rest as slice(4), which silently
-    // killed redirects for single-segment legacy paths like /t/<slug>/tools
-    // (tenantSlug came back as "tools" and innerTenantPath collapsed to "/",
-    // so resolveLabRedirect found no match and the request fell through to a
-    // 404). Fix: slug is [2], rest starts at [3].
-    const tenantParts = innerPath.split("/");
-    const tenantSlug = tenantParts[2];
-    if (tenantSlug) {
-      const innerTenantPath = "/" + tenantParts.slice(3).join("/");
-      const labTarget = resolveLabRedirect(innerTenantPath);
-      if (labTarget) {
-        const labUrl = request.nextUrl.clone();
-        labUrl.pathname = `/${firstSegment}/t/${tenantSlug}${labTarget}`;
-        return NextResponse.redirect(labUrl, 307);
-      }
     }
   }
 

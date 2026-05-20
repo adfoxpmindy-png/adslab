@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Link, usePathname, useRouter } from "@/i18n/routing";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ChevronDown, Crown, Settings, LogOut, User as UserIcon } from "lucide-react";
 

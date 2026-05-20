@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Link } from "@/i18n/routing";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Brain, BarChart3, Crosshair, Layers, Megaphone, Zap, Check } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
@@ -33,9 +33,7 @@ export default async function HomePage() {
       orderBy: { createdAt: "asc" },
       select: { tenant: { select: { slug: true } } },
     });
-    // Send directly to the Insights section (= dashboard overview) so we
-    // skip the proxy hop from the legacy /dashboard → /insights redirect.
-    if (m) redirect(`/t/${m.tenant.slug}/insights`);
+    if (m) redirect(`/t/${m.tenant.slug}/dashboard`);
   }
 
   const t = await getTranslations("pages.landing");

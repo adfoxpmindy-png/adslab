@@ -399,10 +399,7 @@ export async function generateDailyReport(input: GenerateInput): Promise<Generat
       const ownerName = tenant.members[0]?.user.name;
       if (ownerEmail && ownerName) {
         const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-        // Locale prefix in the email CTA so the link skips the proxy hop.
-        // Reports live under Insights now (the proxy redirects /reports →
-        // /insights/reports anyway, but emit the canonical URL directly).
-        const reportUrl = `${appUrl}/${locale}/t/${tenant.slug}/insights/reports/${completed.id}`;
+        const reportUrl = `${appUrl}/t/${tenant.slug}/reports/${completed.id}`;
         const template = await dailyReportEmailTemplate({
           recipientName: ownerName,
           tenantName: tenant.name,

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Link, useRouter, usePathname } from "@/i18n/routing";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { Check, ChevronDown, Layers, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 

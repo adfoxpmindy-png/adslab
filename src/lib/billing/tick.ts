@@ -64,12 +64,10 @@ export async function runBillingTick(opts: {
     try {
       const owner = sub.tenant.members[0]?.user;
       if (!owner) continue;
+      const dashUrl = `${opts.appUrl}/t/${sub.tenant.slug}/settings/billing`;
       const locale: Locale = isLocale(owner.preferredLocale)
         ? owner.preferredLocale
         : DEFAULT_LOCALE;
-      // Include the recipient's locale prefix so the CTA in the email lands
-      // on the billing page directly (no proxy redirect hop).
-      const dashUrl = `${opts.appUrl}/${locale}/t/${sub.tenant.slug}/settings/billing`;
 
       if (sub.status === "TRIALING" && sub.trialEndsAt) {
         const daysToEnd = daysBetween(now, sub.trialEndsAt);

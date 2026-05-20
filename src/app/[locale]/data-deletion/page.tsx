@@ -1,22 +1,13 @@
-import { Link } from "@/i18n/routing";
-import type { Locale } from "@/i18n/locales";
+import Link from "next/link";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 import { SiteFooter } from "@/components/site-footer";
 import { COMPANY } from "@/lib/company";
 
 const CONTACT_EMAIL = COMPANY.supportEmail;
 
-export const revalidate = 86400;
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
+export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("pages.dataDeletion");
   return {
     title: t("metaTitle"),
@@ -24,13 +15,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function DataDeletionPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
+export default async function DataDeletionPage() {
   const t = await getTranslations("pages.dataDeletion");
   const email = () => (
     <a

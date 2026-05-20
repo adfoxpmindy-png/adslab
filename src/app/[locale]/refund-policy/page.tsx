@@ -1,20 +1,12 @@
-import { Link } from "@/i18n/routing";
-import type { Locale } from "@/i18n/locales";
+import Link from "next/link";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 import { SiteFooter } from "@/components/site-footer";
 import { COMPANY, getCompanyAddress } from "@/lib/company";
+import { resolveActiveLocale } from "@/lib/i18n/server";
 
-export const revalidate = 86400;
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
+export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("pages.refundPolicy");
   return {
     title: t("metaTitle"),
@@ -22,15 +14,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function RefundPolicyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
+export default async function RefundPolicyPage() {
   const t = await getTranslations("pages.refundPolicy");
-  const companyAddress = await getCompanyAddress(locale as Locale);
+  const locale = await resolveActiveLocale();
+  const companyAddress = await getCompanyAddress(locale);
 
   return (
     <main className="min-h-screen bg-background">

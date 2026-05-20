@@ -9,7 +9,6 @@ import {
   verifyPageOAuthState,
 } from "@/lib/meta/page-oauth";
 import { syncManagedPages } from "@/lib/meta/page-client";
-import { resolveUserLocale } from "@/lib/i18n/server";
 
 /**
  * GET /api/meta/page-oauth/callback?code=...&state=...
@@ -57,8 +56,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${appUrl}/login?error=oauth_unauthorized`, 307);
   }
 
-  const locale = await resolveUserLocale(statePayload.userId);
-
   try {
     const shortLived = await exchangeCodeForPageToken(code);
     const longLived = await exchangeForLongLivedPageToken(shortLived.access_token);
@@ -94,13 +91,13 @@ export async function GET(request: Request) {
     const params = new URLSearchParams({ page_connected: "1" });
     if (syncFailed) params.set("sync_failed", "1");
     return NextResponse.redirect(
-      `${appUrl}/${locale}/t/${tenant.slug}/settings/integrations?${params.toString()}`,
+      `${appUrl}/t/${tenant.slug}/settings/integrations?${params.toString()}`,
       307,
     );
   } catch (err) {
     console.error("[meta/page-oauth/callback] token exchange failed:", err);
     return NextResponse.redirect(
-      `${appUrl}/${locale}/t/${tenant.slug}/settings/integrations?error=page_oauth_exchange`,
+      `${appUrl}/t/${tenant.slug}/settings/integrations?error=page_oauth_exchange`,
       307,
     );
   }

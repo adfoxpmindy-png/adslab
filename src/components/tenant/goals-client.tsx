@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Check, Filter, Pencil, Search, X } from "lucide-react";
 import { toast } from "sonner";

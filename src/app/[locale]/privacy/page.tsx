@@ -1,7 +1,6 @@
-import { Link } from "@/i18n/routing";
-import type { Locale } from "@/i18n/locales";
+import Link from "next/link";
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 import { SiteFooter } from "@/components/site-footer";
 import { COMPANY } from "@/lib/company";
@@ -9,17 +8,7 @@ import { COMPANY } from "@/lib/company";
 const LAST_UPDATED = "2026-05-11";
 const CONTACT_EMAIL = COMPANY.supportEmail;
 
-// Revalidate at most once per day; the legal copy changes rarely so static
-// HTML can stay warm in the CDN edge cache between deploys.
-export const revalidate = 86400;
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
+export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("pages.privacy");
   return {
     title: t("metaTitle"),
@@ -27,13 +16,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function PrivacyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
+export default async function PrivacyPage() {
   const t = await getTranslations("pages.privacy");
   const deletionLink = (chunks: React.ReactNode) => (
     <Link className="text-primary underline-offset-4 hover:underline" href="/data-deletion">

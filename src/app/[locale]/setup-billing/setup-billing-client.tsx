@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Check, CreditCard, Loader2 } from "lucide-react";

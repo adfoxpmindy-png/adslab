@@ -12,6 +12,7 @@ import { ComingSoonCard } from "@/components/tenant/coming-soon-card";
 import { TenantScopeCard } from "@/components/tenant/tenant-scope-card";
 import { NamingTemplatesCard } from "@/components/tenant/naming-templates-card";
 import { AISettings } from "@/components/tenant/ai-settings-card";
+import { SettingsTabs, type SettingsTab } from "@/components/tenant/settings-tabs";
 import { SetPageTitle } from "@/components/tenant/topbar-page-title";
 import { MetaIcon } from "@/components/icons/meta";
 import { getTenantScope } from "@/lib/tenant-scope";
@@ -21,7 +22,13 @@ type SearchParams = Promise<{
   page_connected?: string;
   sync_failed?: string;
   error?: string;
+  tab?: string;
 }>;
+
+function parseTab(raw: string | undefined): SettingsTab {
+  if (raw === "naming" || raw === "integrations" || raw === "ai") return raw;
+  return "scope";
+}
 
 export default async function IntegrationsPage({
   params,
@@ -31,7 +38,8 @@ export default async function IntegrationsPage({
   searchParams: SearchParams;
 }) {
   const { tenantSlug } = await params;
-  const { connected, page_connected: pageConnected, error } = await searchParams;
+  const { connected, page_connected: pageConnected, error, tab: tabRaw } = await searchParams;
+  const tab = parseTab(tabRaw);
   const { tenant, role } = await requireTenantMember(tenantSlug);
   const canEditScope = role === "OWNER";
 
@@ -75,22 +83,21 @@ export default async function IntegrationsPage({
   const activeAccounts = connection
     ? connection.adAccounts.filter((a) => a.accountStatus === 1)
     : [];
-
-  // The scope picker needs the campaign list so users can preview which
-  // campaigns each scope rule would catch. Only fetch when there's a Meta
-  // connection — otherwise we render an empty-state hint instead.
-  const campaignsForScope = connection
-    ? await prisma.metaCampaign.findMany({
-        where: { metaConnectionId: connection.id },
-        orderBy: [{ effectiveStatus: "asc" }, { name: "asc" }],
-        select: {
-          metaCampaignId: true,
-          metaAccountId: true,
-          name: true,
-          effectiveStatus: true,
-        },
-      })
-    : [];
+  // Only load campaigns when the Scope tab is active — avoid pulling
+  // hundreds of rows on Integrations/Naming visits.
+  const campaignsForScope =
+    tab === "scope" && connection
+      ? await prisma.metaCampaign.findMany({
+          where: { metaConnectionId: connection.id },
+          orderBy: [{ effectiveStatus: "asc" }, { name: "asc" }],
+          select: {
+            metaCampaignId: true,
+            metaAccountId: true,
+            name: true,
+            effectiveStatus: true,
+          },
+        })
+      : [];
 
   const data: MetaConnectionData = connection
     ? {
@@ -115,120 +122,117 @@ export default async function IntegrationsPage({
 
   return (
     <>
-      <SetPageTitle title={t("title")} subtitle={t("subtitle")} />
-      <div className="mx-auto w-full max-w-screen-2xl space-y-10 px-6 py-6">
-        {/* 1. Platform connections — primary purpose of this page. */}
-        <section className="space-y-3">
-          <header className="flex items-start gap-3">
-            <div className="flex size-9 items-center justify-center rounded-md bg-[#1877F2]/10">
-              <MetaIcon className="size-5 text-[#1877F2]" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight">Meta Ads</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t("metaSubtitle")}</p>
-            </div>
-          </header>
-          <MetaConnectionCard
+      <SetPageTitle
+        title={t("title")}
+        subtitle={t("subtitle")}
+      />
+      <div className="mx-auto w-full max-w-screen-2xl space-y-6 px-6 py-6">
+        <SettingsTabs active={tab} />
+
+      {tab === "scope" && (
+        connection && activeAccounts.length > 0 ? (
+          <TenantScopeCard
             tenantSlug={tenantSlug}
-            role={role}
-            data={data}
-            flash={{ success: connected === "1", error: error ?? null }}
+            canEdit={canEditScope}
+            accounts={activeAccounts.map((a) => ({
+              id: a.metaAccountId,
+              name: a.name,
+              business: a.businessName,
+            }))}
+            campaigns={campaignsForScope.map((c) => ({
+              id: c.metaCampaignId,
+              name: c.name,
+              accountId: c.metaAccountId,
+              status: c.effectiveStatus,
+            }))}
+            initialScope={tenantScope}
           />
-        </section>
+        ) : (
+          <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            {t("needMetaForScope")}
+          </p>
+        )
+      )}
 
-        <section className="space-y-3">
-          <header className="flex items-start gap-3">
-            <div className="flex size-9 items-center justify-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-300">
-              <MetaIcon className="size-5" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight">{tSettings("title")}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{tSettings("subtitle")}</p>
-            </div>
-          </header>
-          <PageConnectionCard
-            tenantSlug={tenantSlug}
-            role={role}
-            data={
-              pageConnection
-                ? {
-                    metaUserName: pageConnection.metaUserName,
-                    status: pageConnection.status,
-                    connectedAt: pageConnection.connectedAt.toISOString(),
-                    lastSyncedAt: pageConnection.lastSyncedAt?.toISOString() ?? null,
-                    pageCount: pageConnection._count.managedPages,
-                  }
-                : (null as PageConnectionData)
-            }
-            flashSuccess={pageConnected === "1"}
-          />
-        </section>
+      {tab === "naming" && (
+        connection ? (
+          <NamingTemplatesCard tenantSlug={tenantSlug} canEdit={canEditScope} />
+        ) : (
+          <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            {t("needMetaForNaming")}
+          </p>
+        )
+      )}
 
-        <ComingSoonCard
-          platform="google"
-          tenantSlug={tenantSlug}
-          title="Google Ads"
-          description={t("googleDesc")}
-        />
+      {tab === "ai" && (
+        <AISettings tenantSlug={tenantSlug} canEdit={canEditScope} />
+      )}
 
-        <ComingSoonCard
-          platform="tiktok"
-          tenantSlug={tenantSlug}
-          title="TikTok Ads"
-          description={t("tiktokDesc")}
-        />
-
-        {/* 2. Account scope — restricts which Meta ad accounts this tenant
-            operates on. Lives here because it's a setup-time decision that
-            sits on top of the Meta connection. */}
-        {connection && activeAccounts.length > 0 ? (
-          <section className="space-y-3 border-t border-border pt-10">
-            <header>
-              <h2 className="text-xl font-semibold tracking-tight">{t("scopeHeading")}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t("scopeSubtitle")}</p>
+      {tab === "integrations" && (
+        <div className="space-y-6">
+          <section className="space-y-3">
+            <header className="flex items-start gap-3">
+              <div className="flex size-9 items-center justify-center rounded-md bg-[#1877F2]/10">
+                <MetaIcon className="size-5 text-[#1877F2]" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight">Meta Ads</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {t("metaSubtitle")}
+                </p>
+              </div>
             </header>
-            <TenantScopeCard
+            <MetaConnectionCard
               tenantSlug={tenantSlug}
-              canEdit={canEditScope}
-              accounts={activeAccounts.map((a) => ({
-                id: a.metaAccountId,
-                name: a.name,
-                business: a.businessName,
-              }))}
-              campaigns={campaignsForScope.map((c) => ({
-                id: c.metaCampaignId,
-                name: c.name,
-                accountId: c.metaAccountId,
-                status: c.effectiveStatus,
-              }))}
-              initialScope={tenantScope}
+              role={role}
+              data={data}
+              flash={{ success: connected === "1", error: error ?? null }}
             />
           </section>
-        ) : null}
 
-        {/* 3. Naming templates — surface the legacy templates card so users
-            who relied on it pre-IA-revision still find it. The new
-            "Automation > Naming" route owns naming rules; templates are
-            related but distinct and live with the integration. */}
-        {connection ? (
-          <section className="space-y-3 border-t border-border pt-10">
-            <header>
-              <h2 className="text-xl font-semibold tracking-tight">{t("namingHeading")}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t("namingSubtitle")}</p>
+          <section className="space-y-3">
+            <header className="flex items-start gap-3">
+              <div className="flex size-9 items-center justify-center rounded-md bg-violet-500/10 text-violet-600 dark:text-violet-300">
+                <MetaIcon className="size-5" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight">{tSettings("title")}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">{tSettings("subtitle")}</p>
+              </div>
             </header>
-            <NamingTemplatesCard tenantSlug={tenantSlug} canEdit={canEditScope} />
+            <PageConnectionCard
+              tenantSlug={tenantSlug}
+              role={role}
+              data={
+                pageConnection
+                  ? {
+                      metaUserName: pageConnection.metaUserName,
+                      status: pageConnection.status,
+                      connectedAt: pageConnection.connectedAt.toISOString(),
+                      lastSyncedAt: pageConnection.lastSyncedAt?.toISOString() ?? null,
+                      pageCount: pageConnection._count.managedPages,
+                    }
+                  : (null as PageConnectionData)
+              }
+              flashSuccess={pageConnected === "1"}
+            />
           </section>
-        ) : null}
 
-        {/* 4. AI behavior settings — kept on this page so OWNER tweaks live
-            next to the Meta connection that gates them. */}
-        <section className="space-y-3 border-t border-border pt-10">
-          <header>
-            <h2 className="text-xl font-semibold tracking-tight">{t("aiHeading")}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t("aiSubtitle")}</p>
-          </header>
-          <AISettings tenantSlug={tenantSlug} canEdit={canEditScope} />
-        </section>
+          <ComingSoonCard
+            platform="google"
+            tenantSlug={tenantSlug}
+            title="Google Ads"
+            description={t("googleDesc")}
+          />
+
+          <ComingSoonCard
+            platform="tiktok"
+            tenantSlug={tenantSlug}
+            title="TikTok Ads"
+            description={t("tiktokDesc")}
+          />
+        </div>
+      )}
       </div>
     </>
   );

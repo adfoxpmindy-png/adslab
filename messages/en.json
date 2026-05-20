@@ -194,15 +194,7 @@
       "analyze": "Analyze",
       "memory": "AI Memory",
       "tools": "Tools",
-      "settings": "Settings",
-      "insights": "Insights",
-      "launch": "Launch",
-      "aiLab": "AI Lab",
-      "automation": "Automation",
-      "insightsLab": "Insights Lab",
-      "launchLab": "Launch Lab",
-      "inventoryLab": "Inventory Lab",
-      "automationLab": "Automation Lab"
+      "settings": "Settings"
     },
     "section": {
       "connectAccounts": "Connected accounts"
@@ -3092,19 +3084,13 @@
       }
     },
     "integrations": {
-      "title": "Integrations",
-      "subtitle": "Connect platforms, scope which accounts this tenant manages, and configure naming templates",
-      "needMetaForScope": "Connect Meta before configuring scope",
-      "needMetaForNaming": "Connect Meta before configuring naming templates",
+      "title": "Settings",
+      "subtitle": "Configure scope, naming convention, and integrations for this tenant",
+      "needMetaForScope": "Connect Meta before configuring scope — go to the Integrations tab",
+      "needMetaForNaming": "Connect Meta before configuring naming standards — go to the Integrations tab",
       "metaSubtitle": "Connect Facebook Business Manager",
       "googleDesc": "Connect Google Ads — in development",
-      "tiktokDesc": "Connect TikTok Ads — in development",
-      "scopeHeading": "Account scope",
-      "scopeSubtitle": "Choose which Meta ad accounts and campaigns this tenant operates on (so you don't accidentally edit accounts outside this workspace).",
-      "namingHeading": "Campaign naming templates",
-      "namingSubtitle": "Set templates so new campaigns follow a consistent naming standard.",
-      "aiHeading": "AI behavior",
-      "aiSubtitle": "Tune how AI analyzes performance and what recommendations it surfaces."
+      "tiktokDesc": "Connect TikTok Ads — in development"
     },
     "tiktokAds": {
       "title": "TikTok Ads",
@@ -3297,59 +3283,5 @@
   },
   "topbar": {
     "notifications": "Notifications"
-  },
-  "labs": {
-    "insights": {
-      "title": "Insights",
-      "description": "Overview, reports, customer journey and competitors.",
-      "tabs": {
-        "overview": "Overview",
-        "reports": "Reports",
-        "journey": "Customer Journey",
-        "competitors": "Competitors"
-      }
-    },
-    "launch": {
-      "title": "Launch",
-      "description": "Ads, boosts, campaigns, and asset library.",
-      "tabs": {
-        "ads": "All Ads",
-        "boost": "Quick Boost",
-        "campaigns": "Campaigns",
-        "new": "New campaign",
-        "aiNew": "AI builder",
-        "history": "History",
-        "audiences": "Audiences",
-        "creatives": "Creatives",
-        "posts": "Page posts"
-      }
-    },
-    "ai": {
-      "title": "AI Lab",
-      "description": "AI assistant, recommendations and AI memory.",
-      "tabs": {
-        "chat": "AI Chat",
-        "recommendations": "Recommendations",
-        "memory": "AI Memory"
-      }
-    },
-    "automation": {
-      "title": "Automation",
-      "description": "Auto-rules, goals, naming and events.",
-      "tabs": {
-        "rules": "Auto-rules",
-        "goals": "Goals",
-        "naming": "Naming",
-        "events": "Events"
-      }
-    },
-    "settings": {
-      "title": "Settings",
-      "description": "Integrations, billing and account setup.",
-      "tabs": {
-        "integrations": "Integrations",
-        "billing": "Billing"
-      }
-    }
   }
 }

@@ -1,9 +1,17 @@
 import {
+  BarChart3,
   Brain,
-  LineChart,
-  Megaphone,
-  Settings2,
-  Workflow,
+  Camera,
+  FileText,
+  Folder,
+  Home,
+  Image as ImageIcon,
+  Settings,
+  Shield,
+  TrendingUp,
+  Users,
+  Wrench,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -14,11 +22,6 @@ import {
  * Labels are translation keys under the `sidebar.nav` namespace. The
  * consuming component should call `useTranslations("sidebar.nav")` and
  * resolve `labelKey` at render time so locale switches reflect immediately.
- *
- * 5-section workflow-driven IA: Insights (analytics) · Launch (full ad
- * lifecycle + assets) · AI Lab (the only "Lab" — exploratory AI) ·
- * Automation (rules/goals/naming) · Settings. Each section's landing
- * route opens its default sub-tab; the tab strip exposes the rest.
  */
 export type SidebarNavItem = {
   /** Key into messages/{locale}.json under `sidebar.nav.*`. */
@@ -28,11 +31,19 @@ export type SidebarNavItem = {
 };
 
 export const SIDEBAR_NAV_ITEMS: SidebarNavItem[] = [
-  { labelKey: "insights", href: (s) => `/t/${s}/insights`, icon: LineChart },
-  { labelKey: "launch", href: (s) => `/t/${s}/launch`, icon: Megaphone },
-  { labelKey: "aiLab", href: (s) => `/t/${s}/ai-lab`, icon: Brain },
-  { labelKey: "automation", href: (s) => `/t/${s}/automation`, icon: Workflow },
-  { labelKey: "settings", href: (s) => `/t/${s}/settings/integrations`, icon: Settings2 },
+  { labelKey: "overview", href: (s) => `/t/${s}/dashboard`, icon: Home },
+  { labelKey: "boost", href: (s) => `/t/${s}/boost`, icon: Zap },
+  { labelKey: "rules", href: (s) => `/t/${s}/rules`, icon: Shield },
+  { labelKey: "campaigns", href: (s) => `/t/${s}/campaigns`, icon: Folder },
+  { labelKey: "ads", href: (s) => `/t/${s}/ads`, icon: Camera },
+  { labelKey: "audiences", href: (s) => `/t/${s}/audiences`, icon: Users },
+  { labelKey: "creatives", href: (s) => `/t/${s}/creatives`, icon: ImageIcon },
+  { labelKey: "posts", href: (s) => `/t/${s}/posts`, icon: FileText },
+  { labelKey: "reports", href: (s) => `/t/${s}/reports`, icon: BarChart3 },
+  { labelKey: "analyze", href: (s) => `/t/${s}/ai-optimize`, icon: TrendingUp },
+  { labelKey: "memory", href: (s) => `/t/${s}/ai/memory`, icon: Brain },
+  { labelKey: "tools", href: (s) => `/t/${s}/tools`, icon: Wrench },
+  { labelKey: "settings", href: (s) => `/t/${s}/settings/integrations`, icon: Settings },
 ];
 
 /** A route is active when its path is the current pathname OR a parent of it. */

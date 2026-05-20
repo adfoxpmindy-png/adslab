@@ -1,7 +1,6 @@
-import { Settings2 } from "lucide-react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-import { LabPage } from "@/components/ui-system/lab-page";
 import { requireTenantMember } from "@/lib/auth/tenant";
 
 export default async function SettingsLayout({
@@ -13,22 +12,51 @@ export default async function SettingsLayout({
 }) {
   const { tenantSlug } = await params;
   await requireTenantMember(tenantSlug);
-  const t = await getTranslations("labs.settings");
-  const base = `/t/${tenantSlug}/settings`;
-  // Only render tabs that actually have routes. Team + Account are not
-  // implemented yet — surface them in the layout when they exist.
-  const tabs = [
-    { key: "integrations", label: t("tabs.integrations"), href: `${base}/integrations` },
-    { key: "billing", label: t("tabs.billing"), href: `${base}/billing` },
-  ];
+  const t = await getTranslations("pages.settings");
+
   return (
-    <LabPage
-      title={t("title")}
-      description={t("description")}
-      icon={Settings2}
-      tabs={tabs}
+    <div className="mx-auto w-full max-w-screen-2xl px-6 py-8">
+      <header className="mb-6">
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">{t("eyebrow")}</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("heading")}</h1>
+      </header>
+
+      <nav className="mb-6 flex flex-wrap gap-2 border-b border-border text-sm">
+        <SettingsTab href={`/t/${tenantSlug}/settings/integrations`} label="Integrations" />
+        <SettingsTab href={`/t/${tenantSlug}/settings/billing`} label="Billing" />
+        <SettingsTab href={`/t/${tenantSlug}/settings/team`} label="Team" disabled comingSoonLabel={t("comingSoon")} />
+        <SettingsTab href={`/t/${tenantSlug}/settings/account`} label="Account" disabled comingSoonLabel={t("comingSoon")} />
+      </nav>
+
+      <div>{children}</div>
+    </div>
+  );
+}
+
+function SettingsTab({
+  href,
+  label,
+  disabled,
+  comingSoonLabel,
+}: {
+  href: string;
+  label: string;
+  disabled?: boolean;
+  comingSoonLabel?: string;
+}) {
+  if (disabled) {
+    return (
+      <span className="cursor-not-allowed border-b-2 border-transparent px-3 py-2 text-muted-foreground/60">
+        {label} <span className="text-[10px] uppercase">{comingSoonLabel}</span>
+      </span>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      className="border-b-2 border-foreground px-3 py-2 font-medium text-foreground"
     >
-      {children}
-    </LabPage>
+      {label}
+    </Link>
   );
 }

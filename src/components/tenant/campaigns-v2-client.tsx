@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { Link } from "@/i18n/routing";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
