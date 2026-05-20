@@ -69,8 +69,8 @@ export function AdsClient({ tenantSlug, ads, quotaRemaining, activeStatus }: Pro
               key={tab.value}
               href={
                 tab.value === "all"
-                  ? `/t/${tenantSlug}/launch`
-                  : `/t/${tenantSlug}/launch?status=${tab.value}`
+                  ? `/t/${tenantSlug}/ads`
+                  : `/t/${tenantSlug}/ads?status=${tab.value}`
               }
               className={cn(
                 "rounded-md px-3 py-1 text-xs font-medium transition-colors",

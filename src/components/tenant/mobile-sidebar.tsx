@@ -79,7 +79,7 @@ export function MobileSidebar({ tenantSlug, open, onClose }: Props) {
         {/* Top: logo + close button */}
         <div className="flex h-16 shrink-0 items-center justify-between px-5">
           <Link
-            href={`/t/${tenantSlug}/insights`}
+            href={`/t/${tenantSlug}/dashboard`}
             className="flex items-center"
             aria-label="AdsLab"
             onClick={onClose}

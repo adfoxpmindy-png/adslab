@@ -80,9 +80,7 @@ export async function POST(request: NextRequest) {
   await session.save();
 
   const firstTenantSlug = user.memberships[0]?.tenant.slug ?? null;
-  // Target Insights directly (the new canonical home) instead of /dashboard
-  // → /insights via proxy redirect.
-  const redirectTo = firstTenantSlug ? `/t/${firstTenantSlug}/insights` : "/";
+  const redirectTo = firstTenantSlug ? `/t/${firstTenantSlug}/dashboard` : "/";
 
   const userLocale = isLocale(user.preferredLocale) ? user.preferredLocale : DEFAULT_LOCALE;
   const res = NextResponse.json({

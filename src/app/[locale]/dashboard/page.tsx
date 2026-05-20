@@ -27,5 +27,5 @@ export default async function DashboardRedirect() {
     redirect("/signup");
   }
 
-  redirect(`/t/${membership.tenant.slug}/insights`);
+  redirect(`/t/${membership.tenant.slug}/dashboard`);
 }

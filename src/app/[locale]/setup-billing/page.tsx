@@ -53,7 +53,7 @@ export default async function SetupBillingPage({
     where: { tenantId: tenant.id },
   });
   if (existing && ["TRIALING", "ACTIVE"].includes(existing.status)) {
-    redirect(`/t/${tenant.slug}/insights`);
+    redirect(`/t/${tenant.slug}/dashboard`);
   }
 
   const t = await getTranslations("pages.setupBilling.page");

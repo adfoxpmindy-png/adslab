@@ -213,7 +213,7 @@ export default async function HomePage() {
               </li>
             </ul>
             <p className="mt-5 text-xs text-muted-foreground">
-              {t("pricing.enterpriseQuestion")} <a href="mailto:support@ads-lab.xyz?subject=Enterprise%20plan%20inquiry" className="text-cyan-600 hover:underline">{t("pricing.enterpriseCta")}</a> {t("pricing.enterpriseSuffix")}
+              {t("pricing.enterpriseQuestion")} <Link href="/contact" className="text-cyan-600 hover:underline">{t("pricing.enterpriseCta")}</Link> {t("pricing.enterpriseSuffix")}
             </p>
           </div>
 

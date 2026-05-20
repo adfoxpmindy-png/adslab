@@ -39,14 +39,14 @@ export default async function VerifyEmailPage({
       orderBy: { createdAt: "asc" },
       select: { tenant: { select: { slug: true } } },
     });
-    if (member) dashboardHref = `/t/${member.tenant.slug}/insights`;
+    if (member) dashboardHref = `/t/${member.tenant.slug}/dashboard`;
   } else if (isLoggedIn) {
     const member = await prisma.tenantMember.findFirst({
       where: { userId: session.userId! },
       orderBy: { createdAt: "asc" },
       select: { tenant: { select: { slug: true } } },
     });
-    if (member) dashboardHref = `/t/${member.tenant.slug}/insights`;
+    if (member) dashboardHref = `/t/${member.tenant.slug}/dashboard`;
   }
 
   function titleFor(status: VerifyResult["status"]): string {

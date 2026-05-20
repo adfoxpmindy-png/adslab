@@ -71,7 +71,7 @@ function PlatformSwitcher({ tenantSlug }: { tenantSlug: string }) {
       : "meta";
 
   const items: { id: typeof platform; label: string; href: string; soon: boolean }[] = [
-    { id: "meta", label: "Meta", href: `/t/${tenantSlug}/insights`, soon: false },
+    { id: "meta", label: "Meta", href: `/t/${tenantSlug}/dashboard`, soon: false },
     { id: "google", label: "Google", href: `/t/${tenantSlug}/g`, soon: true },
     { id: "tiktok", label: "TikTok", href: `/t/${tenantSlug}/tt`, soon: true },
   ];

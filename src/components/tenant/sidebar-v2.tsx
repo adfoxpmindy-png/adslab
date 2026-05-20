@@ -63,7 +63,7 @@ export function SidebarV2({ tenantSlug, showUpgrade = true, user }: SidebarV2Pro
       {/* Logo — uses brightness/invert in dark mode so the dark "AdsLab"
           wordmark stays readable on the dark sidebar bg */}
       <div className="flex h-16 shrink-0 items-center px-5">
-        <Link href={`/t/${tenantSlug}/insights`} className="flex items-center" aria-label="AdsLab">
+        <Link href={`/t/${tenantSlug}/dashboard`} className="flex items-center" aria-label="AdsLab">
           <Image
             src="/adslab-logo.png"
             alt="AdsLab"
