@@ -1,5 +1,7 @@
-## ADDED Requirements
+## Purpose
 
+Localize the AdsLab UI for Thai-first users with English and Lao as alternates. Every UI string, AI prompt, date formatter, and email template must respect the active locale; missing translations fall back to Thai. Locale resolution happens via URL prefix (`/<locale>/...`) with cookie + Accept-Language as legacy fallbacks for unprefixed bookmarks.
+## Requirements
 ### Requirement: Three-language translation library
 The system SHALL provide a translation function `t(key, params?)` resolving the active locale (one of `"th"`, `"en"`, `"lo"`) to a localized string from `messages/{locale}.json` dictionaries. Thai is the source-of-truth; missing keys in `en.json` or `lo.json` fall back to Thai.
 
@@ -18,24 +20,41 @@ The library MUST work in both Server Components (via `getTranslations()`) and Cl
 - **THEN** the function returns `"สวัสดี Pisit"`
 
 ### Requirement: Cookie-based locale detection
-The system SHALL detect the user's active locale via the `adslab-locale` cookie. When absent, fall back to the `Accept-Language` HTTP header; when that's absent or unrecognized, fall back to `"th"`.
+The system SHALL detect the active locale primarily from the URL's first path segment (`/th/...`, `/en/...`, `/lo/...`). The `adslab-locale` cookie remains as a SECONDARY fallback used by the middleware to choose a locale when the user arrives at a legacy URL without a locale prefix — the middleware then redirects to the prefixed URL.
 
-The locale resolution happens in `src/middleware.ts` so every server-rendered page sees the correct locale.
+The middleware order is:
+1. URL path segment matches `^/(th|en|lo)/`, use that locale.
+2. Else, read `adslab-locale` cookie. If valid → redirect to `/<cookie-locale>/<original-path>`.
+3. Else, parse `Accept-Language` header. If first language tag is in `LOCALES` → redirect to `/<that>/<original-path>`.
+4. Else → redirect to `/th/<original-path>`.
+
+API routes (`/api/**`) are exempt from locale prefixing and the redirect chain.
 
 #### Scenario: First-time visitor with Lao browser
-- **WHEN** a user visits the app for the first time with `Accept-Language: lo,en;q=0.9`
-- **THEN** the middleware sets `adslab-locale=lo` cookie and the page renders in Lao
+- **WHEN** an unauthenticated user visits `/` with `Accept-Language: lo,en;q=0.9` and no cookie
+- **THEN** the middleware 307-redirects to `/lo/` and sets `adslab-locale=lo` cookie
 
-#### Scenario: Logged-in user with stored preference
-- **WHEN** a user logs in and their `User.preferredLocale` is `"en"`
-- **THEN** the login response sets `adslab-locale=en` cookie regardless of `Accept-Language`
+#### Scenario: Returning visitor with cookie
+- **WHEN** a user with `adslab-locale=en` cookie visits `/login`
+- **THEN** the middleware 307-redirects to `/en/login`
+
+#### Scenario: Direct URL with locale prefix
+- **WHEN** a user visits `/th/refund-policy` (no cookie present)
+- **THEN** the page renders Thai content, no redirect, and the middleware sets `adslab-locale=th` cookie for future visits
+
+#### Scenario: API route bypass
+- **WHEN** any client calls `/api/auth/login` or any other `/api/*` route
+- **THEN** the middleware does NOT inject a locale prefix; the route handler resolves the user's locale via `resolveUserLocale(userId)` against the DB column
 
 ### Requirement: Per-user locale preference
-The system SHALL persist each user's chosen locale on `User.preferredLocale` (default `"th"`). The language switcher in the sidebar dropdown lets the user change it; the new choice updates BOTH the DB column AND the `adslab-locale` cookie immediately.
+The system SHALL persist each user's chosen locale on `User.preferredLocale` (default `"th"`). Changing locale via the language switcher MUST:
+1. Update `User.preferredLocale` in the DB.
+2. Rewrite the `adslab-locale` cookie.
+3. Navigate the user to the equivalent URL with the new locale prefix (e.g., from `/th/dashboard` to `/en/dashboard`), preserving the path and query.
 
 #### Scenario: Change locale via switcher
-- **WHEN** the user clicks "English" in the language switcher
-- **THEN** `User.preferredLocale` is updated to `"en"`, the `adslab-locale` cookie is rewritten, and the page reloads in English
+- **WHEN** a user on `/th/t/agency-x/dashboard` clicks "English" in the language switcher
+- **THEN** `User.preferredLocale` becomes `"en"`, the cookie rewrites to `en`, and the page navigates to `/en/t/agency-x/dashboard` without losing scroll position or in-progress form state in the URL
 
 ### Requirement: AI prompts respect user locale
 Every AI-generated user-facing string MUST be produced in the active locale. This applies to: Daily Report, Chat assistant, vision creative analysis (`analyzeAdCreative`), auto-rules suggest, knowledge synthesis, and any future AI-output surface.
@@ -59,18 +78,22 @@ The system SHALL provide `formatDateTime(date, locale)` and `formatCurrency(amou
 
 The helpers wrap `Intl.DateTimeFormat` / `Intl.NumberFormat` with the active locale and consistent options (numeric day + short month + 24-hour time for dates; THB symbol with no fractional digits for currency).
 
+The `locale` value comes from `getLocale()` server-side (which reads `params.locale` from the URL segment in the new routing) or `useLocale()` client-side.
+
 #### Scenario: Date format consistency across locales
 - **WHEN** a campaign was created on 2026-05-17 and is displayed in three different user locales
-- **THEN** `th` shows "17 พ.ค. 2026", `en` shows "17 May 2026", `lo` shows "17 ພ.ຄ. 2026"
+- **THEN** `/th` shows "17 พ.ค. 2026", `/en` shows "17 May 2026", `/lo` shows "17 ພ.ຄ. 2026"
 
 ### Requirement: Language switcher in sidebar dropdown
-The system SHALL surface a language switcher inside the user-profile dropdown menu at the sidebar bottom (alongside Profile / Settings / Logout). The switcher shows three options with the language's own name as label: `"ไทย"`, `"English"`, `"ລາວ (beta)"`. The active locale is marked with a checkmark.
+The system SHALL surface a language switcher inside the user-profile dropdown menu at the sidebar bottom (alongside Profile / Settings / Logout). The sidebar's TOP section displays exactly six top-level Lab/Settings nav items (no more "Tools" hub, no more 13-item flat list). The switcher itself is unchanged in behavior; it still shows three options with the language's own name as label.
 
-The "(beta)" label on Lao communicates that translations may be incomplete.
+#### Scenario: Sidebar shows exactly six items
+- **WHEN** a logged-in user opens the sidebar
+- **THEN** the visible top-level items are: Insights Lab, Launch Lab, Inventory Lab, AI Lab, Automation Lab, Settings — in that order — each with its lucide icon. No "Tools", no "Dashboard", no "Reports" as separate items
 
-#### Scenario: Switcher visible to every authenticated user
-- **WHEN** a user opens the sidebar profile dropdown
-- **THEN** they see "ภาษา" submenu (or inline section) with the three options and a checkmark next to their current locale
+#### Scenario: Active Lab highlights the right item
+- **WHEN** the URL is `/insights-lab/journey`
+- **THEN** the "Insights Lab" sidebar item shows the active style; clicking any sibling Lab navigates without losing the locale prefix
 
 ### Requirement: CI keyset diff warning
 The CI pipeline SHALL run a script after every PR that compares the key sets of `th.json`, `en.json`, and `lo.json`. When `th.json` contains keys missing from `en.json` or `lo.json`, the script SHALL emit a warning (not a build failure) listing the missing keys.
@@ -120,3 +143,119 @@ Decorative emojis in AI system prompts also bias the model to mirror them in out
 #### Scenario: Engineer writes a success toast
 - **WHEN** an engineer writes `toast.success("✓ Saved")` in code or `"saved": "✅ Saved"` in a translation file
 - **THEN** code review rejects it — use `toast.success(t("saved"))` with translation value `"Saved"` (no glyph) and rely on the toast library's built-in icon
+
+### Requirement: Public pages cache at the edge per locale
+Public pages without authentication state SHALL be statically generated per locale and revalidated periodically rather than rendered fresh per request. Affected pages: `/`, `/login`, `/signup`, `/refund-policy`, `/terms`, `/privacy`, `/data-deletion`, `/verify-email`.
+
+Each affected page MUST:
+1. Export `generateStaticParams` returning all 3 locales (`th`, `en`, `lo`).
+2. Export `revalidate = 3600` (1 hour) — long enough to win the cache, short enough that translation updates appear within an hour.
+3. NOT call `cookies()`, `headers()`, or any other dynamic API at render time (the locale arrives via `params.locale` from the URL segment, not a cookie).
+
+Authenticated tenant pages under `/[locale]/t/<tenant>/**` remain dynamic — they read session cookies and tenant data per request.
+
+#### Scenario: Landing page served from edge cache
+- **WHEN** a user visits `/th` from Bangkok
+- **THEN** the response is served from the Vercel edge in <100ms with no serverless function invocation (visible in Vercel logs as `static`), and the HTML's `<html lang="th">` matches the URL segment
+
+#### Scenario: Cached page refreshes within revalidate window
+- **WHEN** a translation in `messages/th.json` is updated and deployed at T+0
+- **THEN** users hitting `/th/refund-policy` see the new content within 60 minutes (the next revalidate tick), without needing a manual cache invalidation
+
+### Requirement: Localized navigation primitives
+All internal navigation in client and server code SHALL use next-intl's localized `<Link>` and `redirect` / `useRouter` from `@/i18n/routing` instead of the raw `next/link` and `next/navigation` primitives. The localized variants automatically prefix the current locale.
+
+Exception: API routes that build absolute URLs (email templates, OAuth callbacks) MUST pass `locale` explicitly when constructing the path.
+
+#### Scenario: Internal navigation preserves locale
+- **WHEN** a user on `/en/login` clicks a `<Link href="/signup">` rendered by the page
+- **THEN** the resulting URL is `/en/signup` (not `/signup` or `/th/signup`)
+
+#### Scenario: Email confirmation link carries recipient locale
+- **WHEN** the system sends a billing-reminder email to a user with `preferredLocale = "lo"`
+- **THEN** the email body's primary CTA points to `https://ads-lab.xyz/lo/t/<slug>/settings/billing`, not `/th/...` or `/t/...`
+
+### Requirement: Legacy URL redirect during transition
+The middleware SHALL serve a 307 redirect from any non-prefixed legacy URL to the locale-prefixed equivalent for at least 90 days after this change ships. Affected legacy URLs include external links saved by users (bookmarks, shared links, indexed search results, old email CTAs).
+
+After 90 days the redirect MAY be removed; until then it is a hard requirement.
+
+#### Scenario: Legacy bookmark still works
+- **WHEN** a user with `adslab-locale=th` cookie clicks a bookmark to `/login` (no locale prefix)
+- **THEN** the response is a 307 redirect to `/th/login` and the user lands on the localized page without seeing a 404
+
+#### Scenario: Old email CTA still works
+- **WHEN** a user clicks a link from a billing email sent before the change shipped, pointing to `https://ads-lab.xyz/t/<slug>/settings/billing`
+- **THEN** the middleware 307-redirects to `/<recipient-locale>/t/<slug>/settings/billing` (locale chosen from cookie, falling back to Accept-Language, falling back to `th`)
+
+### Requirement: Lab pages compose sub-pages under a tab strip
+Every Lab page SHALL render a consistent header containing: page title, "Lab" badge, tab strip pinned below the header, and a description tooltip explaining what the Lab is for. The tab strip exposes the Lab's sub-tabs as horizontal links; clicking a tab navigates to `/<lab>/<tab>` and the current tab gets the active style.
+
+The five required Labs and their sub-tabs:
+
+| Lab | URL | Default tab | Sub-tabs |
+|---|---|---|---|
+| Insights Lab | `/insights-lab` | overview | overview, reports, journey, competitors |
+| Launch Lab | `/launch-lab` | boost | boost, campaigns, manual-new, ai-new, history |
+| Inventory Lab | `/inventory-lab` | ads | ads, audiences, creatives, posts |
+| AI Lab | `/ai-lab` | chat | chat, recommendations, memory |
+| Automation Lab | `/automation-lab` | rules | rules, goals, naming, events |
+
+#### Scenario: Lab landing renders default tab
+- **WHEN** a user visits `/insights-lab` (no sub-tab in URL)
+- **THEN** the page renders the Insights Lab header + tab strip with "Overview" active + the dashboard content from the previous standalone `/dashboard` route
+
+#### Scenario: Tab navigation updates URL
+- **WHEN** a user on `/insights-lab/overview` clicks the "Reports" tab
+- **THEN** the URL becomes `/insights-lab/reports` and the tab strip shows "Reports" active without a full-page reload
+
+#### Scenario: Direct sub-tab URL works
+- **WHEN** a user clicks an email link to `/insights-lab/reports/abc123` (a specific report)
+- **THEN** the page loads with Insights Lab header + Reports tab active + report content for ID `abc123`
+
+### Requirement: Legacy top-level URLs 307-redirect to the Lab path
+For at least 90 days after this change ships, the middleware SHALL serve a 307 redirect from every removed top-level URL to its new Lab path. This composes with the legacy-URL redirect already required by `add-isr-via-locale-url-prefix` — both redirects run in a single middleware pass.
+
+Redirect map (legacy → new):
+
+| Legacy | New |
+|---|---|
+| `/dashboard` | `/insights-lab/overview` |
+| `/reports` | `/insights-lab/reports` |
+| `/reports/[id]` | `/insights-lab/reports/[id]` |
+| `/journey` | `/insights-lab/journey` |
+| `/competitors` | `/insights-lab/competitors` |
+| `/boost` | `/launch-lab/boost` |
+| `/campaigns` | `/launch-lab/campaigns` |
+| `/campaigns/new` | `/launch-lab/manual-new` |
+| `/campaigns/ai-new` | `/launch-lab/ai-new` |
+| `/campaigns/history` | `/launch-lab/history` |
+| `/ads` | `/inventory-lab/ads` |
+| `/audiences` | `/inventory-lab/audiences` |
+| `/creatives` | `/inventory-lab/creatives` |
+| `/posts`, `/posts/new` | `/inventory-lab/posts`, `/inventory-lab/posts/new` |
+| `/ai` | `/ai-lab/chat` |
+| `/ai/memory` | `/ai-lab/memory` |
+| `/ai-optimize` | `/ai-lab/recommendations` |
+| `/rules` | `/automation-lab/rules` |
+| `/goals`, `/goals/naming` | `/automation-lab/goals`, `/automation-lab/naming` |
+| `/events` | `/automation-lab/events` |
+| `/tools` | `/insights-lab/overview` (no longer exists; redirect to dashboard) |
+
+#### Scenario: Old bookmark to /dashboard
+- **WHEN** a user with `adslab-locale=th` cookie visits `/dashboard` (or `/th/dashboard` after locale-prefix ships)
+- **THEN** the response is 307 to `/th/insights-lab/overview` and the page loads as if the user had navigated there directly
+
+#### Scenario: Old email CTA to /reports/xyz
+- **WHEN** a user clicks `/reports/abc-123` from an email sent before this change
+- **THEN** the response is 307 to `/<recipient-locale>/insights-lab/reports/abc-123`
+
+### Requirement: i18n keys re-key under Lab namespaces
+Translation keys under `pages.dashboard.*`, `pages.reports.*`, `pages.journey.*`, etc. SHALL migrate to `pages.insightsLab.overview.*`, `pages.insightsLab.reports.*`, `pages.insightsLab.journey.*` etc. The `audit-missing-keys-v3.py` script MUST report 0 missing keys at the end of the migration; the per-locale key tree drift MUST remain 0.
+
+Old key paths MAY remain in the JSON dictionaries during a transition (no harm — they're orphan keys, not referenced by code). Phase 3 of the tasks deletes orphans.
+
+#### Scenario: All references updated atomically
+- **WHEN** running `npm run audit:i18n` after the i18n key re-key migration
+- **THEN** "TRULY MISSING translation keys: 0" and "TH/EN/LO drift: 0 / 0 / 0" — no `t("oldKey")` references remain in code with no corresponding JSON value
+
