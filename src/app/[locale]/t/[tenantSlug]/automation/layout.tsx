@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { LabPage } from "@/components/ui-system/lab-page";
 
-export default async function AutomationLabLayout({
+export default async function AutomationLayout({
   children,
   params,
 }: {
@@ -12,7 +12,7 @@ export default async function AutomationLabLayout({
 }) {
   const { locale, tenantSlug } = await params;
   const t = await getTranslations("labs.automation");
-  const base = `/${locale}/t/${tenantSlug}/automation-lab`;
+  const base = `/${locale}/t/${tenantSlug}/automation`;
   const tabs = [
     { key: "rules", label: t("tabs.rules"), href: base },
     { key: "goals", label: t("tabs.goals"), href: `${base}/goals` },

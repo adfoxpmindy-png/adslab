@@ -1,9 +1,9 @@
-import { FlaskConical } from "lucide-react";
+import { LineChart } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { LabPage } from "@/components/ui-system/lab-page";
 
-export default async function InsightsLabLayout({
+export default async function InsightsLayout({
   children,
   params,
 }: {
@@ -12,7 +12,7 @@ export default async function InsightsLabLayout({
 }) {
   const { locale, tenantSlug } = await params;
   const t = await getTranslations("labs.insights");
-  const base = `/${locale}/t/${tenantSlug}/insights-lab`;
+  const base = `/${locale}/t/${tenantSlug}/insights`;
   const tabs = [
     { key: "overview", label: t("tabs.overview"), href: base },
     { key: "reports", label: t("tabs.reports"), href: `${base}/reports` },
@@ -20,12 +20,7 @@ export default async function InsightsLabLayout({
     { key: "competitors", label: t("tabs.competitors"), href: `${base}/competitors` },
   ];
   return (
-    <LabPage
-      title={t("title")}
-      description={t("description")}
-      icon={FlaskConical}
-      tabs={tabs}
-    >
+    <LabPage title={t("title")} description={t("description")} icon={LineChart} tabs={tabs}>
       {children}
     </LabPage>
   );

@@ -30,10 +30,21 @@ export type LabPageProps = {
   description?: string;
   icon: LucideIcon;
   tabs: LabTab[];
+  /** Show the violet "Lab" badge next to the title. Reserved for AI Lab — the
+   * only surface that feels experimental. Defaults to false so other section
+   * shells (Insights, Launch, Automation) get a plain header. */
+  showLabBadge?: boolean;
   children: React.ReactNode;
 };
 
-export function LabPage({ title, description, icon: Icon, tabs, children }: LabPageProps) {
+export function LabPage({
+  title,
+  description,
+  icon: Icon,
+  tabs,
+  showLabBadge = false,
+  children,
+}: LabPageProps) {
   const pathname = usePathname();
 
   return (
@@ -44,9 +55,11 @@ export function LabPage({ title, description, icon: Icon, tabs, children }: LabP
             <Icon className="size-4" />
           </div>
           <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-          <span className="rounded-full bg-brand-violet/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-violet">
-            Lab
-          </span>
+          {showLabBadge && (
+            <span className="rounded-full bg-brand-violet/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-violet">
+              Lab
+            </span>
+          )}
         </div>
         {description && (
           <p className="mt-1 text-sm text-muted-foreground">{description}</p>

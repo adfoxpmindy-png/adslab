@@ -1,8 +1,7 @@
 import {
   Brain,
-  FlaskConical,
-  Package,
-  Rocket,
+  LineChart,
+  Megaphone,
   Settings2,
   Workflow,
   type LucideIcon,
@@ -16,10 +15,10 @@ import {
  * consuming component should call `useTranslations("sidebar.nav")` and
  * resolve `labelKey` at render time so locale switches reflect immediately.
  *
- * The 6-item Lab structure replaces the previous flat 13-item list. Each
- * Lab is a tabbed workbench: clicking a sidebar item lands on the Lab's
- * default sub-tab, and the tab strip exposes the rest of the tools that
- * used to be standalone routes.
+ * 5-section workflow-driven IA: Insights (analytics) · Launch (full ad
+ * lifecycle + assets) · AI Lab (the only "Lab" — exploratory AI) ·
+ * Automation (rules/goals/naming) · Settings. Each section's landing
+ * route opens its default sub-tab; the tab strip exposes the rest.
  */
 export type SidebarNavItem = {
   /** Key into messages/{locale}.json under `sidebar.nav.*`. */
@@ -29,11 +28,10 @@ export type SidebarNavItem = {
 };
 
 export const SIDEBAR_NAV_ITEMS: SidebarNavItem[] = [
-  { labelKey: "insightsLab", href: (s) => `/t/${s}/insights-lab`, icon: FlaskConical },
-  { labelKey: "launchLab", href: (s) => `/t/${s}/launch-lab`, icon: Rocket },
-  { labelKey: "inventoryLab", href: (s) => `/t/${s}/inventory-lab`, icon: Package },
+  { labelKey: "insights", href: (s) => `/t/${s}/insights`, icon: LineChart },
+  { labelKey: "launch", href: (s) => `/t/${s}/launch`, icon: Megaphone },
   { labelKey: "aiLab", href: (s) => `/t/${s}/ai-lab`, icon: Brain },
-  { labelKey: "automationLab", href: (s) => `/t/${s}/automation-lab`, icon: Workflow },
+  { labelKey: "automation", href: (s) => `/t/${s}/automation`, icon: Workflow },
   { labelKey: "settings", href: (s) => `/t/${s}/settings/integrations`, icon: Settings2 },
 ];
 

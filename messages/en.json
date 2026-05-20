@@ -195,10 +195,13 @@
       "memory": "AI Memory",
       "tools": "Tools",
       "settings": "Settings",
+      "insights": "Insights",
+      "launch": "Launch",
+      "aiLab": "AI Lab",
+      "automation": "Automation",
       "insightsLab": "Insights Lab",
       "launchLab": "Launch Lab",
       "inventoryLab": "Inventory Lab",
-      "aiLab": "AI Lab",
       "automationLab": "Automation Lab"
     },
     "section": {
@@ -3291,7 +3294,7 @@
   },
   "labs": {
     "insights": {
-      "title": "Insights Lab",
+      "title": "Insights",
       "description": "Overview, reports, customer journey and competitors.",
       "tabs": {
         "overview": "Overview",
@@ -3301,25 +3304,18 @@
       }
     },
     "launch": {
-      "title": "Launch Lab",
-      "description": "Boost posts, build campaigns and review history.",
+      "title": "Launch",
+      "description": "Ads, boosts, campaigns, and asset library.",
       "tabs": {
+        "ads": "All Ads",
         "boost": "Quick Boost",
         "campaigns": "Campaigns",
-        "new": "New",
+        "new": "New campaign",
         "aiNew": "AI builder",
-        "history": "History"
-      }
-    },
-    "inventory": {
-      "title": "Inventory Lab",
-      "description": "Ads, audiences, creatives and page posts.",
-      "tabs": {
-        "ads": "Ads",
+        "history": "History",
         "audiences": "Audiences",
         "creatives": "Creatives",
-        "posts": "Page posts",
-        "postsNew": "New post"
+        "posts": "Page posts"
       }
     },
     "ai": {
@@ -3332,7 +3328,7 @@
       }
     },
     "automation": {
-      "title": "Automation Lab",
+      "title": "Automation",
       "description": "Auto-rules, goals, naming and events.",
       "tabs": {
         "rules": "Auto-rules",

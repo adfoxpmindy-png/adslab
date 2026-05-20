@@ -2,7 +2,7 @@ import AdsPage from "../ads/page";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-export default function InventoryLabAdsPage(props: {
+export default function LaunchAdsPage(props: {
   params: Promise<{ tenantSlug: string }>;
   searchParams: Promise<SearchParams>;
 }) {

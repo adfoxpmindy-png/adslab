@@ -19,7 +19,13 @@ export default async function AILabLayout({
     { key: "memory", label: t("tabs.memory"), href: `${base}/memory` },
   ];
   return (
-    <LabPage title={t("title")} description={t("description")} icon={Brain} tabs={tabs}>
+    <LabPage
+      title={t("title")}
+      description={t("description")}
+      icon={Brain}
+      tabs={tabs}
+      showLabBadge
+    >
       {children}
     </LabPage>
   );
