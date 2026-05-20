@@ -3092,13 +3092,19 @@
       }
     },
     "integrations": {
-      "title": "Settings",
-      "subtitle": "Configure scope, naming convention, and integrations for this tenant",
-      "needMetaForScope": "Connect Meta before configuring scope — go to the Integrations tab",
-      "needMetaForNaming": "Connect Meta before configuring naming standards — go to the Integrations tab",
+      "title": "Integrations",
+      "subtitle": "Connect platforms, scope which accounts this tenant manages, and configure naming templates",
+      "needMetaForScope": "Connect Meta before configuring scope",
+      "needMetaForNaming": "Connect Meta before configuring naming templates",
       "metaSubtitle": "Connect Facebook Business Manager",
       "googleDesc": "Connect Google Ads — in development",
-      "tiktokDesc": "Connect TikTok Ads — in development"
+      "tiktokDesc": "Connect TikTok Ads — in development",
+      "scopeHeading": "Account scope",
+      "scopeSubtitle": "Choose which Meta ad accounts and campaigns this tenant operates on (so you don't accidentally edit accounts outside this workspace).",
+      "namingHeading": "Campaign naming templates",
+      "namingSubtitle": "Set templates so new campaigns follow a consistent naming standard.",
+      "aiHeading": "AI behavior",
+      "aiSubtitle": "Tune how AI analyzes performance and what recommendations it surfaces."
     },
     "tiktokAds": {
       "title": "TikTok Ads",
@@ -3335,6 +3341,14 @@
         "goals": "Goals",
         "naming": "Naming",
         "events": "Events"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Integrations, billing and account setup.",
+      "tabs": {
+        "integrations": "Integrations",
+        "billing": "Billing"
       }
     }
   }

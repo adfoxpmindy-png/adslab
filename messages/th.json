@@ -3092,13 +3092,19 @@
       }
     },
     "integrations": {
-      "title": "การตั้งค่า",
-      "subtitle": "ตั้งค่า scope, naming convention, และ integrations ของ tenant",
-      "needMetaForScope": "ต้องเชื่อม Meta ก่อนถึงตั้ง scope ได้ — ไปที่ tab Integrations",
-      "needMetaForNaming": "ต้องเชื่อม Meta ก่อนถึงตั้ง naming standards ได้ — ไปที่ tab Integrations",
+      "title": "การเชื่อมต่อ",
+      "subtitle": "เชื่อมต่อแพลตฟอร์ม กำหนดขอบเขตบัญชี และตั้งค่าเทมเพลตชื่อ",
+      "needMetaForScope": "ต้องเชื่อม Meta ก่อนถึงกำหนด scope ได้",
+      "needMetaForNaming": "ต้องเชื่อม Meta ก่อนถึงตั้งเทมเพลตชื่อได้",
       "metaSubtitle": "เชื่อมต่อ Facebook Business Manager",
       "googleDesc": "เชื่อม Google Ads — กำลังพัฒนา",
-      "tiktokDesc": "เชื่อม TikTok Ads — กำลังพัฒนา"
+      "tiktokDesc": "เชื่อม TikTok Ads — กำลังพัฒนา",
+      "scopeHeading": "ขอบเขตบัญชี",
+      "scopeSubtitle": "เลือกบัญชีโฆษณาและแคมเปญที่ tenant นี้ดูแล (ป้องกันการเผลอไปแก้บัญชีอื่น)",
+      "namingHeading": "เทมเพลตชื่อแคมเปญ",
+      "namingSubtitle": "ตั้งเทมเพลตเพื่อให้แคมเปญใหม่ตั้งชื่อตามมาตรฐานเดียวกัน",
+      "aiHeading": "การตั้งค่า AI",
+      "aiSubtitle": "ปรับวิธีที่ AI วิเคราะห์และคำแนะนำของแอป"
     },
     "tiktokAds": {
       "title": "TikTok Ads",
@@ -3335,6 +3341,14 @@
         "goals": "เป้าหมาย",
         "naming": "กฎตั้งชื่อ",
         "events": "อีเวนต์"
+      }
+    },
+    "settings": {
+      "title": "การตั้งค่า",
+      "description": "การเชื่อมต่อ การเรียกเก็บเงิน และตั้งค่าบัญชี",
+      "tabs": {
+        "integrations": "การเชื่อมต่อ",
+        "billing": "การเรียกเก็บเงิน"
       }
     }
   }

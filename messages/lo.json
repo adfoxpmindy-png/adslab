@@ -3092,13 +3092,19 @@
       }
     },
     "integrations": {
-      "title": "ການຕັ້ງຄ່າ",
-      "subtitle": "ຕັ້ງຄ່າ scope, naming convention, ແລະ integrations ຂອງ tenant",
-      "needMetaForScope": "ຕ້ອງເຊື່ອມ Meta ກ່ອນຈຶ່ງຕັ້ງ scope ໄດ້ — ໄປທີ່ tab Integrations",
-      "needMetaForNaming": "ຕ້ອງເຊື່ອມ Meta ກ່ອນຈຶ່ງຕັ້ງ naming standards ໄດ້ — ໄປທີ່ tab Integrations",
+      "title": "ການເຊື່ອມຕໍ່",
+      "subtitle": "ເຊື່ອມຕໍ່ແພລດຟອມ ກຳນົດຂອບເຂດບັນຊີ ແລະຕັ້ງຄ່າເທມເພລດຊື່",
+      "needMetaForScope": "ຕ້ອງເຊື່ອມ Meta ກ່ອນຈຶ່ງກຳນົດ scope ໄດ້",
+      "needMetaForNaming": "ຕ້ອງເຊື່ອມ Meta ກ່ອນຈຶ່ງຕັ້ງເທມເພລດຊື່ໄດ້",
       "metaSubtitle": "ເຊື່ອມຕໍ່ Facebook Business Manager",
       "googleDesc": "ເຊື່ອມ Google Ads — ກຳລັງພັດທະນາ",
-      "tiktokDesc": "ເຊື່ອມ TikTok Ads — ກຳລັງພັດທະນາ"
+      "tiktokDesc": "ເຊື່ອມ TikTok Ads — ກຳລັງພັດທະນາ",
+      "scopeHeading": "ຂອບເຂດບັນຊີ",
+      "scopeSubtitle": "ເລືອກບັນຊີໂຄສະນາ ແລະແຄມເປນທີ່ tenant ນີ້ດູແລ",
+      "namingHeading": "ເທມເພລດຊື່ແຄມເປນ",
+      "namingSubtitle": "ຕັ້ງເທມເພລດໃຫ້ແຄມເປນໃໝ່ມີຊື່ມາດຕະຖານ",
+      "aiHeading": "ຕັ້ງຄ່າ AI",
+      "aiSubtitle": "ປັບວິທີທີ່ AI ວິເຄາະ ແລະຄຳແນະນຳຂອງແອັບ"
     },
     "tiktokAds": {
       "title": "TikTok Ads",
@@ -3335,6 +3341,14 @@
         "goals": "ເປົ້າໝາຍ",
         "naming": "ກົດຕັ້ງຊື່",
         "events": "ອີເວນ"
+      }
+    },
+    "settings": {
+      "title": "ການຕັ້ງຄ່າ",
+      "description": "ການເຊື່ອມຕໍ່ ການເກັບເງິນ ແລະຕັ້ງຄ່າບັນຊີ",
+      "tabs": {
+        "integrations": "ການເຊື່ອມຕໍ່",
+        "billing": "ການເກັບເງິນ"
       }
     }
   }
