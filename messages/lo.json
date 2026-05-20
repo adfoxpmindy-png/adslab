@@ -3283,5 +3283,51 @@
   },
   "topbar": {
     "notifications": "ການແຈ້ງເຕືອນ"
+  },
+  "labs": {
+    "insights": {
+      "title": "ຂໍ້ມູນ",
+      "description": "ພາບລວມ ລາຍງານ ເສັ້ນທາງລູກຄ້າ ແລະຄູ່ແຂ່ງ",
+      "tabs": {
+        "overview": "ພາບລວມ",
+        "reports": "ລາຍງານ",
+        "journey": "Customer Journey",
+        "competitors": "ຄູ່ແຂ່ງ"
+      }
+    },
+    "launch": {
+      "title": "ສ້າງໂຄສະນາ",
+      "description": "ໂຄສະນາ ບູສ ແຄມເປນ ແລະຄັງຄຣີເອທີຟ",
+      "tabs": {
+        "ads": "ໂຄສະນາທັງໝົດ",
+        "boost": "ບູສດ່ວນ",
+        "campaigns": "ແຄມເປນ",
+        "new": "ສ້າງແຄມເປນ",
+        "aiNew": "AI ສ້າງໃຫ້",
+        "history": "ປະຫວັດ",
+        "audiences": "ກຸ່ມເປົ້າໝາຍ",
+        "creatives": "ຄຣີເອທີຟ",
+        "posts": "ໂພສເພຈ"
+      }
+    },
+    "ai": {
+      "title": "AI Lab",
+      "description": "ຜູ້ຊ່ວຍ AI ຄຳແນະນຳ ແລະຄວາມຈຳ AI",
+      "tabs": {
+        "chat": "AI Chat",
+        "recommendations": "ຄຳແນະນຳ",
+        "memory": "ຄວາມຈຳ AI"
+      }
+    },
+    "automation": {
+      "title": "ອັດຕະໂນມັດ",
+      "description": "ກົດອັດຕະໂນມັດ ເປົ້າໝາຍ ກົດຕັ້ງຊື່ ແລະອີເວນ",
+      "tabs": {
+        "rules": "ກົດອັດຕະໂນມັດ",
+        "goals": "ເປົ້າໝາຍ",
+        "naming": "ກົດຕັ້ງຊື່",
+        "events": "ອີເວນ"
+      }
+    }
   }
 }

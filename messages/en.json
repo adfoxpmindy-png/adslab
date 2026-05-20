@@ -3283,5 +3283,51 @@
   },
   "topbar": {
     "notifications": "Notifications"
+  },
+  "labs": {
+    "insights": {
+      "title": "Insights",
+      "description": "Overview, reports, customer journey and competitors.",
+      "tabs": {
+        "overview": "Overview",
+        "reports": "Reports",
+        "journey": "Customer Journey",
+        "competitors": "Competitors"
+      }
+    },
+    "launch": {
+      "title": "Launch",
+      "description": "Ads, boosts, campaigns, and asset library.",
+      "tabs": {
+        "ads": "All Ads",
+        "boost": "Quick Boost",
+        "campaigns": "Campaigns",
+        "new": "New campaign",
+        "aiNew": "AI builder",
+        "history": "History",
+        "audiences": "Audiences",
+        "creatives": "Creatives",
+        "posts": "Page posts"
+      }
+    },
+    "ai": {
+      "title": "AI Lab",
+      "description": "AI assistant, recommendations and AI memory.",
+      "tabs": {
+        "chat": "AI Chat",
+        "recommendations": "Recommendations",
+        "memory": "AI Memory"
+      }
+    },
+    "automation": {
+      "title": "Automation",
+      "description": "Auto-rules, goals, naming and events.",
+      "tabs": {
+        "rules": "Auto-rules",
+        "goals": "Goals",
+        "naming": "Naming",
+        "events": "Events"
+      }
+    }
   }
 }

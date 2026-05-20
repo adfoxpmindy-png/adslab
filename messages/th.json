@@ -3283,5 +3283,51 @@
   },
   "topbar": {
     "notifications": "การแจ้งเตือน"
+  },
+  "labs": {
+    "insights": {
+      "title": "ข้อมูลเชิงลึก",
+      "description": "ภาพรวม รายงาน เส้นทางลูกค้า และคู่แข่ง",
+      "tabs": {
+        "overview": "ภาพรวม",
+        "reports": "รายงาน",
+        "journey": "Customer Journey",
+        "competitors": "คู่แข่ง"
+      }
+    },
+    "launch": {
+      "title": "สร้างโฆษณา",
+      "description": "โฆษณา บูสต์ แคมเปญ และคลังครีเอทีฟ",
+      "tabs": {
+        "ads": "โฆษณาทั้งหมด",
+        "boost": "บูสต์ด่วน",
+        "campaigns": "แคมเปญ",
+        "new": "สร้างแคมเปญ",
+        "aiNew": "AI สร้างให้",
+        "history": "ประวัติ",
+        "audiences": "กลุ่มเป้าหมาย",
+        "creatives": "ครีเอทีฟ",
+        "posts": "โพสต์เพจ"
+      }
+    },
+    "ai": {
+      "title": "AI Lab",
+      "description": "ผู้ช่วย AI คำแนะนำ และความจำของ AI",
+      "tabs": {
+        "chat": "AI Chat",
+        "recommendations": "คำแนะนำ",
+        "memory": "ความจำ AI"
+      }
+    },
+    "automation": {
+      "title": "ระบบอัตโนมัติ",
+      "description": "กฎอัตโนมัติ เป้าหมาย กฎตั้งชื่อ และอีเวนต์",
+      "tabs": {
+        "rules": "กฎอัตโนมัติ",
+        "goals": "เป้าหมาย",
+        "naming": "กฎตั้งชื่อ",
+        "events": "อีเวนต์"
+      }
+    }
   }
 }
