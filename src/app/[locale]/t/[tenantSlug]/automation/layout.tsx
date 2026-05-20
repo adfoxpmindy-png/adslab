@@ -1,0 +1,32 @@
+import { Workflow } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+
+import { LabPage } from "@/components/ui-system/lab-page";
+
+export default async function AutomationLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ tenantSlug: string }>;
+}) {
+  const { tenantSlug } = await params;
+  const t = await getTranslations("labs.automation");
+  const base = `/t/${tenantSlug}/automation`;
+  const tabs = [
+    { key: "rules", label: t("tabs.rules"), href: base },
+    { key: "goals", label: t("tabs.goals"), href: `${base}/goals` },
+    { key: "naming", label: t("tabs.naming"), href: `${base}/naming` },
+    { key: "events", label: t("tabs.events"), href: `${base}/events` },
+  ];
+  return (
+    <LabPage
+      title={t("title")}
+      description={t("description")}
+      icon={<Workflow className="size-4" />}
+      tabs={tabs}
+    >
+      {children}
+    </LabPage>
+  );
+}
