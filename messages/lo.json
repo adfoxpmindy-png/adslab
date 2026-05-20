@@ -194,7 +194,11 @@
       "analyze": "ວິເຄາະ",
       "memory": "ຄວາມຈຳ AI",
       "tools": "ເຄື່ອງມື",
-      "settings": "ການຕັ້ງຄ່າ"
+      "settings": "ການຕັ້ງຄ່າ",
+      "insights": "ຂໍ້ມູນ",
+      "launch": "ສ້າງໂຄສະນາ",
+      "aiLab": "AI Lab",
+      "automation": "ອັດຕະໂນມັດ"
     },
     "section": {
       "connectAccounts": "ບັນຊີທີ່ເຊື່ອມຕໍ່"

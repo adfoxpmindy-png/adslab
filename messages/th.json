@@ -194,7 +194,11 @@
       "analyze": "วิเคราะห์",
       "memory": "ความจำ AI",
       "tools": "เครื่องมือ",
-      "settings": "การตั้งค่า"
+      "settings": "การตั้งค่า",
+      "insights": "ข้อมูลเชิงลึก",
+      "launch": "สร้างโฆษณา",
+      "aiLab": "AI Lab",
+      "automation": "ระบบอัตโนมัติ"
     },
     "section": {
       "connectAccounts": "เชื่อมต่อบัญชี"

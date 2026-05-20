@@ -194,7 +194,11 @@
       "analyze": "Analyze",
       "memory": "AI Memory",
       "tools": "Tools",
-      "settings": "Settings"
+      "settings": "Settings",
+      "insights": "Insights",
+      "launch": "Launch",
+      "aiLab": "AI Lab",
+      "automation": "Automation"
     },
     "section": {
       "connectAccounts": "Connected accounts"
