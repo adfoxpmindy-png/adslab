@@ -112,13 +112,20 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // 2b. Legacy tenant routes → 307 to their Lab equivalent. Tenant path
-    // splits as ["", "t", "<slug>", ...rest]; rest joined back is the path
-    // we match against LAB_REDIRECTS.
-    const tenantParts = innerPath.split("/"); // ["", "t", "<slug>", ...rest]
-    const tenantSlug = tenantParts[3];
+    // 2b. Legacy tenant routes → 307 to their Lab equivalent.
+    //
+    // `innerPath` is `/t/<slug>/<rest>` so the split is:
+    //   tenantParts = ["", "t", "<slug>", ...rest]
+    //                  [0] [1]   [2]      [3+]
+    // Earlier this indexed slug as [3] and rest as slice(4), which silently
+    // killed redirects for single-segment legacy paths like /t/<slug>/tools
+    // (tenantSlug came back as "tools" and innerTenantPath collapsed to "/",
+    // so resolveLabRedirect found no match and the request fell through to a
+    // 404). Fix: slug is [2], rest starts at [3].
+    const tenantParts = innerPath.split("/");
+    const tenantSlug = tenantParts[2];
     if (tenantSlug) {
-      const innerTenantPath = "/" + tenantParts.slice(4).join("/");
+      const innerTenantPath = "/" + tenantParts.slice(3).join("/");
       const labTarget = resolveLabRedirect(innerTenantPath);
       if (labTarget) {
         const labUrl = request.nextUrl.clone();
