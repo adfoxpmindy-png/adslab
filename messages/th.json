@@ -3290,7 +3290,27 @@
     "closeMenu": "ปิดเมนู"
   },
   "tenantSwitcher": {
-    "notFound": "(ไม่พบ workspace)"
+    "notFound": "(ไม่พบ workspace)",
+    "createNew": "+ สร้าง Workspace ใหม่",
+    "create": {
+      "title": "สร้าง Workspace ใหม่",
+      "subtitle": "แต่ละ workspace มีบัญชี Meta แยกของตัวเอง และมี trial 7 วัน",
+      "nameLabel": "ชื่อ Workspace",
+      "namePlaceholder": "เช่น ลูกค้า ABC, ของบริษัท",
+      "nameTooShort": "ชื่อต้องมีอย่างน้อย 2 ตัวอักษร",
+      "useCaseLabel": "ใช้ทำอะไร (ไม่บังคับ)",
+      "useCaseHint": "ช่วยให้เราปรับการแนะนำใน workspace ให้เหมาะกับการใช้งานของคุณ",
+      "useCase": {
+        "own": "ของบริษัท/ตัวเอง",
+        "client": "ของลูกค้า (agency)",
+        "test": "ทดลอง / ทดสอบ"
+      },
+      "cancel": "ยกเลิก",
+      "submit": "สร้าง Workspace",
+      "close": "ปิด",
+      "success": "สร้าง \"{name}\" สำเร็จ",
+      "genericError": "สร้าง Workspace ไม่สำเร็จ ลองใหม่อีกครั้ง"
+    }
   },
   "topbar": {
     "notifications": "การแจ้งเตือน"

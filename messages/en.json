@@ -3290,7 +3290,27 @@
     "closeMenu": "Close menu"
   },
   "tenantSwitcher": {
-    "notFound": "(workspace not found)"
+    "notFound": "(workspace not found)",
+    "createNew": "+ Create new workspace",
+    "create": {
+      "title": "Create a new workspace",
+      "subtitle": "Each workspace has its own Meta connection and a fresh 7-day trial.",
+      "nameLabel": "Workspace name",
+      "namePlaceholder": "e.g. Client ABC, My company",
+      "nameTooShort": "Name must be at least 2 characters",
+      "useCaseLabel": "What is it for? (optional)",
+      "useCaseHint": "Helps us tailor onboarding hints inside the workspace.",
+      "useCase": {
+        "own": "My own business",
+        "client": "Client work (agency)",
+        "test": "Testing / sandbox"
+      },
+      "cancel": "Cancel",
+      "submit": "Create workspace",
+      "close": "Close",
+      "success": "Created \"{name}\"",
+      "genericError": "Couldn't create workspace, please try again."
+    }
   },
   "topbar": {
     "notifications": "Notifications"

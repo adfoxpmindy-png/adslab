@@ -3290,7 +3290,27 @@
     "closeMenu": "ປິດເມນູ"
   },
   "tenantSwitcher": {
-    "notFound": "(ບໍ່ພົບ workspace)"
+    "notFound": "(ບໍ່ພົບ workspace)",
+    "createNew": "+ ສ້າງ Workspace ໃໝ່",
+    "create": {
+      "title": "ສ້າງ Workspace ໃໝ່",
+      "subtitle": "ແຕ່ລະ workspace ມີບັນຊີ Meta ແຍກຂອງມັນເອງ ແລະມີ trial 7 ວັນ",
+      "nameLabel": "ຊື່ Workspace",
+      "namePlaceholder": "ເຊັ່ນ ລູກຄ້າ ABC, ຂອງບໍລິສັດ",
+      "nameTooShort": "ຊື່ຕ້ອງມີຢ່າງໜ້ອຍ 2 ຕົວອັກສອນ",
+      "useCaseLabel": "ໃຊ້ເຮັດຫຍັງ (ບໍ່ບັງຄັບ)",
+      "useCaseHint": "ຊ່ວຍປັບການແນະນຳໃນ workspace ໃຫ້ເໝາະກັບການໃຊ້ງານ",
+      "useCase": {
+        "own": "ຂອງບໍລິສັດ/ຕົວເອງ",
+        "client": "ຂອງລູກຄ້າ (agency)",
+        "test": "ທົດລອງ / ທົດສອບ"
+      },
+      "cancel": "ຍົກເລີກ",
+      "submit": "ສ້າງ Workspace",
+      "close": "ປິດ",
+      "success": "ສ້າງ \"{name}\" ສຳເລັດ",
+      "genericError": "ສ້າງ Workspace ບໍ່ສຳເລັດ ກະລຸນາລອງໃໝ່"
+    }
   },
   "topbar": {
     "notifications": "ການແຈ້ງເຕືອນ"
