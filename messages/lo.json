@@ -45,6 +45,13 @@
     }
   },
   "api": {
+    "tenants": {
+      "create": {
+        "nameTooShort": "ຊື່ Workspace ຕ້ອງມີຢ່າງໜ້ອຍ 2 ຕົວອັກສອນ",
+        "nameTooLong": "ຊື່ Workspace ຍາວເກີນ (ສູງສຸດ 64 ຕົວອັກສອນ)",
+        "invalidPayload": "ຂໍ້ມູນບໍ່ຖືກຕ້ອງ"
+      }
+    },
     "auth": {
       "signup": {
         "invalidEmail": "ຮູບແບບອີເມວບໍ່ຖືກຕ້ອງ",

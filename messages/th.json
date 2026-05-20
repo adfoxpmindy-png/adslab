@@ -45,6 +45,13 @@
     }
   },
   "api": {
+    "tenants": {
+      "create": {
+        "nameTooShort": "ชื่อ Workspace ต้องมีอย่างน้อย 2 ตัวอักษร",
+        "nameTooLong": "ชื่อ Workspace ยาวเกิน (สูงสุด 64 ตัวอักษร)",
+        "invalidPayload": "ข้อมูลไม่ถูกต้อง"
+      }
+    },
     "auth": {
       "signup": {
         "invalidEmail": "รูปแบบอีเมลไม่ถูกต้อง",

@@ -45,6 +45,13 @@
     }
   },
   "api": {
+    "tenants": {
+      "create": {
+        "nameTooShort": "Workspace name must be at least 2 characters",
+        "nameTooLong": "Workspace name too long (max 64 characters)",
+        "invalidPayload": "Invalid input"
+      }
+    },
     "auth": {
       "signup": {
         "invalidEmail": "Invalid email format",
