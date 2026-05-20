@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Check, Languages } from "lucide-react";
 import { toast } from "sonner";
@@ -17,12 +17,18 @@ import { LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales";
  * Language switcher fragment — meant to be inlined inside an existing
  * DropdownMenuContent (e.g., the sidebar profile menu).
  *
- * Renders a small section header + 3 menu items (one per supported locale).
- * Clicking an item POSTs to /api/user/locale → updates DB + cookie →
- * router.refresh() so server components re-render in the new language.
+ * Clicking an item:
+ *   1. POSTs to /api/user/locale (DB + cookie persistence so cross-device
+ *      + unprefixed-URL fallback keeps working).
+ *   2. router.replace() to the SAME path but with the new locale segment
+ *      swapped in (e.g. /th/t/foo/dashboard → /en/t/foo/dashboard). The
+ *      URL is the source of truth for the active locale after the
+ *      locale-prefix migration; just refreshing wouldn't change anything
+ *      because the URL still says /th/.
  */
 export function LanguageSwitcher() {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations("sidebar.profile.menu");
   const tSwitcher = useTranslations("languageSwitcher");
   const activeLocale = useLocale();
@@ -37,7 +43,11 @@ export function LanguageSwitcher() {
         body: JSON.stringify({ locale }),
       });
       if (!res.ok) throw new Error("save failed");
-      startTransition(() => router.refresh());
+      // Swap the locale segment at the start of the pathname. Lookahead
+      // matches only the locale token itself (`/th`, `/en`, `/lo`) so we
+      // never mangle paths that happen to start with those letters.
+      const newPath = pathname.replace(/^\/(?:th|en|lo)(?=\/|$)/, `/${locale}`);
+      startTransition(() => router.replace(newPath));
     } catch {
       toast.error(tSwitcher("errorChange"));
     }
