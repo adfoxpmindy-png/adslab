@@ -132,6 +132,7 @@ model User {
   emailVerificationTokens EmailVerificationToken[]
   connectedMetaAccounts   MetaConnection[]         @relation("MetaConnectionConnector")
   connectedPageAccounts   MetaPageConnection[]     @relation("MetaPageConnectionConnector")
+  viewerLinksCreated      ViewerLink[]             @relation("ViewerLinkCreator")
 }
 
 model Tenant {
@@ -165,6 +166,7 @@ model Tenant {
   aiRecommendations  AIRecommendation[]
   metaPageConnection MetaPageConnection?
   pagePosts          PagePost[]
+  viewerLinks        ViewerLink[]
 }
 
 /// AI Quick Boost — natural-language → bulk campaign creation. One row
@@ -1274,4 +1276,47 @@ model BillingEvent {
 
   @@index([tenantId, createdAt(sort: Desc)])
   @@index([kind])
+}
+
+// Public read-only share links for ad performance views. Operator
+// generates a token-protected URL (/v/<token>) and sends it to a client
+// who has no AdsLab login. Soft delete via isActive so audit fields
+// (viewCount, lastViewedAt) survive a revoke. scope is "ACCOUNT" or
+// "CAMPAIGN"; targetId is the Meta account ID or Meta campaign ID
+// depending on scope.
+model ViewerLink {
+  id           String    @id @default(cuid())
+  token        String    @unique
+  tenantId     String
+  scope        String
+  targetId     String
+  dateRange    String    @default("7d")
+  isActive     Boolean   @default(true)
+  createdById  String
+  createdAt    DateTime  @default(now())
+  viewCount    Int       @default(0)
+  lastViewedAt DateTime?
+
+  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdBy User   @relation("ViewerLinkCreator", fields: [createdById], references: [id])
+
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([token])
+}
+
+// DB cache for Meta ad creative preview URLs (image / video thumbnail).
+// One row per Meta creative ID (creatives are reused across many ads,
+// so this is smaller than caching per-ad). The public viewer route
+// reads from here first; on miss/expiry, fetches from Meta and
+// upserts. TTL ~7 days (Meta CDN URLs are stable but signed).
+model MetaAdCreativePreview {
+  id            String   @id @default(cuid())
+  creativeId    String   @unique
+  type          String
+  imageUrl      String?
+  videoThumbUrl String?
+  fetchedAt     DateTime @default(now())
+  expiresAt     DateTime
+
+  @@index([expiresAt])
 }
