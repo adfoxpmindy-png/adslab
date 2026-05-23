@@ -1,28 +1,28 @@
 ## 1. Commit 1 — Foundation (schema + API, no UI)
 
-- [ ] 1.1 Add `ViewerLink` model to `prisma/schema.prisma` per design D1/D2 (token unique, scope String, targetId String, dateRange default `"7d"`, isActive default true, viewCount default 0, createdById FK, lastViewedAt nullable, indexes on tenantId and token)
-- [ ] 1.2 Add `MetaAdCreativePreview` model to `prisma/schema.prisma` per design D3 (creativeId unique, type String, imageUrl + videoThumbUrl nullable, fetchedAt + expiresAt DateTime)
-- [ ] 1.3 Add reverse relations on `Tenant` and `User` for `ViewerLink`
-- [ ] 1.4 Run `npx prisma migrate dev --name add_viewer_links` and verify migration SQL is clean (no destructive ops, no rename surprises)
-- [ ] 1.5 Create `src/lib/viewer-link.ts` with `generateViewerToken()` (crypto.randomBytes(16) → base64url, trim padding) and `getViewerLinkByToken(token)` helper that returns `{ link, tenant } | null` and gates on `isActive=true`
-- [ ] 1.6 Create `src/app/api/viewer-links/route.ts` with POST handler — Zod validate `{tenantSlug, scope: enum, targetId, dateRange?}`, gate via `requireTenantMember(slug, ["OWNER", "MEDIA_BUYER"])`, create row, return `{ok, token, url}` (use `NEXT_PUBLIC_APP_URL` + `/v/<token>`)
-- [ ] 1.7 Add GET handler to `src/app/api/viewer-links/route.ts` — Zod validate `?tenantSlug=`, gate via `requireTenantMember(slug)` (any role), return ordered list with creator display name joined
-- [ ] 1.8 Create `src/app/api/viewer-links/[id]/route.ts` with DELETE handler — gate via `requireTenantMember(slug, ["OWNER", "MEDIA_BUYER"])`, verify link belongs to caller's tenant, set `isActive=false`, return `{ok}`
-- [ ] 1.9 Curl-test all 3 endpoints against local dev: create → list → revoke → list (expect isActive=false). Document the curl commands in PR description.
-- [ ] 1.10 Run `npm run verify` (typecheck + build + audit scripts) and commit as Commit 1. Browser verification: confirm app still loads at `/` (no UI changed)
+- [x] 1.1 Add `ViewerLink` model to `prisma/schema.prisma` per design D1/D2 (token unique, scope String, targetId String, dateRange default `"7d"`, isActive default true, viewCount default 0, createdById FK, lastViewedAt nullable, indexes on tenantId and token)
+- [x] 1.2 Add `MetaAdCreativePreview` model to `prisma/schema.prisma` per design D3 (creativeId unique, type String, imageUrl + videoThumbUrl nullable, fetchedAt + expiresAt DateTime)
+- [x] 1.3 Add reverse relations on `Tenant` and `User` for `ViewerLink`
+- [x] 1.4 Run `npx prisma migrate dev --name add_viewer_links` and verify migration SQL is clean (no destructive ops, no rename surprises)
+- [x] 1.5 Create `src/lib/viewer-link.ts` with `generateViewerToken()` (crypto.randomBytes(16) → base64url, trim padding) and `getViewerLinkByToken(token)` helper that returns `{ link, tenant } | null` and gates on `isActive=true`
+- [x] 1.6 Create `src/app/api/viewer-links/route.ts` with POST handler — Zod validate `{tenantSlug, scope: enum, targetId, dateRange?}`, gate via `requireTenantMember(slug, ["OWNER", "MEDIA_BUYER"])`, create row, return `{ok, token, url}` (use `NEXT_PUBLIC_APP_URL` + `/v/<token>`)
+- [x] 1.7 Add GET handler to `src/app/api/viewer-links/route.ts` — Zod validate `?tenantSlug=`, gate via `requireTenantMember(slug)` (any role), return ordered list with creator display name joined
+- [x] 1.8 Create `src/app/api/viewer-links/[id]/route.ts` with DELETE handler — gate via `requireTenantMember(slug, ["OWNER", "MEDIA_BUYER"])`, verify link belongs to caller's tenant, set `isActive=false`, return `{ok}`
+- [x] 1.9 Curl-test all 3 endpoints against local dev: create → list → revoke → list (expect isActive=false). Document the curl commands in PR description.
+- [x] 1.10 Run `npm run verify` (typecheck + build + audit scripts) and commit as Commit 1. Browser verification: confirm app still loads at `/` (no UI changed)
 
 ## 2. Commit 2 — Public viewer page (account scope, KPI only, no creative previews)
 
-- [ ] 2.1 Create `src/app/v/[token]/page.tsx` — Server component, no auth, fetch via `getViewerLinkByToken`, return `notFound()` if null or inactive
-- [ ] 2.2 Increment `viewCount` and set `lastViewedAt` in the same DB call as the lookup (single transaction or upsert pattern)
-- [ ] 2.3 Resolve locale: read `Accept-Language` header server-side, support override via `?lang=` searchParam, fall back to `en`. Pass locale to `getTranslations` for the viewer namespace.
-- [ ] 2.4 For ACCOUNT scope: call `getDashboardData(tenantId, range)` and filter to the link's `targetId` (one account). For CAMPAIGN scope: return 200 with "scope not yet supported" placeholder — full support ships in Commit 5.
-- [ ] 2.5 Render header (tenant or account name + date range) and 4 KPI cards (Spend, Purchase, ROAS, Active Ads count). Use existing Card + KPI components from `src/components/ui-system/*` if available; otherwise inline styled per DESIGN.md.
-- [ ] 2.6 Render ad grid: for each active ad, show ad name + per-ad KPIs (Spend, CTR, CPA, ROAS) in a placeholder Card. No creative thumbnail yet — leave a 16:9 gray placeholder box.
-- [ ] 2.7 Render footer: "Powered by AdsLab" linking to marketing site (use `https://adslab.app` for now, env-driven later).
-- [ ] 2.8 Add i18n keys to `messages/en.json`, `messages/th.json`, `messages/lo.json` under `viewer.*` namespace (header labels, KPI labels, footer text, empty state, error states)
-- [ ] 2.9 Test edge cases by hand: unknown token (expect 404), revoked link (expect 404), link with CAMPAIGN scope (expect placeholder), link to deleted account (expect graceful "no data" state).
-- [ ] 2.10 Run `npm run verify` and commit as Commit 2. Browser verification: create a real ACCOUNT-scoped link via curl using the founder's FROST account, open in private window, screenshot for PR.
+- [x] 2.1 Create `src/app/v/[token]/page.tsx` — Server component, no auth, fetch via `getViewerLinkByToken`, return `notFound()` if null or inactive
+- [x] 2.2 Increment `viewCount` and set `lastViewedAt` in the same DB call as the lookup (single transaction or upsert pattern)
+- [x] 2.3 Resolve locale: read `Accept-Language` header server-side, support override via `?lang=` searchParam, fall back to `en`. Pass locale to `getTranslations` for the viewer namespace.
+- [x] 2.4 For ACCOUNT scope: call `getDashboardData(tenantId, range)` and filter to the link's `targetId` (one account). For CAMPAIGN scope: return 200 with "scope not yet supported" placeholder — full support ships in Commit 5.
+- [x] 2.5 Render header (tenant or account name + date range) and 4 KPI cards (Spend, Purchase, ROAS, Active Campaigns count). Use existing Card + KPI components from `src/components/ui-system/*` if available; otherwise inline styled per DESIGN.md.
+- [x] 2.6 Render campaign grid: for each active campaign, show campaign name + per-campaign KPIs (Spend, CTR, CPA, ROAS) in a placeholder Card. No creative thumbnail yet — leave a 16:9 gray placeholder box. (Per-ad rendering deferred to v2 once ad-level insights are cached.)
+- [x] 2.7 Render footer: "Powered by AdsLab" linking to marketing site.
+- [x] 2.8 Add i18n keys to `messages/en.json`, `messages/th.json`, `messages/lo.json` under `viewer.*` namespace (header labels, KPI labels, footer text, empty state, error states)
+- [x] 2.9 Test edge cases by hand: unknown token (expect 404), revoked link (expect 404), link with CAMPAIGN scope (expect placeholder), link to deleted account (expect graceful "no data" state).
+- [x] 2.10 Run `npm run verify` and commit as Commit 2. Browser verification: create a real ACCOUNT-scoped link via curl using the founder's FROST account, open in private window, screenshot for PR.
 
 ## 3. Commit 3 — Creative previews
 

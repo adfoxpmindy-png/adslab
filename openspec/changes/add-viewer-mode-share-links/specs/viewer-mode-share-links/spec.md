@@ -68,9 +68,11 @@ The route MUST increment `viewCount` and set `lastViewedAt` to the current times
 
 The view MUST contain:
 - Header with the tenant or campaign display name and the date range
-- Four KPI cards: total Spend, total Purchase count, ROAS, and count of Active Ads
-- A grid of all currently-active ads in the scope, each rendered with creative preview thumbnail, ad name, Spend, CTR, CPA, and ROAS
+- Four KPI cards: total Spend, total Purchase count, ROAS, and count of Active Campaigns
+- A grid of all currently-active campaigns in the scope, each rendered with creative preview thumbnail (preview of the campaign's first active ad), campaign name, Spend, CTR, CPA, and ROAS
 - A footer reading "Powered by AdsLab" linking to the AdsLab marketing site
+
+Note: v1 renders at campaign granularity because the existing `getDashboardData()` cache is campaign-level. Per-ad rendering is deferred to v2 once ad-level insights are cached.
 
 The view MUST NOT expose any action that mutates data (no pause, no edit, no comment, no chat).
 

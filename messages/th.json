@@ -3360,5 +3360,29 @@
         "events": "อีเวนต์"
       }
     }
+  },
+  "viewer": {
+    "pageTitle": "ผลโฆษณา",
+    "lastUpdated": "อัปเดต {date}",
+    "dateRangeLabel": "{days} วันล่าสุด",
+    "kpi": {
+      "spend": "ค่าโฆษณา",
+      "purchase": "จำนวนการซื้อ",
+      "roas": "ROAS",
+      "activeCampaigns": "Campaign ที่ Active"
+    },
+    "campaign": {
+      "spend": "ค่าโฆษณา",
+      "ctr": "CTR",
+      "cpa": "CPA",
+      "roas": "ROAS",
+      "noPreview": "ไม่มีภาพตัวอย่าง"
+    },
+    "empty": "ยังไม่มี campaign ที่ Active ในช่วงเวลานี้",
+    "campaignScopeUnsupported": "Viewer แบบเฉพาะ campaign จะเปิดในรุ่นถัดไป — ลองสร้างลิ้งก์ใหม่แบบ Account ก่อนนะ",
+    "noConnection": "Workspace นี้ยังไม่ได้เชื่อมต่อบัญชี Meta Ads",
+    "campaignDeleted": "Campaign นี้ถูกลบแล้ว",
+    "accountDeleted": "บัญชีโฆษณานี้ถูกลบแล้ว",
+    "poweredBy": "Powered by AdsLab"
   }
 }

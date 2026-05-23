@@ -3360,5 +3360,29 @@
         "events": "ອີເວນ"
       }
     }
+  },
+  "viewer": {
+    "pageTitle": "ຜົນໂຄສະນາ",
+    "lastUpdated": "ອັບເດດ {date}",
+    "dateRangeLabel": "{days} ມື້ຫຼ້າສຸດ",
+    "kpi": {
+      "spend": "ຄ່າໂຄສະນາ",
+      "purchase": "ຈຳນວນການຊື້",
+      "roas": "ROAS",
+      "activeCampaigns": "Campaign ທີ່ Active"
+    },
+    "campaign": {
+      "spend": "ຄ່າໂຄສະນາ",
+      "ctr": "CTR",
+      "cpa": "CPA",
+      "roas": "ROAS",
+      "noPreview": "ບໍ່ມີຮູບຕົວຢ່າງ"
+    },
+    "empty": "ຍັງບໍ່ມີ campaign ທີ່ Active ໃນຊ່ວງເວລານີ້",
+    "campaignScopeUnsupported": "Viewer ແບບສະເພາະ campaign ຈະເປີດໃນເວີຊັນຖັດໄປ — ລອງສ້າງລິ້ງໃໝ່ແບບ Account ກ່ອນ",
+    "noConnection": "Workspace ນີ້ຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ບັນຊີ Meta Ads",
+    "campaignDeleted": "Campaign ນີ້ຖືກລົບແລ້ວ",
+    "accountDeleted": "ບັນຊີໂຄສະນານີ້ຖືກລົບແລ້ວ",
+    "poweredBy": "Powered by AdsLab"
   }
 }

@@ -3360,5 +3360,29 @@
         "events": "Events"
       }
     }
+  },
+  "viewer": {
+    "pageTitle": "Campaign performance",
+    "lastUpdated": "Updated {date}",
+    "dateRangeLabel": "Last {days} days",
+    "kpi": {
+      "spend": "Spend",
+      "purchase": "Purchases",
+      "roas": "ROAS",
+      "activeCampaigns": "Active campaigns"
+    },
+    "campaign": {
+      "spend": "Spend",
+      "ctr": "CTR",
+      "cpa": "CPA",
+      "roas": "ROAS",
+      "noPreview": "No preview"
+    },
+    "empty": "No active campaigns in this date range yet.",
+    "campaignScopeUnsupported": "Campaign-scoped viewer is shipping in the next release. Please regenerate this link with the Account scope.",
+    "noConnection": "This workspace has no Meta Ads connection.",
+    "campaignDeleted": "This campaign no longer exists.",
+    "accountDeleted": "This ad account no longer exists.",
+    "poweredBy": "Powered by AdsLab"
   }
 }
