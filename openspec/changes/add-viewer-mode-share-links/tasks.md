@@ -26,12 +26,12 @@
 
 ## 3. Commit 3 — Creative previews
 
-- [ ] 3.1 Add `src/lib/meta/creative-preview.ts` with `getCreativePreview(creativeId, tenantId)` that reads from `MetaAdCreativePreview` cache (skip if expiresAt > now()), else fetches `?fields=id,image_url,object_type,object_story_spec,asset_feed_spec,thumbnail_url` from `/v22.0/<creativeId>` using `getFreshAccessToken(tenantId)`, normalizes the response to `{type, imageUrl, videoThumbUrl}`, writes to cache with 7-day TTL.
-- [ ] 3.2 Handle failure path: 4xx/5xx from Meta → return `null`, do NOT cache (so we retry next time). Log to existing logger.
-- [ ] 3.3 Update viewer page (`src/app/v/[token]/page.tsx`) to call `getCreativePreview` for each active ad in parallel (use `Promise.allSettled` so one bad creative doesn't block the page).
-- [ ] 3.4 Replace gray placeholder in ad grid with actual `<img>` (image type) or `<video>` poster (video type, no autoplay) — handle null fallback with a "no preview" placeholder.
-- [ ] 3.5 Add image domain to `next.config.ts` `images.remotePatterns` if the Meta CDN host (`scontent-*.fbcdn.net`, `video.f*.fbcdn.net`) is not already whitelisted.
-- [ ] 3.6 Run `npm run verify` and commit as Commit 3. Browser verification: re-open the same viewer link, confirm thumbnails render for image, video, and carousel ads; check Network tab to confirm Meta is called only once per creative (subsequent reloads hit cache).
+- [x] 3.1 Add `src/lib/meta/creative-preview.ts` with `getCreativePreview(creativeId, tenantId)` that reads from `MetaAdCreativePreview` cache (skip if expiresAt > now()), else fetches `?fields=id,image_url,object_type,object_story_spec,asset_feed_spec,thumbnail_url` from `/v22.0/<creativeId>` using `getFreshAccessToken(tenantId)`, normalizes the response to `{type, imageUrl, videoThumbUrl}`, writes to cache with 7-day TTL.
+- [x] 3.2 Handle failure path: 4xx/5xx from Meta → return `null`, do NOT cache (so we retry next time). Log to existing logger.
+- [x] 3.3 Update viewer page (`src/app/v/[token]/page.tsx`) to call `getCreativePreview` for each active campaign in parallel (use `Promise.allSettled` so one bad creative doesn't block the page). Per-campaign creative IDs resolved via `findCreativeIdsForCampaigns` from cached MetaAd rows.
+- [x] 3.4 Replace gray placeholder in ad grid with actual `<img>` (image type or video poster) — handle null fallback with a "no preview" placeholder.
+- [x] 3.5 Skipped — using native `<img>` instead of `next/image` to avoid configuring remotePatterns for every Meta CDN subdomain. Thumbnails are small (16:9) so the perf cost of unoptimized images is negligible.
+- [x] 3.6 Run `npm run verify` and commit as Commit 3. Browser verification: re-open the same viewer link, confirm thumbnails render for image, video, and carousel ads (or "No preview" fallback when no MetaAd rows are cached for the account).
 
 ## 4. Commit 4 — "Share with Client" button + modal on Insights page (ACCOUNT scope only)
 

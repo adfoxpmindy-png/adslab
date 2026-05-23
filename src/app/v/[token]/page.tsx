@@ -4,6 +4,11 @@ import { getTranslations } from "next-intl/server";
 
 import { getViewerLinkByToken } from "@/lib/viewer-link";
 import { getDashboardData } from "@/lib/meta/dashboard-service";
+import {
+  findCreativeIdsForCampaigns,
+  getCreativePreview,
+  type CreativePreview,
+} from "@/lib/meta/creative-preview";
 import { DEFAULT_LOCALE, isLocale, resolveLocaleFromString, type Locale } from "@/i18n/locales";
 import type { DateRangeKey } from "@/lib/meta/insights";
 import { Card, CardContent } from "@/components/ui/card";
@@ -110,6 +115,23 @@ export default async function ViewerPage({ params, searchParams }: Props) {
   const totalPurchaseValue = activeCampaigns.reduce((s, c) => s + c.purchaseValue, 0);
   const roas = totalSpend > 0 ? totalPurchaseValue / totalSpend : 0;
 
+  // Resolve a creative preview per campaign using cached MetaAd rows + the
+  // creative-preview cache. Fetched in parallel; one bad creative does not
+  // block the others.
+  const creativeIds = await findCreativeIdsForCampaigns(activeCampaigns.map((c) => c.campaignId));
+  const previewPromises = Array.from(creativeIds.entries()).map(async ([campaignId, creativeId]) => {
+    const preview = await getCreativePreview(creativeId, link.tenantId);
+    return [campaignId, preview] as const;
+  });
+  const previewResults = await Promise.allSettled(previewPromises);
+  const previewMap = new Map<string, CreativePreview | null>();
+  for (const result of previewResults) {
+    if (result.status === "fulfilled") {
+      const [campaignId, preview] = result.value;
+      previewMap.set(campaignId, preview);
+    }
+  }
+
   const fetchedAt = new Date(payload.fetchedAt);
   const fetchedLabel = new Intl.DateTimeFormat(
     locale === "th" ? "th-TH" : locale === "lo" ? "lo-LA" : "en-US",
@@ -140,10 +162,10 @@ export default async function ViewerPage({ params, searchParams }: Props) {
           {activeCampaigns.map((c) => {
             const cpa = c.conversions > 0 ? c.spend / c.conversions : 0;
             const campaignRoas = c.spend > 0 ? c.purchaseValue / c.spend : 0;
+            const preview = previewMap.get(c.campaignId) ?? null;
             return (
               <Card key={c.campaignId} className="overflow-hidden">
-                {/* Creative preview placeholder — wired in Commit 3. */}
-                <div className="aspect-video w-full bg-muted/40" aria-hidden />
+                <PreviewThumbnail preview={preview} alt={c.campaignName} noPreviewLabel={t("campaign.noPreview")} />
                 <CardContent className="flex flex-col gap-2 px-4 pt-3 pb-4 text-sm">
                   <div className="line-clamp-2 font-medium text-foreground">{c.campaignName}</div>
                   <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -201,6 +223,36 @@ function CampaignMetric({ label, value }: { label: string; value: string }) {
       <dt className="text-[10px] uppercase tracking-wide">{label}</dt>
       <dd className={cn("font-medium tabular-nums text-foreground")}>{value}</dd>
     </div>
+  );
+}
+
+function PreviewThumbnail({
+  preview,
+  alt,
+  noPreviewLabel,
+}: {
+  preview: CreativePreview | null;
+  alt: string;
+  noPreviewLabel: string;
+}) {
+  const url = preview?.imageUrl ?? preview?.videoThumbUrl ?? null;
+  if (!url) {
+    return (
+      <div className="flex aspect-video w-full items-center justify-center bg-muted/40 text-xs text-muted-foreground">
+        {noPreviewLabel}
+      </div>
+    );
+  }
+  // Native <img> avoids next/image remotePatterns config churn for the many
+  // Meta CDN subdomains. Lazy-loading keeps the grid cheap.
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={url}
+      alt={alt}
+      loading="lazy"
+      className="aspect-video w-full object-cover"
+    />
   );
 }
 
