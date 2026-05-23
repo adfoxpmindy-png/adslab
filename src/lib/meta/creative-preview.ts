@@ -28,6 +28,14 @@ type RawCreative = {
 };
 
 function normalizeCreative(raw: RawCreative): CreativePreview {
+  // Priority order: prefer the source we asked Meta to resize for us.
+  //   1. `image_url` — original image upload, full resolution
+  //   2. `thumbnail_url` — explicitly sized via thumbnail_width=600 query
+  //      param, so this is a real 600×600 image now (not the default 64×64)
+  //   3. asset_feed_spec / object_story_spec fallbacks — these are POST or
+  //      asset-feed URLs that we can't resize and come back as small thumbs
+  //   4. nothing → UNKNOWN
+
   // Carousel: object_story_spec.link_data.child_attachments[]
   if (raw.object_story_spec?.link_data?.child_attachments?.length) {
     const first = raw.object_story_spec.link_data.child_attachments[0];
@@ -38,15 +46,15 @@ function normalizeCreative(raw: RawCreative): CreativePreview {
     };
   }
 
-  // Video: thumbnail_url or object_story_spec.video_data.image_url
+  // Video
   if (raw.object_type === "VIDEO" || raw.object_story_spec?.video_data) {
     return {
       type: "VIDEO",
       imageUrl: null,
       videoThumbUrl:
         raw.thumbnail_url ??
-        raw.object_story_spec?.video_data?.image_url ??
         raw.asset_feed_spec?.videos?.[0]?.thumbnail_url ??
+        raw.object_story_spec?.video_data?.image_url ??
         null,
     };
   }
@@ -55,8 +63,8 @@ function normalizeCreative(raw: RawCreative): CreativePreview {
   const imageUrl =
     raw.image_url ??
     raw.thumbnail_url ??
-    raw.object_story_spec?.link_data?.picture ??
     raw.asset_feed_spec?.images?.[0]?.url ??
+    raw.object_story_spec?.link_data?.picture ??
     null;
 
   return {
@@ -99,10 +107,19 @@ export async function getCreativePreview(
 
   let raw: RawCreative;
   try {
+    // thumbnail_width/height tell Meta to render thumbnail_url at the
+    // requested size (default is 64×64, which looks blurry in a 16:9 card).
+    // We do NOT use the post-level `full_picture` field even though it's
+    // the original-resolution image — that endpoint requires
+    // `pages_read_engagement`, which the AdsLab Meta app cannot request
+    // (see memory reference_meta_app_type_constraint).
     raw = await graphFetch<RawCreative>(`/${creativeId}`, {
       accessToken,
       searchParams: {
-        fields: "id,object_type,image_url,thumbnail_url,asset_feed_spec,object_story_spec",
+        fields:
+          "id,object_type,image_url,thumbnail_url,asset_feed_spec,object_story_spec",
+        thumbnail_width: 600,
+        thumbnail_height: 600,
       },
     });
   } catch (err) {
