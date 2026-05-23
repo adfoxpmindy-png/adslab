@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { getViewerLinkByToken } from "@/lib/viewer-link";
 import { getDashboardData } from "@/lib/meta/dashboard-service";
 import {
-  findCreativeIdsForCampaigns,
+  findCreativeIdsForAccount,
   getCreativePreview,
   type CreativePreview,
 } from "@/lib/meta/creative-preview";
@@ -115,10 +115,13 @@ export default async function ViewerPage({ params, searchParams }: Props) {
   const totalPurchaseValue = activeCampaigns.reduce((s, c) => s + c.purchaseValue, 0);
   const roas = totalSpend > 0 ? totalPurchaseValue / totalSpend : 0;
 
-  // Resolve a creative preview per campaign using cached MetaAd rows + the
-  // creative-preview cache. Fetched in parallel; one bad creative does not
-  // block the others.
-  const creativeIds = await findCreativeIdsForCampaigns(activeCampaigns.map((c) => c.campaignId));
+  // Resolve creative previews per campaign:
+  //   1. One Meta API call lists every ACTIVE ad in the account and gives us
+  //      the (campaignId → first-creativeId) mapping. Cheap and reliable —
+  //      doesn't depend on the local MetaAd table being populated.
+  //   2. Then fetch each creative's preview in parallel (cached in
+  //      MetaAdCreativePreview with 7-day TTL).
+  const creativeIds = await findCreativeIdsForAccount(account.accountId, link.tenantId);
   const previewPromises = Array.from(creativeIds.entries()).map(async ([campaignId, creativeId]) => {
     const preview = await getCreativePreview(creativeId, link.tenantId);
     return [campaignId, preview] as const;

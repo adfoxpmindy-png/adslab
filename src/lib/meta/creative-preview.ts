@@ -143,38 +143,76 @@ export async function getCreativePreview(
   return normalized;
 }
 
-/**
- * For each campaign, look up the first cached ACTIVE ad and return its
- * creativeId. Pure DB read — no Meta API calls. Returns a map of
- * campaignId → creativeId (entries omitted when no cached ad exists).
- *
- * This is the v1 stopgap for per-campaign previews. Once we cache ad-level
- * insights we can drop this and key previews directly off campaign metadata.
- */
-export async function findCreativeIdsForCampaigns(
-  campaignIds: string[],
-): Promise<Map<string, string>> {
-  if (campaignIds.length === 0) return new Map();
+type RawAdRow = {
+  id: string;
+  campaign_id?: string;
+  creative?: { id?: string };
+};
 
-  const ads = await prisma.metaAd.findMany({
-    where: {
-      effectiveStatus: "ACTIVE",
-      creativeId: { not: null },
-      adSet: { campaign: { metaCampaignId: { in: campaignIds } } },
-    },
-    select: {
-      creativeId: true,
-      adSet: { select: { campaign: { select: { metaCampaignId: true } } } },
-    },
-    orderBy: { lastFetchedAt: "desc" },
-  });
+type RawAdsPage = {
+  data: RawAdRow[];
+  paging?: { next?: string };
+};
+
+/**
+ * Build a Map<campaignId, creativeId> for the given ad account by asking
+ * Meta directly for all ACTIVE ads. One Graph API call (paginated) covers
+ * the whole account — much cheaper than per-campaign lookups, and works
+ * even when the local MetaAd table is empty (which is the common case
+ * because the existing sync flow primarily caches insights, not the
+ * ad/creative tree).
+ *
+ * Returns an empty Map on connection error so the viewer page still renders
+ * with placeholder thumbnails instead of crashing.
+ */
+export async function findCreativeIdsForAccount(
+  metaAccountId: string,
+  tenantId: string,
+): Promise<Map<string, string>> {
+  const connection = await getConnection(tenantId);
+  if (!connection || connection.status !== "ACTIVE") return new Map();
+  const accessToken = await getFreshAccessToken(connection);
 
   const map = new Map<string, string>();
-  for (const ad of ads) {
-    const campId = ad.adSet.campaign.metaCampaignId;
-    if (!map.has(campId) && ad.creativeId) {
-      map.set(campId, ad.creativeId);
+  let path: string | null = `/${metaAccountId}/ads`;
+  let searchParams: Record<string, string | number> | undefined = {
+    fields: "id,campaign_id,creative{id}",
+    // Status filter at the API level keeps the payload small.
+    effective_status: JSON.stringify(["ACTIVE"]),
+    limit: 200,
+  };
+  let nextUrl: string | null = null;
+
+  try {
+    while (path || nextUrl) {
+      let page: RawAdsPage;
+      if (nextUrl) {
+        const res = await fetch(nextUrl);
+        if (!res.ok) break;
+        page = (await res.json()) as RawAdsPage;
+      } else {
+        page = await graphFetch<RawAdsPage>(path as string, {
+          accessToken,
+          searchParams,
+        });
+      }
+      for (const ad of page.data) {
+        const campId = ad.campaign_id;
+        const credId = ad.creative?.id;
+        if (campId && credId && !map.has(campId)) {
+          map.set(campId, credId);
+        }
+      }
+      nextUrl = page.paging?.next ?? null;
+      path = null;
+      searchParams = undefined;
     }
+  } catch (err) {
+    console.warn(
+      `[creative-preview] active-ads fetch failed for ${metaAccountId}:`,
+      (err as Error).message,
+    );
   }
+
   return map;
 }
