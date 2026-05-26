@@ -1,3 +1,13 @@
+import {
+  ArrowDown,
+  Calendar,
+  CheckCircle2,
+  CircleDollarSign,
+  RotateCw,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
+
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto/aes";
 import { cn } from "@/lib/utils";
@@ -236,8 +246,8 @@ export async function FrostVisualHero({ tenantId }: { tenantId: string; reportDa
     <section className="space-y-8 text-foreground">
       {/* ============ Optimization log ============ */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold tracking-tight">
-          🛠 การ Optimize ที่เกิดขึ้นจริง (จาก /activities log)
+        <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
+          <Wrench className="size-5" /> การ Optimize ที่เกิดขึ้นจริง (จาก /activities log)
         </h2>
         <p className="text-sm text-muted-foreground">
           Optimize {[...totalActivityByDay.keys()].filter((d) => (totalActivityByDay.get(d) ?? 0) > 0).length} วัน
@@ -254,11 +264,12 @@ export async function FrostVisualHero({ tenantId }: { tenantId: string; reportDa
 
             return (
               <div key={d} className="space-y-2">
-                <h3 className="text-base font-semibold">
-                  📅 {DAY_HEAD[d]} — <span className="font-mono">{totalActs} activities</span>
+                <h3 className="flex items-center gap-2 text-base font-semibold">
+                  <Calendar className="size-4 text-muted-foreground" />
+                  {DAY_HEAD[d]} — <span className="font-mono">{totalActs} activities</span>
                   {theme && (
                     <>
-                      {" · "}
+                      <span className="text-muted-foreground">·</span>
                       <span className="font-bold">{theme}</span>
                     </>
                   )}
@@ -271,23 +282,32 @@ export async function FrostVisualHero({ tenantId }: { tenantId: string; reportDa
                 ) : (
                   <ul className="ml-6 space-y-1 text-sm">
                     {created && created.campaigns > 0 && (
-                      <li>
-                        ✨ <span className="font-medium">สร้างใหม่:</span> {created.campaigns} campaigns
-                        {created.adsets > 0 && ` + ${created.adsets} ad sets`}
-                        {created.ads > 0 && ` + ${created.ads} ads`}
+                      <li className="flex items-baseline gap-2">
+                        <Sparkles className="size-3.5 shrink-0 translate-y-0.5 text-amber-500" />
+                        <span>
+                          <span className="font-medium">สร้างใหม่:</span> {created.campaigns} campaigns
+                          {created.adsets > 0 && ` + ${created.adsets} ad sets`}
+                          {created.ads > 0 && ` + ${created.ads} ads`}
+                        </span>
                       </li>
                     )}
                     {editsToday.length > 0 && (
-                      <li>
-                        💰 <span className="font-medium">Budget edits:</span> {editsToday.length} ครั้ง
+                      <li className="flex items-baseline gap-2">
+                        <CircleDollarSign className="size-3.5 shrink-0 translate-y-0.5 text-emerald-500" />
+                        <span>
+                          <span className="font-medium">Budget edits:</span> {editsToday.length} ครั้ง
+                        </span>
                       </li>
                     )}
                     {statusToday && statusToday.total > 0 && (
-                      <li>
-                        🔄 <span className="font-medium">Status changes:</span> {statusToday.total} ครั้ง
-                        {statusToday.paused > 0 && ` (${statusToday.paused} paused`}
-                        {statusToday.resumed > 0 && `${statusToday.paused > 0 ? ", " : " ("}${statusToday.resumed} resumed`}
-                        {(statusToday.paused > 0 || statusToday.resumed > 0) && ")"}
+                      <li className="flex items-baseline gap-2">
+                        <RotateCw className="size-3.5 shrink-0 translate-y-0.5 text-muted-foreground" />
+                        <span>
+                          <span className="font-medium">Status changes:</span> {statusToday.total} ครั้ง
+                          {statusToday.paused > 0 && ` (${statusToday.paused} paused`}
+                          {statusToday.resumed > 0 && `${statusToday.paused > 0 ? ", " : " ("}${statusToday.resumed} resumed`}
+                          {(statusToday.paused > 0 || statusToday.resumed > 0) && ")"}
+                        </span>
                       </li>
                     )}
 
@@ -333,7 +353,9 @@ export async function FrostVisualHero({ tenantId }: { tenantId: string; reportDa
 
       {/* ============ Spend movement table ============ */}
       <div className="space-y-3">
-        <h2 className="text-xl font-semibold tracking-tight">💰 Spend Movement (ของจริง)</h2>
+        <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
+          <CircleDollarSign className="size-5 text-emerald-500" /> Spend Movement (ของจริง)
+        </h2>
 
         <div className="overflow-hidden rounded-lg border border-border">
           <table className="w-full text-sm">
@@ -356,10 +378,12 @@ export async function FrostVisualHero({ tenantId }: { tenantId: string; reportDa
                     <td className="px-3 py-2 tabular-nums">{fmtThb(d.spend)}</td>
                     <td className="px-3 py-2 tabular-nums">{fmtNum(d.eng)}</td>
                     <td className="px-3 py-2 tabular-nums">
-                      {fmtCpe(d.cpe)}
-                      {isImproving && (
-                        <span className="ml-1 text-emerald-600 dark:text-emerald-400">⬇</span>
-                      )}
+                      <span className="inline-flex items-center gap-1">
+                        {fmtCpe(d.cpe)}
+                        {isImproving && (
+                          <ArrowDown className="size-3 text-emerald-600 dark:text-emerald-400" />
+                        )}
+                      </span>
                     </td>
                     <td className="px-3 py-2 tabular-nums">{d.active}</td>
                   </tr>
@@ -376,9 +400,9 @@ export async function FrostVisualHero({ tenantId }: { tenantId: string; reportDa
           </table>
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          CPE ลดลงทุกวัน = optimize ทำงาน{" "}
-          <span className="text-emerald-600 dark:text-emerald-400">✅</span>
+        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          CPE ลดลงทุกวัน = optimize ทำงาน
+          <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
         </p>
       </div>
     </section>
