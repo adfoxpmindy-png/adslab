@@ -14,7 +14,6 @@
 import Link from "next/link";
 import {
   ChevronLeft,
-  AlertTriangle,
   Award,
   BarChart3,
   CheckCircle2,
@@ -24,7 +23,6 @@ import {
   Share2,
   Target,
   Tv,
-  Wand2,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -323,12 +321,12 @@ export default async function EngagementQualityPage({
       {/* Per-campaign breakdown */}
       <section className="space-y-3">
         <h2 className="flex items-center gap-2 text-xl font-semibold">
-          <BarChart3 className="size-5" /> ทุก campaign — Engagement breakdown
+          <BarChart3 className="size-5" /> ทุก {campaigns.length} campaign — Engagement breakdown
         </h2>
         <p className="text-sm text-muted-foreground">
-          เทียบ Reactions / Comments / Shares / Video views ต่อ campaign — เห็นเลยว่า &ldquo;ใครได้ engagement จากอะไร&rdquo;
+          เทียบ Reactions / Comments / Shares / Video views ต่อ campaign — เห็นเลยว่าตัวไหนเก่งอะไร
         </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...campaigns]
             .sort((a, b) => a.cpe - b.cpe)
             .map((c) => {
@@ -384,22 +382,37 @@ export default async function EngagementQualityPage({
                       />
                     </div>
 
-                    {/* Verdict */}
-                    <div
-                      className={cn(
-                        "rounded-md border px-3 py-2 text-xs",
-                        verdict.tone === "good" && "border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300",
-                        verdict.tone === "bad" && "border-rose-500/30 bg-rose-500/5 text-rose-700 dark:text-rose-300",
-                        verdict.tone === "neutral" && "border-border bg-muted/30 text-foreground",
-                      )}
-                    >
-                      <p className="flex items-center gap-1.5 font-medium">
-                        {verdict.tone === "good" && <CheckCircle2 className="size-3.5" />}
-                        {verdict.tone === "bad" && <AlertTriangle className="size-3.5" />}
-                        {verdict.tone === "neutral" && <Tv className="size-3.5" />}
-                        {verdict.headline}
-                      </p>
-                      <p className="mt-0.5 text-muted-foreground">{verdict.detail}</p>
+                    {/* Strength + next step */}
+                    <div className="space-y-2">
+                      <div
+                        className={cn(
+                          "rounded-md border px-3 py-2 text-xs",
+                          verdict.tone === "good"
+                            ? "border-emerald-500/30 bg-emerald-500/5"
+                            : "border-border bg-muted/30",
+                        )}
+                      >
+                        <p className="flex items-baseline gap-1.5 font-medium text-foreground">
+                          <CheckCircle2
+                            className={cn(
+                              "size-3.5 shrink-0 translate-y-0.5",
+                              verdict.tone === "good"
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-muted-foreground",
+                            )}
+                          />
+                          <span>{verdict.strength}</span>
+                        </p>
+                      </div>
+                      <div className="rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs">
+                        <p className="flex items-baseline gap-1.5 font-medium text-foreground">
+                          <Target className="size-3.5 shrink-0 translate-y-0.5 text-amber-600 dark:text-amber-400" />
+                          <span>
+                            <span className="text-amber-700 dark:text-amber-300">Next step:</span>{" "}
+                            {verdict.nextStep}
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -408,74 +421,92 @@ export default async function EngagementQualityPage({
         </div>
       </section>
 
-      {/* Takeaway */}
-      <Card className="border-amber-500/30 bg-amber-500/5 p-5">
-        <CardContent className="space-y-3 px-0">
+      {/* Action plan */}
+      <Card className="border-emerald-500/30 bg-emerald-500/5 p-5">
+        <CardContent className="space-y-4 px-0">
           <h2 className="flex items-center gap-2 text-lg font-semibold">
-            <Target className="size-5" /> Takeaway สำหรับ FROST FSV0526
+            <Target className="size-5" /> Action plan — ทำได้เลยใน 3 วันนี้
           </h2>
-          <ul className="ml-5 list-disc space-y-2 text-sm">
-            <li>
-              <strong>&ldquo;เมืองขนมหวาน&rdquo; (FB/IG)</strong> มี CPE ถูกที่สุด — แต่ engagement{" "}
-              <strong>~98% มาจาก video views</strong> (auto-play scroll-throughs) · มี comment แค่ 1, share &lt; 75
-              → ใช้สำหรับ <strong>brand awareness / reach</strong> ได้ ไม่ใช่ active engagement
-            </li>
-            <li>
-              <strong>&ldquo;วันหยุดนี้&rdquo; (FB/IG)</strong> มี Reactions เยอะ (992-1,246) แต่ <strong>0-2 comments, 5-7
-              shares</strong> เท่านั้น · CPE แพง 13-22 เท่า · creative ดึงไลค์ผ่านๆ
-              แต่ไม่กระตุ้นความคิด / action จริง
-            </li>
-            <li>
-              <strong>0 campaign มี comments หรือ shares เป็นเลข 2 หลัก</strong> → theme ทั้ง FSV0526
-              ขาด &ldquo;ปลุก conversation&rdquo; — ถ้าจะใช้ creative line นี้ต่อ ต้องเปลี่ยน hook เป็น question /
-              opinion bait
-            </li>
-            <li>
-              <strong>ห้าม scale แค่เพราะ CPE ถูก</strong> — ดู comments + shares ก่อนตัดสินใจว่า
-              &ldquo;winner จริง&rdquo; หรือเพียง &ldquo;passive view ราคาถูก&rdquo;
-            </li>
-          </ul>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <ActionStep
+              when="วันนี้ (10 นาที)"
+              title="Scale ตัวที่เก่ง video"
+              detail="bump งบ FB เมืองขนมหวาน +20% — engagement engine ของ theme นี้ ไม่ saturate ใน 5 วันที่ผ่านมา"
+            />
+            <ActionStep
+              when="พรุ่งนี้เช้า (30 นาที)"
+              title="ปรับ caption ตัว like-magnet"
+              detail="เพิ่มคำถามท้ายโพส วันหยุดนี้พาเด็กๆ — เช่น 'พาเด็กๆไปเที่ยวที่ไหนบ้างครับ' เพื่อ unlock comment"
+            />
+            <ActionStep
+              when="ภายในสัปดาห์ (1-2 ชม.)"
+              title="Brief creative variant ใหม่"
+              detail="ทำ Reels vertical 3 variant พร้อม CTA ที่ชัด แทนภาพ static — ทดสอบ hook 'พาลูกเที่ยว = ของขวัญดีที่สุด'"
+            />
+          </div>
+
+          <div className="rounded-md bg-background/60 p-3 text-sm">
+            <p className="font-medium text-foreground">สรุปแบบ 1 ประโยค</p>
+            <p className="mt-1 text-muted-foreground">
+              FSV0526 เป็น theme ที่ <strong>เก่งด้าน reach + recognition</strong> —
+              ตอนนี้ใช้ดึง awareness ได้ดี · step ถัดไปคือ test creative ที่กระตุ้น conversation
+              เพื่อเสริม engagement quality
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
 
-function makeVerdict(c: CampaignSummary): {
-  tone: "good" | "bad" | "neutral";
-  headline: string;
-  detail: string;
-} {
-  const totalActive = c.comments + c.shares;
-  const videoDominant = c.videoViews > c.reactions * 10;
-  const reactionDominant = c.reactions > 500 && c.videoViews === 0;
-  const noActive = totalActive < 20;
+function ActionStep({ when, title, detail }: { when: string; title: string; detail: string }) {
+  return (
+    <div className="space-y-1.5 rounded-md border border-border bg-background/60 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{when}</p>
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="text-xs text-muted-foreground">{detail}</p>
+    </div>
+  );
+}
+
+type Verdict = {
+  tone: "good" | "neutral";
+  strength: string; // what the campaign is good at (positive framing)
+  nextStep: string; // concrete action to take (actionable)
+};
+
+function makeVerdict(c: CampaignSummary): Verdict {
+  const videoDominant = c.videoViews > c.reactions * 10 && c.videoViews > 1000;
+  const reactionDominant = c.reactions > 500 && c.videoViews < 100;
+  const balanced = c.comments + c.shares >= 20;
 
   if (videoDominant) {
     return {
-      tone: "neutral",
-      headline: "Video-driven (passive)",
-      detail: `${fmtNum(c.videoViews)} video views ดัน CPE ลง — แต่ ${c.comments} comments · ${c.shares} shares เท่านั้น`,
+      tone: "good",
+      strength: `Reach engine — ${fmtNum(c.videoViews)} วิดีโอวิว ทำให้ CPE ต่ำ (${fmtCpe(c.cpe)})`,
+      nextStep: `Scale +20% สำหรับ awareness · ถ้าอยากได้ engagement ลึก เพิ่มแคปชั่นจบด้วยคำถาม`,
     };
   }
   if (reactionDominant) {
     return {
-      tone: "bad",
-      headline: "Like-only (no conversation)",
-      detail: `${fmtNum(c.reactions)} ไลค์ แต่ ${c.comments} comments · ${c.shares} shares = passive engagement`,
+      tone: "good",
+      strength: `Like magnet — ภาพดึงได้ ${fmtNum(c.reactions)} reactions`,
+      nextStep: `Test variant แคปชั่นใหม่ที่ใส่คำถาม เพื่อ unlock comments · ทำ retargeting ไปยังคนที่กดไลค์`,
     };
   }
-  if (noActive) {
+  if (balanced) {
     return {
-      tone: "bad",
-      headline: "Active engagement ต่ำมาก",
-      detail: `รวม comments + shares = ${totalActive} ใน spend ${fmtThb(c.spend)} = ขาด conversation signal`,
+      tone: "good",
+      strength: `Balanced — มีทั้ง reactions, comments, shares`,
+      nextStep: `เก็บเป็น control · clone เพื่อ test budget tier ที่สูงขึ้น`,
     };
   }
+  // Default: small / mixed signal
   return {
-    tone: "good",
-    headline: "Balanced engagement",
-    detail: `Active = ${totalActive} · Reactions = ${fmtNum(c.reactions)}`,
+    tone: "neutral",
+    strength: `Mixed signal — กำลังหา audience ที่ใช่`,
+    nextStep: `ให้ 48 ชม.อีก ถ้า CPE ยังเท่าเดิม → swap creative ใหม่`,
   };
 }
 
