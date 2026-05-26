@@ -35,7 +35,15 @@ import { getCreativePreview, type CreativePreview } from "@/lib/meta/creative-pr
 
 const FROST = "act_1856743671701430";
 const V = "v23.0";
-const PREFIX = "FSV0526";
+const ALL_PREFIXES = ["SN0526", "FST0526", "FSV0526", "SNB0526"] as const;
+type ThemePrefix = (typeof ALL_PREFIXES)[number];
+
+function detectTheme(campaignName: string): ThemePrefix | "OTHER" {
+  for (const p of ALL_PREFIXES) {
+    if (campaignName.startsWith(p)) return p;
+  }
+  return "OTHER";
+}
 
 type RawInsight = {
   campaign_id?: string;
@@ -51,6 +59,7 @@ type CampaignSummary = {
   campaignName: string;
   channel: "FB" | "IG";
   shortName: string;
+  theme: ThemePrefix | "OTHER";
   spend: number;
   impressions: number;
   clicks: number;
@@ -84,7 +93,7 @@ async function fetchAll<T>(url: string): Promise<T[]> {
   return out;
 }
 
-async function fetchFsvCampaigns(token: string): Promise<CampaignSummary[]> {
+async function fetchAllFrostCampaigns(token: string): Promise<CampaignSummary[]> {
   const url =
     `https://graph.facebook.com/${V}/${FROST}/insights?` +
     new URLSearchParams({
@@ -96,23 +105,26 @@ async function fetchFsvCampaigns(token: string): Promise<CampaignSummary[]> {
     }).toString();
   const rows = await fetchAll<RawInsight>(url);
   return rows
-    .filter((r) => (r.campaign_name ?? "").startsWith(PREFIX))
     .map<CampaignSummary>((r) => {
       const name = r.campaign_name ?? "?";
       const channel: "FB" | "IG" = name.includes("[IG]") ? "IG" : "FB";
+      const theme = detectTheme(name);
       const spend = num(r.spend);
       const eng = sum(r.actions, "post_engagement");
       const comments = sum(r.actions, "comment");
       const shares = sum(r.actions, "post");
       const highIntent = spend > 0 ? ((comments + shares) / spend) * 1000 : 0;
+      const prefixToStrip = theme !== "OTHER" ? theme : "";
       return {
         campaignId: r.campaign_id ?? "?",
         campaignName: name,
         channel,
+        theme,
         shortName: name
-          .replace(PREFIX, "")
+          .replace(prefixToStrip, "")
           .replace(/^\s*-?\s*\[(FB|IG)\]\s*-?\s*/, "")
           .replace(/\s*-\s*Engagement.*$/, "")
+          .replace(/\s*\|.*$/, "")
           .trim()
           .slice(0, 60),
         spend,
@@ -128,7 +140,8 @@ async function fetchFsvCampaigns(token: string): Promise<CampaignSummary[]> {
         photoViews: sum(r.actions, "photo_view"),
         highIntentScore: highIntent,
       };
-    });
+    })
+    .filter((c) => c.spend > 0 && c.engagement > 0);
 }
 
 async function fetchCreativeIdMap(token: string, campaignIds: string[]): Promise<Map<string, string>> {
@@ -178,13 +191,21 @@ const fmtCpe = (n: number) =>
 
 export default async function EngagementQualityPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ tenantSlug: string }>;
+  searchParams: Promise<{ theme?: string }>;
 }) {
   const { tenantSlug } = await params;
+  const { theme: themeParam } = await searchParams;
   const { tenant } = await requireTenantMember(tenantSlug);
   const t = await getTranslations();
-  void t; // i18n hookup point for later — strings inline for now (single-purpose page)
+  void t;
+
+  const activeTheme: ThemePrefix | null =
+    themeParam && (ALL_PREFIXES as readonly string[]).includes(themeParam)
+      ? (themeParam as ThemePrefix)
+      : null;
 
   const conn = await prisma.metaConnection.findUnique({
     where: { tenantId: tenant.id },
@@ -199,7 +220,10 @@ export default async function EngagementQualityPage({
   }
   const token = decrypt(conn.accessTokenEncrypted);
 
-  const campaigns = await fetchFsvCampaigns(token);
+  const allCampaigns = await fetchAllFrostCampaigns(token);
+  const campaigns = activeTheme
+    ? allCampaigns.filter((c) => c.theme === activeTheme)
+    : allCampaigns;
   const creativeIdMap = await fetchCreativeIdMap(
     token,
     campaigns.map((c) => c.campaignId),
@@ -244,6 +268,28 @@ export default async function EngagementQualityPage({
           อาจมี <strong>quality</strong> ของ engagement <strong>แย่กว่า</strong>
         </p>
       </header>
+
+      {/* Theme filter chips */}
+      <nav className="flex flex-wrap items-center gap-2 text-sm">
+        <span className="text-xs uppercase tracking-wide text-muted-foreground">Theme:</span>
+        <FilterChip
+          href={`/t/${tenantSlug}/insights/engagement-quality`}
+          label={`All (${allCampaigns.length})`}
+          active={!activeTheme}
+        />
+        {ALL_PREFIXES.map((p) => {
+          const count = allCampaigns.filter((c) => c.theme === p).length;
+          return (
+            <FilterChip
+              key={p}
+              href={`/t/${tenantSlug}/insights/engagement-quality?theme=${p}`}
+              label={`${p} (${count})`}
+              active={activeTheme === p}
+              disabled={count === 0}
+            />
+          );
+        })}
+      </nav>
 
       {/* Concept */}
       <Card className="bg-muted/30 p-5">
@@ -426,37 +472,50 @@ export default async function EngagementQualityPage({
         <CardContent className="space-y-4 px-0">
           <h2 className="flex items-center gap-2 text-lg font-semibold">
             <Target className="size-5" /> Action plan — ทำได้เลยใน 3 วันนี้
+            {activeTheme && <span className="text-sm font-normal text-muted-foreground">· {activeTheme}</span>}
           </h2>
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            <ActionStep
-              when="วันนี้ (10 นาที)"
-              title="Scale ตัวที่เก่ง video"
-              detail="bump งบ FB เมืองขนมหวาน +20% — engagement engine ของ theme นี้ ไม่ saturate ใน 5 วันที่ผ่านมา"
-            />
-            <ActionStep
-              when="พรุ่งนี้เช้า (30 นาที)"
-              title="ปรับ caption ตัว like-magnet"
-              detail="เพิ่มคำถามท้ายโพส วันหยุดนี้พาเด็กๆ — เช่น 'พาเด็กๆไปเที่ยวที่ไหนบ้างครับ' เพื่อ unlock comment"
-            />
-            <ActionStep
-              when="ภายในสัปดาห์ (1-2 ชม.)"
-              title="Brief creative variant ใหม่"
-              detail="ทำ Reels vertical 3 variant พร้อม CTA ที่ชัด แทนภาพ static — ทดสอบ hook 'พาลูกเที่ยว = ของขวัญดีที่สุด'"
-            />
-          </div>
+          <ActionPlanGrid campaigns={campaigns} />
 
           <div className="rounded-md bg-background/60 p-3 text-sm">
             <p className="font-medium text-foreground">สรุปแบบ 1 ประโยค</p>
-            <p className="mt-1 text-muted-foreground">
-              FSV0526 เป็น theme ที่ <strong>เก่งด้าน reach + recognition</strong> —
-              ตอนนี้ใช้ดึง awareness ได้ดี · step ถัดไปคือ test creative ที่กระตุ้น conversation
-              เพื่อเสริม engagement quality
-            </p>
+            <p className="mt-1 text-muted-foreground">{generateSummary(campaigns, activeTheme)}</p>
           </div>
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function FilterChip({
+  href,
+  label,
+  active,
+  disabled,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  disabled?: boolean;
+}) {
+  const base = "rounded-full border px-3 py-1 text-xs font-medium transition-colors";
+  if (disabled) {
+    return (
+      <span className={cn(base, "border-border bg-muted/30 text-muted-foreground/50")}>{label}</span>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      className={cn(
+        base,
+        active
+          ? "border-foreground bg-foreground text-background"
+          : "border-border bg-background text-foreground hover:bg-accent",
+      )}
+    >
+      {label}
+    </Link>
   );
 }
 
@@ -468,6 +527,59 @@ function ActionStep({ when, title, detail }: { when: string; title: string; deta
       <p className="text-xs text-muted-foreground">{detail}</p>
     </div>
   );
+}
+
+function ActionPlanGrid({ campaigns }: { campaigns: CampaignSummary[] }) {
+  // Derive concrete actions from real data — pick best video for scale,
+  // best like-magnet for caption tweak, anything expensive for variant brief.
+  const sorted = [...campaigns].sort((a, b) => a.cpe - b.cpe);
+  const scaleTarget = sorted.find((c) => c.videoViews > c.reactions * 5) ?? sorted[0];
+  const captionTarget = sorted.find((c) => c.reactions > 500 && c.comments < 10) ??
+    sorted[Math.floor(sorted.length / 2)];
+  const briefTarget = [...campaigns].sort((a, b) => b.cpe - a.cpe).find((c) => c.cpe > 0.5) ??
+    sorted[sorted.length - 1];
+
+  return (
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <ActionStep
+        when="วันนี้ (10 นาที)"
+        title="Scale ตัวที่ CPE ต่ำสุด"
+        detail={`bump งบ ${scaleTarget?.shortName ?? "winner"} (${scaleTarget?.channel}) +20% — CPE ${fmtCpe(scaleTarget?.cpe ?? 0)} ยังไม่ saturate`}
+      />
+      <ActionStep
+        when="พรุ่งนี้เช้า (30 นาที)"
+        title="ปรับ caption ตัว like-magnet"
+        detail={`เพิ่มคำถามท้ายโพส ${captionTarget?.shortName ?? "ตัวที่ reactions เยอะแต่ comments น้อย"} — เพื่อ unlock comments`}
+      />
+      <ActionStep
+        when="ภายในสัปดาห์ (1-2 ชม.)"
+        title="Brief creative variant ใหม่"
+        detail={`ทำ Reels vertical 3 variant แทน ${briefTarget?.shortName ?? "ตัวที่ CPE แพง"} (${briefTarget?.channel}) — ทดสอบ hook ใหม่`}
+      />
+    </div>
+  );
+}
+
+function generateSummary(campaigns: CampaignSummary[], theme: ThemePrefix | null): string {
+  if (campaigns.length === 0) return "ยังไม่มีข้อมูลพอ — รออีก 24-48 ชม.";
+  const totalSpend = campaigns.reduce((s, c) => s + c.spend, 0);
+  const totalEng = campaigns.reduce((s, c) => s + c.engagement, 0);
+  const totalActive = campaigns.reduce((s, c) => s + c.comments + c.shares, 0);
+  const avgCpe = totalEng > 0 ? totalSpend / totalEng : 0;
+  const themeLabel = theme ? `Theme ${theme}` : "FROST account นี้";
+  const cheap = avgCpe < 0.2;
+  const activeStrength = totalActive >= 50;
+
+  if (cheap && activeStrength) {
+    return `${themeLabel} ทำได้ดีทั้งสองด้าน — CPE เฉลี่ย ${fmtCpe(avgCpe)} + active engagement ${fmtNum(totalActive)} เป็นจุดเริ่มที่แข็งแรง · scale ต่อได้เลย`;
+  }
+  if (cheap) {
+    return `${themeLabel} <strong>เก่งด้าน reach</strong> (CPE เฉลี่ย ${fmtCpe(avgCpe)}) — ดึง awareness ได้ดี · step ถัดไป test creative ที่กระตุ้น conversation`;
+  }
+  if (activeStrength) {
+    return `${themeLabel} ได้ active engagement ${fmtNum(totalActive)} ครั้ง — creative ดึงคนได้ · ปรับ targeting เพื่อลด CPE จาก ${fmtCpe(avgCpe)} ลง`;
+  }
+  return `${themeLabel} กำลังหา audience ที่ใช่ — ให้เวลาเรียนรู้อีก 48 ชม. ถ้า CPE ยังเท่าเดิม → swap creative ใหม่`;
 }
 
 type Verdict = {
