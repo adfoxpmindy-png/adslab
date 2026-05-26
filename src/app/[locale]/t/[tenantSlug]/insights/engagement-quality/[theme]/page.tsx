@@ -115,8 +115,13 @@ export default async function ThemePage({
         })}
       </nav>
 
-      {/* Platform comparison summary */}
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {/* Theme total + Platform comparison summary */}
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <ThemeTotalSummary
+          theme={theme}
+          agg={aggregate(themeCampaigns)}
+          count={themeCampaigns.length}
+        />
         <PlatformSummary
           platform="FB"
           icon={<PlatformBadge platform="FB" />}
@@ -130,6 +135,12 @@ export default async function ThemePage({
           count={igCampaigns.length}
         />
       </section>
+
+      <p className="rounded-md bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+        <strong className="text-foreground">CPE blended</strong> = total spend ÷ total engagement
+        ของกลุ่มนั้นๆ — ใช้แบบนี้แทน simple average เพราะ campaign ใหญ่ดันค่าจริงมากกว่า · ดูตรงกับ
+        Meta Ads Manager &ldquo;Cost per Engagement&rdquo; ของ filtered view
+      </p>
 
       {/* FB section */}
       {fbCampaigns.length > 0 && (
@@ -214,11 +225,44 @@ function PlatformSummary({
         <div className="grid grid-cols-3 gap-3 text-sm">
           <Stat label="Spend" value={fmtThb(agg.spend)} />
           <Stat label="Engagement" value={fmtNum(agg.engagement)} />
-          <Stat label="CPE avg" value={fmtCpe(agg.cpe)} />
+          <Stat label="CPE blended" value={fmtCpe(agg.cpe)} />
         </div>
         <div className="flex gap-4 text-xs text-muted-foreground">
-          <span>💬 {fmtNum(agg.comments)} comments</span>
-          <span>↗ {fmtNum(agg.shares)} shares</span>
+          <span>{fmtNum(agg.comments)} comments</span>
+          <span>{fmtNum(agg.shares)} shares</span>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function ThemeTotalSummary({
+  theme,
+  agg,
+  count,
+}: {
+  theme: ThemePrefix;
+  agg: AggSummary;
+  count: number;
+}) {
+  return (
+    <Card className="border-foreground/30 bg-foreground/5 p-4">
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex size-7 items-center justify-center rounded bg-foreground text-[10px] font-bold uppercase text-background">
+            All
+          </span>
+          <span className="font-medium text-foreground">{theme} ทั้ง theme</span>
+          <span className="text-xs text-muted-foreground">· {count} campaigns</span>
+        </div>
+        <div className="grid grid-cols-3 gap-3 text-sm">
+          <Stat label="Spend" value={fmtThb(agg.spend)} />
+          <Stat label="Engagement" value={fmtNum(agg.engagement)} />
+          <Stat label="CPE blended" value={fmtCpe(agg.cpe)} />
+        </div>
+        <div className="flex gap-4 text-xs text-muted-foreground">
+          <span>{fmtNum(agg.comments)} comments</span>
+          <span>{fmtNum(agg.shares)} shares</span>
         </div>
       </div>
     </Card>

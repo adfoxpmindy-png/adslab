@@ -94,6 +94,9 @@ export default async function EngagementQualityIndex({
         </CardContent>
       </Card>
 
+      {/* Account-wide totals */}
+      <AccountTotalsCard campaigns={allCampaigns} />
+
       {/* Theme hub */}
       <section className="space-y-3">
         <h2 className="flex items-center gap-2 text-xl font-semibold">
@@ -109,6 +112,43 @@ export default async function EngagementQualityIndex({
         </div>
       </section>
     </div>
+  );
+}
+
+function AccountTotalsCard({ campaigns }: { campaigns: CampaignSummary[] }) {
+  const spend = campaigns.reduce((s, c) => s + c.spend, 0);
+  const eng = campaigns.reduce((s, c) => s + c.engagement, 0);
+  const comments = campaigns.reduce((s, c) => s + c.comments, 0);
+  const shares = campaigns.reduce((s, c) => s + c.shares, 0);
+  const reactions = campaigns.reduce((s, c) => s + c.reactions, 0);
+  const videoViews = campaigns.reduce((s, c) => s + c.videoViews, 0);
+  const fbCount = campaigns.filter((c) => c.channel === "FB").length;
+  const igCount = campaigns.filter((c) => c.channel === "IG").length;
+  const cpe = eng > 0 ? spend / eng : 0;
+
+  return (
+    <Card className="border-foreground/20 bg-foreground/5 p-5">
+      <CardContent className="space-y-4 px-0">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-base font-semibold">รวมทั้ง account · 5-day window (21-25 พ.ค.)</h2>
+          <span className="text-xs text-muted-foreground">
+            {campaigns.length} active · {fbCount} FB · {igCount} IG
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Stat label="Total spend" value={fmtThb(spend)} />
+          <Stat label="Engagement" value={fmtNum(eng)} />
+          <Stat label="CPE blended" value={fmtCpe(cpe)} />
+          <Stat label="Comments + Shares" value={fmtNum(comments + shares)} />
+        </div>
+        <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground md:grid-cols-4">
+          <span>Reactions: {fmtNum(reactions)}</span>
+          <span>Comments: {fmtNum(comments)}</span>
+          <span>Shares: {fmtNum(shares)}</span>
+          <span>Video views: {fmtNum(videoViews)}</span>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -155,7 +195,7 @@ function ThemeCard({
             <div className="grid grid-cols-3 gap-3 text-sm">
               <Stat label="Total spend" value={fmtThb(totalSpend)} />
               <Stat label="Engagement" value={fmtNum(totalEng)} />
-              <Stat label="CPE avg" value={fmtCpe(avgCpe)} />
+              <Stat label="CPE blended" value={fmtCpe(avgCpe)} />
             </div>
 
             <div className="flex items-center gap-3 text-xs">
