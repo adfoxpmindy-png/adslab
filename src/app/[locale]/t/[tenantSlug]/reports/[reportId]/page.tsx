@@ -8,6 +8,7 @@ import { requireTenantMember } from "@/lib/auth/tenant";
 import { prisma } from "@/lib/prisma";
 import { renderMarkdown } from "@/lib/markdown";
 import { ReportActionsPanel } from "@/components/tenant/report-actions-panel";
+import { FrostVisualHero } from "@/components/reports/frost-visual-hero";
 import type { ValidatedSuggestion } from "@/lib/reports/extract-actions";
 import { enrichReportSuggestions, isFreshReport } from "@/lib/reports/enrich-suggestions";
 
@@ -67,7 +68,7 @@ export default async function ReportViewerPage({
       : [];
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 px-6 py-8">
+    <div className="mx-auto w-full max-w-5xl space-y-6 px-6 py-8">
       <Link
         href={`/t/${tenantSlug}/reports`}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline"
@@ -102,6 +103,10 @@ export default async function ReportViewerPage({
         </Card>
       )}
 
+      {report.status === "COMPLETED" && (
+        <FrostVisualHero tenantId={tenant.id} reportDate={report.reportDate} />
+      )}
+
       {report.status === "COMPLETED" && enrichedSuggestions.length > 0 && (
         <ReportActionsPanel
           tenantSlug={tenantSlug}
@@ -115,7 +120,6 @@ export default async function ReportViewerPage({
         <Card className="p-8">
           <article
             className="prose-sm"
-             
             dangerouslySetInnerHTML={{ __html: renderMarkdown(report.contentMd) }}
           />
         </Card>
