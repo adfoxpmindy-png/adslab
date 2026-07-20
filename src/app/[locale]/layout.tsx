@@ -90,6 +90,14 @@ export default async function LocaleLayout({
             }}
           />
         )}
+        {/* FastShip Pixel Hub */}
+        <Script
+          id="fastship-pixel-hub"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `!function(f,s,h){if(f.fsq)return;var q=f.fsq=function(){q.q.push(arguments)};q.q=[];var t=s.createElement('script');t.async=!0;t.src=h+'/px/fs-pixel.js';var x=s.getElementsByTagName('script')[0];x?x.parentNode.insertBefore(t,x):s.head.appendChild(t);}(window,document,'https://fastship-pixel-hub.vercel.app');fsq('init','fs_ws_0bf8e20b4f8ba7388e3ffac8');fsq('track','PageView');`,
+          }}
+        />
       </body>
     </html>
   );
