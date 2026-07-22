@@ -137,9 +137,10 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Match every page navigation except API, static assets, Next internals,
-  // and `/v/<token>` viewer-mode share links (handled outside the locale
-  // prefix flow — the viewer page resolves Accept-Language itself).
+  // `/v/<token>` viewer-mode share links, and `/pitch/*` public sales pages
+  // (both handled outside the locale prefix flow — those pages own their
+  // own layout and don't need a /<locale>/ URL prefix).
   matcher: [
-    "/((?!api|v/|_next|monitoring|favicon\\.ico|adslab-logo\\.png|sdk\\.js|robots\\.txt|sitemap\\.xml).*)",
+    "/((?!api|v/|pitch/|_next|monitoring|favicon\\.ico|adslab-logo\\.png|sdk\\.js|robots\\.txt|sitemap\\.xml).*)",
   ],
 };
