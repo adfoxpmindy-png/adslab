@@ -13,15 +13,26 @@
  */
 import {
   AlertCircle,
+  Aperture,
   Award,
+  CheckCircle2,
+  ChevronRight,
   CircleDollarSign,
+  ClockAlert,
+  Layers,
   MapPin,
+  MessageCircle,
+  PieChart,
   PlayCircle,
+  Repeat,
+  ShieldCheck,
   Sparkles,
   Target,
   TrendingDown,
   TrendingUp,
   Users,
+  Video,
+  Wrench,
 } from "lucide-react";
 
 import { AgeCtrBarChart } from "@/components/pitch/AgeCtrBarChart";
@@ -34,14 +45,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   BAANYEN_COPY,
+  BAANYEN_EXECUTIVE_SUMMARY,
   BAANYEN_FINDINGS,
   BAANYEN_HIDDEN_GEM,
+  BAANYEN_OVERALL_AFTER,
+  BAANYEN_OVERALL_BEFORE,
   BAANYEN_PROOF_POINTS,
   BAANYEN_SNAPSHOT,
   BAANYEN_TOTAL_PROJECTED_IMPACT_THB,
   fmtInt,
   fmtThb,
   type Finding,
+  type FindingIconHint,
   type FindingSeverity,
 } from "@/lib/pitch/baanyen";
 
@@ -51,16 +66,35 @@ export const metadata = {
     "รายงานวิเคราะห์บัญชีโฆษณา Meta ของ BaanYen 30 วันย้อนหลัง พร้อมชี้จุดที่ Meta ไม่บอก และผลกระทบเป็นตัวเลขบาท",
 };
 
+const SEVERITY_ORDER: Record<FindingSeverity, number> = {
+  high: 0,
+  medium: 1,
+  low: 2,
+  passed: 3,
+};
+
 export default function BaanYenPitchPage() {
   const s = BAANYEN_SNAPSHOT;
-  const findingsWithImpact = BAANYEN_FINDINGS.filter(
-    (f) => f.projectedImpactThb > 0,
+  const needsFixCount = BAANYEN_FINDINGS.filter(
+    (f) => f.status === "needs_fix",
   ).length;
-  const highSeverityCount = BAANYEN_FINDINGS.filter((f) => f.severity === "high")
-    .length;
-  const sortedFindings = [...BAANYEN_FINDINGS].sort(
-    (a, b) => b.projectedImpactThb - a.projectedImpactThb,
-  );
+  const passedCount = BAANYEN_FINDINGS.filter(
+    (f) => f.status === "passed",
+  ).length;
+
+  // Sort: needs_fix first, then by severity, then by delta desc
+  const sortedFindings = [...BAANYEN_FINDINGS].sort((a, b) => {
+    if (a.status !== b.status) {
+      return a.status === "needs_fix" ? -1 : 1;
+    }
+    const sevDiff = SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
+    if (sevDiff !== 0) return sevDiff;
+    return b.delta_thb_per_month - a.delta_thb_per_month;
+  });
+
+  const hoursSaved =
+    BAANYEN_OVERALL_BEFORE.manual_hours_per_week -
+    BAANYEN_OVERALL_AFTER.manual_hours_per_week;
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-10 sm:px-6">
@@ -68,72 +102,161 @@ export default function BaanYenPitchPage() {
           Section 1 — HERO
           ============================================================ */}
       <header className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-end">
-          <div className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-              หลักฐาน 30 วัน · BaanYen Cool Shield
-            </p>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:text-5xl">
-              AdsLab ประหยัดงบให้คุณ{" "}
-              <span className="text-emerald-600 dark:text-emerald-400 tabular-nums">
-                {fmtThb(BAANYEN_TOTAL_PROJECTED_IMPACT_THB)}
-              </span>{" "}
-              / เดือน
-            </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-              เราสแกนบัญชี Meta ของคุณย้อนหลัง 30 วัน เจอ 10 จุดที่ Ads Manager ไม่ flag ให้ —
-              แต่ละจุดคำนวณเป็นตัวเลขบาทที่กู้กลับได้จริง ไม่ใช่ %.
-            </p>
-          </div>
-          <div className="flex flex-col items-start gap-2 md:items-end">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground/5 px-3 py-1 text-xs font-medium ring-1 ring-foreground/10">
-              <Sparkles className="size-3.5" />
-              Meta Ads · 30 วัน
-            </span>
-            <span className="font-mono text-xs text-muted-foreground">
+        <div className="space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+            หลักฐาน 30 วัน · BaanYen Cool Shield
+          </p>
+          <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:text-5xl">
+            AdsLab สแกน BaanYen เจอ 10 จุด แก้ 5 ปิดรูรั่ว{" "}
+            <span className="text-emerald-600 dark:text-emerald-400 tabular-nums">
+              {fmtThb(BAANYEN_TOTAL_PROJECTED_IMPACT_THB)}
+            </span>{" "}
+            / เดือน
+          </h1>
+          <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">
+            {BAANYEN_COPY.heroSubheadline}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <Chip>BaanYen</Chip>
+            <Chip>Meta Ads</Chip>
+            <Chip>30 วัน</Chip>
+            <Chip tone="live">Live</Chip>
+            <span className="ml-2 font-mono text-xs text-muted-foreground">
               {s.accountId}
             </span>
             <span className="text-xs text-muted-foreground">
-              {s.since} → {s.until}
+              · {s.since} → {s.until}
             </span>
           </div>
         </div>
-
-        {/* 4-tile row */}
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <HeroTile
-            label="Total spend"
-            value={fmtThb(s.totalSpendThb)}
-            sub={`${s.campaignsCount} campaigns`}
-            tone="neutral"
-          />
-          <HeroTile
-            label="Total reach"
-            value={fmtInt(s.totalReach)}
-            sub={`${fmtInt(s.totalImpressions)} impressions`}
-            tone="neutral"
-          />
-          <HeroTile
-            label="Findings"
-            value={`${BAANYEN_FINDINGS.length}`}
-            sub={`${highSeverityCount} high · ${findingsWithImpact} มีผลกระทบ`}
-            tone="neutral"
-          />
-          <HeroTile
-            label="Projected savings / เดือน"
-            value={fmtThb(BAANYEN_TOTAL_PROJECTED_IMPACT_THB)}
-            sub="งบที่กู้กลับได้"
-            tone="good"
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          CTR เฉลี่ย {s.ctrAvg.toFixed(2)}% · CPM เฉลี่ย {fmtThb(s.cpmAvg)} ·
-          Engagement {fmtInt(s.totalEngagement)} · Messages {fmtInt(s.totalMessages)}
-        </p>
       </header>
 
       {/* ============================================================
-          Section 2 — CHARTS ROW (3 columns)
+          Section 2 — EXECUTIVE SUMMARY
+          ============================================================ */}
+      <Card className="p-6">
+        <CardContent className="px-0">
+          <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
+                <h2 className="text-xl font-semibold tracking-tight">
+                  สรุปผู้บริหาร
+                </h2>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                {BAANYEN_EXECUTIVE_SUMMARY}
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <SummaryTile label="ปัญหาพบ" value="10" tone="neutral" />
+              <SummaryTile label="ต้องแก้" value={`${needsFixCount}`} tone="warn" />
+              <SummaryTile
+                label="ประหยัด / เดือน"
+                value={fmtThb(BAANYEN_TOTAL_PROJECTED_IMPACT_THB)}
+                tone="good"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ============================================================
+          Section 3 — BEFORE / AFTER COMPARISON
+          ============================================================ */}
+      <section aria-labelledby="before-after-heading" className="space-y-4">
+        <div className="space-y-1">
+          <h2
+            id="before-after-heading"
+            className="flex items-center gap-2 text-2xl font-semibold tracking-tight"
+          >
+            <ChevronRight className="size-5 text-emerald-600 dark:text-emerald-400" />
+            ก่อน vs หลังใช้ AdsLab
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            เทียบต้นทุนงบและเวลา — จากที่ Meta ไม่ flag ให้เห็น เหลือแค่รีวิว 30 นาที/สัปดาห์
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* BEFORE */}
+          <Card className="border-rose-500/30 bg-rose-500/5 p-6">
+            <CardContent className="space-y-4 px-0">
+              <div className="flex items-center gap-2">
+                <ClockAlert className="size-5 text-rose-600 dark:text-rose-400" />
+                <h3 className="text-lg font-semibold">ก่อนใช้ AdsLab</h3>
+              </div>
+              <ul className="space-y-3 text-sm">
+                <ComparisonRow
+                  label="งบเสียเปล่า"
+                  value={`${fmtThb(BAANYEN_OVERALL_BEFORE.wasted_budget_thb)}/เดือน`}
+                  tone="bad"
+                />
+                <ComparisonRow
+                  label="ปัญหาที่ไม่ถูก flag"
+                  value={`${BAANYEN_OVERALL_BEFORE.issues} จุด`}
+                  tone="bad"
+                />
+                <ComparisonRow
+                  label="Actionable insights"
+                  value={`${BAANYEN_OVERALL_BEFORE.actionable_insights}`}
+                  tone="bad"
+                />
+                <ComparisonRow
+                  label="เวลาวิเคราะห์เอง"
+                  value={`~${BAANYEN_OVERALL_BEFORE.manual_hours_per_week} ชม./สัปดาห์`}
+                  tone="bad"
+                />
+              </ul>
+            </CardContent>
+          </Card>
+          {/* AFTER */}
+          <Card className="border-emerald-500/30 bg-emerald-500/5 p-6">
+            <CardContent className="space-y-4 px-0">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="text-lg font-semibold">ใช้ AdsLab แล้ว</h3>
+              </div>
+              <ul className="space-y-3 text-sm">
+                <ComparisonRow
+                  label="งบเสียเปล่า"
+                  value={fmtThb(BAANYEN_OVERALL_AFTER.wasted_budget_thb)}
+                  tone="good"
+                />
+                <ComparisonRow
+                  label="ปัญหาที่ flag"
+                  value={`${BAANYEN_OVERALL_AFTER.issues}/10`}
+                  tone="good"
+                />
+                <ComparisonRow
+                  label="Actionable insights"
+                  value={`${BAANYEN_OVERALL_AFTER.actionable_insights}`}
+                  tone="good"
+                />
+                <ComparisonRow
+                  label="เวลารีวิว"
+                  value={`~${Math.round(BAANYEN_OVERALL_AFTER.manual_hours_per_week * 60)} นาที/สัปดาห์`}
+                  tone="good"
+                />
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+        {/* Arrow summary */}
+        <div className="flex items-center justify-center gap-3 rounded-xl bg-emerald-500/10 px-6 py-4 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-500/30 dark:text-emerald-300 sm:text-base">
+          <TrendingDown className="size-5 shrink-0" />
+          <span className="text-center">
+            ประหยัด ~{hoursSaved} ชม./สัปดาห์ ·{" "}
+            <span className="tabular-nums">
+              {fmtThb(BAANYEN_TOTAL_PROJECTED_IMPACT_THB)}
+            </span>{" "}
+            / เดือน
+          </span>
+          <TrendingUp className="size-5 shrink-0" />
+        </div>
+      </section>
+
+      {/* ============================================================
+          Section 4 — CHARTS ROW (3 columns)
           ============================================================ */}
       <section aria-labelledby="charts-heading" className="space-y-4">
         <div className="space-y-1">
@@ -174,7 +297,7 @@ export default function BaanYenPitchPage() {
       </section>
 
       {/* ============================================================
-          Section 3 — FB vs IG
+          Section 5 — FB vs IG
           ============================================================ */}
       <Card className="p-6">
         <CardContent className="space-y-5 px-0">
@@ -201,7 +324,7 @@ export default function BaanYenPitchPage() {
       </Card>
 
       {/* ============================================================
-          Section 4 — Gender allocation
+          Section 6 — Gender allocation
           ============================================================ */}
       <Card className="p-6">
         <CardContent className="space-y-5 px-0">
@@ -228,7 +351,7 @@ export default function BaanYenPitchPage() {
       </Card>
 
       {/* ============================================================
-          Section 5 — HIDDEN GEM (age 65+)
+          Section 7 — HIDDEN GEM (age 65+)
           ============================================================ */}
       <Card className="border-emerald-500/40 bg-emerald-500/5 p-6">
         <CardContent className="space-y-5 px-0">
@@ -263,7 +386,8 @@ export default function BaanYenPitchPage() {
                 <li className="flex gap-2">
                   <span className="mt-0.5 size-1.5 shrink-0 rounded-full bg-emerald-500" />
                   <span>
-                    Message rate ดีที่สุด: <span className="tabular-nums font-medium">1 msg / ฿17</span> (บัญชีเฉลี่ย 1 msg / ฿28)
+                    Message rate ดีที่สุด:{" "}
+                    <span className="tabular-nums font-medium">1 msg / ฿17</span> (บัญชีเฉลี่ย 1 msg / ฿28)
                   </span>
                 </li>
                 <li className="flex gap-2">
@@ -275,7 +399,8 @@ export default function BaanYenPitchPage() {
                 <li className="flex gap-2">
                   <span className="mt-0.5 size-1.5 shrink-0 rounded-full bg-emerald-500" />
                   <span>
-                    ถ้าเพิ่มงบเป็น 15% → projected impact <span className="tabular-nums font-medium">฿1,700 / เดือน</span>
+                    ถ้าเพิ่มงบเป็น 15% → projected impact{" "}
+                    <span className="tabular-nums font-medium">฿1,700 / เดือน</span>
                   </span>
                 </li>
               </ul>
@@ -291,7 +416,7 @@ export default function BaanYenPitchPage() {
       </Card>
 
       {/* ============================================================
-          Section 6 — Video funnel
+          Section 8 — Video funnel
           ============================================================ */}
       <Card className="p-6">
         <CardContent className="space-y-5 px-0">
@@ -334,7 +459,7 @@ export default function BaanYenPitchPage() {
       </Card>
 
       {/* ============================================================
-          Section 7 — 10 Findings grid
+          Section 9 — 10 FINDINGS with NARRATIVE FORMAT
           ============================================================ */}
       <section aria-labelledby="findings-heading" className="space-y-4">
         <div className="space-y-1">
@@ -343,21 +468,21 @@ export default function BaanYenPitchPage() {
             className="flex items-center gap-2 text-2xl font-semibold tracking-tight"
           >
             <AlertCircle className="size-5" />
-            10 จุดที่ AdsLab เจอในบัญชี BaanYen
+            10 จุดที่ AdsLab เจอ — ปัญหา · การแก้ · ผลลัพธ์
           </h2>
           <p className="text-sm text-muted-foreground">
-            เรียงตาม projected impact จากมากไปน้อย — high severity คือจุดที่ควรแก้ก่อน
+            {needsFixCount} ต้องแก้ · {passedCount} ผ่านเกณฑ์ — เรียงตามลำดับความสำคัญ
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-5">
           {sortedFindings.map((f) => (
-            <FindingCard key={f.code} finding={f} />
+            <NarrativeFindingCard key={f.code} finding={f} />
           ))}
         </div>
       </section>
 
       {/* ============================================================
-          Section 8 — Solution flow
+          Section 10 — Solution flow
           ============================================================ */}
       <Card className="border-foreground/20 bg-foreground/5 p-6">
         <CardContent className="space-y-5 px-0">
@@ -372,17 +497,17 @@ export default function BaanYenPitchPage() {
               { step: "3", label: "Quantify", desc: "คำนวณเป็น ฿ ต่อเดือน" },
               { step: "4", label: "Explain", desc: "อธิบายเป็นภาษาที่เจ้าของอ่านได้" },
               { step: "5", label: "Recommend", desc: "action ที่กดทำได้ทันที" },
-            ].map((s) => (
+            ].map((step) => (
               <div
-                key={s.step}
+                key={step.step}
                 className="rounded-lg bg-background p-3 text-center ring-1 ring-foreground/10"
               >
                 <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Step {s.step}
+                  Step {step.step}
                 </div>
-                <div className="mt-1 text-sm font-semibold">{s.label}</div>
+                <div className="mt-1 text-sm font-semibold">{step.label}</div>
                 <div className="mt-1 text-[11px] leading-tight text-muted-foreground">
-                  {s.desc}
+                  {step.desc}
                 </div>
               </div>
             ))}
@@ -392,7 +517,7 @@ export default function BaanYenPitchPage() {
       </Card>
 
       {/* ============================================================
-          Section 9 — Proof strip
+          Section 11 — Proof strip
           ============================================================ */}
       <section aria-labelledby="proof-heading" className="space-y-4">
         <h2
@@ -445,7 +570,7 @@ export default function BaanYenPitchPage() {
       </section>
 
       {/* ============================================================
-          Section 10 — Final CTA
+          Section 12 — Final CTA
           ============================================================ */}
       <Card className="border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-transparent p-8">
         <CardContent className="space-y-5 px-0">
@@ -483,51 +608,90 @@ export default function BaanYenPitchPage() {
 
 /* ----------------------------- Sub-components ----------------------------- */
 
-type Tone = "good" | "bad" | "neutral";
+type Tone = "good" | "bad" | "warn" | "neutral";
 
 function toneTextClass(tone: Tone): string {
-  return tone === "good"
-    ? "text-emerald-600 dark:text-emerald-400"
-    : tone === "bad"
-      ? "text-rose-600 dark:text-rose-400"
-      : "text-foreground";
+  if (tone === "good") return "text-emerald-600 dark:text-emerald-400";
+  if (tone === "bad") return "text-rose-600 dark:text-rose-400";
+  if (tone === "warn") return "text-amber-700 dark:text-amber-400";
+  return "text-foreground";
 }
 
-function HeroTile({
+function Chip({
+  children,
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  tone?: "neutral" | "live";
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1",
+        tone === "live"
+          ? "bg-emerald-500/10 text-emerald-700 ring-emerald-500/30 dark:text-emerald-300"
+          : "bg-foreground/5 text-foreground ring-foreground/10",
+      )}
+    >
+      {tone === "live" ? (
+        <span className="size-1.5 rounded-full bg-emerald-500" />
+      ) : null}
+      {children}
+    </span>
+  );
+}
+
+function SummaryTile({
   label,
   value,
-  sub,
   tone,
 }: {
   label: string;
   value: string;
-  sub: string;
   tone: Tone;
 }) {
   return (
     <div
       className={cn(
-        "rounded-xl p-4 ring-1",
+        "rounded-xl p-3 text-center ring-1",
         tone === "good"
           ? "bg-emerald-500/10 ring-emerald-500/30"
-          : "bg-card ring-foreground/10",
+          : tone === "warn"
+            ? "bg-amber-500/10 ring-amber-500/30"
+            : "bg-card ring-foreground/10",
       )}
     >
-      <div className="flex flex-col gap-1">
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-          {label}
-        </span>
-        <span
-          className={cn(
-            "text-2xl font-semibold tabular-nums leading-tight",
-            toneTextClass(tone),
-          )}
-        >
-          {value}
-        </span>
-        <span className="text-[11px] text-muted-foreground">{sub}</span>
+      <div
+        className={cn(
+          "text-xl font-semibold tabular-nums leading-tight sm:text-2xl",
+          toneTextClass(tone),
+        )}
+      >
+        {value}
+      </div>
+      <div className="mt-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
       </div>
     </div>
+  );
+}
+
+function ComparisonRow({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: Tone;
+}) {
+  return (
+    <li className="flex items-center justify-between gap-3 border-b border-foreground/5 pb-2 last:border-0 last:pb-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className={cn("font-semibold tabular-nums", toneTextClass(tone))}>
+        {value}
+      </span>
+    </li>
   );
 }
 
@@ -583,14 +747,28 @@ function ProofStrip({
 }
 
 function SeverityBadge({ severity }: { severity: FindingSeverity }) {
-  const label =
-    severity === "high" ? "HIGH" : severity === "medium" ? "MEDIUM" : "LOW";
-  const cls =
-    severity === "high"
-      ? "bg-rose-500/10 text-rose-600 ring-rose-500/30 dark:text-rose-400"
-      : severity === "medium"
-        ? "bg-amber-500/10 text-amber-700 ring-amber-500/30 dark:text-amber-400"
-        : "bg-muted/40 text-muted-foreground ring-foreground/10";
+  const config: Record<
+    FindingSeverity,
+    { label: string; cls: string }
+  > = {
+    high: {
+      label: "HIGH",
+      cls: "bg-rose-500/10 text-rose-600 ring-rose-500/30 dark:text-rose-400",
+    },
+    medium: {
+      label: "MEDIUM",
+      cls: "bg-amber-500/10 text-amber-700 ring-amber-500/30 dark:text-amber-400",
+    },
+    low: {
+      label: "LOW",
+      cls: "bg-muted/40 text-muted-foreground ring-foreground/10",
+    },
+    passed: {
+      label: "PASSED",
+      cls: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/30 dark:text-emerald-400",
+    },
+  };
+  const { label, cls } = config[severity];
   return (
     <span
       className={cn(
@@ -603,57 +781,196 @@ function SeverityBadge({ severity }: { severity: FindingSeverity }) {
   );
 }
 
-function FindingCard({ finding }: { finding: Finding }) {
-  const hasImpact = finding.projectedImpactThb > 0;
+function StatusPill({ status }: { status: Finding["status"] }) {
+  if (status === "needs_fix") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-rose-600 ring-1 ring-rose-500/30 dark:text-rose-400">
+        <AlertCircle className="size-3" />
+        ต้องแก้
+      </span>
+    );
+  }
   return (
-    <Card className={cn("p-5", hasImpact && "ring-emerald-500/20")}>
-      <CardContent className="space-y-3 px-0">
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="rounded-md bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
-                {finding.code}
-              </span>
-              <SeverityBadge severity={finding.severity} />
+    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-500/30 dark:text-emerald-400">
+      <CheckCircle2 className="size-3" />
+      ผ่านเกณฑ์
+    </span>
+  );
+}
+
+function FindingIcon({ hint }: { hint: FindingIconHint }) {
+  const iconMap: Record<FindingIconHint, React.ComponentType<{ className?: string }>> = {
+    Video,
+    Users,
+    MapPin,
+    Target,
+    Instagram: Aperture,
+    CheckCircle: CheckCircle2,
+    MessageCircle,
+    Layers,
+    Repeat,
+    PieChart,
+  };
+  const Icon = iconMap[hint];
+  return <Icon className="size-5 text-foreground/70" />;
+}
+
+function NarrativeFindingCard({ finding }: { finding: Finding }) {
+  const isPassed = finding.status === "passed";
+  return (
+    <Card
+      className={cn(
+        "p-6",
+        isPassed
+          ? "border-foreground/10 bg-card"
+          : "border-foreground/15 bg-card",
+      )}
+    >
+      <CardContent className="space-y-5 px-0">
+        {/* Header */}
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 shrink-0 rounded-lg bg-foreground/5 p-2 ring-1 ring-foreground/10">
+              <FindingIcon hint={finding.icon_hint} />
             </div>
-            <h3 className="text-base font-semibold leading-snug">
-              {finding.title}
-            </h3>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              metric: {finding.metric}
-            </p>
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-md bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
+                  {finding.code}
+                </span>
+                <SeverityBadge severity={finding.severity} />
+                <StatusPill status={finding.status} />
+              </div>
+              <h3 className="text-lg font-semibold leading-snug">
+                {finding.title}
+              </h3>
+            </div>
           </div>
-          <div className="shrink-0 text-right">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              ผลกระทบ / เดือน
-            </div>
-            <div
-              className={cn(
-                "text-xl font-semibold tabular-nums",
-                hasImpact
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-muted-foreground",
-              )}
+        </div>
+
+        {isPassed ? (
+          /* Passed compact layout — only problem summary */
+          <div className="space-y-3">
+            <StageBlock
+              tone="passed"
+              icon={<CheckCircle2 className="size-4" />}
+              label="สถานะ"
             >
-              {hasImpact ? fmtThb(finding.projectedImpactThb) : "—"}
+              <p className="text-sm leading-relaxed">{finding.problem_th}</p>
+              <p className="mt-2 text-xs italic text-muted-foreground">
+                {finding.fix_th}
+              </p>
+            </StageBlock>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+              ผ่านเกณฑ์แล้ว — เฝ้าระวังต่อไป
             </div>
           </div>
-        </div>
-
-        <div className="space-y-1.5 rounded-md bg-muted/30 p-3 text-xs leading-relaxed">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            สภาพปัจจุบัน
+        ) : (
+          /* Needs-fix full 3-stage layout */
+          <div className="space-y-4">
+            <StageBlock
+              tone="problem"
+              icon={<AlertCircle className="size-4" />}
+              label="ปัญหา"
+            >
+              <p className="text-sm leading-relaxed">{finding.problem_th}</p>
+              <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-500/10 px-2 py-1 text-[11px] font-medium text-rose-700 ring-1 ring-rose-500/20 dark:text-rose-300">
+                <span className="text-[10px] uppercase tracking-wide">ตอนนี้:</span>
+                <span className="tabular-nums">{finding.before_metric}</span>
+              </div>
+            </StageBlock>
+            <StageBlock
+              tone="fix"
+              icon={<Wrench className="size-4" />}
+              label="สิ่งที่ AdsLab แนะนำให้แก้"
+            >
+              <p className="text-sm leading-relaxed">{finding.fix_th}</p>
+            </StageBlock>
+            <StageBlock
+              tone="result"
+              icon={<CheckCircle2 className="size-4" />}
+              label="ผลลัพธ์ที่จะได้"
+            >
+              <p className="text-sm leading-relaxed">{finding.result_th}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                <span className="inline-flex items-center gap-1 rounded-md bg-foreground/5 px-2 py-1 font-medium tabular-nums text-muted-foreground">
+                  {finding.before_metric}
+                </span>
+                <ChevronRight className="size-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 font-semibold tabular-nums text-emerald-700 ring-1 ring-emerald-500/20 dark:text-emerald-300">
+                  {finding.after_metric}
+                </span>
+                {finding.delta_thb_per_month > 0 ? (
+                  <span className="ml-auto inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2.5 py-1 text-sm font-bold tabular-nums text-emerald-700 ring-1 ring-emerald-500/30 dark:text-emerald-300">
+                    <TrendingUp className="size-3.5" />
+                    +{fmtThb(finding.delta_thb_per_month)}/เดือน
+                  </span>
+                ) : null}
+              </div>
+            </StageBlock>
           </div>
-          <p>{finding.currentValue}</p>
-        </div>
+        )}
 
-        <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
-          <div className="text-[10px] uppercase tracking-wide">
-            AdsLab หาเจอได้ยังไง
-          </div>
-          <p>{finding.howAdsLabFindsIt}</p>
+        {/* Footer */}
+        <div className="border-t border-foreground/5 pt-3 text-[11px] text-muted-foreground">
+          <Sparkles className="mr-1 inline size-3" />
+          AdsLab surface ให้อัตโนมัติจาก Meta breakdown scan (ทุก 6 ชม.)
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function StageBlock({
+  tone,
+  icon,
+  label,
+  children,
+}: {
+  tone: "problem" | "fix" | "result" | "passed";
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  const styles: Record<
+    "problem" | "fix" | "result" | "passed",
+    { border: string; labelCls: string; iconCls: string }
+  > = {
+    problem: {
+      border: "border-l-rose-500",
+      labelCls: "text-rose-700 dark:text-rose-400",
+      iconCls: "text-rose-500",
+    },
+    fix: {
+      border: "border-l-amber-500",
+      labelCls: "text-amber-700 dark:text-amber-400",
+      iconCls: "text-amber-500",
+    },
+    result: {
+      border: "border-l-emerald-500",
+      labelCls: "text-emerald-700 dark:text-emerald-400",
+      iconCls: "text-emerald-500",
+    },
+    passed: {
+      border: "border-l-emerald-500",
+      labelCls: "text-emerald-700 dark:text-emerald-400",
+      iconCls: "text-emerald-500",
+    },
+  };
+  const cfg = styles[tone];
+  return (
+    <div className={cn("rounded-r-md border-l-2 bg-foreground/[0.02] px-4 py-3", cfg.border)}>
+      <div
+        className={cn(
+          "mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide",
+          cfg.labelCls,
+        )}
+      >
+        <span className={cfg.iconCls}>{icon}</span>
+        {label}
+      </div>
+      {children}
+    </div>
   );
 }
