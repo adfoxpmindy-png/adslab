@@ -219,7 +219,7 @@ export async function generateHookConcepts(
     system,
     messages: [{ role: "user", content: JSON.stringify(userPayload) }],
     temperature: 0.8,
-    maxTokens: 4000,
+    maxTokens: 8000,
   });
 
   const parsedRaw = JSON.parse(extractJson(res.content));
@@ -354,7 +354,7 @@ export async function generateIterations(
     system,
     messages: [{ role: "user", content: JSON.stringify(userPayload) }],
     temperature: 0.7,
-    maxTokens: 4000,
+    maxTokens: 8000,
   });
 
   const parsedRaw = JSON.parse(extractJson(res.content));
