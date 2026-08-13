@@ -77,11 +77,20 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-/** Strip markdown fences if the model wraps its JSON. */
+/** Strip markdown fences if the model wraps its JSON.
+ *
+ * Tries closed-fence extraction first, then falls back to trimming leading
+ * `` ```json `` / `` ``` `` and any trailing fence. LLMs sometimes emit an
+ * opening fence but no closing one — the regex-only version returned the
+ * whole fenced string, breaking JSON.parse on the first backtick. */
 function extractJson(raw: string): string {
   const trimmed = raw.trim();
-  const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-  return fence ? fence[1] : trimmed;
+  const closed = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (closed) return closed[1].trim();
+  return trimmed
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
+    .trim();
 }
 
 function safeString(v: unknown): string | null {
