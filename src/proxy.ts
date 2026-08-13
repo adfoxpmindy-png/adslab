@@ -75,8 +75,20 @@ const LAB_REDIRECTS: ReadonlyArray<readonly [string, string]> = (
   .sort(([a], [b]) => b.length - a.length);
 
 /** Tenant inner path (e.g. `/dashboard`, `/campaigns/r_abc`) → Lab inner
- * path, or null if the input doesn't match any legacy key. */
+ * path, or null if the input doesn't match any legacy key.
+ *
+ * Hook Lab lives at `/creatives/hooks` (standalone sidebar section) and
+ * must NOT get caught by the legacy `/creatives → /launch/creatives`
+ * redirect. Match it first and return null so the request continues to
+ * the real page.
+ */
 function resolveLabRedirect(innerTenantPath: string): string | null {
+  if (
+    innerTenantPath === "/creatives/hooks" ||
+    innerTenantPath.startsWith("/creatives/hooks/")
+  ) {
+    return null;
+  }
   for (const [from, to] of LAB_REDIRECTS) {
     if (innerTenantPath === from || innerTenantPath.startsWith(`${from}/`)) {
       return to + innerTenantPath.slice(from.length);
