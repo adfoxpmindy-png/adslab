@@ -127,6 +127,11 @@
       "pageOauth": {
         "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນເຊື່ອມຕໍ່ Page Management ໄດ້"
       },
+      "mcp": {
+        "key": {
+          "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນທີ່ອອກຫຼືຍົກເລີກ MCP API key ໄດ້"
+        }
+      },
       "pixels": {
         "alreadyExists": "Ad account ນີ້ມີ Pixel ຢູ່ແລ້ວ: \"{name}\" (ID {id}) — Meta ຈຳກັດ 1 Pixel ຕໍ່ ad account",
         "shareNeedsBm": "Target ad account ບໍ່ໄດ້ຢູ່ໃນ Business Manager — Pixel share ໃຊ້ໄດ້ກັບ BM accounts ເທົ່ານັ້ນ"
@@ -204,6 +209,7 @@
       "settings": "ການຕັ້ງຄ່າ",
       "insights": "ຂໍ້ມູນ",
       "launch": "ສ້າງໂຄສະນາ",
+      "hookLab": "Hook Lab",
       "aiLab": "AI Lab",
       "automation": "ອັດຕະໂນມັດ"
     },
@@ -432,7 +438,67 @@
     "disconnecting": "ກຳລັງຍົກເລີກ...",
     "disconnectBtn": "ຍົກເລີກ",
     "tokenExpired": "Token ໝົດອາຍຸຫຼືຖືກຍົກເລີກ ກະລຸນາເຊື່ອມຕໍ່ໃໝ່",
-    "reconnect": "ເຊື່ອມຕໍ່ອີກຄັ້ງ"
+    "reconnect": "ເຊື່ອມຕໍ່ອີກຄັ້ງ",
+    "paste": {
+      "title": "ເຊື່ອມຕໍ່ Meta",
+      "subtitle": "ວາງ System User token ເພື່ອໃຫ້ AdsLab ອ່ານຂໍ້ມູນ Ad Accounts",
+      "heading": "Meta System User Token",
+      "headingSubtitle": "System User token ບໍ່ໝົດອາຍຸ — ວາງຄັ້ງດຽວໃຊ້ດົນ",
+      "guideTitle": "ສ້າງ token ໃນ Business Manager (3 ຂັ້ນຕອນ)",
+      "guideSubtitle": "System User token ບໍ່ໝົດອາຍຸ, ຕ່າງຈາກ user token ທີ່ໝົດໃນ 60 ວັນ",
+      "step1Title": "ເປີດ System Users ໃນ Business Settings",
+      "step1Body": "ໄປທີ່ Business Settings > Users > System Users ຈາກໜ້າ",
+      "step2Title": "ເລືອກ System User ແລ້ວ Assign Ad Accounts",
+      "step2Body": "ສ້າງ System User ໃໝ່ຫຼືເລືອກອັນເດີມ, ກົດ Add Assets, ເລືອກ Ad Accounts ທັງໝົດທີ່ຕ້ອງການໃຫ້ AdsLab ເຂົ້າເຖິງ ແລ້ວໃຫ້ສິດ Manage Campaigns",
+      "step3Title": "Generate Token ແບບ Never Expires",
+      "step3Body": "ກົດ Generate New Token, ເລືອກ App ຂອງທ່ານ, ຕັ້ງ Token Expiration ເປັນ Never, ຕິກ scope: ads_management, ads_read, business_management ແລ້ວຄັດລອກມາວາງດ້ານລຸ່ມ",
+      "tokenLabel": "System User Access Token",
+      "tokenPlaceholder": "EAAG...",
+      "tokenHint": "AdsLab ຈະເຂົ້າລະຫັດ token ດ້ວຍ AES-256-GCM ກ່ອນບັນທຶກໃນຖານຂໍ້ມູນ",
+      "tokenTooShort": "Token ສັ້ນເກີນໄປ — ກວດວ່າຄັດລອກມາຄົບຫຼືບໍ່",
+      "saveBtn": "ບັນທຶກ + ທົດສອບ",
+      "saving": "ກຳລັງທົດສອບ...",
+      "saveSuccess": "ເຊື່ອມຕໍ່ສຳເລັດໃນນາມ {name}",
+      "cancelBtn": "ຍົກເລີກ",
+      "ownerOnly": "ສະເພາະເຈົ້າຂອງ (OWNER) ເທົ່ານັ້ນທີ່ວາງ token ໄດ້",
+      "connectedAt": "ເຊື່ອມຕໍ່ເມື່ອ {when}",
+      "metaUserIdLabel": "Meta User ID",
+      "repasteBtn": "ວາງ token ໃໝ່",
+      "disconnectBtn": "ຍົກເລີກການເຊື່ອມຕໍ່",
+      "disconnecting": "ກຳລັງຍົກເລີກ...",
+      "disconnectConfirm": "ຕ້ອງການຍົກເລີກການເຊື່ອມຕໍ່ Meta ຫຼືບໍ່",
+      "disconnectSuccess": "ຍົກເລີກການເຊື່ອມຕໍ່ແລ້ວ"
+    }
+  },
+  "mcpKey": {
+    "statusActive": "MCP key ພ້ອມໃຊ້ງານ",
+    "statusActiveHint": "ມີ key ຢູ່ 1 ໂຕ ໝຸນ key ໃໝ່ໄດ້ທຸກຄັ້ງທີ່ສົງໄສວ່າຫຼຸດ",
+    "statusNotIssued": "ຍັງບໍ່ໄດ້ອອກ MCP API key",
+    "statusNotIssuedHint": "ອອກ key ເພື່ອໃຫ້ Claude Desktop ສັ່ງງານ workspace ນີ້ໄດ້",
+    "ownerOnly": "ສະເພາະ OWNER ເທົ່ານັ້ນທີ່ອອກຫຼືຍົກເລີກ key ນີ້ໄດ້",
+    "generateBtn": "ສ້າງ key",
+    "rotateBtn": "ໝຸນ key ໃໝ່",
+    "generating": "ກຳລັງສ້າງ...",
+    "revokeBtn": "ຍົກເລີກ key",
+    "revoking": "ກຳລັງຍົກເລີກ...",
+    "rotateConfirm": "ຕ້ອງການໝຸນ MCP key ຫຼືບໍ່ key ເກົ່າຈະໃຊ້ບໍ່ໄດ້ທັນທີ",
+    "revokeConfirm": "ຕ້ອງການຍົກເລີກ MCP key ຫຼືບໍ່ Claude Desktop ຈະເຂົ້າເຖິງ workspace ນີ້ບໍ່ໄດ້ຈົນກວ່າຈະອອກ key ໃໝ່",
+    "issuedToast": "ອອກ MCP key ແລ້ວ",
+    "rotatedToast": "ໝຸນ MCP key ແລ້ວ",
+    "revokedToast": "ຍົກເລີກ MCP key ແລ້ວ",
+    "generateFailedDefault": "ອອກ key ບໍ່ສຳເລັດ",
+    "revokeFailedDefault": "ຍົກເລີກ key ບໍ່ສຳເລັດ",
+    "oneTimeWarning": "ຄັດລອກ key ດຽວນີ້ ລະບົບຈະສະແດງພຽງຄັ້ງດຽວແລະກູ້ຄືນບໍ່ໄດ້",
+    "keyLabel": "MCP API Key ຂອງທ່ານ",
+    "configLabel": "Config ສຳລັບ Claude Desktop",
+    "configHint": "ວາງບລ໋ອກນີ້ລົງໃນໄຟລ໌ claude_desktop_config.json ໃຕ້ຫົວຂໍ້ mcpServers",
+    "copyBtn": "ຄັດລອກ",
+    "keyCopied": "ຄັດລອກ key ແລ້ວ",
+    "configCopied": "ຄັດລອກ config ແລ້ວ",
+    "copyFailed": "ບຣາວເຊີບໍ່ອະນຸຍາດໃຫ້ຄັດລອກອັດຕະໂນມັດ ຄັດລອກດ້ວຍມືແທນ",
+    "dismissBtn": "ບັນທຶກແລ້ວ ຊ່ອນ key",
+    "activeReminder": "ພວກເຮົາບໍ່ເກັບ key ຕົວຈິງໄວ້ຢູ່ເຊີບເວີ ຖ້າລືມໃຫ້ກົດໝຸນ key ໃໝ່ແທນ",
+    "notIssuedHint": "ຍັງບໍ່ມີ MCP key ໃນລະບົບ Claude Desktop ຈະເຊື່ອມຕໍ່ workspace ນີ້ບໍ່ໄດ້ຈົນກວ່າຈະສ້າງ key"
   },
   "settings": {
     "pageMgmt": {
@@ -1247,6 +1313,277 @@
       "kpiVideo": "ວິດີໂອ",
       "kpiAi": "ສ້າງດ້ວຍ AI",
       "kpiTotal": "ທັງໝົດ"
+    },
+    "hookLab": {
+      "title": "Hook Lab",
+      "subtitle": "ຮ່າງ ປັບ ແລະ ໃຫ້ຄະແນນ hook ໂຄສະນາຕາມແນວທາງ Nick Theriot",
+      "refreshWinners": "ດຶງ winner ໃໝ່",
+      "winnerDetectionQueued": "ກຳລັງກວດເບື້ອງຫຼັງ ລອງກົດອີກປະມານ 30 ວິນາທີ",
+      "winnerCacheHit": "ໂຫຼດ winner ຈາກແຄສແລ້ວ {n} ລາຍການ",
+      "winnerDetected": "ພົບ winner {n} ລາຍການ",
+      "winnerDetectFail": "ດຶງ winner ບໍ່ສຳເລັດ: {message}",
+      "nickBanner": {
+        "attribution": "ແຫຼ່ງອ້າງອີງ: ການສອນສາທາລະນະຂອງ Nick Theriot ເລື່ອງການຂຽນ hook",
+        "heuristic": "Meta ບໍ່ໄດ້ເປີດເຜີຍຕົວຈັດປະເພດຈິງ ຜົນຕັດສິນທຸກຢ່າງເປັນຄຳແນະນຳເຊິງປະມານ ບໍ່ແມ່ນການຮັບປະກັນ"
+      },
+      "tabs": {
+        "generate": "ສ້າງໃໝ່",
+        "iterate": "ປັບຕໍ່",
+        "analyze": "ວິເຄາະ",
+        "visuals": "ວາງແຜນ visual"
+      },
+      "risk": {
+        "short": {
+          "LOW": "ຄວາມສ່ຽງຕ່ຳ",
+          "MEDIUM": "ຄວາມສ່ຽງກາງ",
+          "HIGH": "ຄວາມສ່ຽງສູງ"
+        },
+        "low": "ປະເມີນ: ຕ່ຳ",
+        "medium": "ປະເມີນ: ກາງ",
+        "high": "ປະເມີນ: ສູງ",
+        "checking": "ກຳລັງປະເມີນ",
+        "reasoningIntro": "ເຫດຜົນຂອງຄວາມສ່ຽງນີ້"
+      },
+      "levers": {
+        "opening_beat": "ຈັງຫວະເປີດ",
+        "first_frame": "ເຟຣມທຳອິດ",
+        "actor_age": "ອາຍຸນັກສະແດງ",
+        "actor_ethnicity": "ເຊື້ອຊາດນັກສະແດງ",
+        "format_style": "ຮູບແບບສື່",
+        "callout_wording": "ຄຳເອີ້ນ"
+      },
+      "generate": {
+        "productLabel": "ສິນຄ້າ ຫຼື ຂໍ້ສະເໜີ",
+        "productPlaceholder": "ຕົວຢ່າງ ເຊຣັ່ມໄວທ໌ເທນນິງກາງຄືນ",
+        "audienceLabel": "ກຸ່ມເປົ້າໝາຍ",
+        "audiencePlaceholder": "ຕົວຢ່າງ ຜູ້ຍິງໄທ 25 ຫາ 40 ປີ ຜິວແພ້ງ່າຍ",
+        "desireLabel": "ຄວາມຕ້ອງການ",
+        "desirePlaceholder": "ສິ່ງທີ່ຜູ້ຊົມຢາກໄດ້",
+        "awarenessLabel": "ລະດັບ awareness",
+        "awarenessAny": "ທັງໝົດ",
+        "awarenessOptions": {
+          "unaware": "ຍັງບໍ່ຮູ້ບັນຫາ",
+          "problem": "ຮູ້ບັນຫາ",
+          "solution": "ຮູ້ທາງແກ້",
+          "product": "ຮູ້ຈັກສິນຄ້າ",
+          "mostAware": "ຮູ້ດີທີ່ສຸດ"
+        },
+        "sophisticationLabel": "ລະດັບ sophistication",
+        "languageLabel": "ພາສາທີ່ຕ້ອງການ",
+        "languageOptions": {
+          "th": "ໄທ",
+          "en": "ອັງກິດ",
+          "both": "ທັງສອງ"
+        },
+        "controlWinnerLabel": "ໂຄສະນາຕົວຊະນະ (control)",
+        "controlWinnerNone": "ບໍ່ມີ ຮ່າງຈາກສູນ",
+        "controlWinnerHint": "ເລືອກ winner ເພື່ອໃຫ້ໂມເດວຮູ້ວ່າຕ້ອງແກວ່ງອອກຈາກຕົວໃດ",
+        "controlHookLabel": "hook ຕົວຊະນະ (ບໍ່ບັງຄັບ)",
+        "controlHookPlaceholder": "ວາງ hook ຕົວຊະນະປັດຈຸບັນ",
+        "controlBodyLabel": "body ຕົວຊະນະ (ບໍ່ບັງຄັບ)",
+        "controlBodyPlaceholder": "ວາງ body ຂອງ winner ປັດຈຸບັນ",
+        "submit": "ຮ່າງ 3 ແນວຄິດໃຫຍ່",
+        "generatedToast": "ຮ່າງແລ້ວ {n} ແນວຄິດ",
+        "generateFail": "ສ້າງບໍ່ສຳເລັດ: {message}",
+        "savedToast": "ບັນທຶກແນວຄິດແລ້ວ",
+        "saveFail": "ບັນທຶກບໍ່ສຳເລັດ: {message}",
+        "stageSearch": "ກຳລັງຫາແຫຼ່ງອ້າງອີງຂອງ Nick",
+        "stageDraft": "ກຳລັງຮ່າງແນວຄິດ",
+        "stageScore": "ກຳລັງກຽມຄະແນນ heuristic",
+        "emptyTitle": "ຍັງບໍ່ມີແນວຄິດ",
+        "emptyBody": "ຕື່ມຟອມແລ້ວກົດປຸ່ມ ເພື່ອເຫັນແນວຄິດ 3 ຕົວທີ່ແກວ່ງອອກຈາກ control"
+      },
+      "iterate": {
+        "sourceLabel": "ແຫຼ່ງຂອງ winner",
+        "sourceOptions": {
+          "meta": "ຈາກ Meta",
+          "metaHint": "ດຶງຈາກ ad ຕົວທ໋ອບ",
+          "saved": "ແນວຄິດທີ່ບັນທຶກໄວ້",
+          "savedHint": "ເລືອກຈາກທີ່ໝາຍວ່າເປັນ winner",
+          "pasted": "ວາງເອງ",
+          "pastedHint": "ວາງ hook ແລະ body ດ້ວຍຕົນເອງ"
+        },
+        "winnerLabel": "ເລືອກ winner ຈາກ Meta",
+        "savedLabel": "ເລືອກ winner ທີ່ບັນທຶກໄວ້",
+        "pastedHookLabel": "ຂໍ້ຄວາມ hook ຕົວຊະນະ",
+        "pastedHookPlaceholder": "ວາງ hook ຕົວຊະນະໃຫ້ຄົບ",
+        "pastedBodyLabel": "body ຕົວຊະນະ",
+        "pastedBodyPlaceholder": "ວາງ body ຕົວຊະນະໃຫ້ຄົບ",
+        "iterationCountLabel": "ຕ້ອງການຈັກຕົວປັບ",
+        "lockedLeversLabel": "ລ໋ອກຕົວແປເຫຼົ່ານີ້",
+        "lockedLeversHint": "ແຕະເພື່ອລ໋ອກ ໂມເດວຈະບໍ່ແຕະຕົວແປທີ່ລ໋ອກ",
+        "languageLabel": "ພາສາທີ່ຕ້ອງການ",
+        "languageOptions": {
+          "th": "ໄທ",
+          "en": "ອັງກິດ",
+          "both": "ທັງສອງ"
+        },
+        "submit": "ຮ່າງຕົວປັບແບບປ່ຽນເທື່ອລະຢ່າງ",
+        "selectWinner": "ເລືອກ winner ຈາກ Meta ກ່ອນ",
+        "selectSavedConcept": "ເລືອກ winner ທີ່ບັນທຶກໄວ້ກ່ອນ",
+        "pastedRequired": "ວາງທັງ hook ແລະ body ກ່ອນ",
+        "generatedToast": "ຮ່າງຕົວປັບແລ້ວ {n} ລາຍການ",
+        "iterateFail": "ປັບບໍ່ສຳເລັດ: {message}",
+        "savedToast": "ບັນທຶກຕົວປັບແລ້ວ",
+        "saveFail": "ບັນທຶກບໍ່ສຳເລັດ: {message}",
+        "stageLoadWinner": "ກຳລັງໂຫຼດຂໍ້ມູນ winner",
+        "stageDraft": "ກຳລັງຮ່າງຕົວປັບ",
+        "emptyTitle": "ຍັງບໍ່ມີຕົວປັບ",
+        "emptyBody": "ເລືອກ winner ແລ້ວກົດປຸ່ມ ເພື່ອເຫັນຕົວປັບແບບປ່ຽນເທື່ອລະຢ່າງ",
+        "emptyNoWinners": "ຍັງບໍ່ມີ winner ຈາກ Meta ໃນແຄສ ກົດປຸ່ມດຶງ winner ດ້ານເທິງ",
+        "emptyNoSaved": "ຍັງບໍ່ມີ winner ທີ່ບັນທຶກໄວ້ ຕ້ອງໝາຍແນວຄິດເປັນ winner ກ່ອນ"
+      },
+      "analyze": {
+        "hookLabel": "ຂໍ້ຄວາມ hook ທີ່ຈະໃຫ້ຄະແນນ",
+        "hookPlaceholder": "ວາງ hook ທີ່ຕ້ອງການໃຫ້ຄະແນນ",
+        "bodyLabel": "body (ບໍ່ບັງຄັບ)",
+        "bodyPlaceholder": "ວາງ body ເພື່ອກວດວ່າ hook ກັບ body ສອດຄ່ອງກັນ",
+        "useMetaWinner": "ທຽບກັບ winner ທີ່ Meta ພົບ",
+        "controlHookLabel": "hook ຄວບຄຸມ (ບໍ່ບັງຄັບ)",
+        "controlHookPlaceholder": "ວາງ hook ຕົວຊະນະປັດຈຸບັນ",
+        "controlBodyLabel": "body ຄວບຄຸມ (ບໍ່ບັງຄັບ)",
+        "controlBodyPlaceholder": "ວາງ body ຕົວຊະນະປັດຈຸບັນ",
+        "productLabel": "ສິນຄ້າ",
+        "audienceLabel": "ກຸ່ມເປົ້າໝາຍ",
+        "imageUrlLabel": "ລິງກ໌ຮູບ (ບໍ່ບັງຄັບ)",
+        "imageUrlPlaceholder": "https://...",
+        "languageLabel": "ພາສາ",
+        "languageOptions": {
+          "th": "ໄທ",
+          "en": "ອັງກິດ",
+          "both": "ທັງສອງ"
+        },
+        "submit": "ໃຫ້ຄະແນນ hook ນີ້",
+        "hookRequired": "ວາງ hook ກ່ອນ",
+        "scoredToast": "ໃຫ້ຄະແນນແລ້ວ",
+        "analyzeFail": "ວິເຄາະບໍ່ສຳເລັດ: {message}",
+        "stageLoad": "ກຳລັງໂຫຼດແຫຼ່ງອ້າງອີງ Nick",
+        "stageScore": "ກຳລັງໃຫ້ຄະແນນ 3 ແກນ Golden Formula ແລະ alignment",
+        "emptyTitle": "ວາງ hook ເພື່ອຂໍຄະແນນ",
+        "emptyBody": "ຈະໄດ້ຄະແນນ 4 ແກນ ເຫດຜົນລາຍແກນ 3 rewrite ແລະ ປ້າຍຄວາມສ່ຽງເຊິງປະມານ",
+        "resultTitle": "ລາຍລະອຽດຄະແນນ",
+        "axis": {
+          "stopScroll": "ຢຸດເລື່ອນຈໍ",
+          "curiosity": "ກະຕຸ້ນຄວາມສົງໄສ",
+          "benefit": "ຜົນປະໂຫຍດ",
+          "alignment": "hook ຕົງກັບ body"
+        },
+        "rewritesLabel": "ຕົວຢ່າງການຂຽນໃໝ່"
+      },
+      "visualPlanner": {
+        "hookLabel": "ຂໍ້ຄວາມ hook",
+        "hookPlaceholder": "ວາງ hook ທີ່ຈະວາງແຜນ visual",
+        "formatLabel": "ຮູບແບບ",
+        "formatOptions": {
+          "video": "ວິດີໂອ",
+          "static": "ຮູບນິ່ງ"
+        },
+        "aspectLabel": "ອັດຕາສ່ວນ",
+        "intentLabel": "ຈຸດປະສົງ",
+        "intentOptions": {
+          "bigSwing": "ແກວ່ງໃຫຍ່",
+          "iteration": "ປັບຕໍ່ຍອດ"
+        },
+        "productLabel": "ສິນຄ້າ",
+        "audienceLabel": "ກຸ່ມເປົ້າໝາຍ",
+        "languageLabel": "ພາສາ",
+        "languageOptions": {
+          "th": "ໄທ",
+          "en": "ອັງກິດ",
+          "both": "ທັງສອງ"
+        },
+        "submit": "ວາງແຜນ 3 ແນວ visual",
+        "hookRequired": "ວາງ hook ກ່ອນ",
+        "plannedToast": "ວາງແຜນ visual ແລ້ວ {n} ແນວ",
+        "planFail": "ວາງແຜນບໍ່ສຳເລັດ: {message}",
+        "directionNumber": "ແນວທີ່ {n}",
+        "shotListLabel": "ລິສ ຊ໋ອດ",
+        "hypothesisLabel": "ສົມມຸດຕິຖານ",
+        "emptyTitle": "ຍັງບໍ່ມີແຜນ visual",
+        "emptyBody": "ວາງ hook ແລ້ວກົດປຸ່ມ ເພື່ອເຫັນ 3 ແນວທາງ visual"
+      },
+      "conceptCard": {
+        "hookLabel": "hook",
+        "briefLabel": "ບຣີບຟຸນເຕັມ",
+        "bodyLabel": "ໂຄງ body",
+        "hypothesisLabel": "ສົມມຸດຕິຖານ",
+        "angleChangeLabel": "ມຸມທີ່ປ່ຽນ",
+        "visualLabel": "ແນວ visual ({n} ແນວ)",
+        "sourcesLabel": "ແຫຼ່ງອ້າງອີງ",
+        "leverLabel": "ຕົວແປທີ່ປ່ຽນ: {lever}",
+        "copyHook": "ຄັດລອກ hook",
+        "copyBrief": "ຄັດລອກບຣີບເຕັມ",
+        "save": "ບັນທຶກ",
+        "regenerate": "ຮ່າງໃໝ່",
+        "useInLauncher": "ໃຊ້ໃນ Ad Launcher",
+        "delete": "ລຶບ",
+        "overrideChosen": "ບັນທຶກແລ້ວທັງທີ່ຄວາມສ່ຽງສູງ",
+        "noHookText": "ບໍ່ມີຂໍ້ຄວາມ hook",
+        "toastCopied": "ຄັດລອກ {label} ແລ້ວ",
+        "toastCopyFail": "ຄັດລອກບໍ່ສຳເລັດ ໃຫ້ເລືອກຂໍ້ຄວາມເອງແທນ"
+      },
+      "board": {
+        "heading": "ກະດານແນວຄິດ",
+        "subtitle": "ສະແດງ {shown} ຈາກ {total} ແນວຄິດ",
+        "searchPlaceholder": "ຄົ້ນຫາ hook ຫຼື body",
+        "statusLabel": "ສະຖານະ",
+        "sourceLabel": "ແຫຼ່ງ",
+        "statusAll": "ທັງໝົດ",
+        "sourceAll": "ທັງໝົດ",
+        "statusOptions": {
+          "draft": "ຮ່າງ",
+          "testing": "ກຳລັງທົດສອບ",
+          "winner": "winner",
+          "archived": "ເກັບເຂົ້າຄັງ"
+        },
+        "sourceOptions": {
+          "generated": "ສ້າງໃໝ່",
+          "iteration": "ຕົວປັບ",
+          "analyzed": "ວິເຄາະ",
+          "manual": "ຕື່ມເອງ"
+        },
+        "colHook": "hook",
+        "colHookEmpty": "(ຍັງບໍ່ມີ hook)",
+        "colSource": "ແຫຼ່ງ",
+        "colStatus": "ສະຖານະ",
+        "colRisk": "ຄວາມສ່ຽງ",
+        "colActions": "ຈັດການ",
+        "emptyNoConcepts": "ຍັງບໍ່ມີແນວຄິດທີ່ບັນທຶກໄວ້ ໃຊ້ເມນູສ້າງໃໝ່ ຫຼື ປັບຕໍ່ດ້ານເທິງ",
+        "emptyFiltered": "ບໍ່ມີແນວຄິດຕົງກັບຕົວກັ່ນຕອງ",
+        "statusChanged": "ອັບເດດສະຖານະແລ້ວ",
+        "statusChangeFail": "ອັບເດດສະຖານະບໍ່ສຳເລັດ: {message}",
+        "deleteConfirm": "ລຶບແນວຄິດນີ້ຖາວອນ ຫຼື ບໍ່",
+        "deleted": "ລຶບແນວຄິດແລ້ວ",
+        "deleteFail": "ລຶບບໍ່ສຳເລັດ: {message}"
+      },
+      "warnConfirmModal": {
+        "title": "ແກວ່ງສ່ຽງສູງ",
+        "subtitle": "ແນວຄິດນີ້ໃກ້ກັບ winner ປັດຈຸບັນຫຼາຍ ການບັນທຶກຕໍ່ເປັນການຕັດສິນເຊິງປະມານເທົ່ານັ້ນ",
+        "reasoningLabel": "ເຫດຜົນເຊິງ heuristic",
+        "suggestionLabel": "ຄຳແນະນຳຖັດໄປ",
+        "saveAnyway": "ບັນທຶກຕໍ່",
+        "revise": "ຂໍປັບກ່ອນ"
+      },
+      "costPill": {
+        "callsToday": "ເອີ້ນ {n} ຄັ້ງ",
+        "remaining": "ເຫຼືອ {n} ຄັ້ງມື້ນີ້"
+      },
+      "metaSignals": {
+        "heading": "ສັນຍານຈາກ Meta",
+        "opportunityCampaign": "ຄະແນນໂອກາດຂອງແຄມເປນ",
+        "opportunityAccount": "ຄະແນນໂອກາດຂອງບັນຊີ",
+        "anomalies": "ຄ່າຜິດປົກກະຕິ",
+        "noAnomalies": "ບໍ່ພົບຄ່າຜິດປົກກະຕິ",
+        "loading": "ກຳລັງໂຫຼດສັນຍານຈາກ Meta",
+        "errorMessage": "ດຶງສັນຍານຈາກ Meta ບໍ່ສຳເລັດ: {message}",
+        "emptyNoCampaign": "ກວດຫາ winner ຈາກ Meta ກ່ອນ ຄະແນນໂອກາດຈະສະແດງຢູ່ນີ້",
+        "partial": "ຂໍ້ມູນບໍ່ຄົບ ສ່ວນທີ່ຂາດ: {list}"
+      },
+      "errors": {
+        "rateLimited": "ມື້ນີ້ໃຊ້ Hook Lab ໝົດໂຄຕ້າແລ້ວ ລໍຖ້າຫຼັງທ່ຽງຄືນ",
+        "metaFailed": "ເອີ້ນ Meta API ບໍ່ສຳເລັດ ລອງໃໝ່ໃນອີກສັກຄູ່",
+        "nickEmpty": "ບໍ່ພົບແຫຼ່ງອ້າງອີງຂອງ Nick ສຳລັບບຣີບນີ້"
+      }
     },
     "posts": {
       "title": "ໂພສເພຈ",
@@ -3120,7 +3457,15 @@
     "settings": {
       "heading": "ການຕັ້ງຄ່າ",
       "eyebrow": "Settings",
-      "comingSoon": "ໄວໆ ນີ້"
+      "comingSoon": "ໄວໆ ນີ້",
+      "navMetaConnection": "Meta Connection",
+      "navMcp": "MCP"
+    },
+    "mcp": {
+      "title": "MCP API Key",
+      "subtitle": "ໃຫ້ Claude Desktop ສັ່ງງານ tenant ນີ້ຜ່ານ AdsLab MCP server",
+      "heading": "MCP API Key",
+      "headingSubtitle": "1 key ຕໍ່ 1 tenant ໃຊ້ໃຫ້ Claude Desktop ເຊື່ອມເຂົ້າມາທີ່ AdsLab ໃນນາມຂອງ workspace ນີ້"
     }
   },
   "optimizationEngine": {
@@ -3338,6 +3683,7 @@
         "history": "ປະຫວັດ",
         "audiences": "ກຸ່ມເປົ້າໝາຍ",
         "creatives": "ຄຣີເອທີຟ",
+        "hooks": "Hook Lab",
         "posts": "ໂພສເພຈ"
       }
     },

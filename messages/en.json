@@ -127,6 +127,11 @@
       "pageOauth": {
         "ownerOnly": "Only OWNER can connect Page Management"
       },
+      "mcp": {
+        "key": {
+          "ownerOnly": "Only OWNER can issue or revoke the MCP API key"
+        }
+      },
       "pixels": {
         "alreadyExists": "This ad account already has a Pixel: \"{name}\" (ID {id}) — Meta limits 1 Pixel per ad account",
         "shareNeedsBm": "Target ad account is not in a Business Manager — Pixel sharing only works with BM accounts"
@@ -204,6 +209,7 @@
       "settings": "Settings",
       "insights": "Insights",
       "launch": "Launch",
+      "hookLab": "Hook Lab",
       "aiLab": "AI Lab",
       "automation": "Automation"
     },
@@ -432,7 +438,67 @@
     "disconnecting": "Disconnecting...",
     "disconnectBtn": "Disconnect",
     "tokenExpired": "Token expired or revoked — please reconnect",
-    "reconnect": "Reconnect"
+    "reconnect": "Reconnect",
+    "paste": {
+      "title": "Connect Meta",
+      "subtitle": "Paste a System User token so AdsLab can read your ad accounts",
+      "heading": "Meta System User Token",
+      "headingSubtitle": "System User tokens never expire — paste once, stay connected",
+      "guideTitle": "Generate a token in Business Manager (3 steps)",
+      "guideSubtitle": "Unlike user tokens (which expire in 60 days), System User tokens don't expire",
+      "step1Title": "Open System Users in Business Settings",
+      "step1Body": "Head to Business Settings > Users > System Users on",
+      "step2Title": "Pick a System User and assign your ad accounts",
+      "step2Body": "Create a new System User or pick an existing one, click Add Assets, select every ad account AdsLab should reach, and grant Manage Campaigns.",
+      "step3Title": "Generate a Never-Expires token",
+      "step3Body": "Click Generate New Token, pick your app, set Token Expiration to Never, tick scopes: ads_management, ads_read, business_management, then paste it below.",
+      "tokenLabel": "System User Access Token",
+      "tokenPlaceholder": "EAAG...",
+      "tokenHint": "AdsLab encrypts your token with AES-256-GCM before storing it.",
+      "tokenTooShort": "Token looks too short — make sure you copied the whole string.",
+      "saveBtn": "Save & Test",
+      "saving": "Testing...",
+      "saveSuccess": "Connected as {name}",
+      "cancelBtn": "Cancel",
+      "ownerOnly": "Only the workspace OWNER can paste a token.",
+      "connectedAt": "Connected {when}",
+      "metaUserIdLabel": "Meta User ID",
+      "repasteBtn": "Re-paste token",
+      "disconnectBtn": "Disconnect",
+      "disconnecting": "Disconnecting...",
+      "disconnectConfirm": "Disconnect Meta?",
+      "disconnectSuccess": "Disconnected"
+    }
+  },
+  "mcpKey": {
+    "statusActive": "MCP key active",
+    "statusActiveHint": "One key is issued — rotate any time you suspect it leaked",
+    "statusNotIssued": "MCP API key not yet issued",
+    "statusNotIssuedHint": "Generate one to let Claude Desktop drive this workspace",
+    "ownerOnly": "Only the workspace OWNER can issue or revoke this key",
+    "generateBtn": "Generate key",
+    "rotateBtn": "Rotate key",
+    "generating": "Generating...",
+    "revokeBtn": "Revoke",
+    "revoking": "Revoking...",
+    "rotateConfirm": "Rotate the current MCP key? The old key will stop working immediately.",
+    "revokeConfirm": "Revoke the MCP key? Claude Desktop will lose access until you issue a new one.",
+    "issuedToast": "MCP key issued",
+    "rotatedToast": "MCP key rotated",
+    "revokedToast": "MCP key revoked",
+    "generateFailedDefault": "Could not issue key",
+    "revokeFailedDefault": "Could not revoke key",
+    "oneTimeWarning": "Copy this key now — it will only be shown once and cannot be recovered later.",
+    "keyLabel": "Your MCP API Key",
+    "configLabel": "Claude Desktop MCP config",
+    "configHint": "Paste this block into claude_desktop_config.json under the mcpServers section.",
+    "copyBtn": "Copy",
+    "keyCopied": "Key copied",
+    "configCopied": "Config copied",
+    "copyFailed": "Clipboard blocked by the browser — copy the text manually.",
+    "dismissBtn": "I saved it, hide the key",
+    "activeReminder": "The plaintext key is not stored on our servers — if you lost it, rotate to mint a fresh one.",
+    "notIssuedHint": "No MCP key on file yet — Claude Desktop cannot reach this workspace until you generate one."
   },
   "settings": {
     "pageMgmt": {
@@ -1247,6 +1313,277 @@
       "kpiVideo": "Videos",
       "kpiAi": "Made with AI",
       "kpiTotal": "Total"
+    },
+    "hookLab": {
+      "title": "Hook Lab",
+      "subtitle": "Draft, iterate, and score ad hooks with Nick Theriot's playbook",
+      "refreshWinners": "Refresh winners",
+      "winnerDetectionQueued": "Detection running in the background. Refresh again in ~30 seconds.",
+      "winnerCacheHit": "Loaded {n} cached winners.",
+      "winnerDetected": "Detected {n} winners.",
+      "winnerDetectFail": "Winner detection failed: {message}",
+      "nickBanner": {
+        "attribution": "Source: Nick Theriot's public teachings on hook writing.",
+        "heuristic": "Meta's actual classifier is not published. Treat every verdict as heuristic guidance, not a guarantee."
+      },
+      "tabs": {
+        "generate": "Generate",
+        "iterate": "Iterate",
+        "analyze": "Analyze",
+        "visuals": "Plan Visuals"
+      },
+      "risk": {
+        "short": {
+          "LOW": "Low risk",
+          "MEDIUM": "Medium risk",
+          "HIGH": "High risk"
+        },
+        "low": "Heuristic: LOW",
+        "medium": "Heuristic: MEDIUM",
+        "high": "Heuristic: HIGH",
+        "checking": "Scoring risk",
+        "reasoningIntro": "Why this risk"
+      },
+      "levers": {
+        "opening_beat": "Opening beat",
+        "first_frame": "First frame",
+        "actor_age": "Actor age",
+        "actor_ethnicity": "Actor ethnicity",
+        "format_style": "Format style",
+        "callout_wording": "Callout wording"
+      },
+      "generate": {
+        "productLabel": "Product or offer",
+        "productPlaceholder": "Example: whitening night serum",
+        "audienceLabel": "Audience",
+        "audiencePlaceholder": "Example: Thai women 25 to 40 with sensitive skin",
+        "desireLabel": "Desire or job to be done",
+        "desirePlaceholder": "What the audience wants to achieve",
+        "awarenessLabel": "Awareness stage",
+        "awarenessAny": "Any",
+        "awarenessOptions": {
+          "unaware": "Unaware",
+          "problem": "Problem-aware",
+          "solution": "Solution-aware",
+          "product": "Product-aware",
+          "mostAware": "Most aware"
+        },
+        "sophisticationLabel": "Sophistication",
+        "languageLabel": "Output language",
+        "languageOptions": {
+          "th": "Thai",
+          "en": "English",
+          "both": "Both"
+        },
+        "controlWinnerLabel": "Control (winning ad)",
+        "controlWinnerNone": "None — greenfield draft",
+        "controlWinnerHint": "Picking a winner tells the model to swing away from it.",
+        "controlHookLabel": "Control hook (optional)",
+        "controlHookPlaceholder": "Paste the current winning hook to swing away from",
+        "controlBodyLabel": "Control body (optional)",
+        "controlBodyPlaceholder": "Paste the body copy from the current winner",
+        "submit": "Draft 3 big-swing concepts",
+        "generatedToast": "Drafted {n} concepts.",
+        "generateFail": "Generation failed: {message}",
+        "savedToast": "Concept saved.",
+        "saveFail": "Save failed: {message}",
+        "stageSearch": "Finding Nick citations",
+        "stageDraft": "Drafting concepts",
+        "stageScore": "Preparing heuristic scores",
+        "emptyTitle": "No concepts yet",
+        "emptyBody": "Fill the form and press Draft to see 3 big-swing concepts here."
+      },
+      "iterate": {
+        "sourceLabel": "Winner source",
+        "sourceOptions": {
+          "meta": "Meta-detected",
+          "metaHint": "Pull from your top ad",
+          "saved": "Saved concept",
+          "savedHint": "Pick one you already marked as winner",
+          "pasted": "Paste manually",
+          "pastedHint": "Paste hook and body copy"
+        },
+        "winnerLabel": "Pick a Meta winner",
+        "savedLabel": "Pick a saved winner",
+        "pastedHookLabel": "Winning hook text",
+        "pastedHookPlaceholder": "Paste the exact winning hook",
+        "pastedBodyLabel": "Winning body copy",
+        "pastedBodyPlaceholder": "Paste the exact winning body",
+        "iterationCountLabel": "How many iterations",
+        "lockedLeversLabel": "Lock these levers",
+        "lockedLeversHint": "Tap a lever to lock it. The model will not change locked levers.",
+        "languageLabel": "Output language",
+        "languageOptions": {
+          "th": "Thai",
+          "en": "English",
+          "both": "Both"
+        },
+        "submit": "Draft single-lever iterations",
+        "selectWinner": "Pick a Meta winner first.",
+        "selectSavedConcept": "Pick a saved winner first.",
+        "pastedRequired": "Paste both hook and body first.",
+        "generatedToast": "Drafted {n} iterations.",
+        "iterateFail": "Iteration failed: {message}",
+        "savedToast": "Iteration saved.",
+        "saveFail": "Save failed: {message}",
+        "stageLoadWinner": "Loading winner data",
+        "stageDraft": "Drafting single-lever swings",
+        "emptyTitle": "No iterations yet",
+        "emptyBody": "Pick a winner and press Draft to see one-lever variations here.",
+        "emptyNoWinners": "No cached Meta winners. Press Refresh winners at the top of the page.",
+        "emptyNoSaved": "No saved winners yet. Save a concept to Winner status first."
+      },
+      "analyze": {
+        "hookLabel": "Text hook to score",
+        "hookPlaceholder": "Paste the hook you want scored",
+        "bodyLabel": "Body copy (optional)",
+        "bodyPlaceholder": "Paste the body so we can score hook-body alignment",
+        "useMetaWinner": "Compare against a Meta-detected winner",
+        "controlHookLabel": "Control hook (optional)",
+        "controlHookPlaceholder": "Paste the current winner hook",
+        "controlBodyLabel": "Control body (optional)",
+        "controlBodyPlaceholder": "Paste the current winner body",
+        "productLabel": "Product or offer",
+        "audienceLabel": "Audience",
+        "imageUrlLabel": "Image URL (optional)",
+        "imageUrlPlaceholder": "https://...",
+        "languageLabel": "Language",
+        "languageOptions": {
+          "th": "Thai",
+          "en": "English",
+          "both": "Both"
+        },
+        "submit": "Score this hook",
+        "hookRequired": "Paste the hook first.",
+        "scoredToast": "Scored.",
+        "analyzeFail": "Analysis failed: {message}",
+        "stageLoad": "Loading Nick citations",
+        "stageScore": "Scoring 3 Golden-Formula axes plus alignment",
+        "emptyTitle": "Paste a hook to score",
+        "emptyBody": "You get 4 scores, per-axis reasons, 3 rewrites, and a heuristic risk label.",
+        "resultTitle": "Score breakdown",
+        "axis": {
+          "stopScroll": "Stop-scroll",
+          "curiosity": "Curiosity",
+          "benefit": "Benefit",
+          "alignment": "Body alignment"
+        },
+        "rewritesLabel": "Suggested rewrites"
+      },
+      "visualPlanner": {
+        "hookLabel": "Text hook",
+        "hookPlaceholder": "Paste the hook you want visuals for",
+        "formatLabel": "Format",
+        "formatOptions": {
+          "video": "Video",
+          "static": "Static image"
+        },
+        "aspectLabel": "Aspect ratio",
+        "intentLabel": "Intent",
+        "intentOptions": {
+          "bigSwing": "Big swing",
+          "iteration": "Iteration"
+        },
+        "productLabel": "Product",
+        "audienceLabel": "Audience",
+        "languageLabel": "Language",
+        "languageOptions": {
+          "th": "Thai",
+          "en": "English",
+          "both": "Both"
+        },
+        "submit": "Plan 3 visuals",
+        "hookRequired": "Paste the hook first.",
+        "plannedToast": "Planned {n} visual directions.",
+        "planFail": "Planning failed: {message}",
+        "directionNumber": "Direction {n}",
+        "shotListLabel": "Shot list",
+        "hypothesisLabel": "Hypothesis",
+        "emptyTitle": "No visuals planned yet",
+        "emptyBody": "Paste a hook and press Plan to see 3 visual directions here."
+      },
+      "conceptCard": {
+        "hookLabel": "Hook",
+        "briefLabel": "Full brief",
+        "bodyLabel": "Body outline",
+        "hypothesisLabel": "Hypothesis",
+        "angleChangeLabel": "Angle change",
+        "visualLabel": "Visual directions ({n})",
+        "sourcesLabel": "Sources",
+        "leverLabel": "Lever changed: {lever}",
+        "copyHook": "Copy hook",
+        "copyBrief": "Copy full brief",
+        "save": "Save",
+        "regenerate": "Regenerate",
+        "useInLauncher": "Use in Ad Launcher",
+        "delete": "Delete",
+        "overrideChosen": "Saved with high-risk override.",
+        "noHookText": "No hook text",
+        "toastCopied": "{label} copied.",
+        "toastCopyFail": "Copy failed. Select the text manually."
+      },
+      "board": {
+        "heading": "Concept board",
+        "subtitle": "{shown} of {total} concepts shown",
+        "searchPlaceholder": "Search hooks and bodies",
+        "statusLabel": "Status",
+        "sourceLabel": "Source",
+        "statusAll": "Any status",
+        "sourceAll": "Any source",
+        "statusOptions": {
+          "draft": "Draft",
+          "testing": "Testing",
+          "winner": "Winner",
+          "archived": "Archived"
+        },
+        "sourceOptions": {
+          "generated": "Generated",
+          "iteration": "Iteration",
+          "analyzed": "Analyzed",
+          "manual": "Manual"
+        },
+        "colHook": "Hook",
+        "colHookEmpty": "(no hook text)",
+        "colSource": "Source",
+        "colStatus": "Status",
+        "colRisk": "Risk",
+        "colActions": "Actions",
+        "emptyNoConcepts": "No saved concepts yet. Use Generate or Iterate above.",
+        "emptyFiltered": "No concepts match the current filter.",
+        "statusChanged": "Status updated.",
+        "statusChangeFail": "Status update failed: {message}",
+        "deleteConfirm": "Delete this concept permanently?",
+        "deleted": "Concept deleted.",
+        "deleteFail": "Delete failed: {message}"
+      },
+      "warnConfirmModal": {
+        "title": "High risk swing",
+        "subtitle": "This concept sits close to your current winner. Saving anyway is a heuristic call.",
+        "reasoningLabel": "Heuristic reasoning",
+        "suggestionLabel": "Suggested next step",
+        "saveAnyway": "Save anyway",
+        "revise": "Let me revise"
+      },
+      "costPill": {
+        "callsToday": "{n} calls",
+        "remaining": "{n} left today"
+      },
+      "metaSignals": {
+        "heading": "Meta signals",
+        "opportunityCampaign": "Campaign opportunity score",
+        "opportunityAccount": "Account opportunity score",
+        "anomalies": "Anomalies",
+        "noAnomalies": "No anomalies flagged.",
+        "loading": "Loading Meta signals",
+        "errorMessage": "Meta signals failed: {message}",
+        "emptyNoCampaign": "Detect a Meta winner to see Meta's own opportunity score and anomalies here.",
+        "partial": "Partial data. Missing: {list}"
+      },
+      "errors": {
+        "rateLimited": "You hit today's Hook Lab limit. Try again after midnight Bangkok time.",
+        "metaFailed": "Meta API call failed. Try again in a minute.",
+        "nickEmpty": "No Nick citations found for this brief."
+      }
     },
     "posts": {
       "title": "Page Posts",
@@ -3120,7 +3457,15 @@
     "settings": {
       "heading": "Settings",
       "eyebrow": "Settings",
-      "comingSoon": "Soon"
+      "comingSoon": "Soon",
+      "navMetaConnection": "Meta Connection",
+      "navMcp": "MCP"
+    },
+    "mcp": {
+      "title": "MCP API Key",
+      "subtitle": "Let Claude Desktop control this tenant via the AdsLab MCP server",
+      "heading": "MCP API Key",
+      "headingSubtitle": "One key per tenant — used by Claude Desktop to reach the AdsLab MCP server as this workspace"
     }
   },
   "optimizationEngine": {
@@ -3338,6 +3683,7 @@
         "history": "History",
         "audiences": "Audiences",
         "creatives": "Creatives",
+        "hooks": "Hook Lab",
         "posts": "Page posts"
       }
     },

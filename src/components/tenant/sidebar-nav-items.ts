@@ -3,6 +3,7 @@ import {
   LineChart,
   Megaphone,
   Settings2,
+  Sparkles,
   Workflow,
   type LucideIcon,
 } from "lucide-react";
@@ -30,6 +31,7 @@ export type SidebarNavItem = {
 export const SIDEBAR_NAV_ITEMS: SidebarNavItem[] = [
   { labelKey: "insights", href: (s) => `/t/${s}/insights`, icon: LineChart },
   { labelKey: "launch", href: (s) => `/t/${s}/launch`, icon: Megaphone },
+  { labelKey: "hookLab", href: (s) => `/t/${s}/creatives/hooks`, icon: Sparkles },
   { labelKey: "aiLab", href: (s) => `/t/${s}/ai-lab`, icon: Brain },
   { labelKey: "automation", href: (s) => `/t/${s}/automation`, icon: Workflow },
   { labelKey: "settings", href: (s) => `/t/${s}/settings/integrations`, icon: Settings2 },

@@ -142,6 +142,13 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /// SHA-256 hash of the tenant's MCP API key. Plaintext is shown to the
+  /// user ONCE at generation time (via scripts/mcp-issue-key.ts) and never
+  /// stored server-side. The MCP HTTP endpoint (/api/mcp) resolves the
+  /// bearer token by hashing it and looking up this column. NULL until the
+  /// tenant issues a key; rotation = overwrite this column.
+  mcpApiKey String? @unique
+
   members            TenantMember[]
   metaConnection     MetaConnection?
   insightCaches      MetaInsightCache[]
@@ -167,6 +174,10 @@ model Tenant {
   metaPageConnection MetaPageConnection?
   pagePosts          PagePost[]
   viewerLinks        ViewerLink[]
+  hookConcepts       HookConcept[]
+  hookAnalyses       HookAnalysis[]
+  hookProfile        HookProfile?
+  hookWinners        HookWinner[]
 }
 
 /// AI Quick Boost — natural-language → bulk campaign creation. One row
@@ -1319,4 +1330,191 @@ model MetaAdCreativePreview {
   expiresAt     DateTime
 
   @@index([expiresAt])
+}
+
+// ============================================================
+// Hook Lab v2 — hook generation / iteration / analysis
+// ============================================================
+
+/// One drafted or analyzed hook concept. Rows come from 4 sources:
+///   - "generated"    → Generate mode big-swing concept (angle/avatar/etc.)
+///   - "iteration"    → Iterate mode single-lever variation of a parent winner
+///   - "analyzed"     → Analyze mode paste-and-score (may or may not be saved)
+///   - "manual"       → user typed their own concept
+/// `generationId` groups rows produced by one call (Generate returns 3
+/// concepts; Iterate returns 3–5 iterations — all share one generationId).
+/// `parentConceptId` self-references the row this iteration was built off
+/// (null for generated/analyzed/manual).
+model HookConcept {
+  id                       String   @id @default(cuid())
+  tenantId                 String
+  createdByUserId          String
+  /// Groups rows produced by one call. Same for all N concepts/iterations
+  /// returned by a single Generate or Iterate invocation.
+  generationId             String
+  /// "generated" | "iteration" | "analyzed" | "manual"
+  source                   String
+  /// FK to another HookConcept.id — the winner/control this iteration was
+  /// built from. Null for generated/analyzed/manual rows. onDelete:SetNull
+  /// so deleting the parent winner doesn't nuke its iteration history.
+  parentConceptId          String?
+  textHookTh               String?
+  textHookEn               String?
+  /// Markdown body outline.
+  bodyOutline              String?  @db.Text
+  /// Array of visual directions. Shape:
+  /// `Array<{ name, description, shotList[], hypothesis, whyDifferent, format?, aspectRatio?, durationSec? }>`
+  /// Generate mode: 3 directions per concept. Iterate mode: 1 direction.
+  visualDirections         Json?
+  /// For iterations: which single lever was changed.
+  /// One of: "opening_beat" | "first_frame" | "actor_age" |
+  /// "actor_ethnicity" | "format_style" | "callout_wording".
+  leverChanged             String?
+  /// Free-form hypothesis. Required by prompt for iterations
+  /// ("no iteration without hypothesis" — Nick's rule).
+  hypothesis               String?  @db.Text
+  /// For generated concepts: what changed from control.
+  /// Shape: `{ angle?, avatar?, awareness?, sophistication?, desire? }`
+  angleChange              Json?
+  /// "unaware" | "problem" | "solution" | "product" | "most"
+  awarenessStage           String?
+  /// 1-5
+  sophisticationStage      Int?
+  avatar                   String?
+  /// Control (winner) hook text this concept was drafted against (if any).
+  controlHookText          String?  @db.Text
+  controlBodyText          String?  @db.Text
+  /// Body-hook alignment score 0..1 from BODY_HOOK_ALIGNMENT_PROMPT.
+  alignmentScore           Float?
+  /// "aligned" | "partial" | "misaligned"
+  alignmentVerdict         String?
+  /// "clearly-different" | "partial-swing" | "same-visual-bucket"
+  visualDiffVerdict        String?
+  /// Combined heuristic risk label. "LOW" | "MEDIUM" | "HIGH".
+  andromedaRisk            String?
+  /// True if user hit "Save anyway" on the HIGH-risk warn+confirm modal.
+  /// Telemetry for downstream hit-rate analysis.
+  andromedaOverrideChosen  Boolean  @default(false)
+  /// Nick RAG citations used. Shape:
+  /// `Array<{ ordinal, title, url, similarity }>`
+  citations                Json?
+  /// "draft" | "testing" | "winner" | "archived" (soft-delete via status)
+  status                   String   @default("draft")
+  notes                    String?  @db.Text
+  /// Populated when user launches this concept as a Meta campaign.
+  metaCampaignId           String?
+  metaAdSetId              String?
+  promptTokens             Int?
+  completionTokens         Int?
+  costUsd                  Float?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  parent      HookConcept?  @relation("HookConceptIterations", fields: [parentConceptId], references: [id], onDelete: SetNull)
+  iterations  HookConcept[] @relation("HookConceptIterations")
+
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@index([tenantId, generationId])
+  @@index([parentConceptId])
+}
+
+/// One Analyze-mode submission. Kept separately from HookConcept because
+/// Analyze is a scoring flow, not necessarily a saved concept. Users can
+/// promote an analyzed row into a HookConcept row via the "save" action.
+model HookAnalysis {
+  id                 String   @id @default(cuid())
+  tenantId           String
+  createdByUserId    String
+  /// The user's pasted text hook to score.
+  inputTextHook      String   @db.Text
+  /// Optional pasted control hook + body to run body-hook alignment against.
+  controlHookText    String?  @db.Text
+  controlBodyText    String?  @db.Text
+  imageUrl           String?
+  product            String?
+  audience           String?
+  /// 1-5 Golden-Formula scores.
+  scoreStopScroll    Int
+  scoreCuriosity     Int
+  scoreBenefit       Int
+  scoreAlignment     Int
+  /// "green" | "yellow" | "red" or similar verdict emitted by prompt.
+  verdict            String
+  /// Per-axis 1-line reasons. Shape:
+  /// `{ stopScroll: string, curiosity: string, benefit: string, alignment: string }`
+  reasoning          Json
+  /// 3 rewrite suggestions. Shape:
+  /// `Array<{ text, angle, whyBetter }>`
+  rewrites           Json
+  /// "LOW" | "MEDIUM" | "HIGH"
+  andromedaRisk      String
+  andromedaReasoning String?  @db.Text
+  /// Nick RAG citations used. Shape:
+  /// `Array<{ ordinal, title, url, similarity }>`
+  citations          Json
+  promptTokens       Int?
+  completionTokens   Int?
+  costUsd            Float?
+  createdAt          DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt(sort: Desc)])
+}
+
+/// Per-tenant profile capturing product/audience/desire so Generate and
+/// Iterate forms auto-prefill on repeat visits. One row per tenant.
+model HookProfile {
+  id                     String   @id @default(cuid())
+  tenantId               String   @unique
+  product                String   @db.Text
+  audience               String   @db.Text
+  desire                 String   @db.Text
+  /// "unaware" | "problem" | "solution" | "product" | "most"
+  awarenessDefault       String?
+  /// 1-5
+  sophisticationDefault  Int?
+  /// "th" | "en" | "both"
+  language               String   @default("both")
+  updatedByUserId        String
+  updatedAt              DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+/// Cache row for Meta-detected top winners per tenant. Populated by the
+/// detect-winners flow (campaigns_list → ads_list_ads_in_account →
+/// insights_get_ad → creative + preview → META_WINNER_INTERPRETER_PROMPT).
+/// TTL via `cachedUntil`. One row per (tenantId, metaAdId).
+model HookWinner {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  metaAdId            String
+  metaCampaignId      String?
+  metaAdSetId         String?
+  textHook            String   @db.Text
+  body                String?  @db.Text
+  /// "video" | "image" | "carousel"
+  creativeType        String?
+  /// Normalized visual description from META_WINNER_INTERPRETER_PROMPT.
+  visualSummary       String?  @db.Text
+  /// Dominant attribute chips. Shape:
+  /// `Array<string>` e.g. ["ethnicity:asian-female-30s","format:UGC","duration:~15s"]
+  dominantAttributes  Json?
+  spend               Float?
+  purchaseRoas        Float?
+  ctr                 Float?
+  linkClicks          Int?
+  impressions         Int?
+  detectedAt          DateTime
+  cachedUntil         DateTime
+  /// Detection warnings surfaced to UI. Shape:
+  /// `Array<{ code, message }>` — e.g. rate_limited, insufficient_data.
+  warnings            Json?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, metaAdId])
+  @@index([tenantId, cachedUntil])
 }

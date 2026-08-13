@@ -10,7 +10,7 @@ echo "→ audit:i18n (missing-key + emoji scans)"
 python scripts/audit-missing-keys-v3.py | tail -5
 MISSING=$(python -c "
 import subprocess, sys
-r = subprocess.run(['python', 'scripts/audit-missing-keys-v3.py'], capture_output=True, text=True)
+r = subprocess.run(['python', 'scripts/audit-missing-keys-v3.py'], capture_output=True, text=True, encoding='utf-8')
 print(r.stdout.split('MISSING translation keys:')[1].split('\n')[0].strip() if 'MISSING translation keys:' in r.stdout else '?')
 ")
 if [ "$MISSING" != "0 ===" ] && [ "$MISSING" != "0" ]; then
@@ -21,7 +21,7 @@ fi
 echo "→ audit:emojis"
 EMOJIS=$(python -c "
 import subprocess
-r = subprocess.run(['python', 'scripts/audit-emojis.py'], capture_output=True, text=True)
+r = subprocess.run(['python', 'scripts/audit-emojis.py'], capture_output=True, text=True, encoding='utf-8')
 for line in r.stdout.splitlines():
   if 'JSON total' in line:
     print(line.split(':')[1].strip()); break

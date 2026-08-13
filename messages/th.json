@@ -127,6 +127,11 @@
       "pageOauth": {
         "ownerOnly": "เฉพาะ OWNER เชื่อมต่อ Page Management ได้"
       },
+      "mcp": {
+        "key": {
+          "ownerOnly": "เฉพาะ OWNER เท่านั้นที่ออกหรือยกเลิก MCP API key ได้"
+        }
+      },
       "pixels": {
         "alreadyExists": "Ad account นี้มี Pixel อยู่แล้ว: \"{name}\" (ID {id}) — Meta จำกัด 1 Pixel ต่อ ad account",
         "shareNeedsBm": "Target ad account ไม่ได้อยู่ใน Business Manager — Pixel share ใช้ได้กับ BM accounts เท่านั้น"
@@ -204,6 +209,7 @@
       "settings": "การตั้งค่า",
       "insights": "ข้อมูลเชิงลึก",
       "launch": "สร้างโฆษณา",
+      "hookLab": "Hook Lab",
       "aiLab": "AI Lab",
       "automation": "ระบบอัตโนมัติ"
     },
@@ -432,7 +438,67 @@
     "disconnecting": "กำลังยกเลิก...",
     "disconnectBtn": "ยกเลิก",
     "tokenExpired": "Token หมดอายุหรือถูกยกเลิก กรุณาเชื่อมต่อใหม่",
-    "reconnect": "เชื่อมต่ออีกครั้ง"
+    "reconnect": "เชื่อมต่ออีกครั้ง",
+    "paste": {
+      "title": "เชื่อมต่อ Meta",
+      "subtitle": "วาง System User token เพื่อให้ AdsLab อ่านข้อมูล Ad Accounts",
+      "heading": "Meta System User Token",
+      "headingSubtitle": "ใช้ System User token ที่ไม่หมดอายุ — เชื่อมครั้งเดียวใช้ยาว",
+      "guideTitle": "สร้าง token ใน Business Manager (3 ขั้นตอน)",
+      "guideSubtitle": "System User token ไม่หมดอายุ ต่างจาก user token ที่หมดใน 60 วัน",
+      "step1Title": "เปิด System Users ใน Business Settings",
+      "step1Body": "ไปที่ Business Settings > Users > System Users จากหน้า",
+      "step2Title": "เลือก System User แล้ว Assign Ad Accounts",
+      "step2Body": "สร้าง System User ใหม่หรือเลือกอันเดิม กด Add Assets เลือก Ad Accounts ทั้งหมดที่ต้องการให้ AdsLab เข้าถึง แล้วให้สิทธิ์ Manage Campaigns",
+      "step3Title": "Generate Token แบบ Never Expires",
+      "step3Body": "กด Generate New Token เลือก App ของคุณ ตั้ง Token Expiration เป็น Never ติ๊ก scope: ads_management, ads_read, business_management แล้วคัดลอกมาวางด้านล่าง",
+      "tokenLabel": "System User Access Token",
+      "tokenPlaceholder": "EAAG...",
+      "tokenHint": "AdsLab จะเข้ารหัส token ด้วย AES-256-GCM ก่อนบันทึกในฐานข้อมูล",
+      "tokenTooShort": "Token สั้นเกินไป — ตรวจว่าคัดลอกมาครบหรือไม่",
+      "saveBtn": "บันทึก + ทดสอบ",
+      "saving": "กำลังทดสอบ...",
+      "saveSuccess": "เชื่อมต่อสำเร็จในนาม {name}",
+      "cancelBtn": "ยกเลิก",
+      "ownerOnly": "เฉพาะเจ้าของ (OWNER) เท่านั้นที่วาง token ได้",
+      "connectedAt": "เชื่อมต่อเมื่อ {when}",
+      "metaUserIdLabel": "Meta User ID",
+      "repasteBtn": "วาง token ใหม่",
+      "disconnectBtn": "ยกเลิกการเชื่อมต่อ",
+      "disconnecting": "กำลังยกเลิก...",
+      "disconnectConfirm": "ต้องการยกเลิกการเชื่อมต่อ Meta หรือไม่",
+      "disconnectSuccess": "ยกเลิกการเชื่อมต่อแล้ว"
+    }
+  },
+  "mcpKey": {
+    "statusActive": "MCP key พร้อมใช้งาน",
+    "statusActiveHint": "มี key อยู่ 1 ตัว หมุน key ใหม่ได้ทุกครั้งที่สงสัยว่าหลุด",
+    "statusNotIssued": "ยังไม่ได้ออก MCP API key",
+    "statusNotIssuedHint": "ออก key เพื่อให้ Claude Desktop สั่งงาน workspace นี้ได้",
+    "ownerOnly": "เฉพาะ OWNER เท่านั้นที่ออกหรือยกเลิก key นี้ได้",
+    "generateBtn": "สร้าง key",
+    "rotateBtn": "หมุน key ใหม่",
+    "generating": "กำลังสร้าง...",
+    "revokeBtn": "ยกเลิก key",
+    "revoking": "กำลังยกเลิก...",
+    "rotateConfirm": "ต้องการหมุน MCP key หรือไม่ key เดิมจะใช้ไม่ได้ทันที",
+    "revokeConfirm": "ต้องการยกเลิก MCP key หรือไม่ Claude Desktop จะเข้าถึง workspace นี้ไม่ได้จนกว่าจะออก key ใหม่",
+    "issuedToast": "ออก MCP key แล้ว",
+    "rotatedToast": "หมุน MCP key แล้ว",
+    "revokedToast": "ยกเลิก MCP key แล้ว",
+    "generateFailedDefault": "ออก key ไม่สำเร็จ",
+    "revokeFailedDefault": "ยกเลิก key ไม่สำเร็จ",
+    "oneTimeWarning": "คัดลอก key เลย ระบบจะแสดงเพียงครั้งเดียวและกู้คืนไม่ได้",
+    "keyLabel": "MCP API Key ของคุณ",
+    "configLabel": "Config สำหรับ Claude Desktop",
+    "configHint": "วางบล็อกนี้ลงในไฟล์ claude_desktop_config.json ใต้หัวข้อ mcpServers",
+    "copyBtn": "คัดลอก",
+    "keyCopied": "คัดลอก key แล้ว",
+    "configCopied": "คัดลอก config แล้ว",
+    "copyFailed": "เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ คัดลอกด้วยมือแทน",
+    "dismissBtn": "บันทึกแล้ว ซ่อน key",
+    "activeReminder": "เราไม่เก็บ key ตัวจริงไว้บนเซิร์ฟเวอร์ ถ้าลืมให้กดหมุน key ใหม่แทน",
+    "notIssuedHint": "ยังไม่มี MCP key ในระบบ Claude Desktop จะเชื่อมต่อ workspace นี้ไม่ได้จนกว่าจะสร้าง key"
   },
   "settings": {
     "pageMgmt": {
@@ -1247,6 +1313,277 @@
       "kpiVideo": "วิดีโอ",
       "kpiAi": "สร้างด้วย AI",
       "kpiTotal": "ทั้งหมด"
+    },
+    "hookLab": {
+      "title": "Hook Lab",
+      "subtitle": "ร่าง ปรับ และให้คะแนน hook โฆษณาตามหลักของ Nick Theriot",
+      "refreshWinners": "ดึง winner ใหม่",
+      "winnerDetectionQueued": "กำลังตรวจในเบื้องหลัง กดอีกครั้งอีกประมาณ 30 วินาที",
+      "winnerCacheHit": "โหลด winner จากแคชแล้ว {n} รายการ",
+      "winnerDetected": "พบ winner {n} รายการ",
+      "winnerDetectFail": "ดึง winner ไม่สำเร็จ: {message}",
+      "nickBanner": {
+        "attribution": "แหล่งอ้างอิง: การสอนสาธารณะของ Nick Theriot เรื่องการเขียน hook",
+        "heuristic": "Meta ไม่ได้เปิดเผยตัวจัดหมวดจริง ผลตัดสินทุกอย่างเป็นคำแนะนำเชิงประมาณเท่านั้น ไม่ใช่การรับประกัน"
+      },
+      "tabs": {
+        "generate": "สร้างใหม่",
+        "iterate": "ปรับต่อ",
+        "analyze": "วิเคราะห์",
+        "visuals": "วางแผน visual"
+      },
+      "risk": {
+        "short": {
+          "LOW": "ความเสี่ยงต่ำ",
+          "MEDIUM": "ความเสี่ยงกลาง",
+          "HIGH": "ความเสี่ยงสูง"
+        },
+        "low": "ประเมิน: ต่ำ",
+        "medium": "ประเมิน: กลาง",
+        "high": "ประเมิน: สูง",
+        "checking": "กำลังประเมิน",
+        "reasoningIntro": "เหตุผลของความเสี่ยงนี้"
+      },
+      "levers": {
+        "opening_beat": "จังหวะเปิด",
+        "first_frame": "เฟรมแรก",
+        "actor_age": "อายุนักแสดง",
+        "actor_ethnicity": "เชื้อชาตินักแสดง",
+        "format_style": "รูปแบบสื่อ",
+        "callout_wording": "ถ้อยคำเรียก"
+      },
+      "generate": {
+        "productLabel": "สินค้าหรือข้อเสนอ",
+        "productPlaceholder": "ตัวอย่าง เซรั่มไวท์เทนนิ่งกลางคืน",
+        "audienceLabel": "กลุ่มเป้าหมาย",
+        "audiencePlaceholder": "ตัวอย่าง ผู้หญิงไทย 25 ถึง 40 ปี ผิวแพ้ง่าย",
+        "desireLabel": "ความต้องการหรืองานที่อยากทำให้สำเร็จ",
+        "desirePlaceholder": "สิ่งที่ผู้ชมอยากได้จากสินค้า",
+        "awarenessLabel": "ระดับ awareness",
+        "awarenessAny": "ทั้งหมด",
+        "awarenessOptions": {
+          "unaware": "ยังไม่รู้ปัญหา",
+          "problem": "รู้ปัญหา",
+          "solution": "รู้ทางแก้",
+          "product": "รู้จักสินค้า",
+          "mostAware": "รู้ดีที่สุด"
+        },
+        "sophisticationLabel": "ระดับ sophistication",
+        "languageLabel": "ภาษาที่ต้องการ",
+        "languageOptions": {
+          "th": "ไทย",
+          "en": "อังกฤษ",
+          "both": "ทั้งสอง"
+        },
+        "controlWinnerLabel": "โฆษณาตัวชนะ (control)",
+        "controlWinnerNone": "ไม่มี ร่างจากศูนย์",
+        "controlWinnerHint": "เลือก winner เพื่อให้โมเดลรู้ว่าต้องเหวี่ยงออกจากตัวไหน",
+        "controlHookLabel": "hook ตัวชนะ (ไม่บังคับ)",
+        "controlHookPlaceholder": "วาง hook ตัวชนะปัจจุบันที่ต้องการเหวี่ยงออก",
+        "controlBodyLabel": "body ตัวชนะ (ไม่บังคับ)",
+        "controlBodyPlaceholder": "วาง body ของ winner ปัจจุบัน",
+        "submit": "ร่าง 3 แนวคิดใหญ่",
+        "generatedToast": "ร่างแล้ว {n} แนวคิด",
+        "generateFail": "สร้างไม่สำเร็จ: {message}",
+        "savedToast": "บันทึกแนวคิดแล้ว",
+        "saveFail": "บันทึกไม่สำเร็จ: {message}",
+        "stageSearch": "กำลังหาแหล่งอ้างอิงของ Nick",
+        "stageDraft": "กำลังร่างแนวคิด",
+        "stageScore": "กำลังเตรียมคะแนน heuristic",
+        "emptyTitle": "ยังไม่มีแนวคิด",
+        "emptyBody": "กรอกฟอร์มแล้วกดปุ่ม เพื่อเห็นแนวคิด 3 ตัวที่เหวี่ยงออกจาก control"
+      },
+      "iterate": {
+        "sourceLabel": "แหล่งของ winner",
+        "sourceOptions": {
+          "meta": "จาก Meta",
+          "metaHint": "ดึงจาก ad ตัวท็อป",
+          "saved": "แนวคิดที่บันทึกไว้",
+          "savedHint": "เลือกจากที่มาร์กว่าเป็น winner",
+          "pasted": "วางเอง",
+          "pastedHint": "วาง hook และ body ด้วยตัวเอง"
+        },
+        "winnerLabel": "เลือก winner จาก Meta",
+        "savedLabel": "เลือก winner ที่บันทึกไว้",
+        "pastedHookLabel": "ข้อความ hook ตัวชนะ",
+        "pastedHookPlaceholder": "วาง hook ตัวชนะเป๊ะ",
+        "pastedBodyLabel": "body ตัวชนะ",
+        "pastedBodyPlaceholder": "วาง body ตัวชนะเป๊ะ",
+        "iterationCountLabel": "ต้องการกี่ตัวปรับ",
+        "lockedLeversLabel": "ล็อกตัวแปรเหล่านี้ไว้",
+        "lockedLeversHint": "แตะเพื่อล็อก โมเดลจะไม่แตะตัวแปรที่ล็อกไว้",
+        "languageLabel": "ภาษาที่ต้องการ",
+        "languageOptions": {
+          "th": "ไทย",
+          "en": "อังกฤษ",
+          "both": "ทั้งสอง"
+        },
+        "submit": "ร่างตัวปรับแบบเปลี่ยนทีละอย่าง",
+        "selectWinner": "เลือก winner จาก Meta ก่อน",
+        "selectSavedConcept": "เลือก winner ที่บันทึกไว้ก่อน",
+        "pastedRequired": "วางทั้ง hook และ body ก่อน",
+        "generatedToast": "ร่างตัวปรับแล้ว {n} รายการ",
+        "iterateFail": "ปรับไม่สำเร็จ: {message}",
+        "savedToast": "บันทึกตัวปรับแล้ว",
+        "saveFail": "บันทึกไม่สำเร็จ: {message}",
+        "stageLoadWinner": "กำลังโหลดข้อมูล winner",
+        "stageDraft": "กำลังร่างตัวปรับ",
+        "emptyTitle": "ยังไม่มีตัวปรับ",
+        "emptyBody": "เลือก winner แล้วกดปุ่ม เพื่อเห็นตัวปรับแบบเปลี่ยนทีละอย่าง",
+        "emptyNoWinners": "ยังไม่มี winner จาก Meta ในแคช กดปุ่มดึง winner ที่ด้านบนของหน้า",
+        "emptyNoSaved": "ยังไม่มี winner ที่บันทึกไว้ ต้องมาร์กแนวคิดใดแนวคิดหนึ่งเป็น winner ก่อน"
+      },
+      "analyze": {
+        "hookLabel": "ข้อความ hook ที่จะให้คะแนน",
+        "hookPlaceholder": "วาง hook ที่ต้องการให้คะแนน",
+        "bodyLabel": "body (ไม่บังคับ)",
+        "bodyPlaceholder": "วาง body เพื่อให้เราตรวจว่า hook กับ body สอดคล้องกัน",
+        "useMetaWinner": "เทียบกับ winner ที่ Meta ตรวจเจอ",
+        "controlHookLabel": "hook ตัวควบคุม (ไม่บังคับ)",
+        "controlHookPlaceholder": "วาง hook ตัวชนะปัจจุบัน",
+        "controlBodyLabel": "body ตัวควบคุม (ไม่บังคับ)",
+        "controlBodyPlaceholder": "วาง body ตัวชนะปัจจุบัน",
+        "productLabel": "สินค้า",
+        "audienceLabel": "กลุ่มเป้าหมาย",
+        "imageUrlLabel": "ลิงก์รูปภาพ (ไม่บังคับ)",
+        "imageUrlPlaceholder": "https://...",
+        "languageLabel": "ภาษา",
+        "languageOptions": {
+          "th": "ไทย",
+          "en": "อังกฤษ",
+          "both": "ทั้งสอง"
+        },
+        "submit": "ให้คะแนน hook นี้",
+        "hookRequired": "วาง hook ก่อน",
+        "scoredToast": "ให้คะแนนแล้ว",
+        "analyzeFail": "วิเคราะห์ไม่สำเร็จ: {message}",
+        "stageLoad": "กำลังโหลดแหล่งอ้างอิง Nick",
+        "stageScore": "กำลังให้คะแนน 3 แกน Golden Formula และ alignment",
+        "emptyTitle": "วาง hook เพื่อขอคะแนน",
+        "emptyBody": "คุณจะได้คะแนน 4 แกน เหตุผลรายแกน 3 rewrite และป้ายความเสี่ยงเชิงประมาณ",
+        "resultTitle": "รายละเอียดคะแนน",
+        "axis": {
+          "stopScroll": "หยุดสไครล",
+          "curiosity": "กระตุ้นความสงสัย",
+          "benefit": "ประโยชน์",
+          "alignment": "hook ตรงกับ body"
+        },
+        "rewritesLabel": "ตัวอย่างการเขียนใหม่"
+      },
+      "visualPlanner": {
+        "hookLabel": "ข้อความ hook",
+        "hookPlaceholder": "วาง hook ที่จะวางแผน visual",
+        "formatLabel": "รูปแบบ",
+        "formatOptions": {
+          "video": "วิดีโอ",
+          "static": "ภาพนิ่ง"
+        },
+        "aspectLabel": "อัตราส่วน",
+        "intentLabel": "จุดประสงค์",
+        "intentOptions": {
+          "bigSwing": "สวิงใหญ่",
+          "iteration": "ปรับต่อยอด"
+        },
+        "productLabel": "สินค้า",
+        "audienceLabel": "กลุ่มเป้าหมาย",
+        "languageLabel": "ภาษา",
+        "languageOptions": {
+          "th": "ไทย",
+          "en": "อังกฤษ",
+          "both": "ทั้งสอง"
+        },
+        "submit": "วางแผน 3 แนว visual",
+        "hookRequired": "วาง hook ก่อน",
+        "plannedToast": "วางแผน visual แล้ว {n} แนว",
+        "planFail": "วางแผนไม่สำเร็จ: {message}",
+        "directionNumber": "แนวที่ {n}",
+        "shotListLabel": "ลิสต์ช็อต",
+        "hypothesisLabel": "สมมติฐาน",
+        "emptyTitle": "ยังไม่มีแผน visual",
+        "emptyBody": "วาง hook แล้วกดปุ่ม เพื่อเห็น 3 แนวทาง visual"
+      },
+      "conceptCard": {
+        "hookLabel": "hook",
+        "briefLabel": "บรีฟฉบับเต็ม",
+        "bodyLabel": "โครง body",
+        "hypothesisLabel": "สมมติฐาน",
+        "angleChangeLabel": "มุมที่เปลี่ยน",
+        "visualLabel": "แนว visual ({n} แนว)",
+        "sourcesLabel": "แหล่งอ้างอิง",
+        "leverLabel": "ตัวแปรที่เปลี่ยน: {lever}",
+        "copyHook": "คัดลอก hook",
+        "copyBrief": "คัดลอกบรีฟเต็ม",
+        "save": "บันทึก",
+        "regenerate": "ร่างใหม่",
+        "useInLauncher": "ใช้ใน Ad Launcher",
+        "delete": "ลบ",
+        "overrideChosen": "บันทึกไว้แล้วทั้งที่ความเสี่ยงสูง",
+        "noHookText": "ไม่มีข้อความ hook",
+        "toastCopied": "คัดลอก {label} แล้ว",
+        "toastCopyFail": "คัดลอกไม่สำเร็จ ให้เลือกข้อความเองแทน"
+      },
+      "board": {
+        "heading": "กระดานแนวคิด",
+        "subtitle": "แสดง {shown} จาก {total} แนวคิด",
+        "searchPlaceholder": "ค้นหา hook หรือ body",
+        "statusLabel": "สถานะ",
+        "sourceLabel": "แหล่ง",
+        "statusAll": "ทั้งหมด",
+        "sourceAll": "ทั้งหมด",
+        "statusOptions": {
+          "draft": "ร่าง",
+          "testing": "กำลังทดสอบ",
+          "winner": "winner",
+          "archived": "เก็บเข้าคลัง"
+        },
+        "sourceOptions": {
+          "generated": "สร้างใหม่",
+          "iteration": "ตัวปรับ",
+          "analyzed": "วิเคราะห์",
+          "manual": "กรอกเอง"
+        },
+        "colHook": "hook",
+        "colHookEmpty": "(ยังไม่มี hook)",
+        "colSource": "แหล่ง",
+        "colStatus": "สถานะ",
+        "colRisk": "ความเสี่ยง",
+        "colActions": "จัดการ",
+        "emptyNoConcepts": "ยังไม่มีแนวคิดที่บันทึกไว้ ใช้เมนูสร้างใหม่หรือปรับต่อด้านบน",
+        "emptyFiltered": "ไม่มีแนวคิดตรงกับตัวกรอง",
+        "statusChanged": "อัปเดตสถานะแล้ว",
+        "statusChangeFail": "อัปเดตสถานะไม่สำเร็จ: {message}",
+        "deleteConfirm": "ลบแนวคิดนี้ถาวรหรือไม่",
+        "deleted": "ลบแนวคิดแล้ว",
+        "deleteFail": "ลบไม่สำเร็จ: {message}"
+      },
+      "warnConfirmModal": {
+        "title": "สวิงเสี่ยงสูง",
+        "subtitle": "แนวคิดนี้ใกล้กับ winner ปัจจุบันมาก การบันทึกต่อเป็นการตัดสินเชิงประมาณเท่านั้น",
+        "reasoningLabel": "เหตุผลเชิง heuristic",
+        "suggestionLabel": "คำแนะนำถัดไป",
+        "saveAnyway": "บันทึกต่อ",
+        "revise": "ขอปรับก่อน"
+      },
+      "costPill": {
+        "callsToday": "เรียก {n} ครั้ง",
+        "remaining": "เหลือ {n} ครั้งวันนี้"
+      },
+      "metaSignals": {
+        "heading": "สัญญาณจาก Meta",
+        "opportunityCampaign": "คะแนนโอกาสของแคมเปญ",
+        "opportunityAccount": "คะแนนโอกาสของบัญชี",
+        "anomalies": "ค่าผิดปกติ",
+        "noAnomalies": "ไม่มีค่าผิดปกติ",
+        "loading": "กำลังโหลดสัญญาณจาก Meta",
+        "errorMessage": "ดึงสัญญาณจาก Meta ไม่สำเร็จ: {message}",
+        "emptyNoCampaign": "ตรวจหา winner จาก Meta ก่อน แล้วคะแนนโอกาสและค่าผิดปกติจะโผล่มาตรงนี้",
+        "partial": "ข้อมูลไม่ครบ ส่วนที่ขาด: {list}"
+      },
+      "errors": {
+        "rateLimited": "วันนี้ใช้ Hook Lab ครบโควตาแล้ว รอหลังเที่ยงคืนตามเวลาไทย",
+        "metaFailed": "เรียก Meta API ไม่สำเร็จ ลองใหม่ในอีกสักครู่",
+        "nickEmpty": "ไม่พบแหล่งอ้างอิงของ Nick สำหรับบรีฟนี้"
+      }
     },
     "posts": {
       "title": "โพสต์เพจ",
@@ -3120,7 +3457,15 @@
     "settings": {
       "heading": "การตั้งค่า",
       "eyebrow": "Settings",
-      "comingSoon": "เร็วๆ นี้"
+      "comingSoon": "เร็วๆ นี้",
+      "navMetaConnection": "Meta Connection",
+      "navMcp": "MCP"
+    },
+    "mcp": {
+      "title": "MCP API Key",
+      "subtitle": "ให้ Claude Desktop สั่งงาน tenant นี้ผ่าน AdsLab MCP server",
+      "heading": "MCP API Key",
+      "headingSubtitle": "1 key ต่อ 1 tenant ใช้ให้ Claude Desktop เชื่อมเข้ามาที่ AdsLab ในนามของ workspace นี้"
     }
   },
   "optimizationEngine": {
@@ -3338,6 +3683,7 @@
         "history": "ประวัติ",
         "audiences": "กลุ่มเป้าหมาย",
         "creatives": "ครีเอทีฟ",
+        "hooks": "Hook Lab",
         "posts": "โพสต์เพจ"
       }
     },
